@@ -26,7 +26,7 @@ tags: ["Hexo"]
 
 
 [1]:http://zespia.tw/blog/2012/10/11/hexo-debut/
-[2]:http://yangruihan.com/2015/03/22/Windows%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%AD%A5%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%E2%80%94%E2%80%94%E4%BD%BF%E7%94%A8%20GitHub%20Pages%20+%20Hexo%20%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B%EF%BC%88%E4%B8%80%EF%BC%89/
+[2]:https://hexo.io/zh-cn/docs/
 [3.1]:http://zipperary.com/2013/05/30/hexo-guide-4/
 [3.2]:http://zhidao.baidu.com/link?url=zE0f91IjLHKzR5FEr_-aMwL6SrHSSfltLyKaTErrZ_DTcqan-xQu2IBGMo52ntBLz-vvsjO4zkPckiXBBVptbb6WR3dGu7nq_a5AFy3GKBW
 [4]:http://vkki.me/2014/02/04/beautify-your-hexo/

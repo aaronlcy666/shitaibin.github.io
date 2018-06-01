@@ -22,12 +22,11 @@ tags: ["Github Pages", "Hexo"]
 
 参考资料众多，我再写一篇就是，重复造轮子了。
 
-参考资料：http://yangruihan.com/ 。他采用了Github Pages + Hexo，风格个人比较喜欢，之前也用jekyII，Octopress搭过，目前Hexo看起来更舒服，并且过程相对简单。
+参考资料：https://hexo.io/zh-cn/docs/ 。他采用了Github Pages + Hexo，风格个人比较喜欢，之前也用jekyII，Octopress搭过，目前Hexo看起来更舒服，并且过程相对简单。
 
 安装时有以下建议：
-1. 安装Node.js后，更改为国内源，不然安装Hexo慢...
+1. 安装Node.js后，更改为国内源，不然安装Hexo慢。
     参考：http://yijiebuyi.com/blog/b12eac891cdc5f0dff127ae18dc386d4.html
-2. yangruihan提到的Node.js安装失败，重启主机即可。
 3. 部署失败可参考文件`——config.yml`中所提供的链接：http://hexo.io/docs/deployment.html。
 
 
