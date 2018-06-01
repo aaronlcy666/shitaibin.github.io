@@ -1,5 +1,5 @@
 ---
-title: Mac software and Chrome app
+title: 必备Mac软件&Chrome应用
 date: 2018-06-01 21:02:19
 tags: ['Mac', 'Chrome']
 ---
@@ -27,7 +27,7 @@ tags: ['Mac', 'Chrome']
 
 许多朋友都觉得Mac的抓图不好用，找好用的截图软件，但那些工具太Low了。
 
-Ctrl + Command + Shift + 4，截图后存到剪贴板。
+**Ctrl + Command + Shift + 4**，截图后存到剪贴板。
 
 其他：
 Command + Shift + 3 截取整个屏幕，保存图片在桌面 
