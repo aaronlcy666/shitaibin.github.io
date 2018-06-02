@@ -7,6 +7,15 @@ tags: ['Mac', 'Chrome']
 
 # 必备的Mac软件
 
+### 编程
+
+- Dash：开发必备，秒差各语言API
+- Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并
+- iTerm2：The Best Terminal，用好快捷键
+- Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000
+
+<!--more-->
+
 ### 办公
 - Copy Clip2：保存复制文本，对于程序员和文字重度工作者很重要
 - 疯狂番茄：番茄工作法，只用来当定时器用，配合Things
@@ -15,13 +24,6 @@ tags: ['Mac', 'Chrome']
 - Paralles Desktop：还是习惯Windows办公全家桶
 - Entropy：windows解压无压力的软件，压缩为7z文件更小，zip实际不压缩只是打包。符正确使用姿势：**右键->服务->Archive as 7z**，Keka必须打开软件才能压缩，简直弱爆了。
 ￼
-
-### 编程
-- Dash：开发必备，秒差各语言API
-- Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并
-- iTerm2：The Best Terminal，用好快捷键
-- Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000
-
 
 ### Mac截图
 
