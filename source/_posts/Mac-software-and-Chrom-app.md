@@ -10,7 +10,7 @@ tags: ['Mac', 'Chrome']
 ### 编程
 
 - Dash：开发必备，秒差各语言API
-- Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并
+- Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。
 - iTerm2：The Best Terminal，用好快捷键
 - Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000
 
