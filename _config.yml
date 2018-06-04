@@ -72,6 +72,27 @@ pagination_dir: page
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
+plugins:
+  - hexo-qiniu-sync
+
+qiniu:
+  offline: false
+  sync: true
+  bucket: hexo-blog
+  access_key: YRSOy1vsM8wBogotPNHvFuaXLMJ786Ebr8phxXvt
+  secret_key: J7gzyo7wrHp3FQQenbBXgLTTaNd2ofBAQJ-kK0EQ
+  dirPrefix:
+  urlPrefix: http://7xixtr.com1.z0.glb.clouddn.com
+  local_dir: cdn
+  update_exist: true
+  image:
+    folder: images
+    extend:
+  js:
+    folder: js
+  css:
+    folder: css
+
 ## Themes: https://hexo.io/themes/
 theme: yilia
 
@@ -81,3 +102,4 @@ deploy:
   type: git
   repository: git@github.com:Shitaibin/shitaibin.github.io.git
   branch: master
+

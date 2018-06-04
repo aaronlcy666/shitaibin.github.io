@@ -38,3 +38,7 @@ Goland是我目前（2018年06月02日）体验过的最方便/高效的Golang I
 |Git面板|Cmd + 9|
 |Git提交|Cmd + K|
 |||
+
+### Goland其他设置
+
+1. 快捷键添加的注释前面默认是没有空格的，`//comment`，如果要这种效果`// comment`，设置中搜索`Add leading space to comments`。
