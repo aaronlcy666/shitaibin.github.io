@@ -1,0 +1,6 @@
+<% if (post.toc != false) { %>
+<div id="toc">
+    <h1>目录</h1>
+    <%- toc(post.content, {list_number: false}) %>
+</div>
+<% } %>
