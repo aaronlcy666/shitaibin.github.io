@@ -209,7 +209,7 @@ Devise an efficient data structure to handle the following operations on a weigh
 解答
 
 在课本的并查集操作，得到的并查集是这样的。  
-![原始并查集结果](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-12%20b.png)
+![原始并查集结果](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-12%20b.-own)
 
 要想确定两个顶点在不在一个集合内，需要找到代表这个集合的根节点，find的效率并不高，他需要多次递归才能得到根节点。
 
@@ -240,7 +240,7 @@ The _single-destination shortest path_ problem for a **directed graph** seeks th
 
 另外，Kruskal算法是All-Pairs最短路径，如果想到的算法时间复杂度大于O(n3)，那还不如直接使用Kruskal。
 
-![6-14图](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-14.png)
+![6-14图](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-14.png-own)
 
 如上图,假设要求从s到t的最短路径，并且已经求得c1,c2,c3到t的最短路径，那么s到t的最短路径应当为 `W[s,t] = min(W[s,c1]+W[c1,t], W[s,c2]+W[c2,t], W[s,c3]+W[c3,t])`。
 
@@ -268,11 +268,11 @@ Answer all of the following:
 
 (a) 图G、MST、SP构成的树都是下图：
 
-![Ex 6-16 a](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-16%20a.png)
+![Ex 6-16 a](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-16%20a.png-own)
 
 (b) minimum-cost spanning tree就是MST，看到这个刚开始还觉得这是不是一个新东西。
 
-![Ex 6-16 b](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-16%20b.png)
+![Ex 6-16 b](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-16%20b.png-own)
 
 (c) What is ‘completely disjointed’?
 

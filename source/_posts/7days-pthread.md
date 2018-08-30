@@ -83,7 +83,7 @@ rwlock保护一个共享队列。
 * `pthread_cond_signal()`通知线程A
 * 继续
 
-![pthread条件变量](http://7xixtr.com1.z0.glb.clouddn.com/pthread_cond.png)
+![pthread条件变量](http://7xixtr.com1.z0.glb.clouddn.com/pthread_cond.png-own)
 
 5，条件变量信号多播`pthread_cond_broadcast()`，当多个线程等待条件变量时。
 

@@ -16,6 +16,29 @@ tags: ['Mac', 'Chrome']
 
 <!--more-->
 
+- brew：必备包管理工具，使用`proxychains brew xxx`就实现科学上网，快速下载软件了，不要设置其他源。
+- 命令行临时救命代理`export ALL_PROXY=socks5://127.0.0.1:1080`
+- proxychains：命令行代理工具
+    运行一下`proxychains curl ip.gs`就能列出来配置文件目录，修改为：
+    ```
+    dynamic_chain
+    socks5 127.0.0.1 1080
+    ```
+    然后使用`proxychains wget www.google.com`进行测试，成功则配置完成。
+
+- oh-my-zsh:
+    - 插件
+        - git
+        - autojump
+    - [历史配置](https://gist.github.com/Shitaibin/16f781ff5b320388efc55ed37d260815)
+- [trash-cli](https://github.com/andreafrancia/trash-cli)，配上昵称，解决`rm`误删问题
+    ```
+    # Reset rm command
+    alias rm='trash-put'
+    alias rl='trash-list'
+    alias ur='trash-restore'
+    ```
+
 ### 办公
 - Copy Clip2：保存复制文本，对于程序员和文字重度工作者很重要
 - 疯狂番茄：番茄工作法，只用来当定时器用，配合Things

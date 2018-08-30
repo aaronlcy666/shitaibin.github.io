@@ -26,7 +26,7 @@ tags: ['以太坊']
 - worker：副矿长，负责具体挖矿工作的安排，把挖矿任务（Work）安排给agent。
 - agent：真实的矿工，他们负责挖矿，把自己的劳动成果（Result）交给worker，agent默认只有1个，可以通过API创建多个。
 
-![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121153.jpg)
+![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121153.jpg-own)
 
 ## 一个区块产生的主要流程
 
@@ -42,7 +42,7 @@ tags: ['以太坊']
 6. engine.Seal把`Nonce`和`MixDigest`填到区块头，生成一个`new block`交给agent.mine.
 7. agent.mine把`new block`封装成`Result`，发送给worker。
 
-![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121152.jpg)
+![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121152.jpg-own)
 
 ## 矿工的主要函数
 
