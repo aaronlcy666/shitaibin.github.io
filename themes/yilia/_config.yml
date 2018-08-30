@@ -1,8 +1,10 @@
 # Header
 menu:
+  # 标签↑⬆：/
+  标签⬆: /
   主页: /
   所有文章: /archives
-  # 随笔: /tags/随笔
+  # 标签: /tags
 
 # SubNav
 subnav:

@@ -4,12 +4,12 @@ title:
   tag: Tag
 
 menu:
-  menu: Menu
-  home: Home
-  archives: Archives
+  menu: 主菜单
+  home: 主页
+  archives: 所有文字
   categories: Categories
-  tags: Tags
-  about: About
+  tags: 标签
+  about: 关于
   search: Search
   link: Links
 
