@@ -22,7 +22,7 @@
 <meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/image-20180821143403650.png-own">
 <meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/image-20180822103401508.png-own">
 <meta property="og:image" content="http://7xixtr.com1.z0.glb.clouddn.com/image-20180822103701006.png-own">
-<meta property="og:updated_time" content="2018-08-30T09:39:06.120Z">
+<meta property="og:updated_time" content="2018-09-01T07:49:38.441Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="以太坊源码分析：fetcher模块和区块传播">
 <meta name="twitter:description" content="前言这篇文章从区块传播策略入手，介绍新区块是如何传播到远端节点，以及新区块加入到远端节点本地链的过程，同时会介绍fetcher模块，fetcher的功能是处理Peer通知的区块信息。在介绍过程中，还会涉及到p2p，eth等模块，不会专门介绍，而是专注区块的传播和加入区块链的过程。 当前代码是以太坊Release 1.8，如果版本不同，代码上可能存在差异。">
@@ -254,7 +254,7 @@
 <p>至此，可以看出<strong>以太坊采用以石击水的方式，像水纹一样，层层扩散新产生的区块</strong>。</p>
 <h1><span id="fetcher模块是干啥的">Fetcher模块是干啥的</span></h1><p>fetcher模块的功能，就是收集其他Peer通知它的区块信息：1）完整的区块2）区块Hash消息。根据通知的消息，获取完整的区块，然后传递给<code>eth</code>模块把区块插入区块链。</p>
 <p>如果是完整区块，就可以传递给eth插入区块，如果只有区块Hash，则需要从其他的Peer获取此完整的区块，然后再传递给eth插入区块。</p>
-<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/image-20180821175330370.png-own" alt="image-20180821175330370"></p>
+<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/image-20180821175330370.png-own" alt="fetcher功能抽象"></p>
 <h1><span id="源码解读">源码解读</span></h1><p>本节介绍区块传播和处理的细节东西，方式仍然是先用图解释流程，再是代码流程。</p>
 <h2><span id="产块节点的传播新区块">产块节点的传播新区块</span></h2><p>节点产生区块后，广播的流程可以表示为图4：</p>
 <ol>
@@ -365,7 +365,7 @@
 <li><code>forgetHash(hash common.Hash)</code>：用于清空指定hash指的记/状态录信息。</li>
 <li><code>forgetBlock(hash common.Hash)</code>：用于从队列中移除一个区块。</li>
 </ol>
-<p>最后了，再回到开始看看fetcher模块和新区块的传播流程，有没有了然于胸。</p>
+<p>最后了，再回到开始看看fetcher模块和新区块的传播流程，有没有豁然开朗。</p>
 
       
     </div>
