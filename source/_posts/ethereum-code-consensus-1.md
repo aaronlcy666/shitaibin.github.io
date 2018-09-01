@@ -4,15 +4,15 @@ date: 2018-06-22 20:12:57
 tags: ['以太坊']
 ---
 
+
 ## 前言
 
-矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。
+矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己做了很多工作的区块，然后将这个区块加入到本地区块链并且广播给其他节点。
 
 接下来我们将从以下角度介绍矿工：
-
 1. 角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。
-2. 一个区块产生的主要流程。
-3. 矿工的主要函数介绍，掌握矿工的主要挖矿机制。
+2. 通过了解一个区块产生的主要流程，掌握矿工的工作流。
+3. 通过了解矿工的主要函数介绍，掌握矿工的主要挖矿机制。
 
 <!--more-->
 
@@ -20,13 +20,12 @@ tags: ['以太坊']
 
 ## 角色
 
-有3种角色：miner、worker、agent。
-
+有3种角色：miner、worker、agent。我们分别使用矿长、副矿长、矿工进行类比。
 - miner：是矿长，负责管理整个矿场的运作，比如：启动、停止挖矿，处理外部请求，设置挖矿获得的奖励的钱包地址等等。
 - worker：副矿长，负责具体挖矿工作的安排，把挖矿任务（Work）安排给agent。
 - agent：真实的矿工，他们负责挖矿，把自己的劳动成果（Result）交给worker，agent默认只有1个，可以通过API创建多个。
 
-![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121153.jpg-own)
+![角色与交互](http://upload-images.jianshu.io/upload_images/10901752-6ffa23499ef4c353.jpg-own?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## 一个区块产生的主要流程
 
@@ -42,7 +41,7 @@ tags: ['以太坊']
 6. engine.Seal把`Nonce`和`MixDigest`填到区块头，生成一个`new block`交给agent.mine.
 7. agent.mine把`new block`封装成`Result`，发送给worker。
 
-![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121152.jpg-own)
+![产生1个区块的流程](http://upload-images.jianshu.io/upload_images/10901752-c652019d474d92c4.jpg-own?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ## 矿工的主要函数
 
@@ -63,7 +62,7 @@ tags: ['以太坊']
 2. `update()`：负责处理外部事件。它是死循环，主要处理3种事件：1）ChainHeadEvent，有了新区块头，所以得切换到挖下一个高度的区块，2）ChainSideEvent，收到了uncle区块，缓存起来，3）TxPreEvent，预处理交易，如果在挖矿执行`commitNewWork`，如果未挖矿，则交易设置为未决状态。
 3. `wait()`：负责处理agent挖矿的结果。它是死循环，一直等待接收agent发回的result，然后把区块加入到本地数据库，如果没有问题，就发布`NewMinedBlockEvent`事件，通告其他节点挖到了一个新块。
 
-![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121154.jpg)
+![update & wait](http://upload-images.jianshu.io/upload_images/10901752-5636eb21b1ae9260.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ### agent的主要函数
 
@@ -71,8 +70,8 @@ tags: ['以太坊']
 
 1. `update()`：负责接收worker发来的任务（work）。它是死循环，把work交给mine去挖矿。
 2. `mine()`：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。 
-   ![img](http://7xixtr.com1.z0.glb.clouddn.com/2018-06-22-121151.jpg)
+   ![update & mine ](http://upload-images.jianshu.io/upload_images/10901752-a7df835eb9013af4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 
-> 最后两张图片来源网络，侵删。
+> **最后两张图片来源网络，侵删。**
