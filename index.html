@@ -211,22 +211,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
-<div id="toc">
-    <h1>目录</h1>
-    
-</div>
-
         <p>Oh Shit！误删数据了。</p>
-<p>!<--more--></--more--></p>
-<p>既然看这篇文章，你必然也有<code>rm</code>命令误删数据的经历了，废话少说，解决办法：使用trash-cli覆盖原有的<code>rm</code>命令，把<code>rm</code>命令更改为<code>RM</code>。</p>
-<p>需要的软件:</p>
-<ul>
-<li><a href="https://github.com/andreafrancia/trash-cli" target="_blank" rel="noopener">trash-cli</a></li>
-</ul>
-<p>安装办法见Github项目的Readme文档。</p>
-<p>修改<code>.bashrc</code>或<code>.zshrc</code>，增加昵称覆盖原有的<code>rm</code>命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">alias rm=&apos;trash-put&apos;        #文件移动到垃圾桶</span><br><span class="line">alias rl=&apos;trash-list&apos;       #列出删除的文件</span><br><span class="line">alias ur=&apos;trash-restore&apos;    #恢复删除的文件</span><br><span class="line">alias RM=&apos;/bin/rm&apos;          #原有的rm命令</span><br></pre></td></tr></table></figure></p>
-
       
     </div>
     
@@ -239,6 +224,10 @@
 
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2018/09/07/rename-rm-in-MacOS/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -282,56 +271,15 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
-<div id="toc">
-    <h1>目录</h1>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">软件列表</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">shadowsocks</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">Chrome设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#undefined"><span class="toc-text">终端科学上网</span></a></li></ol>
-</div>
-
-        <h1><span id="前言">前言</span></h1><p>科学上网，为祖国建设添砖加瓦。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>科学上网，为祖国建设添砖加瓦。</p>
 <ul>
 <li>教你浏览器科学上网，获取学习资料。</li>
 <li>教你终端科学上网，获取学习资料。</li>
 </ul>
-<h1><span id="软件列表">软件列表</span></h1><ul>
+<h1 id="软件列表"><a href="#软件列表" class="headerlink" title="软件列表"></a>软件列表</h1><ul>
 <li><a href="https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9" target="_blank" rel="noopener">Shadowsocks</a>:sock5代理</li>
 <li>proxychains-ng:为终端命令设置代理</li>
 </ul>
-<p>!<--more--></--more--></p>
-<h1><span id="shadowsocks">shadowsocks</span></h1><p>这是Mac版本，<a href="https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9" target="_blank" rel="noopener">自行下载</a>。</p>
-<p>配置如下图2个：</p>
-<ul>
-<li>设置自动代理模式</li>
-<li>填写服务器信息</li>
-</ul>
-<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/image-20180906200452853.png" alt="shadowsocks配置1"></p>
-<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/image-20180906200930519.png" alt="shadowsocks服务器配置"></p>
-<h1><span id="chrome设置">Chrome设置</span></h1><p>应用商店安装<a href="https://github.com/FelisCatus/SwitchyOmega" target="_blank" rel="noopener">SwitchyOmega</a>，shadowsocks默认端口为1080，配置如下：</p>
-<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/image-20180906201214614.png" alt="Omega代理设置"></p>
-<p>浏览器启用代理，自动切换代理的方式自行百度：</p>
-<p><img src="http://7xixtr.com1.z0.glb.clouddn.com/image-20180906201322243.png" alt="image-20180906201322243"></p>
-<p>浏览器可科学上网了。</p>
-<h1><span id="终端科学上网">终端科学上网</span></h1><p>作为研发，天天和国外资源打交道，必需让终端也能科学上网，不然下载个攻击、软件包就吐血了。</p>
-<p>用下来最稳定省心的办法是proxychains-ng，优点突出：</p>
-<ul>
-<li>只局限于使用的软件</li>
-<li>稳定可行</li>
-</ul>
-<p>安装proxychains-ng</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install proxychains-ng</span><br></pre></td></tr></table></figure>
-<p>运行会列出配置文件位置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: /usr/local/etc/proxychains.conf</span><br><span class="line">[proxychains] preloading /usr/local/Cellar/proxychains-ng/4.13/lib/libproxychains4.dylib</span><br></pre></td></tr></table></figure>
-<p>打开配置文件：<code>/usr/local/etc/proxychains.conf</code>。</p>
-<ul>
-<li>dynamic_chain，取消这行注释</li>
-<li>strict_chain， 注释</li>
-<li>最后一行添加<code>socks5 127.0.0.1 1080</code></li>
-</ul>
-<p><strong>验证科学上网的唯一标准：能用wget下载google主页</strong>，什么<code>curl ip.cn</code>这种不一定准。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  t proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: /usr/local/etc/proxychains.conf</span><br><span class="line">[proxychains] preloading /usr/local/Cellar/proxychains-ng/4.13/lib/libproxychains4.dylib</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.13</span><br><span class="line">--2018-09-06 20:24:26--  http://www.google.com/</span><br><span class="line">正在解析主机 www.google.com (www.google.com)... 224.0.0.1</span><br><span class="line">正在连接 www.google.com (www.google.com)|224.0.0.1|:80... [proxychains] Strict chain  ...  127.0.0.1:1080  ...  www.google.com:80  ...  OK</span><br><span class="line">已连接。</span><br><span class="line">已发出 HTTP 请求，正在等待回应... 200 OK</span><br><span class="line">长度：未指定 [text/html]</span><br><span class="line">正在保存至: “index.html.10”</span><br><span class="line"></span><br><span class="line">index.html.10                    [ &lt;=&gt;                                           ]  11.11K  --.-KB/s  用时 0s</span><br><span class="line"></span><br><span class="line">2018-09-06 20:24:27 (59.9 MB/s) - “index.html.10” 已保存 [11375]</span><br></pre></td></tr></table></figure>
-<p>为了方便使用proxychains可以设置命令昵称，比如我的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alias py4=&quot;proxychains4&quot;</span><br><span class="line">alias brew=&quot;py4 brew&quot;</span><br><span class="line">alias wget=&quot;py4 wget&quot;</span><br></pre></td></tr></table></figure>
-
       
     </div>
     
@@ -344,6 +292,10 @@
 
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2018/09/06/Science-and-the-Internet/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -387,29 +339,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
-<div id="toc">
-    <h1>目录</h1>
-    
-</div>
-
         <p>所谓陷阱，就是它不是你认为的那样。刚好<code>Timer.Reset()</code>和<code>Timer.Stop()</code>的返回值就有陷阱，探索一下。</p>
-<p>!<--more--></--more--></p>
-<p><code>Timer.Reset()</code>函数的返回值与重设定时器成功和失败没有关系，而是与定时器在重设前的状态有关：</p>
-<ul>
-<li>Timer已经停止或者超时，返回false。</li>
-<li>只有未超时时，返回true。</li>
-</ul>
-<p><code>Timer.Reset()</code>“失败”的情况，与通道中是否存在事件有关。由于<code>Timer.C</code>是缓冲大小只为1，当其中存在事件时，即便定时器真正超时，也无法向通道中写入数据，对外通知。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// NewTimer creates a new Timer that will send</span><br><span class="line">// the current time on its channel after at least duration d.</span><br><span class="line">func NewTimer(d Duration) *Timer &#123;</span><br><span class="line">	c := make(chan Time, 1) // 缓存通道大小为1</span><br><span class="line">	t := &amp;Timer&#123;</span><br><span class="line">		C: c,</span><br><span class="line">		r: runtimeTimer&#123;</span><br><span class="line">			when: when(d),</span><br><span class="line">			f:    sendTime,</span><br><span class="line">			arg:  c,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	startTimer(&amp;t.r)</span><br><span class="line">	return t</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>如果确保<code>Timer.Reset()</code>成功？</strong>不确定，没有一个指标能告诉你它成功了，一定会在将来的某个时间通知你。但我们可以尽量让他成功，在<code>Timer.Reset()</code>前清空通道，以免阻塞。</p>
-<ul>
-<li>当业务场景简单的时候，只要能够保证，下次<code>Reset()</code>前通道数据是空的，没有必要主动去判断和清空<code>Timer.C</code>中的事件。</li>
-<li>当业务场景复杂，存在调用<code>Timer.Stop()</code>停止定时器，某种条件之后又通过<code>Reset()</code>开启定时器的情况，考虑清楚<code>Reset()</code>前是否可能存在<code>Timer.C</code>未清空的情况，如果存在，最好在<code>Reset()</code>前增加判断和清空。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if len(Timer.C) &gt; 0&#123;</span><br><span class="line">    &lt;-Timer.C</span><br><span class="line">&#125;</span><br><span class="line">Timer.Reset(time.Second)</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>测试代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;time&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">// 不同情况下，Timer.Reset()的返回值</span><br><span class="line">func test1() &#123;</span><br><span class="line">	fmt.Println(&quot;第1个测试：Reset返回值和什么有关？&quot;)</span><br><span class="line">	tm := time.NewTimer(time.Second)</span><br><span class="line">	defer tm.Stop()</span><br><span class="line"></span><br><span class="line">	quit := make(chan bool)</span><br><span class="line"></span><br><span class="line">	// 退出事件</span><br><span class="line">	go func() &#123;</span><br><span class="line">		time.Sleep(3 * time.Second)</span><br><span class="line">		quit &lt;- true</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	// Timer未超时，看Reset的返回值</span><br><span class="line">	if !tm.Reset(time.Second) &#123;</span><br><span class="line">		fmt.Println(&quot;未超时，Reset返回false&quot;)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		fmt.Println(&quot;未超时，Reset返回true&quot;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// 停止timer</span><br><span class="line">	tm.Stop()</span><br><span class="line">	if !tm.Reset(time.Second) &#123;</span><br><span class="line">		fmt.Println(&quot;停止Timer，Reset返回false&quot;)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		fmt.Println(&quot;停止Timer，Reset返回true&quot;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// Timer超时</span><br><span class="line">	for &#123;</span><br><span class="line">		select &#123;</span><br><span class="line">		case &lt;-quit:</span><br><span class="line">			return</span><br><span class="line"></span><br><span class="line">		case &lt;-tm.C:</span><br><span class="line">			if !tm.Reset(time.Second) &#123;</span><br><span class="line">				fmt.Println(&quot;超时，Reset返回false&quot;)</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				fmt.Println(&quot;超时，Reset返回true&quot;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func test2() &#123;</span><br><span class="line">	fmt.Println(&quot;\n第2个测试:超时后，不读通道中的事件，可以Reset成功吗？&quot;)</span><br><span class="line">	sm2Start := time.Now()</span><br><span class="line">	tm2 := time.NewTimer(time.Second)</span><br><span class="line">	time.Sleep(2 * time.Second)</span><br><span class="line">	fmt.Printf(&quot;Reset前通道中事件的数量:%d\n&quot;, len(tm2.C))</span><br><span class="line">	if !tm2.Reset(time.Second) &#123;</span><br><span class="line">		fmt.Println(&quot;不读通道数据，Reset返回false&quot;)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		fmt.Println(&quot;不读通道数据，Reset返回true&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(&quot;Reset后通道中事件的数量:%d\n&quot;, len(tm2.C))</span><br><span class="line"></span><br><span class="line">	select &#123;</span><br><span class="line">	case t := &lt;-tm2.C:</span><br><span class="line">		fmt.Printf(&quot;tm2开始的时间: %v\n&quot;, sm2Start.Unix())</span><br><span class="line">		fmt.Printf(&quot;通道中事件的时间：%v\n&quot;, t.Unix())</span><br><span class="line">		if t.Sub(sm2Start) &lt;= time.Second+time.Millisecond &#123;</span><br><span class="line">			fmt.Println(&quot;通道中的时间是重新设置sm2前的时间，即第一次超时的时间，所以第二次Reset失败了&quot;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Printf(&quot;读通道后，其中事件的数量:%d\n&quot;, len(tm2.C))</span><br><span class="line">	tm2.Reset(time.Second)</span><br><span class="line">	fmt.Printf(&quot;再次Reset后，通道中事件的数量:%d\n&quot;, len(tm2.C))</span><br><span class="line">	time.Sleep(2 * time.Second)</span><br><span class="line">	fmt.Printf(&quot;超时后通道中事件的数量:%d\n&quot;, len(tm2.C))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func test3() &#123;</span><br><span class="line">	fmt.Println(&quot;\n第3个测试：Reset前清空通道，尽可能通畅&quot;)</span><br><span class="line">	smStart := time.Now()</span><br><span class="line">	tm := time.NewTimer(time.Second)</span><br><span class="line">	time.Sleep(2 * time.Second)</span><br><span class="line">	if len(tm.C) &gt; 0 &#123;</span><br><span class="line">		&lt;-tm.C</span><br><span class="line">	&#125;</span><br><span class="line">	tm.Reset(time.Second)</span><br><span class="line"></span><br><span class="line">	// 超时</span><br><span class="line">	t := &lt;-tm.C</span><br><span class="line">	fmt.Printf(&quot;tm开始的时间: %v\n&quot;, smStart.Unix())</span><br><span class="line">	fmt.Printf(&quot;通道中事件的时间：%v\n&quot;, t.Unix())</span><br><span class="line">	if t.Sub(smStart) &lt;= time.Second+time.Millisecond &#123;</span><br><span class="line">		fmt.Println(&quot;通道中的时间是重新设置sm前的时间，即第一次超时的时间，所以第二次Reset失败了&quot;)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		fmt.Println(&quot;通道中的时间是重新设置sm后的时间，Reset成功了&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	test1()</span><br><span class="line">	test2()</span><br><span class="line">	test3()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
       
     </div>
     
@@ -422,6 +352,10 @@
 
       
 
+      
+        <p class="article-more-link">
+          <a  href="/2018/09/04/explore-golang-timer/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
