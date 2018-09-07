@@ -17,10 +17,10 @@ tags: ['shadowsocks']
 
 # 软件列表
 
-- [Shadowsocks](https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9)
-- proxychains-ng
+- [Shadowsocks](https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9):sock5代理
+- proxychains-ng:为终端命令设置代理
 
-
+!<--more-->
 
 # shadowsocks
 
