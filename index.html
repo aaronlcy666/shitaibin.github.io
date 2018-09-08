@@ -339,7 +339,18 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>所谓陷阱，就是它不是你认为的那样。刚好<code>Timer.Reset()</code>和<code>Timer.Stop()</code>的返回值就有陷阱，探索一下。</p>
+        <p>所谓陷阱，就是它不是你认为的那样，这种认知误差可能让你的软件留下隐藏Bug。刚好Timer就有3个陷阱，我们会讲1）Reset的陷阱和2）通道的陷阱，3）Stop的陷阱与Reset的陷阱类似，自己探索吧。</p>
+<h1 id="Reset的陷阱在哪"><a href="#Reset的陷阱在哪" class="headerlink" title="Reset的陷阱在哪"></a>Reset的陷阱在哪</h1><p><code>Timer.Reset()</code>函数的返回值是bool类型，我们看一个问题三连：</p>
+<ol>
+<li>它的返回值代表什么呢？</li>
+<li>我们想要的成功是什么？</li>
+<li>失败是什么？</li>
+</ol>
+<ul>
+<li>成功：一段时间之后定时器超时，收到超时事件。</li>
+<li>失败：成功的反面，我们收不到那个事件。对于失败，我们应当做些什么，确保我们的定时器发挥作用。</li>
+</ul>
+<p>Reset的返回值是不是这个意思？</p>
       
     </div>
     
