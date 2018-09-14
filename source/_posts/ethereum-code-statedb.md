@@ -77,7 +77,7 @@ StateDB定义了2个接口：`Trie`和`Database`：Trie建立在Database之上�
 
 在代码实现上，cachedTrie实现了Trie，cachingDB实现了Databse，他们定义在`core/state/database.go`。
 
-```
+```go
 // 实现Database接口，缓存常用的trie
 type cachingDB struct {
    //保存trie数据的db
@@ -158,7 +158,7 @@ Commit的主要调用场景是插入区块链，有2种情况：
 
 state所在的目录是：`core/state`，它的文件和每个文件的主要功能如下：
 
-```
+```go
 core/state
 ├── database.go，底层的存储设计，`Trie`和`Database`定义在此文件。
 ├── dump.go，用来dumpstateDB数据。
@@ -187,7 +187,7 @@ database.go的主要代码和设计，已经在[底层存储设计](#底层存�
 
 把1和2合并：**cachingDB会缓存stateDB使用的Trie，而不会缓存stateObject使用的Trie**。
 
-```
+```go
 // OpenStorageTrie opens the storage trie of an account.
 // 创建一个账户的存储trie，但实际没有使用到addrHash
 func (db *cachingDB) OpenStorageTrie(addrHash, root common.Hash) (Trie, error) {
@@ -221,7 +221,7 @@ func (db *cachingDB) OpenTrie(root common.Hash) (Trie, error) {
 
 以太坊的账户分为普通账户和合约账户，在代码上，他们都是用`Account`来表示，它记录了账户的数据，有：Nonce，余额，状态树根Root和合约代码的哈希值CodeHash。
 
-```
+```go
 // Account is the Ethereum consensus representation of accounts.
 // These objects are stored in the main account trie.
 // Account是账户的数据，不包含账户地址
@@ -240,7 +240,7 @@ type Account struct {
 以上是账户的数据，那如何表示一个账户呢？
 **使用账户地址表示账户**，它记录在`stateObject`中:
 
-```
+```go
 // stateObject represents an Ethereum account which is being modified.
 //
 // The usage pattern is as follows:
@@ -263,7 +263,7 @@ type stateObject struct {
 
 再来看下stateObject的完整信息，它记录了：账户信息、EVM执行过程中的错误、保存数据的storage trie、合约代码、缓存的storage数据cachedStorage、修改过的storage数据dirtyStorage，剩下的信息先忽略。storage代表了该对象/账户中存储的KV数据。
 
-```
+```go
 type stateObject struct {
     // 账户信息
     address common.Address
@@ -303,7 +303,7 @@ type stateObject struct {
 
 **账户地址和账户信息是stateObject的核心数据**，有他们2个就能建立一个stateObject：
 
-```
+```go
 // newObject creates a state object.
 // 使用地址和账户创建stateObject
 func newObject(db *StateDB, address common.Address, data Account) *stateObject {
@@ -340,7 +340,7 @@ stateObject保存了2个重要信息：
 
 剩余的函数都是stateObject的基本Get和Set函数。
 
-```
+```go
 // 获取当前账户的trie，如果没有，则创建一个空的
 func (c *stateObject) getTrie(db Database) Trie {
     if c.trie == nil {
@@ -417,7 +417,7 @@ func (self *stateObject) updateRoot(db Database) {
 3. 使用`stateObjects`存储最近使用过的stateObject。
 4. 使用`stateObjectsDirty`存储被修改过的stateObject。
 
-```
+```go
 // StateDBs within the ethereum protocol are used to store anything
 // within the merkle trie. StateDBs take care of caching and storing
 // nested states. It's the general query interface to retrieve:
@@ -469,7 +469,7 @@ type StateDB struct {
 
 创建StateDB很简单，传入已知的root和使用的db即可。调用`cachingDB.OpenTrie`打开一个trie，该trie就用来存放所有的stateObject。
 
-```
+```go
 func New(root common.Hash, db Database) (*StateDB, error) {
    tr, err := db.OpenTrie(root)
    if err != nil {
@@ -491,7 +491,7 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 
 创建账户。账户使用地址来标记，所以创建账户的时候要传入地址。如果当前的地址已经代表了一个账户，再执行创建账户，会创建1个新的空账户，然后把旧账户的余额，设置到新的账户，其他账户信息比如Nonce、Code等都设置为初始值了。
 
-```
+```go
 // CreateAccount explicitly creates a state object. If a state object with the address
 // already exists the balance is carried over to the new account.
 //
@@ -530,7 +530,7 @@ func (self *StateDB) createObject(addr common.Address) (newobj, prev *stateObjec
 查询账户。`getStateObject`入参是账户地址，先查询缓存中是否存在账户，没有的话，再从trie中读取。有一点需要注意：trie中实际保存的stateObject中的Account数据，从trie中获取到Account信息后，然后再合成stateObject，它通常被查询账户数据的函数所使用。
 `GetOrNewStateObject`是先查询一下stateObject，如果不存在则创建一个新的。通常是被Set系列函数在更新状态数据的时候使用。
 
-```
+```go
 // Retrieve a state object given by the address. Returns nil if not found.
 // stateDB中使用trie保存addr到stateObject的映射，stateObject中保存key到value的映射
 // 先从stateObjects中读取，否则从Trie读取Account，然后创建stateObject，存到stateObjects
@@ -575,7 +575,7 @@ func (self *StateDB) GetOrNewStateObject(addr common.Address) *stateObject {
 更新状态数据。stateObject的修改，修改后都暂存在`stateDB.stateObjects`中，当执行`updateStateObject`的时候，是把stateOject进行RLP编码，然后存到`stateDB.trie`中。
 **tire中实际保存的是stateObject的Account的RLP编码。**因为stateObject实现了`EncodeRLP`函数，在RLP执行编码的时候，会调用该函数对stateObject进行编码，该函数实际只对`state.data`进行了编码。
 
-```
+```go
 // updateStateObject writes the given object to the trie.
 // 把对象RLP编码，然后写到trie
 func (self *StateDB) updateStateObject(stateObject *stateObject) {
@@ -606,7 +606,7 @@ func (c *stateObject) EncodeRLP(w io.Writer) error {
 
 Commit会把journal中所有标记的对象加入到stateObjectsDirty，然后清空自杀和空的对象，把修改的对象写入到trie，把对象trie写入到数据库，最后把自己的trie写入到数据库。
 
-```
+```go
 // Finalise finalises the state by removing the self destructed objects
 // and clears the journal as well as the refunds.
 // 最终化数据库，遍历的日志中标记为dirty的账户，删除部分自杀、或空的数据，然后把数据写入存储trie，然后更新root，但每个对象都没有commit
@@ -712,7 +712,7 @@ func (s *StateDB) Commit(deleteEmptyObjects bool) (root common.Hash, err error) 
 
 关于Commit保存对象信息的时候，还有1个重点关注：**stateObject.Code并没有保存在stateObject.trie中，而是保存在stateDB.trie中**。所以调用stateObject.Code获取合约代码的时候，实际传入的是stateDB.db，`cachingDB.ContractCode`实际也不使用合约的地址，因为(CodeHash, Code)本身就是作为KV存放在Trie中。
 
-```
+```go
 // Code returns the contract code associated with this object, if any.
 // 从db读取合约代码，db实际是stateDB.db
 func (self *stateObject) Code(db Database) []byte {
@@ -750,7 +750,7 @@ func (db *cachingDB) ContractCode(addrHash, codeHash common.Hash) ([]byte, error
 
 
 
-```
+```go
 // Snapshot returns an identifier for the current revision of the state.
 // 快照只是一个id，把id和日志的长度关联起来，存到Revisions中
 // EVM在执行在运行一个交易时，在修改state之前，创建快照，出现错误，则回滚

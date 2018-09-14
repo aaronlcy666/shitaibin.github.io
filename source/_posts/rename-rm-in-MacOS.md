@@ -19,7 +19,7 @@ Oh Shit！误删数据了。
 
 1. 安装办法见Github项目的Readme文档。
 2. 修改`.bashrc`或`.zshrc`，增加昵称覆盖原有的`rm`命令。
-```
+```bash
 alias rm='trash-put'        #文件移动到垃圾桶
 alias rl='trash-list'       #列出删除的文件
 alias ur='trash-restore'    #恢复删除的文件

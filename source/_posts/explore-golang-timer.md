@@ -5,6 +5,7 @@ tags: ['Golang', '定时器']
 ---
 
 
+
 所谓陷阱，就是它不是你认为的那样，这种认知误差可能让你的软件留下隐藏Bug。刚好Timer就有3个陷阱，我们会讲1）Reset的陷阱和2）通道的陷阱，3）Stop的陷阱与Reset的陷阱类似，自己探索吧。
 
 
@@ -66,16 +67,27 @@ func NewTimer(d Duration) *Timer {
 
 - 当业务场景简单时，没有必要主动清空通道。比如，处理流程是：设置1次定时器，处理一次定时器，中间无中断，下次Reset前，通道必然是空的。
 - 当业务场景复杂时，不确定通道是否为空，那就主动清除。
-```
+```go
+// 方法1
 if len(Timer.C) > 0{
     <-Timer.C
 }
 Timer.Reset(time.Second)
 ```
+经过和[@周志荣_9447](https://www.jianshu.com/u/987596c52194)的讨论和思考，更加合理的做法还是下面这样：
+```go
+// 方法2
+if !Timer.Stop() && len(Timer.C) > 0{
+    <-Timer.C
+}
+Timer.Reset(time.Second)
+```
+定时器的运行和`len(Timer.C)`的判断是在不同的协程中，当判断的时候通道大小可能为0，但当执行`Reset()`的前的这段时间，旧的定时器超时，通道中存在超时时间，再执行`Reset()`也达不到预期的效果。
+**方法2才是合理的方法。**先执行`Stop()`，可以确保旧定时器已经停止，不会再向通道中写入超时事件，就可解决上面的问题。`Stop()`返回false并不是代表，通道中一定存在超时事件，所以还需使用`len(Timer.C)  > 0`进行判断再决定是否清空通道。
 
 # 测试代码
 
-```
+```go
 package main
 
 import (
@@ -162,7 +174,9 @@ func test3() {
 	smStart := time.Now()
 	tm := time.NewTimer(time.Second)
 	time.Sleep(2 * time.Second)
-	if len(tm.C) > 0 {
+	
+	// 停掉定时器再清空
+	if !tm.Stop() && len(tm.C) > 0 {
 		<-tm.C
 	}
 	tm.Reset(time.Second)
