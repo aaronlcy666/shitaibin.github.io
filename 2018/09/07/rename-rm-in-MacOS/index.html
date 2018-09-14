@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="Oh Shit！误删数据了。 既然看这篇文章，你必然也有rm命令误删数据的经历了，废话少说，解决办法：使用trash-cli覆盖原有的rm命令，把rm命令更改为RM。 需要的软件:  trash-cli：会把删除的数据，单独放到程序建立的垃圾桶，可以通过自带的命令查询和恢复。  优点：再也不担心数据丢失了。缺点：需要手动去清空垃圾桶，是否垃圾占用的空间，还好可以搞个定时任务解决。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-08T01:19:35.235Z">
+<meta property="og:updated_time" content="2018-09-14T01:31:29.483Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="重命名rm命令，防止误删">
 <meta name="twitter:description" content="Oh Shit！误删数据了。 既然看这篇文章，你必然也有rm命令误删数据的经历了，废话少说，解决办法：使用trash-cli覆盖原有的rm命令，把rm命令更改为RM。 需要的软件:  trash-cli：会把删除的数据，单独放到程序建立的垃圾桶，可以通过自带的命令查询和恢复。  优点：再也不担心数据丢失了。缺点：需要手动去清空垃圾桶，是否垃圾占用的空间，还好可以搞个定时任务解决。">
@@ -239,7 +239,7 @@
 <ol>
 <li>安装办法见Github项目的Readme文档。</li>
 <li><p>修改<code>.bashrc</code>或<code>.zshrc</code>，增加昵称覆盖原有的<code>rm</code>命令。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">alias rm=&apos;trash-put&apos;        #文件移动到垃圾桶</span><br><span class="line">alias rl=&apos;trash-list&apos;       #列出删除的文件</span><br><span class="line">alias ur=&apos;trash-restore&apos;    #恢复删除的文件</span><br><span class="line">alias RM=&apos;/bin/rm&apos;          #原有的rm命令</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> rm=<span class="string">'trash-put'</span>        <span class="comment">#文件移动到垃圾桶</span></span><br><span class="line"><span class="built_in">alias</span> rl=<span class="string">'trash-list'</span>       <span class="comment">#列出删除的文件</span></span><br><span class="line"><span class="built_in">alias</span> ur=<span class="string">'trash-restore'</span>    <span class="comment">#恢复删除的文件</span></span><br><span class="line"><span class="built_in">alias</span> RM=<span class="string">'/bin/rm'</span>          <span class="comment">#原有的rm命令</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>上述命令用起来，建立临时文件去测试吧。</p>
 </li>
