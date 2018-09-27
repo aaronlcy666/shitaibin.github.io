@@ -17,7 +17,7 @@ tags: ['博客']
 
 域名配置步骤，只需3个：
 1. 获取托管你的博客的Github Pages服务器。`ping your_name.github.io`，必然是[这里列出的某一个](https://help.github.com/articles/troubleshooting-custom-domains/#dns-record-doesnt-point-to-githubs-server)。
-1. 博客Github仓库页增加CNAME文件。[CNAME的配置注意事项]见这里(https://help.github.com/articles/troubleshooting-custom-domains/#the-cname-file-isnt-properly-formatted)。 我的仓库示例在[这里](https://github.com/Shitaibin/shitaibin.github.io/blob/master/CNAME)。
+1. 博客Github仓库页增加CNAME文件。CNAME的配置注意事项见[这里](https://help.github.com/articles/troubleshooting-custom-domains/#the-cname-file-isnt-properly-formatted)。 我的仓库示例在[这里](https://github.com/Shitaibin/shitaibin.github.io/blob/master/CNAME)。
 1. 为你的域名配置解析，让你的DNS能指到Github Pages的服务器IP地址。如果你是阿里云的，参考[这个](https://jingyan.baidu.com/article/6fb756ec737930241858fba9.html)。其中填写的IP就是步骤1中获取的Github Pages的IP地址。
 
 <!--more-->
