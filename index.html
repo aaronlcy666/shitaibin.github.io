@@ -1,11 +1,113 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
+
+
+
+
+
+
+
+
+
+
+
+
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>随风</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
   <meta name="description" content="屌丝程序员的自留地#为搜索引擎留的">
 <meta property="og:type" content="website">
 <meta property="og:title" content="随风">
@@ -16,202 +118,580 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="随风">
 <meta name="twitter:description" content="屌丝程序员的自留地#为搜索引擎留的">
+
+
+
+
+
+
+  <link rel="canonical" href="http://shitaibin.github.io/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>随风</title>
   
-    <link rel="alternative" href="/atom.xml" title="随风" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  <link rel="stylesheet" href="/css/style.css">
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
 </head>
 
-<body>
-  <div id="container">
-    <div class="left-col">
-    <div class="overlay"></div>
-<div class="intrude-less">
-	<header id="header" class="inner">
-		<a href="/" class="profilepic">
-			
-			<img lazy-src="http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
-			
-		</a>
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
 
-		<hgroup>
-		  <h1 class="header-author"><a href="/">随风</a></h1>
-		</hgroup>
+  
+  
+    
+  
 
-		
-		<p class="header-subtitle">随风而起，随风而散</p>
-		
+  <div class="container sidebar-position-left 
+  page-home">
+    <div class="headband"></div>
 
-		
-			<div class="switch-btn">
-				<div class="icon">
-					<div class="icon-ctn">
-						<div class="icon-wrap icon-house" data-idx="0">
-							<div class="birdhouse"></div>
-							<div class="birdhouse_holes"></div>
-						</div>
-						<div class="icon-wrap icon-ribbon hide" data-idx="1">
-							<div class="ribbon"></div>
-						</div>
-						
-						<div class="icon-wrap icon-link hide" data-idx="2">
-							<div class="loopback_l"></div>
-							<div class="loopback_r"></div>
-						</div>
-						
-						
-						<div class="icon-wrap icon-me hide" data-idx="3">
-							<div class="user"></div>
-							<div class="shoulder"></div>
-						</div>
-						
-					</div>
-					
-				</div>
-				<div class="tips-box hide">
-					<div class="tips-arrow"></div>
-					<ul class="tips-inner">
-						<li>主菜单</li>
-						<li>标签</li>
-						
-						<li>友链</li>
-						
-						
-						<li>关于</li>
-						
-					</ul>
-				</div>
-			</div>
-		
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
 
-		<div class="switch-area">
-			<div class="switch-wrap">
-				<section class="switch-part switch-part1">
-					<nav class="header-menu">
-						<ul>
-						
-							<li><a href="/">标签⬆</a></li>
-				        
-							<li><a href="/">主页</a></li>
-				        
-							<li><a href="/archives">所有文章</a></li>
-				        
-						</ul>
-					</nav>
-					<nav class="header-nav">
-						<div class="social">
-							
-								<a class="github" target="_blank" href="https://github.com/Shitaibin" title="github">github</a>
-					        
-						</div>
-					</nav>
-				</section>
-				
-				
-				<section class="switch-part switch-part2">
-					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Bash/" style="font-size: 10px;">Bash</a> <a href="/tags/Chrome/" style="font-size: 10px;">Chrome</a> <a href="/tags/Github/" style="font-size: 10px;">Github</a> <a href="/tags/Github-Pages/" style="font-size: 10px;">Github Pages</a> <a href="/tags/Goland/" style="font-size: 10px;">Goland</a> <a href="/tags/Golang/" style="font-size: 12.5px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 20px;">Hexo</a> <a href="/tags/JOS/" style="font-size: 10px;">JOS</a> <a href="/tags/Life/" style="font-size: 10px;">Life</a> <a href="/tags/Mac/" style="font-size: 12.5px;">Mac</a> <a href="/tags/Package/" style="font-size: 12.5px;">Package</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/TADM/" style="font-size: 17.5px;">TADM</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/fork/" style="font-size: 10px;">fork</a> <a href="/tags/malloc/" style="font-size: 10px;">malloc</a> <a href="/tags/pthread/" style="font-size: 10px;">pthread</a> <a href="/tags/shadowsocks/" style="font-size: 10px;">shadowsocks</a> <a href="/tags/以太坊/" style="font-size: 20px;">以太坊</a> <a href="/tags/动态规划/" style="font-size: 10px;">动态规划</a> <a href="/tags/单元测试/" style="font-size: 15px;">单元测试</a> <a href="/tags/博客/" style="font-size: 10px;">博客</a> <a href="/tags/图论/" style="font-size: 10px;">图论</a> <a href="/tags/安全/" style="font-size: 10px;">安全</a> <a href="/tags/定时器/" style="font-size: 10px;">定时器</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/并发/" style="font-size: 10px;">并发</a> <a href="/tags/待办/" style="font-size: 10px;">待办</a> <a href="/tags/思考/" style="font-size: 12.5px;">思考</a> <a href="/tags/房子/" style="font-size: 10px;">房子</a> <a href="/tags/房贷/" style="font-size: 10px;">房贷</a> <a href="/tags/招聘/" style="font-size: 10px;">招聘</a> <a href="/tags/排序/" style="font-size: 10px;">排序</a> <a href="/tags/搜索/" style="font-size: 12.5px;">搜索</a> <a href="/tags/操作系统/" style="font-size: 12.5px;">操作系统</a> <a href="/tags/数据挖掘/" style="font-size: 10px;">数据挖掘</a> <a href="/tags/机器学习/" style="font-size: 10px;">机器学习</a> <a href="/tags/机试/" style="font-size: 10px;">机试</a> <a href="/tags/栈/" style="font-size: 10px;">栈</a> <a href="/tags/特征/" style="font-size: 10px;">特征</a> <a href="/tags/管理/" style="font-size: 10px;">管理</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/面试/" style="font-size: 17.5px;">面试</a>
-					</div>
-				</section>
-				
-				
-				
-				<section class="switch-part switch-part3">
-					<div id="js-friends">
-					
-			          <a target="_blank" class="main-nav-link switch-friends-link" href="https://yuan1028.github.io/">yuan1028博客</a>
-			        
-			        </div>
-				</section>
-				
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">随风</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">随风而起，随风而散</p>
+      
+    
+  </div>
 
-				
-				
-				<section class="switch-part switch-part4">
-				
-					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
-				</section>
-				
-			</div>
-		</div>
-	</header>				
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
 </div>
 
-    </div>
-    <div class="mid-col">
-      <nav id="mobile-nav">
-  	<div class="overlay">
-  		<div class="slider-trigger"></div>
-  		<h1 class="header-author js-mobile-header hide">随风</h1>
-  	</div>
-	<div class="intrude-less">
-		<header id="header" class="inner">
-			<div class="profilepic">
-			
-				<img lazy-src="http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg" class="js-avatar">
-			
-			</div>
-			<hgroup>
-			  <h1 class="header-author">随风</h1>
-			</hgroup>
-			
-			<p class="header-subtitle">随风而起，随风而散</p>
-			
-			<nav class="header-menu">
-				<ul>
-				
-					<li><a href="/">标签⬆</a></li>
-		        
-					<li><a href="/">主页</a></li>
-		        
-					<li><a href="/archives">所有文章</a></li>
-		        
-		        <div class="clearfix"></div>
-				</ul>
-			</nav>
-			<nav class="header-nav">
-				<div class="social">
-					
-						<a class="github" target="_blank" href="https://github.com/Shitaibin" title="github">github</a>
-			        
-				</div>
-			</nav>
-		</header>				
-	</div>
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home menu-item-active">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
 </nav>
 
-      <div class="body-wrap">
-  
-    <article id="post-Set-custom-domain-for-github-pags" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/09/26/Set-custom-domain-for-github-pags/" class="article-date">
-  	<time datetime="2018-09-26T01:35:04.000Z" itemprop="datePublished">2018-09-26</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/26/Set-custom-domain-for-github-pags/">为Github博客配置自定义域名</a>
-    </h1>
+
+
   
 
-      </header>
-      
+
+
+</div>
+    </header>
+
     
-    <div class="article-entry" itemprop="articleBody">
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
       
-        <p>七牛空间的测试域名现在只能使用一个月了，有天突然发现，博客的图片都无法访问了，因此要为七牛配置自定义的域名，顺便也把博客的自定义域名配上。</p>
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/10/18/ethereum-code-event-framework/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/10/18/ethereum-code-event-framework/" itemprop="url">
+                  以太坊源码分析之事件框架
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-10-18 20:16:01 / Modified: 09:41:29" itemprop="dateCreated datePublished" datetime="2018-10-18T20:16:01+08:00">2018-10-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。</p>
+<p>以太坊的事件框架是一个单独的基础模块，存在于目录<code>go-ethereum/event</code>中，它有2中独立的事件框架实现，老点的叫<code>TypeMux</code>，已经基本弃用，新的叫<code>Feed</code>，当前正在广泛使用。</p>
+<p><code>TypeMux</code>和<code>Feed</code>还只是简单的事件框架，与Kafka、RocketMQ等消息系统相比，是非常的传统和简单，但是<code>TypeMux</code>和<code>Feed</code>的简单简洁，已经很好的支撑以太坊的上层模块，这是当下最好的选择。</p>
+<p><code>TypeMux</code>和<code>Feed</code>各有优劣，最优秀的共同特点是，他们只依赖于Golang原始的包，完全与以太坊的其他模块隔离开来，也就是说，你完全可以把这两个事件框架用在自己的项目中。</p>
+<p><code>TypeMux</code>的特点是，你把所有的订阅塞给它就好，事件来了它自会通知你，但有可能会阻塞，通知你不是那么及时，甚至过了一段挺长的时间。</p>
+<p><code>Feed</code>的特点是，它通常不存在阻塞的情况，会及时的把事件通知给你，但需要你为<strong>每类事件</strong>都建立一个Feed，然后不同的事件去不同的Feed上订阅和发送，这其实挺烦人的，如果你用错了Feed，会导致panic。</p>
+<p>接下来，介绍下这种简单事件框架的抽象模型，然后再回归到以太坊，介绍下<code>TypeMux</code>和<code>Feed</code>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/10/18/ethereum-code-event-framework/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/09/29/go-map-delete/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/29/go-map-delete/" itemprop="url">
+                  Go的map中删除子map，内存会自动释放吗？
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-29 20:06:39" itemprop="dateCreated datePublished" datetime="2018-09-29T20:06:39+08:00">2018-09-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-10-18 09:52:39" itemprop="dateModified" datetime="2018-10-18T09:52:39+08:00">2018-10-18</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="结论">结论</span></h2><p>在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。</p>
+<h2><span id="实验">实验</span></h2><p>在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> lastTotalFreed <span class="keyword">uint64</span></span><br><span class="line"><span class="keyword">var</span> intMap <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> cnt = <span class="number">8192</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	initMap()</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMap))</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		<span class="built_in">delete</span>(intMap, i)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMap))</span><br><span class="line"></span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	intMap = <span class="literal">nil</span></span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initMap</span><span class="params">()</span></span> &#123;</span><br><span class="line">	intMap = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>, cnt)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		intMap[i] = i</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printMemStats</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m runtime.MemStats</span><br><span class="line">	runtime.ReadMemStats(&amp;m)</span><br><span class="line">	log.Printf(<span class="string">"Alloc = %v TotalAlloc = %v  Just Freed = %v Sys = %v NumGC = %v\n"</span>,</span><br><span class="line">		m.Alloc/<span class="number">1024</span>, m.TotalAlloc/<span class="number">1024</span>, ((m.TotalAlloc-m.Alloc)-lastTotalFreed)/<span class="number">1024</span>, m.Sys/<span class="number">1024</span>, m.NumGC)</span><br><span class="line"></span><br><span class="line">	lastTotalFreed = m.TotalAlloc - m.Alloc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2018/09/29 20:09:25 Alloc = 65 TotalAlloc = 65  Just Freed = 0 Sys = 1700 NumGC = 0</span><br><span class="line">2018/09/29 20:09:25 Alloc = 387 TotalAlloc = 391  Just Freed = 3 Sys = 3076 NumGC = 1</span><br><span class="line">2018/09/29 20:09:25 8192</span><br><span class="line">2018/09/29 20:09:25 0</span><br><span class="line">2018/09/29 20:09:25 Alloc = 387 TotalAlloc = 392  Just Freed = 1 Sys = 3140 NumGC = 2</span><br><span class="line">2018/09/29 20:09:25 Alloc = 74 TotalAlloc = 394  Just Freed = 314 Sys = 3140 NumGC = 3</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> intMapMap <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> cnt = <span class="number">1024</span></span><br><span class="line"><span class="keyword">var</span> lastTotalFreed <span class="keyword">uint64</span> <span class="comment">// size of last memory has been freed</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 1</span></span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 2</span></span><br><span class="line">	initMapMap()</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 3</span></span><br><span class="line">	fillMapMap()</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 4</span></span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMapMap))</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		<span class="built_in">delete</span>(intMapMap, i)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="built_in">len</span>(intMapMap))</span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 5</span></span><br><span class="line">	intMapMap = <span class="literal">nil</span></span><br><span class="line">	runtime.GC()</span><br><span class="line">	printMemStats()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initMapMap</span><span class="params">()</span></span> &#123;</span><br><span class="line">	intMapMap = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>, cnt)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		intMapMap[i] = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>, cnt)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fillMapMap</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; cnt; i++ &#123;</span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; cnt; j++ &#123;</span><br><span class="line">			intMapMap[i][j] = j</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printMemStats</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m runtime.MemStats</span><br><span class="line">	runtime.ReadMemStats(&amp;m)</span><br><span class="line">	log.Printf(<span class="string">"Alloc = %v TotalAlloc = %v  Just Freed = %v Sys = %v NumGC = %v\n"</span>,</span><br><span class="line">		m.Alloc/<span class="number">1024</span>, m.TotalAlloc/<span class="number">1024</span>, ((m.TotalAlloc-m.Alloc)-lastTotalFreed)/<span class="number">1024</span>, m.Sys/<span class="number">1024</span>, m.NumGC)</span><br><span class="line"></span><br><span class="line">	lastTotalFreed = m.TotalAlloc - m.Alloc</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2018/09/29 20:10:27 Alloc = 64 TotalAlloc = 64  Just Freed = 0 Sys = 1700 NumGC = 0</span><br><span class="line">2018/09/29 20:10:27 Alloc = 41154 TotalAlloc = 41157  Just Freed = 3 Sys = 46026 NumGC = 5</span><br><span class="line">2018/09/29 20:10:27 Alloc = 41241 TotalAlloc = 41293  Just Freed = 48 Sys = 47082 NumGC = 6</span><br><span class="line">2018/09/29 20:10:27 1024</span><br><span class="line">2018/09/29 20:10:27 0</span><br><span class="line">2018/09/29 20:10:27 Alloc = 114 TotalAlloc = 41295  Just Freed = 41128 Sys = 47082 NumGC = 7</span><br><span class="line">2018/09/29 20:10:27 Alloc = 74 TotalAlloc = 41296  Just Freed = 41 Sys = 47082 NumGC = 8</span><br></pre></td></tr></table></figure></p>
+<h2><span id="参考资料">参考资料</span></h2><ul>
+<li><a href="http://blog.cyeam.com/json/2017/11/02/go-map-delete" target="_blank" rel="noopener">http://blog.cyeam.com/json/2017/11/02/go-map-delete</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/09/26/Set-custom-domain-for-github-pags/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/26/Set-custom-domain-for-github-pags/" itemprop="url">
+                  为Github博客配置自定义域名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-26 09:35:04" itemprop="dateCreated datePublished" datetime="2018-09-26T09:35:04+08:00">2018-09-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-27 10:29:34" itemprop="dateModified" datetime="2018-09-27T10:29:34+08:00">2018-09-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>七牛空间的测试域名现在只能使用一个月了，有天突然发现，博客的图片都无法访问了，因此要为七牛配置自定义的域名，顺便也把博客的自定义域名配上。</p>
 <p>看了Github Pages帮助文档，来回跳转导致配置成本增加，记录下简要配置过程，帮助打算配置自定义域名的朋友。</p>
 <h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><p>前提：</p>
 <ol>
@@ -221,135 +701,327 @@
 <p>域名配置步骤，只需3个：</p>
 <ol>
 <li>获取托管你的博客的Github Pages服务器。<code>ping your_name.github.io</code>，必然是<a href="https://help.github.com/articles/troubleshooting-custom-domains/#dns-record-doesnt-point-to-githubs-server" target="_blank" rel="noopener">这里列出的某一个</a>。</li>
-<li>博客Github仓库页增加CNAME文件。CNAME的配置注意事项见<a href="https://help.github.com/articles/troubleshooting-custom-domains/#the-cname-file-isnt-properly-formatted" target="_blank" rel="noopener">这里</a>。 我的仓库示例在<a href="https://github.com/Shitaibin/shitaibin.github.io/blob/master/CNAME" target="_blank" rel="noopener">这里</a>。</li>
+<li>博客Github仓库页增加CNAME文件，CNAME的配置注意事项见<a href="https://help.github.com/articles/troubleshooting-custom-domains/#the-cname-file-isnt-properly-formatted" target="_blank" rel="noopener">这里</a>， 我的仓库示例在<a href="https://github.com/Shitaibin/shitaibin.github.io/blob/master/CNAME" target="_blank" rel="noopener">这里</a>。</li>
 <li>为你的域名配置解析，让你的DNS能指到Github Pages的服务器IP地址。如果你是阿里云的，参考<a href="https://jingyan.baidu.com/article/6fb756ec737930241858fba9.html" target="_blank" rel="noopener">这个</a>。其中填写的IP就是步骤1中获取的Github Pages的IP地址。</li>
 </ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/09/26/Set-custom-domain-for-github-pags/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/博客/">博客</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/09/26/Set-custom-domain-for-github-pags/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-rename-rm-in-MacOS" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/09/07/rename-rm-in-MacOS/" class="article-date">
-  	<time datetime="2018-09-07T00:45:31.000Z" itemprop="datePublished">2018-09-07</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/09/07/rename-rm-in-MacOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/07/rename-rm-in-MacOS/">重命名rm命令，防止误删</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/07/rename-rm-in-MacOS/" itemprop="url">
+                  重命名rm命令，防止误删
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-07 08:45:31" itemprop="dateCreated datePublished" datetime="2018-09-07T08:45:31+08:00">2018-09-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-14 09:31:29" itemprop="dateModified" datetime="2018-09-14T09:31:29+08:00">2018-09-14</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <p>Oh Shit！误删数据了。</p>
+      
+
+      
+        
+          <p>Oh Shit！误删数据了。</p>
 <p>既然看这篇文章，你必然也有<code>rm</code>命令误删数据的经历了，废话少说，解决办法：使用trash-cli覆盖原有的<code>rm</code>命令，把<code>rm</code>命令更改为<code>RM</code>。</p>
 <p>需要的软件:</p>
 <ul>
 <li><a href="https://github.com/andreafrancia/trash-cli" target="_blank" rel="noopener">trash-cli</a>：会把删除的数据，单独放到程序建立的垃圾桶，可以通过自带的命令查询和恢复。</li>
 </ul>
 <p>优点：再也不担心数据丢失了。<br>缺点：需要手动去清空垃圾桶，是否垃圾占用的空间，还好可以搞个定时任务解决。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/09/07/rename-rm-in-MacOS/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bash/">Bash</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mac/">Mac</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/09/07/rename-rm-in-MacOS/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-Science-and-the-Internet" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/09/06/Science-and-the-Internet/" class="article-date">
-  	<time datetime="2018-09-06T12:35:40.000Z" itemprop="datePublished">2018-09-06</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/09/06/Science-and-the-Internet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/Science-and-the-Internet/">让终端科学上网</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/06/Science-and-the-Internet/" itemprop="url">
+                  让终端科学上网
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-06 20:35:40" itemprop="dateCreated datePublished" datetime="2018-09-06T20:35:40+08:00">2018-09-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-08 08:28:28" itemprop="dateModified" datetime="2018-09-08T08:28:28+08:00">2018-09-08</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>科学上网，为祖国建设添砖加瓦。</p>
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>科学上网，为祖国建设添砖加瓦。</p>
 <ul>
 <li>教你浏览器科学上网，获取学习资料。</li>
 <li>教你终端科学上网，获取学习资料。</li>
@@ -358,66 +1030,162 @@
 <li><a href="https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9" target="_blank" rel="noopener">Shadowsocks</a>:sock5代理</li>
 <li>proxychains-ng:为终端命令设置代理</li>
 </ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/09/06/Science-and-the-Internet/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shadowsocks/">shadowsocks</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/09/06/Science-and-the-Internet/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-explore-golang-timer" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/09/04/explore-golang-timer/" class="article-date">
-  	<time datetime="2018-09-04T09:43:41.000Z" itemprop="datePublished">2018-09-04</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/09/04/explore-golang-timer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/04/explore-golang-timer/">探索Golang定时器的陷阱</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/04/explore-golang-timer/" itemprop="url">
+                  探索Golang定时器的陷阱
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-04 17:43:41" itemprop="dateCreated datePublished" datetime="2018-09-04T17:43:41+08:00">2018-09-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-14 09:36:37" itemprop="dateModified" datetime="2018-09-14T09:36:37+08:00">2018-09-14</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <p>所谓陷阱，就是它不是你认为的那样，这种认知误差可能让你的软件留下隐藏Bug。刚好Timer就有3个陷阱，我们会讲1）Reset的陷阱和2）通道的陷阱，3）Stop的陷阱与Reset的陷阱类似，自己探索吧。</p>
+      
+
+      
+        
+          <p>所谓陷阱，就是它不是你认为的那样，这种认知误差可能让你的软件留下隐藏Bug。刚好Timer就有3个陷阱，我们会讲1）Reset的陷阱和2）通道的陷阱，3）Stop的陷阱与Reset的陷阱类似，自己探索吧。</p>
 <h1 id="Reset的陷阱在哪"><a href="#Reset的陷阱在哪" class="headerlink" title="Reset的陷阱在哪"></a>Reset的陷阱在哪</h1><p><code>Timer.Reset()</code>函数的返回值是bool类型，我们看一个问题三连：</p>
 <ol>
 <li>它的返回值代表什么呢？</li>
@@ -429,488 +1197,1047 @@
 <li>失败：成功的反面，我们收不到那个事件。对于失败，我们应当做些什么，确保我们的定时器发挥作用。</li>
 </ul>
 <p>Reset的返回值是不是这个意思？</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/09/04/explore-golang-timer/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/定时器/">定时器</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/09/04/explore-golang-timer/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-ethereum-fetcher-module-and-block-propagate" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/08/30/ethereum-fetcher-module-and-block-propagate/" class="article-date">
-  	<time datetime="2018-08-30T08:49:47.000Z" itemprop="datePublished">2018-08-30</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/08/30/ethereum-fetcher-module-and-block-propagate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/30/ethereum-fetcher-module-and-block-propagate/">以太坊源码分析：fetcher模块和区块传播</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/30/ethereum-fetcher-module-and-block-propagate/" itemprop="url">
+                  以太坊源码分析：fetcher模块和区块传播
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-30 16:49:47" itemprop="dateCreated datePublished" datetime="2018-08-30T16:49:47+08:00">2018-08-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-01 15:49:38" itemprop="dateModified" datetime="2018-09-01T15:49:38+08:00">2018-09-01</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这篇文章从区块传播策略入手，介绍新区块是如何传播到远端节点，以及新区块加入到远端节点本地链的过程，同时会介绍fetcher模块，fetcher的功能是处理Peer通知的区块信息。在介绍过程中，还会涉及到p2p，eth等模块，不会专门介绍，而是专注区块的传播和加入区块链的过程。</p>
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这篇文章从区块传播策略入手，介绍新区块是如何传播到远端节点，以及新区块加入到远端节点本地链的过程，同时会介绍fetcher模块，fetcher的功能是处理Peer通知的区块信息。在介绍过程中，还会涉及到p2p，eth等模块，不会专门介绍，而是专注区块的传播和加入区块链的过程。</p>
 <p>当前代码是以太坊Release 1.8，如果版本不同，代码上可能存在差异。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/30/ethereum-fetcher-module-and-block-propagate/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/08/30/ethereum-fetcher-module-and-block-propagate/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-ethereum-code-consensus-3" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/06/22/ethereum-code-consensus-3/" class="article-date">
-  	<time datetime="2018-06-22T12:16:01.000Z" itemprop="datePublished">2018-06-22</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/22/ethereum-code-consensus-3/">以太坊源码分析：共识（3）</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/22/ethereum-code-consensus-3/" itemprop="url">
+                  以太坊源码分析：共识（3）
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-22 20:16:01" itemprop="dateCreated datePublished" datetime="2018-06-22T20:16:01+08:00">2018-06-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-01 15:36:59" itemprop="dateModified" datetime="2018-09-01T15:36:59+08:00">2018-09-01</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Ethash实现了PoW，PoW的精妙在于通过一个随机数确定，矿工确实做了大量的工作，并且是没有办法作弊的。接下来将介绍：</p>
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Ethash实现了PoW，PoW的精妙在于通过一个随机数确定，矿工确实做了大量的工作，并且是没有办法作弊的。接下来将介绍：</p>
 <ol>
 <li>Ethash的挖矿本质。</li>
 <li>Ethash是如何挖矿的。</li>
 <li>如何验证Ethash的随机数。</li>
 </ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/22/ethereum-code-consensus-3/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/06/22/ethereum-code-consensus-3/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-ethereum-code-consensus-2" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/06/22/ethereum-code-consensus-2/" class="article-date">
-  	<time datetime="2018-06-22T12:15:16.000Z" itemprop="datePublished">2018-06-22</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/22/ethereum-code-consensus-2/">以太坊源码分析：共识（2）</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/22/ethereum-code-consensus-2/" itemprop="url">
+                  以太坊源码分析：共识（2）
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-22 20:15:16" itemprop="dateCreated datePublished" datetime="2018-06-22T20:15:16+08:00">2018-06-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-01 15:38:58" itemprop="dateModified" datetime="2018-09-01T15:38:58+08:00">2018-09-01</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>engine</code>是以太坊封定义的一个接口，它的功能可以分为3类：</p>
+      
+
+      
+        
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>engine</code>是以太坊封定义的一个接口，它的功能可以分为3类：</p>
 <ol>
 <li>验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。</li>
 <li>产生区块类，主要用在挖矿时。</li>
 <li>辅助类。</li>
 </ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/22/ethereum-code-consensus-2/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/06/22/ethereum-code-consensus-2/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+      
 
   
-    <article id="post-ethereum-code-consensus-1" class="article article-type-post" itemscope itemprop="blogPost">
+
   
-    <div class="article-meta">
-      <a href="/2018/06/22/ethereum-code-consensus-1/" class="article-date">
-  	<time datetime="2018-06-22T12:12:57.000Z" itemprop="datePublished">2018-06-22</time>
-</a>
-    </div>
   
-  <div class="article-inner">
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/06/22/ethereum-code-consensus-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="随风">
+      <meta itemprop="description" content="屌丝程序员的自留地#为搜索引擎留的">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+      <header class="post-header">
+
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/22/ethereum-code-consensus-1/">以太坊源码分析：共识（1）</a>
-    </h1>
-  
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/22/ethereum-code-consensus-1/" itemprop="url">
+                  以太坊源码分析：共识（1）
+                </a>
+              
+            
+          </h1>
+        
 
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-22 20:12:57" itemprop="dateCreated datePublished" datetime="2018-06-22T20:12:57+08:00">2018-06-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-09-01 15:39:16" itemprop="dateModified" datetime="2018-09-01T15:39:16+08:00">2018-09-01</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
-      
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己做了很多工作的区块，然后将这个区块加入到本地区块链并且广播给其他节点。</p>
+      
+
+      
+        
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己做了很多工作的区块，然后将这个区块加入到本地区块链并且广播给其他节点。</p>
 <p>接下来我们将从以下角度介绍矿工：</p>
 <ol>
 <li>角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。</li>
 <li>通过了解一个区块产生的主要流程，掌握矿工的工作流。</li>
 <li>通过了解矿工的主要函数介绍，掌握矿工的主要挖矿机制。</li>
 </ol>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/22/ethereum-code-consensus-1/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-ethereum-code-statedb" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/22/ethereum-code-statedb/" class="article-date">
-  	<time datetime="2018-06-22T10:10:54.000Z" itemprop="datePublished">2018-06-22</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/22/ethereum-code-consensus-1/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/22/ethereum-code-statedb/">以太坊源码分析：statedb</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>就如以太坊黄皮书讲的，以太坊是状态机，区块的产生，实际是状态迁移的过程。那以太坊</p>
-<ol>
-<li>是如何定义状态的？</li>
-<li>是如何迁移状态的？</li>
-<li>是怎么存储状态的？</li>
-</ol>
-<p>这篇文章就介绍什么是状态，以及是怎么存储的。</p>
       
     </div>
+
     
-    <div class="article-info article-info-index">
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
       
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/以太坊/">以太坊</a></li></ul>
-	</div>
 
       
 
       
-        <p class="article-more-link">
-          <a  href="/2018/06/22/ethereum-code-statedb/#more">more >></a>
-        </p>
+
       
-      <div class="clearfix"></div>
-    </div>
-    
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
   
-</article>
+  
+  
+  </article>
 
 
-
-
-
-
-
-
+    
+  </section>
 
   
-    <article id="post-steps-of-house-trade" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/06/03/steps-of-house-trade/" class="article-date">
-  	<time datetime="2018-06-03T01:14:37.000Z" itemprop="datePublished">2018-06-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+        </div>
         
+          
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/03/steps-of-house-trade/">二手房交易流程（附时间表）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>帮你了解二手房购买路上的盲点。</strong>关于二手房的买卖的教程有很多，交易流程教程也很多，但都是总体的一个大概步骤，<strong>等走到那一步，才发现，我们仍然有很多疑问</strong>：什么时候打首付？什么时候缴税？什么时候办理产权证？房贷的审批和房贷流程是什么样？各种问题围绕着我们，我们问已经买房的朋友，但这件事，就像人的长相，虽然基本相同，有鼻子有眼睛，但大多数每个人的长相又是不同的。</p>
-<p><strong>希望这篇文章，能让你在正确的时间做正确的事。</strong>我们将从签订意向合同开始，因为在这之前的就是挑房子、和房东交流各种事情，网上都有教程，问问已经买房的朋友也可以。</p>
-      
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
     </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/房子/">房子</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/房贷/">房贷</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/06/03/steps-of-house-trade/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
   </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">随风</p>
+              <p class="site-description motion-element" itemprop="description">屌丝程序员的自留地#为搜索引擎留的</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">45</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">随风</span>
+
   
-</article>
 
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-    </nav>
   
 </div>
-      <footer id="footer">
-  <div class="outer">
-    <div id="footer-info">
-    	<div class="footer-left">
-    		&copy; 2018 随风
-    	</div>
-      	<div class="footer-right">
-      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
-      	</div>
-    </div>
-  </div>
-</footer>
-    </div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
     
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
 
+    
+	
+    
 
-<script>
-	var yiliaConfig = {
-		fancybox: true,
-		mathjax: true,
-		animate: true,
-		isHome: true,
-		isPost: false,
-		isArchive: false,
-		isTag: false,
-		isCategory: false,
-		open_in_new: false
-	}
-</script>
-<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
-<script src="/js/main.js"></script>
-
-
-
-
-
-
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-        processEscapes: true,
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    }
-});
-
-MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';                 
-    }       
-});
-</script>
-
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
-
+    
   </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
 </body>
 </html>
