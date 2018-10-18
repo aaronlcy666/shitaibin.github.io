@@ -12,6 +12,11 @@ tags: ['Golang', 'map']
 
 在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。
 
+做2个对比实验，
+实验1：普通的map，map保存到是int到int的映射，会执行delete删除map的每一项，执行垃圾回收，看内存是否被回收，map设置为nil，再看是否被回收。
+实验2：map套子map，顶层map是int到子map的映射，子map是int到int的映射，同样先执行delete，再设置为nil，分别看垃圾回收情况。
+
+### 实验1
 ```go
 package main
 
@@ -63,7 +68,13 @@ func printMemStats() {
 }
 ```
 
-结果
+看结果前，解释下几个字段：
+- Alloc：当前堆上对象占用的内存大小。
+- TotalAlloc：堆上总共分配出的内存大小。
+- Sys：程序从操作系统总共申请的内存大小。
+- NumGC：垃圾回收运行的次数。
+
+结果如下：
 ```
 2018/09/29 20:09:25 Alloc = 65 TotalAlloc = 65  Just Freed = 0 Sys = 1700 NumGC = 0
 2018/09/29 20:09:25 Alloc = 387 TotalAlloc = 391  Just Freed = 3 Sys = 3076 NumGC = 1
@@ -73,6 +84,9 @@ func printMemStats() {
 2018/09/29 20:09:25 Alloc = 74 TotalAlloc = 394  Just Freed = 314 Sys = 3140 NumGC = 3
 ```
 
+Alloc代表了map占用的内存大小，这个结果表明，执行完delete后，map占用的内存并没有变小，Alloc依然是387，代表map的key和value占用的空间仍在map里.执行完map设置为nil，Alloc变为74，与刚创建的map大小基本是约等于。
+
+### 实验2
 
 ```go
 package main
@@ -151,6 +165,9 @@ func printMemStats() {
 2018/09/29 20:10:27 Alloc = 74 TotalAlloc = 41296  Just Freed = 41 Sys = 47082 NumGC = 8
 ```
 
-参考资料
+这个结果表明，在执行完delete后，顶层map占用的内存从41241降到了114，子层map占用的空间肯定是被GC回收了，不然占用内存不会下降这么显著。但依然比初始化的顶层map占用的内存64多出不少，那是因为delete操作，顶层map的key占用的空间依然在map里，当把顶层map设置为nil时，大小变为74吗，顶层map占用那些空间被释放了.
+
+
+参考资料 
 ---------------
 - http://blog.cyeam.com/json/2017/11/02/go-map-delete
