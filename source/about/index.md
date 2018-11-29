@@ -17,7 +17,6 @@ toc: false
 
 # 社区
 
-- ![公众号：](/img/WechatIMG206.png)
 - [Stack Overflow](https://stackoverflow.com/users/4296218/james-shi)
 - [Segment Fault](https://segmentfault.com/u/lessisbetter)
 - [CSDN](https://me.csdn.net/m0_43499523)
@@ -26,3 +25,6 @@ toc: false
 - [博客园](https://www.cnblogs.com/lifeathappiness)
 - [个人博客](http://lessisbetter.site/)
 
+        
+
+![a](https://upload-images.jianshu.io/upload_images/10901752-bb6517d112b779f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
