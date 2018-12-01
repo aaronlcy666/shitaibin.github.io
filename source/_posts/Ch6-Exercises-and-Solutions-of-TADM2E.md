@@ -31,9 +31,9 @@ MST中两点间的路径不是该两点在整个图中的最短路径。
 
 **反例：**使用习题5-1的图，使用Kruskal得到的MST是：
 
-![习题5-1图](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-2-1.JPG)
+![习题5-1图](http://cdn.lessisbetter.site/Ex%206-2-1.JPG)
 
-![习题5-1图的MST](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-2.JPG)
+![习题5-1图的MST](http://cdn.lessisbetter.site/Ex%206-2.JPG)
 
 路径A->I：A->D->G->J->I。路径长度为13，而在整个图中，路劲为A->I，长度为9。结果已显然。
 
@@ -47,7 +47,7 @@ Assume that all edges in the graph have distinct edge weights (i.e., no pair of 
 
 否。
 
-![反例图及其MST](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-3.JPG)
+![反例图及其MST](http://cdn.lessisbetter.site/Ex%206-3.JPG)
 
 考虑B到D的路径，在图中路径长度为6，而在MST中路径长度为7。
 
@@ -209,7 +209,7 @@ Devise an efficient data structure to handle the following operations on a weigh
 解答
 
 在课本的并查集操作，得到的并查集是这样的。  
-![原始并查集结果](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-12%20b.-own)
+![原始并查集结果](http://cdn.lessisbetter.site/Ex%206-12%20b.-own)
 
 要想确定两个顶点在不在一个集合内，需要找到代表这个集合的根节点，find的效率并不高，他需要多次递归才能得到根节点。
 
@@ -240,7 +240,7 @@ The _single-destination shortest path_ problem for a **directed graph** seeks th
 
 另外，Kruskal算法是All-Pairs最短路径，如果想到的算法时间复杂度大于O(n3)，那还不如直接使用Kruskal。
 
-![6-14图](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-14.png-own)
+![6-14图](http://cdn.lessisbetter.site/Ex%206-14.png-own)
 
 如上图,假设要求从s到t的最短路径，并且已经求得c1,c2,c3到t的最短路径，那么s到t的最短路径应当为 `W[s,t] = min(W[s,c1]+W[c1,t], W[s,c2]+W[c2,t], W[s,c3]+W[c3,t])`。
 
@@ -268,11 +268,11 @@ Answer all of the following:
 
 (a) 图G、MST、SP构成的树都是下图：
 
-![Ex 6-16 a](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-16%20a.png-own)
+![Ex 6-16 a](http://cdn.lessisbetter.site/Ex%206-16%20a.png-own)
 
 (b) minimum-cost spanning tree就是MST，看到这个刚开始还觉得这是不是一个新东西。
 
-![Ex 6-16 b](http://7xixtr.com1.z0.glb.clouddn.com/Ex%206-16%20b.png-own)
+![Ex 6-16 b](http://cdn.lessisbetter.site/Ex%206-16%20b.png-own)
 
 (c) What is ‘completely disjointed’?
 

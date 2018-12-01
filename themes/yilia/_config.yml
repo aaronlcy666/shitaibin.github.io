@@ -37,7 +37,7 @@ google_analytics: ''
 favicon: /favicon.png
 
 #你的头像url
-avatar: http://7xixtr.com1.z0.glb.clouddn.com/avatar.jpg
+avatar: http://cdn.lessisbetter.site/avatar.jpg
 
 #是否开启分享
 share: false
