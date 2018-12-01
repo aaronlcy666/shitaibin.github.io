@@ -58,19 +58,19 @@
 
 <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
 
 
 
@@ -85,7 +85,7 @@
   var CONFIG = {
     root: '/',
     scheme: 'Muse',
-    version: '6.4.2',
+    version: '6.5.0',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: false,
     fastclick: false,
@@ -136,6 +136,8 @@
 
   <title>随风</title>
   
+
+
 
 
 
@@ -224,32 +226,68 @@
         
           
           <li class="menu-item menu-item-home menu-item-active">
-    <a href="/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-about">
-    <a href="/about/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />About</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-tags">
-    <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />Tags</a>
+
   </li>
         
         
         
           
           <li class="menu-item menu-item-archives">
-    <a href="/archives/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+
   </li>
 
       
@@ -319,9 +357,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/17/Golang-detecting-date-racing/" itemprop="url">
-                  轻松检测Golang并发的数据竞争
-                </a>
+                
+                <a href="/2018/11/17/Golang-detecting-date-racing/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">轻松检测Golang并发的数据竞争</a>
               
             
           </h1>
@@ -393,11 +430,13 @@
 <h1 id="使用race检测数据竞争"><a href="#使用race检测数据竞争" class="headerlink" title="使用race检测数据竞争"></a>使用race检测数据竞争</h1><p><code>go build</code>有个标记<code>race</code>可以帮助检测代码中的数据竞争。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  awesome git:(master) ✗ go <span class="built_in">help</span> build</span><br><span class="line">//.... omit</span><br><span class="line">-race</span><br><span class="line">		<span class="built_in">enable</span> data race detection.</span><br><span class="line">		Supported only on linux/amd64, freebsd/amd64, darwin/amd64 and windows/amd64.</span><br></pre></td></tr></table></figure>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/17/Golang-detecting-date-racing/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/17/Golang-detecting-date-racing/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -411,6 +450,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -469,9 +511,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/17/An-introduction-to-Govendor/" itemprop="url">
-                  Go依赖包管理工具，3分钟掌握govendor
-                </a>
+                
+                <a href="/2018/11/17/An-introduction-to-Govendor/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">Go依赖包管理工具，3分钟掌握govendor</a>
               
             
           </h1>
@@ -539,11 +580,13 @@
 <h1 id="第1部分-简明教程"><a href="#第1部分-简明教程" class="headerlink" title="第1部分 简明教程"></a>第1部分 简明教程</h1><p>2步走，3分钟轻松搞定Go项目的依赖。</p>
 <h2 id="第1步-安装"><a href="#第1步-安装" class="headerlink" title="第1步 安装"></a>第1步 安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/kardianos/govendor</span><br></pre></td></tr></table></figure>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/17/An-introduction-to-Govendor/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/17/An-introduction-to-Govendor/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -557,6 +600,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -615,9 +661,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/10/Golang-trap-of-defer/" itemprop="url">
-                  Golang defer的陷阱
-                </a>
+                
+                <a href="/2018/11/10/Golang-trap-of-defer/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">Golang defer的陷阱</a>
               
             
           </h1>
@@ -702,11 +747,13 @@
 </li>
 </ol>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/10/Golang-trap-of-defer/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/10/Golang-trap-of-defer/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -720,6 +767,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -778,9 +828,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/07/Golang-pprof-step-by-step/" itemprop="url">
-                  轻松入门Golang pprof实用不忽悠
-                </a>
+                
+                <a href="/2018/11/07/Golang-pprof-step-by-step/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">轻松入门Golang pprof实用不忽悠</a>
               
             
           </h1>
@@ -860,11 +909,13 @@
 <h1 id="第1步：安装易用的pprof"><a href="#第1步：安装易用的pprof" class="headerlink" title="第1步：安装易用的pprof"></a>第1步：安装易用的pprof</h1><p>golang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof，专心解决自己的代码问题，下载：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/pkg/profile</span><br></pre></td></tr></table></figure>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/07/Golang-pprof-step-by-step/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/07/Golang-pprof-step-by-step/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -878,6 +929,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -936,9 +990,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/03/Golang-channel-read-and-write-without-blocking/" itemprop="url">
-                  一招教你无阻塞读写Golang channel
-                </a>
+                
+                <a href="/2018/11/03/Golang-channel-read-and-write-without-blocking/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">一招教你无阻塞读写Golang channel</a>
               
             
           </h1>
@@ -1023,11 +1076,13 @@
 <li>通道中无数据，向通道写数据，但无协程读取。</li>
 </ol>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/03/Golang-channel-read-and-write-without-blocking/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/03/Golang-channel-read-and-write-without-blocking/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -1041,6 +1096,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -1099,9 +1157,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/29/Golang-trap-of-waitgroup/" itemprop="url">
-                  Golang的sync.WaitGroup陷阱
-                </a>
+                
+                <a href="/2018/10/29/Golang-trap-of-waitgroup/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">Golang的sync.WaitGroup陷阱</a>
               
             
           </h1>
@@ -1173,11 +1230,13 @@
 <li><code>Wait()</code>：阻塞等待计数器为0。</li>
 </ol>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/29/Golang-trap-of-waitgroup/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/29/Golang-trap-of-waitgroup/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -1191,6 +1250,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -1249,9 +1311,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/24/go-handle-error/" itemprop="url">
-                  如何优雅的处理Golang错误[TODO]
-                </a>
+                
+                <a href="/2018/10/24/go-handle-error/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">如何优雅的处理Golang错误[TODO]</a>
               
             
           </h1>
@@ -1321,11 +1382,13 @@
 <li>使用存在限制：只有当错误需要结束调用时才可以使用这种方法，如果被调用函数返回错误，但调用者函数需处理错误后，向下继续执行，则不能采用这种方法。</li>
 </ol>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/24/go-handle-error/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/24/go-handle-error/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -1339,6 +1402,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -1397,9 +1463,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/18/ethereum-code-event-framework/" itemprop="url">
-                  以太坊源码分析之事件框架
-                </a>
+                
+                <a href="/2018/10/18/ethereum-code-event-framework/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">以太坊源码分析之事件框架</a>
               
             
           </h1>
@@ -1471,11 +1536,13 @@
 <p><code>Feed</code>的特点是，它通常不存在阻塞的情况，会及时的把事件通知给你，但需要你为<strong>每类事件</strong>都建立一个Feed，然后不同的事件去不同的Feed上订阅和发送，这其实挺烦人的，如果你用错了Feed，会导致panic。</p>
 <p>接下来，介绍下这种简单事件框架的抽象模型，然后再回归到以太坊，介绍下<code>TypeMux</code>和<code>Feed</code>。</p>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/18/ethereum-code-event-framework/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/18/ethereum-code-event-framework/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -1489,6 +1556,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -1547,9 +1617,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/29/go-map-delete/" itemprop="url">
-                  Go的map中删除子map，内存会自动释放吗？
-                </a>
+                
+                <a href="/2018/09/29/go-map-delete/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">Go的map中删除子map，内存会自动释放吗？</a>
               
             
           </h1>
@@ -1660,6 +1729,9 @@
     
 
     
+       
+    
+    
 
     
 
@@ -1717,9 +1789,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/26/Set-custom-domain-for-github-pags/" itemprop="url">
-                  为Github博客配置自定义域名
-                </a>
+                
+                <a href="/2018/09/26/Set-custom-domain-for-github-pags/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">为Github博客配置自定义域名</a>
               
             
           </h1>
@@ -1809,11 +1880,13 @@
 <li>为你的域名配置解析，让你的DNS能指到Github Pages的服务器IP地址。如果你是阿里云的，参考<a href="https://jingyan.baidu.com/article/6fb756ec737930241858fba9.html" target="_blank" rel="noopener">这个</a>。其中填写的IP就是步骤1中获取的Github Pages的IP地址。</li>
 </ol>
           <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/09/26/Set-custom-domain-for-github-pags/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/09/26/Set-custom-domain-for-github-pags/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
           <!--/noindex-->
         
       
@@ -1827,6 +1900,9 @@
 
     
 
+    
+       
+    
     
 
     
@@ -2024,7 +2100,6 @@
           
 
           
-          
 
           
           
@@ -2063,9 +2138,7 @@
 </div>
 
 
-
-
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
 
 
 
@@ -2073,7 +2146,7 @@
 
 
 
-  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.4.2</div>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v6.5.0</div>
 
 
 
@@ -2157,36 +2230,25 @@
   
 
 
-  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
 
-  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
-
-
-
-  
-  
-
-  
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
 
 
 
   
+  
 
-
+  
 
   
 
 
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
 
 
 
-
-
+  
 
 
 
@@ -2196,7 +2258,16 @@
 
 
 
+
+
+
+
+
   
+
+
+
+
 
   
 
@@ -2205,6 +2276,12 @@
   
 
   
+
+  
+
+  
+  
+
   
 
   
