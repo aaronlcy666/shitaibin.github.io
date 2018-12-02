@@ -338,6 +338,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2016/04/14/a-malloc-tutorial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="啊哈，被你找到了！关注我的公众号吧，我也在下面的社区出没，欢迎探讨。不过瘾？点[关于]试试">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2016/04/14/a-malloc-tutorial/" class="post-title-link" itemprop="http://shitaibin.github.io/page/4/index.html">malloc的故事</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2016-04-14 19:05:37" itemprop="dateCreated datePublished" datetime="2016-04-14T19:05:37+08:00">2016-04-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-05-31 13:57:23" itemprop="dateModified" datetime="2018-05-31T13:57:23+08:00">2018-05-31</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2016/04/14/a-malloc-tutorial/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2016/04/14/a-malloc-tutorial/" class="cy_cmt_count" data-xid="2016/04/14/a-malloc-tutorial/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>读了张洋的《如何实现一个malloc》和Marwan Burlle的《A Malloc Turorial》，张洋的博文是对Marwan Burlle的理解、翻译和补充，缺失了一些细节。但读了张洋的文章后，再读《A Malloc Turorial》会快很多。</p>
+<p>#A Malloc Tutorial</p>
+<h3 id="讲了什么"><a href="#讲了什么" class="headerlink" title="讲了什么"></a>讲了什么</h3><ol>
+<li>什么是malloc</li>
+<li>堆的内存模型</li>
+<li>如何通过系统调用操纵堆</li>
+<li>什么是块、块的数据结构</li>
+<li>结构体的本质（虽然变量data属于结构体，但只是想获取数据区的指针，而数据区不属于meta结构体）</li>
+<li>如何实现内存对齐</li>
+<li>基本的堆管理需要哪些功能/函数</li>
+<li>如何创建、选择、分割块</li>
+<li>碎片整理（融合块）</li>
+<li>free要做什么，如何实现</li>
+<li>如何实现calloc</li>
+<li>何时把块“还给系统”</li>
+<li>realloc的原理，及优化</li>
+</ol>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2016/04/14/a-malloc-tutorial/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2016/04/04/learn-dynamic-programming/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1897,177 +2084,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2015/12/13/hexo-errors/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="啊哈，被你找到了！关注我的公众号吧，我也在下面的社区出没，欢迎探讨。不过瘾？点[关于]试试">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="随风">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2015/12/13/hexo-errors/" class="post-title-link" itemprop="http://shitaibin.github.io/page/4/index.html">Hexo博客错误汇总</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2015-12-13 12:21:33" itemprop="dateCreated datePublished" datetime="2015-12-13T12:21:33+08:00">2015-12-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-05-31 13:57:23" itemprop="dateModified" datetime="2018-05-31T13:57:23+08:00">2018-05-31</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/13/hexo-errors/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/13/hexo-errors/" class="cy_cmt_count" data-xid="2015/12/13/hexo-errors/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="博文格式错误"><a href="#博文格式错误" class="headerlink" title="博文格式错误"></a>博文格式错误</h1><h2 id="错误1"><a href="#错误1" class="headerlink" title="错误1"></a>错误1</h2><p>错误提示如下：</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2015/12/13/hexo-errors/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-         
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-       
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2115,7 +2131,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-count">52</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2228,7 +2244,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">49</span>
+                      
+                    
+                    <span class="site-state-item-count">50</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>

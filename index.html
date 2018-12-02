@@ -338,6 +338,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/12/02/golang-exit-goroutine-in-3-ways/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="啊哈，被你找到了！关注我的公众号吧，我也在下面的社区出没，欢迎探讨。不过瘾？点[关于]试试">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="随风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">博文Golang并发：并发协程的优雅退出</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-12-02 11:26:04 / Modified: 13:09:52" itemprop="dateCreated datePublished" datetime="2018-12-02T11:26:04+08:00">2018-12-02</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2018/12/02/golang-exit-goroutine-in-3-ways/" class="cy_cmt_count" data-xid="2018/12/02/golang-exit-goroutine-in-3-ways/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。</p>
+<p>goroutine在退出方面，不像线程和进程，不能通过某种手段<strong>强制</strong>关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭goroutine而烦恼，下面就介绍3种优雅退出goroutine的方法，只要采用这种最佳实践去设计，基本上就可以确保goroutine退出上不会有问题，尽情享用。</p>
+<h3><span id="1使用for-range退出">1：使用for-range退出</span></h3><p><code>for-range</code>是使用频率很高的结构，常用它来遍历数据，<strong><code>range</code>能够感知channel的关闭，当channel被发送数据的协程关闭时，range就会结束</strong>，接着退出for循环。</p>
+<p>它在并发中的使用场景是：当协程只从1个channel读取数据，然后进行处理，处理后协程退出。下面这个示例程序，当in通道被关闭时，协程可自动退出。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(in &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Using for-range to exit goroutine</span></span><br><span class="line">    <span class="comment">// range has the ability to detect the close/end of a channel</span></span><br><span class="line">    <span class="keyword">for</span> x := <span class="keyword">range</span> in &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"Process %d\n"</span>, x)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;(inCh)</span><br></pre></td></tr></table></figure>
+<h3><span id="2使用ok退出">2：使用,ok退出</span></h3><p><code>for-select</code>也是使用频率很高的结构，select提供了多路复用的能力，所以for-select可以让函数具有持续多路处理多个channel的能力。<strong>但select没有感知channel的关闭，这引出了2个问题</strong>：</p>
+<ol>
+<li>继续在关闭的通道上读，会读到通道传输数据类型的零值，如果是指针类型，读到nil，继续处理还会产生nil。</li>
+<li>继续在关闭的通道上写，将会panic。</li>
+</ol>
+<p>问题2可以这样解决，通道只由发送方关闭，接收方不可关闭，即某个写通道只由使用该select的协程关闭，select中就不存在继续在关闭的通道上写数据的问题。</p>
+<p>问题1可以使用<code>,ok</code>来检测通道的关闭，使用情况有2种。</p>
+<p>第一种：<strong>如果某个通道关闭后，需要退出协程，直接return即可</strong>。示例代码中，该协程需要从in通道读数据，还需要定时打印已经处理的数量，有2件事要做，所有不能使用for-range，需要使用for-select，当in关闭时，<code>ok=false</code>，我们直接返回。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// in for-select using ok to exit goroutine</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> x, ok := &lt;-in:</span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(<span class="string">"Process %d\n"</span>, x)</span><br><span class="line">			processedCnt++</span><br><span class="line">		<span class="keyword">case</span> &lt;-t.C:</span><br><span class="line">			fmt.Printf(<span class="string">"Working, processedCnt = %d\n"</span>, processedCnt)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+<p>第二种：如果<strong>某个通道关闭了，不再处理该通道，而是继续处理其他case</strong>，退出是等待所有的可读通道关闭。我们需要<strong>使用select的一个特征：select不会在nil的通道上进行等待</strong>。这种情况，把只读通道设置为nil即可解决。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// in for-select using ok to exit goroutine</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> x, ok := &lt;-in1:</span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				in1 = <span class="literal">nil</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// Process</span></span><br><span class="line">		<span class="keyword">case</span> y, ok := &lt;-in2:</span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				in2 = <span class="literal">nil</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// Process</span></span><br><span class="line">		<span class="keyword">case</span> &lt;-t.C:</span><br><span class="line">			fmt.Printf(<span class="string">"Working, processedCnt = %d\n"</span>, processedCnt)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// If both in channel are closed, goroutine exit</span></span><br><span class="line">		<span class="keyword">if</span> in1 == <span class="literal">nil</span> &amp;&amp; in2 == <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+<h3><span id="3使用退出通道退出">3：使用退出通道退出</span></h3><p><strong>使用<code>,ok</code>来退出使用for-select协程，解决是当读入数据的通道关闭时，没数据读时程序的正常结束</strong>。想想下面这2种场景，<code>,ok</code>还能适用吗？</p>
+<ol>
+<li>接收的协程要退出了，如果它直接退出，不告知发送协程，发送协程将阻塞。</li>
+<li>启动了一个工作协程处理数据，如何通知它退出？</li>
+</ol>
+<p><strong>使用一个专门的通道，发送退出的信号，可以解决这类问题</strong>。以第2个场景为例，协程入参包含一个停止通道<code>stopCh</code>，当<code>stopCh</code>被关闭，<code>case &lt;-stopCh</code>会执行，直接返回即可。</p>
+<p>当我启动了100个worker时，只要<code>main()</code>执行关闭stopCh，每一个worker都会都到信号，进而关闭。如果<code>main()</code>向stopCh发送100个数据，这种就低效了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">worker</span><span class="params">(stopCh &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(<span class="string">"worker exit"</span>)</span><br><span class="line">		<span class="comment">// Using stop channel explicit exit</span></span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> &lt;-stopCh:</span><br><span class="line">				fmt.Println(<span class="string">"Recv stop signal"</span>)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			<span class="keyword">case</span> &lt;-t.C:</span><br><span class="line">				fmt.Println(<span class="string">"Working ."</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="最佳实践回顾">最佳实践回顾</span></h3><ol>
+<li>发送协程主动关闭通道，接收协程不关闭通道。技巧：把接收方的通道入参声明为只读，如果接收协程关闭只读协程，编译时就会报错。</li>
+<li>协程处理1个通道，并且是读时，协程优先使用<code>for-range</code>，因为<code>range</code>可以关闭通道的关闭自动退出协程。</li>
+<li><code>,ok</code>可以处理多个读通道关闭，需要关闭当前使用<code>for-select</code>的协程。</li>
+<li>显式关闭通道<code>stopCh</code>可以处理主动通知协程退出的场景。</li>
+</ol>
+<h3><span id="完整示例代码">完整示例代码</span></h3><p>本文所有代码都在仓库，可查看完整示例代码：<a href="https://github.com/Shitaibin/golang_goroutine_exit" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_goroutine_exit</a></p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。</li>
+<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/" target="_blank" rel="noopener">原文链接</a>。</li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg" style="border:0" width="256" hegiht="30" align="center"></p>
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+       
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/11/17/Golang-detecting-date-racing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1854,189 +2046,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/09/26/Set-custom-domain-for-github-pags/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="啊哈，被你找到了！关注我的公众号吧，我也在下面的社区出没，欢迎探讨。不过瘾？点[关于]试试">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="随风">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/09/26/Set-custom-domain-for-github-pags/" class="post-title-link" itemprop="http://shitaibin.github.io/index.html">为Github博客配置自定义域名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-09-26 09:35:04" itemprop="dateCreated datePublished" datetime="2018-09-26T09:35:04+08:00">2018-09-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-09-27 10:29:34" itemprop="dateModified" datetime="2018-09-27T10:29:34+08:00">2018-09-27</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2018/09/26/Set-custom-domain-for-github-pags/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2018/09/26/Set-custom-domain-for-github-pags/" class="cy_cmt_count" data-xid="2018/09/26/Set-custom-domain-for-github-pags/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>七牛空间的测试域名现在只能使用一个月了，有天突然发现，博客的图片都无法访问了，因此要为七牛配置自定义的域名，顺便也把博客的自定义域名配上。</p>
-<p>看了Github Pages帮助文档，来回跳转导致配置成本增加，记录下简要配置过程，帮助打算配置自定义域名的朋友。</p>
-<h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><p>前提：</p>
-<ol>
-<li>已经购买了域名。</li>
-<li>Github上已经部署了博客。</li>
-</ol>
-<p>域名配置步骤，只需3个：</p>
-<ol>
-<li>获取托管你的博客的Github Pages服务器。<code>ping your_name.github.io</code>，必然是<a href="https://help.github.com/articles/troubleshooting-custom-domains/#dns-record-doesnt-point-to-githubs-server" target="_blank" rel="noopener">这里列出的某一个</a>。</li>
-<li>博客Github仓库页增加CNAME文件，CNAME的配置注意事项见<a href="https://help.github.com/articles/troubleshooting-custom-domains/#the-cname-file-isnt-properly-formatted" target="_blank" rel="noopener">这里</a>， 我的仓库示例在<a href="https://github.com/Shitaibin/shitaibin.github.io/blob/master/CNAME" target="_blank" rel="noopener">这里</a>。</li>
-<li>为你的域名配置解析，让你的DNS能指到Github Pages的服务器IP地址。如果你是阿里云的，参考<a href="https://jingyan.baidu.com/article/6fb756ec737930241858fba9.html" target="_blank" rel="noopener">这个</a>。其中填写的IP就是步骤1中获取的Github Pages的IP地址。</li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/09/26/Set-custom-domain-for-github-pags/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-         
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-       
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2084,7 +2093,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">51</span>
+                    <span class="site-state-item-count">52</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2197,7 +2206,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">49</span>
+                      
+                    
+                    <span class="site-state-item-count">50</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
