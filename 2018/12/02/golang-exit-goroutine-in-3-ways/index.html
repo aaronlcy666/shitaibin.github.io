@@ -111,15 +111,15 @@
   <meta name="description" content="goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。 goroutine在退出方面，不像线程和进程，不能通过某种手段强制关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭gor">
 <meta name="keywords" content="Golang,goroutine">
 <meta property="og:type" content="article">
-<meta property="og:title" content="博文Golang并发：并发协程的优雅退出">
+<meta property="og:title" content="Golang并发：并发协程的优雅退出">
 <meta property="og:url" content="http://shitaibin.github.io/2018/12/02/golang-exit-goroutine-in-3-ways/index.html">
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。 goroutine在退出方面，不像线程和进程，不能通过某种手段强制关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭gor">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg">
-<meta property="og:updated_time" content="2018-12-02T05:09:52.049Z">
+<meta property="og:updated_time" content="2018-12-04T06:23:22.684Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="博文Golang并发：并发协程的优雅退出">
+<meta name="twitter:title" content="Golang并发：并发协程的优雅退出">
 <meta name="twitter:description" content="goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。 goroutine在退出方面，不像线程和进程，不能通过某种手段强制关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭gor">
 <meta name="twitter:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg">
 
@@ -138,7 +138,7 @@
   };
 </script>
 
-  <title>博文Golang并发：并发协程的优雅退出 | 随风</title>
+  <title>Golang并发：并发协程的优雅退出 | 随风</title>
   
 
 
@@ -358,7 +358,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">博文Golang并发：并发协程的优雅退出
+          <h1 class="post-title" itemprop="name headline">Golang并发：并发协程的优雅退出
               
             
           </h1>
@@ -383,12 +383,24 @@
                 
               
 
-              <time title="Created: 2018-12-02 11:26:04 / Modified: 13:09:52" itemprop="dateCreated datePublished" datetime="2018-12-02T11:26:04+08:00">2018-12-02</time>
+              <time title="Created: 2018-12-02 11:26:04" itemprop="dateCreated datePublished" datetime="2018-12-02T11:26:04+08:00">2018-12-02</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-04 14:23:22" itemprop="dateModified" datetime="2018-12-04T14:23:22+08:00">2018-12-04</time>
               
             
           </span>
@@ -463,6 +475,11 @@
 <li>显式关闭通道<code>stopCh</code>可以处理主动通知协程退出的场景。</li>
 </ol>
 <h3><span id="完整示例代码">完整示例代码</span></h3><p>本文所有代码都在仓库，可查看完整示例代码：<a href="https://github.com/Shitaibin/golang_goroutine_exit" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_goroutine_exit</a></p>
+<h3><span id="并发系列文章推荐">并发系列文章推荐</span></h3><ul>
+<li><a href="http://lessisbetter.site/2018/12/02/golang-introduction-to-pipeline/" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="http://lessisbetter.site/2018/12/02/golang-pipeline-fan-model/" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/" target="_blank" rel="noopener">Golang并发：并发协程的优雅退出</a></li>
+</ul>
 <blockquote>
 <ol>
 <li>如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。</li>
@@ -510,8 +527,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/11/17/Golang-detecting-date-racing/" rel="next" title="轻松检测Golang并发的数据竞争">
-                <i class="fa fa-chevron-left"></i> 轻松检测Golang并发的数据竞争
+              <a href="/2018/11/28/golang-pipeline-fan-model/" rel="next" title="Golang并发模型：轻松入门流水线FAN模式">
+                <i class="fa fa-chevron-left"></i> Golang并发模型：轻松入门流水线FAN模式
               </a>
             
           </div>
@@ -593,7 +610,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">52</span>
+                    <span class="site-state-item-count">54</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -708,7 +725,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">50</span>
+                      
+                    
+                    <span class="site-state-item-count">51</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -802,7 +821,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">1：使用for-range退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">2：使用,ok退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">3：使用退出通道退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">最佳实践回顾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">完整示例代码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">1：使用for-range退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">2：使用,ok退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">3：使用退出通道退出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">最佳实践回顾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">完整示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
             
 
           </div>
