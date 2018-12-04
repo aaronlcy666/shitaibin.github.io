@@ -16,6 +16,8 @@ Golang并发核心思路是关注数据流动。数据流动的过程交给chann
 
 但我们先从简单的入手。
 
+<!--more-->
+
 ### 从一个简单的流水线入手
 
 流水线并不是什么新奇的概念，它能极大的提高生产效率，在当代社会流水线非常普遍，我们用的几乎任何产品（手机、电脑、汽车、水杯），都是从流水线上生产出来的。以汽车为例，整个汽车流水线要经过几百个组装点，而在某个组装点只组装固定的零部件，然后传递给下一个组装点，最终一台完整的汽车从流水线上生产出来。
@@ -117,12 +119,12 @@ func main() {
 
 
 > 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-introduction-to-pipeline/)。
+> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)。
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg" style="border:0" width="256" hegiht="30" align=center />
+<img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>

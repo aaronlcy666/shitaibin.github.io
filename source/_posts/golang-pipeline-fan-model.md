@@ -13,6 +13,9 @@ tags: ['Golang', 'Pipeline']
 
 Golang的并发模式灵感来自现实世界，这些模式是通用的，毫无例外，FAN模式也是对当前世界的模仿。**以汽车组装为例，汽车生产线上有个阶段是给小汽车装4个轮子，可以把这个阶段任务交给4个人同时去做，这4个人把轮子都装完后，再把汽车移动到生产线下一个阶段。这个过程中，就有任务的分发，和任务结果的收集。其中任务分发是FAN-OUT，任务收集是FAN-IN。**
 
+
+<!--more-->
+
 - **FAN-OUT模式：多个goroutine从同一个通道读取数据，直到该通道关闭。**OUT是一种张开的模式，所以又被称为扇出，可以用来分发任务。
 - **FAN-IN模式：1个goroutine从多个通道读取数据，直到这些通道关闭。**IN是一种收敛的模式，所以又被称为扇入，用来收集处理的结果。
 
@@ -396,12 +399,12 @@ FAN模式很有意思，并且能提高Golang并发的性能，如果想以后�
 下一篇，写流水线中协程的“优雅退出”，欢迎关注。
 
 > 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-pipeline-fan-model/)。
+> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)。
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg" style="border:0" width="256" hegiht="30" align=center />
+<img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
