@@ -388,9 +388,9 @@ FAN模式很有意思，并且能提高Golang并发的性能，如果想以后�
 
 
 ### 并发系列文章推荐
-- [Golang并发模型：轻松入门流水线模型](http://lessisbetter.site/2018/12/02/golang-introduction-to-pipeline/)
-- [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/12/02/golang-pipeline-fan-model/)
-- [Golang并发：并发协程的优雅退出](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
+- [Golang并发模型：轻松入门流水线模型](http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/)
+- [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/)
+- [Golang并发模型：并发协程的优雅退出](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
 
 
 下一篇，写流水线中协程的“优雅退出”，欢迎关注。

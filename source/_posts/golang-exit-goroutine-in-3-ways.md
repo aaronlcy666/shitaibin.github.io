@@ -1,5 +1,5 @@
 ---
-title: Golang并发：并发协程的优雅退出
+title: Golang并发模型：并发协程的优雅退出
 date: 2018-12-02 11:26:04
 tags: ['Golang', 'goroutine']
 ---
@@ -126,9 +126,9 @@ func worker(stopCh <-chan struct{}) {
 本文所有代码都在仓库，可查看完整示例代码：https://github.com/Shitaibin/golang_goroutine_exit
 
 ### 并发系列文章推荐
-- [Golang并发模型：轻松入门流水线模型](http://lessisbetter.site/2018/12/02/golang-introduction-to-pipeline/)
-- [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/12/02/golang-pipeline-fan-model/)
-- [Golang并发：并发协程的优雅退出](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
+- [Golang并发模型：轻松入门流水线模型](http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/)
+- [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/)
+- [Golang并发模型：并发协程的优雅退出](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
 
 > 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
 > 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)。
