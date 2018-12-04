@@ -117,8 +117,8 @@
 <meta property="og:description" content="前一篇文章《Golang并发模型：轻松入门流水线模型》，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。 FAN-IN和FAN-OUT模式Golang的">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-727b047a9808439d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg">
-<meta property="og:updated_time" content="2018-12-04T06:48:10.593Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
+<meta property="og:updated_time" content="2018-12-04T06:58:56.824Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Golang并发模型：轻松入门流水线FAN模式">
 <meta name="twitter:description" content="前一篇文章《Golang并发模型：轻松入门流水线模型》，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。 FAN-IN和FAN-OUT模式Golang的">
@@ -401,7 +401,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-04 14:48:10" itemprop="dateModified" datetime="2018-12-04T14:48:10+08:00">2018-12-04</time>
+                <time title="Modified: 2018-12-04 14:58:56" itemprop="dateModified" datetime="2018-12-04T14:58:56+08:00">2018-12-04</time>
               
             
           </span>
@@ -447,6 +447,7 @@
       
         <p>前一篇文章<a href="https://segmentfault.com/a/1190000017142506" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
 <h3><span id="fan-in和fan-out模式">FAN-IN和FAN-OUT模式</span></h3><p>Golang的并发模式灵感来自现实世界，这些模式是通用的，毫无例外，FAN模式也是对当前世界的模仿。<strong>以汽车组装为例，汽车生产线上有个阶段是给小汽车装4个轮子，可以把这个阶段任务交给4个人同时去做，这4个人把轮子都装完后，再把汽车移动到生产线下一个阶段。这个过程中，就有任务的分发，和任务结果的收集。其中任务分发是FAN-OUT，任务收集是FAN-IN。</strong></p>
+<a id="more"></a>
 <ul>
 <li><strong>FAN-OUT模式：多个goroutine从同一个通道读取数据，直到该通道关闭。</strong>OUT是一种张开的模式，所以又被称为扇出，可以用来分发任务。</li>
 <li><strong>FAN-IN模式：1个goroutine从多个通道读取数据，直到这些通道关闭。</strong>IN是一种收敛的模式，所以又被称为扇入，用来收集处理的结果。</li>
@@ -515,12 +516,12 @@
 <blockquote>
 <ol>
 <li>如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。</li>
-<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/02/golang-pipeline-fan-model/" target="_blank" rel="noopener">原文链接</a>。</li>
+<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/" target="_blank" rel="noopener">原文链接</a>。</li>
 </ol>
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg" style="border:0" width="256" hegiht="30" align="center"></p>
+<p><img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align="center"></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>

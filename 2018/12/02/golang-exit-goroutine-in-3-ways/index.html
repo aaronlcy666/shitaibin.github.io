@@ -116,12 +116,12 @@
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。 goroutine在退出方面，不像线程和进程，不能通过某种手段强制关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭gor">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg">
-<meta property="og:updated_time" content="2018-12-04T06:49:29.630Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
+<meta property="og:updated_time" content="2018-12-04T06:59:13.509Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Golang并发模型：并发协程的优雅退出">
 <meta name="twitter:description" content="goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。 goroutine在退出方面，不像线程和进程，不能通过某种手段强制关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭gor">
-<meta name="twitter:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg">
+<meta name="twitter:image" content="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
 
 
 
@@ -400,7 +400,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-04 14:49:29" itemprop="dateModified" datetime="2018-12-04T14:49:29+08:00">2018-12-04</time>
+                <time title="Modified: 2018-12-04 14:59:13" itemprop="dateModified" datetime="2018-12-04T14:59:13+08:00">2018-12-04</time>
               
             
           </span>
@@ -447,6 +447,7 @@
         <p>goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。</p>
 <p>goroutine在退出方面，不像线程和进程，不能通过某种手段<strong>强制</strong>关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭goroutine而烦恼，下面就介绍3种优雅退出goroutine的方法，只要采用这种最佳实践去设计，基本上就可以确保goroutine退出上不会有问题，尽情享用。</p>
 <h3><span id="1使用for-range退出">1：使用for-range退出</span></h3><p><code>for-range</code>是使用频率很高的结构，常用它来遍历数据，<strong><code>range</code>能够感知channel的关闭，当channel被发送数据的协程关闭时，range就会结束</strong>，接着退出for循环。</p>
+<a id="more"></a>
 <p>它在并发中的使用场景是：当协程只从1个channel读取数据，然后进行处理，处理后协程退出。下面这个示例程序，当in通道被关闭时，协程可自动退出。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(in &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Using for-range to exit goroutine</span></span><br><span class="line">    <span class="comment">// range has the ability to detect the close/end of a channel</span></span><br><span class="line">    <span class="keyword">for</span> x := <span class="keyword">range</span> in &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"Process %d\n"</span>, x)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;(inCh)</span><br></pre></td></tr></table></figure>
 <h3><span id="2使用ok退出">2：使用,ok退出</span></h3><p><code>for-select</code>也是使用频率很高的结构，select提供了多路复用的能力，所以for-select可以让函数具有持续多路处理多个channel的能力。<strong>但select没有感知channel的关闭，这引出了2个问题</strong>：</p>
@@ -488,7 +489,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/NjvicFU9uBtYssgKYGWKZasFA0wwLO3CH2puCbWuibHiaI0Qf1zs5q2qoCTYJwbgKmmfeB7wrqphPq5LYtJMFd9Rw/0?wx_fmt=jpeg" style="border:0" width="256" hegiht="30" align="center"></p>
+<p><img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align="center"></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>
