@@ -5,7 +5,7 @@ tags: ['Golang', 'Pipeline']
 ---
 
 
-前一篇文章[《Golang并发模型：轻松入门流水线模型》](https://segmentfault.com/a/1190000017142506)，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。
+前一篇文章[《Golang并发模型：轻松入门流水线模型》](https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw)，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。
 
 
 
@@ -22,7 +22,7 @@ Golang的并发模式灵感来自现实世界，这些模式是通用的，毫�
 ![fan-in和fan-out.png](https://upload-images.jianshu.io/upload_images/10901752-727b047a9808439d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
-# FAN-IN和FAN-OUT实践
+### FAN-IN和FAN-OUT实践
 
 我们这次试用FAN-OUT和FAN-IN，解决[《Golang并发模型：轻松入门流水线模型》](https://segmentfault.com/a/1190000017142506?_ea=5178632)中提到的问题：计算一个整数切片中元素的平方值并把它打印出来。
 
@@ -391,7 +391,7 @@ FAN模式很有意思，并且能提高Golang并发的性能，如果想以后�
 
 
 ### 并发系列文章推荐
-- [Golang并发模型：轻松入门流水线模型](http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/)
+- [Golang并发模型：轻松入门流水线模型](https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw)
 - [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/)
 - [Golang并发模型：并发协程的优雅退出](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
 
