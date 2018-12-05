@@ -118,7 +118,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-727b047a9808439d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
-<meta property="og:updated_time" content="2018-12-04T06:58:56.824Z">
+<meta property="og:updated_time" content="2018-12-05T00:50:17.081Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Golang并发模型：轻松入门流水线FAN模式">
 <meta name="twitter:description" content="前一篇文章《Golang并发模型：轻松入门流水线模型》，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。 FAN-IN和FAN-OUT模式Golang的">
@@ -401,7 +401,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-04 14:58:56" itemprop="dateModified" datetime="2018-12-04T14:58:56+08:00">2018-12-04</time>
+                <time title="Modified: 2018-12-05 08:50:17" itemprop="dateModified" datetime="2018-12-05T08:50:17+08:00">2018-12-05</time>
               
             
           </span>
@@ -445,7 +445,7 @@
       
 
       
-        <p>前一篇文章<a href="https://segmentfault.com/a/1190000017142506" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
+        <p>前一篇文章<a href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
 <h3><span id="fan-in和fan-out模式">FAN-IN和FAN-OUT模式</span></h3><p>Golang的并发模式灵感来自现实世界，这些模式是通用的，毫无例外，FAN模式也是对当前世界的模仿。<strong>以汽车组装为例，汽车生产线上有个阶段是给小汽车装4个轮子，可以把这个阶段任务交给4个人同时去做，这4个人把轮子都装完后，再把汽车移动到生产线下一个阶段。这个过程中，就有任务的分发，和任务结果的收集。其中任务分发是FAN-OUT，任务收集是FAN-IN。</strong></p>
 <a id="more"></a>
 <ul>
@@ -453,7 +453,7 @@
 <li><strong>FAN-IN模式：1个goroutine从多个通道读取数据，直到这些通道关闭。</strong>IN是一种收敛的模式，所以又被称为扇入，用来收集处理的结果。</li>
 </ul>
 <p><img src="https://upload-images.jianshu.io/upload_images/10901752-727b047a9808439d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="fan-in和fan-out.png"></p>
-<h1><span id="fan-in和fan-out实践">FAN-IN和FAN-OUT实践</span></h1><p>我们这次试用FAN-OUT和FAN-IN，解决<a href="https://segmentfault.com/a/1190000017142506?_ea=5178632" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>中提到的问题：计算一个整数切片中元素的平方值并把它打印出来。</p>
+<h3><span id="fan-in和fan-out实践">FAN-IN和FAN-OUT实践</span></h3><p>我们这次试用FAN-OUT和FAN-IN，解决<a href="https://segmentfault.com/a/1190000017142506?_ea=5178632" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>中提到的问题：计算一个整数切片中元素的平方值并把它打印出来。</p>
 <ul>
 <li><code>producer()</code>保持不变，负责生产数据。</li>
 <li><code>squre()</code>也不变，负责计算平方值。</li>
@@ -508,7 +508,7 @@
 <p>FAN模式的特点很简单，相信你已经掌握了，如果记不清了<a href="#FAN-IN和FAN-OUT模式">看这里</a>，本文所有代码在该<a href="https://github.com/Shitaibin/golang_pipeline_step_by_step/tree/master" target="_blank" rel="noopener">Github仓库</a>。</p>
 <p>FAN模式很有意思，并且能提高Golang并发的性能，如果想以后运用自如，用到自己的项目中去，还是要写写自己的Demo，快去实践一把。</p>
 <h3><span id="并发系列文章推荐">并发系列文章推荐</span></h3><ul>
-<li><a href="http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
 <li><a href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线FAN模式</a></li>
 <li><a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/" target="_blank" rel="noopener">Golang并发模型：并发协程的优雅退出</a></li>
 </ul>
@@ -858,7 +858,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">FAN-IN和FAN-OUT模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">FAN-IN和FAN-OUT实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">FAN模式真能提升性能吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">FAN模式一定能提升性能吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">优化FAN模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">FAN-IN和FAN-OUT模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">FAN-IN和FAN-OUT实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">FAN模式真能提升性能吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">FAN模式一定能提升性能吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">优化FAN模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
             
 
           </div>

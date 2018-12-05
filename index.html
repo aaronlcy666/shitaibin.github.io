@@ -573,7 +573,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-04 14:58:56" itemprop="dateModified" datetime="2018-12-04T14:58:56+08:00">2018-12-04</time>
+                <time title="Modified: 2018-12-05 08:50:17" itemprop="dateModified" datetime="2018-12-05T08:50:17+08:00">2018-12-05</time>
               
             
           </span>
@@ -618,7 +618,7 @@
 
       
         
-          <p>前一篇文章<a href="https://segmentfault.com/a/1190000017142506" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
+          <p>前一篇文章<a href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw" target="_blank" rel="noopener">《Golang并发模型：轻松入门流水线模型》</a>，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。</p>
 <h3 id="FAN-IN和FAN-OUT模式"><a href="#FAN-IN和FAN-OUT模式" class="headerlink" title="FAN-IN和FAN-OUT模式"></a>FAN-IN和FAN-OUT模式</h3><p>Golang的并发模式灵感来自现实世界，这些模式是通用的，毫无例外，FAN模式也是对当前世界的模仿。<strong>以汽车组装为例，汽车生产线上有个阶段是给小汽车装4个轮子，可以把这个阶段任务交给4个人同时去做，这4个人把轮子都装完后，再把汽车移动到生产线下一个阶段。这个过程中，就有任务的分发，和任务结果的收集。其中任务分发是FAN-OUT，任务收集是FAN-IN。</strong></p>
           <!--noindex-->
           
