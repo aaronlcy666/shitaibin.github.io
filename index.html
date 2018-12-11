@@ -548,7 +548,7 @@
                 
               
 
-              <time title="Created: 2018-12-11 10:51:00 / Modified: 10:53:06" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
+              <time title="Created: 2018-12-11 10:51:00 / Modified: 11:11:23" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
             
 
             
@@ -598,81 +598,22 @@
 
       
         
-          
-            <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
+          <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
 <ol>
 <li>txpool的在交易中的位置和作用。</li>
 <li>txpool的功能，核心组成部分queued和pending。</li>
 <li>txpool如何实现它的功能。</li>
 <li>txpool源码的重要关注点。</li>
 </ol>
-<p>以太坊内部有个重要的内部功能是txpool，从字面意思就能看出来，交易池就是存放交易的池子。它在以太坊中的位置如下图，只要有新交易，无论是本节点创建的，还是其他peer节点广播来的，都会先加入到交易池里，在打包区块的时候，就从这个池子里提取，区块产生之后，共识区块，交易上链。</p>
-<p><img src="http://cdn.lessisbetter.site/2018/txpool主图.png" alt="txpool主图"></p>
-<p>txpool有4个功能：</p>
-<ol>
-<li>作为存放交易的缓冲区，大量交易到来时，先存起来</li>
-<li>为打包区块服务，合适交易会被打包到区块</li>
-<li>清理交易</li>
-<li>当交易的数量多于缓冲区大小时，过滤/惩罚发送大量交易的账户（攻击者）</li>
-</ol>
-<p>我们来一张稍微详细点的模块交互图，看txpool怎么实现上面4个功能的。</p>
-<p><img src="http://cdn.lessisbetter.site/2018/txpool模块交互.png" alt="txpool模块交互"></p>
-<h3><span id="缓存功能的设计">缓存功能的设计</span></h3><p>txpool中的交易分为queued和pending 2种，其中<strong>queued存放未来的、当前无法执行的交易</strong>。以太坊使用nonce值决定某个账户的交易顺序，多条交易值nonce值必须连续，如果和过去的交易不连续，则无法执行，我们不妨使用nonce值，标记交易的号码，nonce为10的交易，称为第10号交易。举个例子，当前账户的nonce是10，txpool中有该账户的第100号交易，但txpool中没有第11~99号交易，这些交易的缺失，造成第100号交易无法执行，所以第100号交易就是未来的交易、不可执行的交易，存放在queue中。</p>
-<p><strong>pending存放可执行的交易</strong>。比如我们把上面的11~99号交易补全了，那么11~100号交易都可以进入到pending，因为这些交易都是连续的，都可以打包进区块。</p>
-<p>当节点收到交易（本地节点发起的或peer广播来的）时，会先存放到queued，txpool在某些情况下，把queued中可执行的交易，转移到pending中。</p>
-<h3><span id="为区块打包服务">为区块打包服务</span></h3><p><strong>这是txpool最核心的功能</strong>，worker在打包区块的时候，会获取<strong>所有的pending交易</strong>，但这些交易还存在txpool中，worker只是读取出来，至于txpool何时删除交易，稍后从txpool清理交易的角度单独在看。</p>
-<h3><span id="清理交易">清理交易</span></h3><p>txpool清理交易有以下<strong>几种条件</strong>，符合任意以下1条的，都是<strong>无效交易，会被从pending或者queued中移除</strong>：</p>
-<ol>
-<li>交易的nonce值已经低于账户在当前高度上的nonce值，代表交易已过期，交易已经上链就属于这种情况</li>
-<li>交易的GasLimit大于区块的GasLimit，区块容不下交易</li>
-<li>账户的余额已不足以支持该交易要消耗的费用</li>
-<li>交易的数量超过了queued和pending的缓冲区大小，需要进行清理</li>
-</ol>
-<p>交易清理主要有<strong>3个场景</strong>：</p>
-<ol>
-<li><p>txpool订阅了<code>ChainHeadEvent</code>事件，该事件代表主链上有新区块产生，txpool会根据最新的区块，检查每个账号的交易，有些无效的会被删除，有些由于区块回滚会从pending移动到queued，然后把queued中可执行的交易移动到pending，为下一轮区块打包组号准备。</p>
-</li>
-<li><p>queued交易移动到pending被称为“提升”（promote），这个过程中，同样会检查交易，当交易不符合以上条件时，就会被直接从queued中删除。</p>
-</li>
-<li>删除停留在queued中超过3小时的交易，3小时这个超时时间是可以通过<code>geth</code>的启动参数调整的。txpool记录了某个账户交易进入pending的时间，如果这个时间超过了3小时，代表该账号的交易迟迟不能被主链打包，既然无法被主链接受，就删除掉在queued中本来就无法执行的交易。</li>
-</ol>
-<h3><span id="惩罚恶意账号">惩罚恶意账号</span></h3><p>这也是txpool很重要的一个属性，可以防止恶意账户以发起大量垃圾交易。防止恶意用户造成：</p>
-<ol>
-<li>占用txpool空间</li>
-<li>浪费节点大量内存和CPU</li>
-<li>降低打包性能</li>
-</ol>
-<p><strong>只有当交易的总数量超过缓冲区大小时，txpool才会认为有恶意账户发起大量交易。</strong>pending和queued缓冲区大小不同，但处理策略类似：</p>
-<ol>
-<li>pending的缓冲区容量是4096，当pending的交易数量多于此时，就会运行检查，每个账号的交易数量是否多于16，把这些账号搜集出来，进行循环依次清理，什么意思呢？就是每轮只删除（移动到queued）这些账号的每个账号1条交易，然后看数量是否降下来了，不满足再进行下一轮，直到满足。</li>
-<li>queued的缓冲区容量是1024，超过之后清理策略和pending差不多，但这里可是真删除了。</li>
-</ol>
-<p>该部分功能未抽象成单独的函数，而是在<code>promoteExecutables()</code>中，就是在每次把queued交易转移到pending后执行的。</p>
-<p><strong>本地交易的特权</strong>，txpool虽然对交易有诸多限制，但如果交易是本节点的账号发起的，以上数量限制等都对他无效。所以，如果你用本节点账号不停的发送交易，并不会被认为是攻击者，你用<code>txpool.status</code>命令，可以查看到交易的数量，肯定可以大于4096，我曾达到过60000+。</p>
-<h3><span id="重点关注的源码">重点关注的源码</span></h3><p>txpool的主要设计上面就讲完了，如果你想把txpool的代码阅读一番，我建议你重点关注一下这些函数和变量，按图索骥能就完全掌握txpool的实现。</p>
-<ul>
-<li><code>TxPoolConfig</code>：txpool的配置参数</li>
-<li><code>chainHeadCh</code>：txpool订阅了新区块事件</li>
-<li><code>pending</code>：pending的交易，每个账号都有一个交易列表</li>
-<li><code>queue</code>：queued的交易，每个账号都有一个交易列表</li>
-<li><code>loop</code>：txpool的事件处理函数</li>
-<li><code>addTx</code>：添加1条交易的源头，你能找到类似的函数</li>
-<li><code>promoteExecutables</code>：queued交易移动到pending</li>
-<li><code>reset</code>：根据当前区块的最新高度，重置txpool中的交易</li>
-</ul>
-<p>仔细阅读一遍，你会发现txpool会涉及多个锁（TxPool.mu, TxPool.all, TxPool.priced.all），所以当txpool中的交易很多时，它的性能是很低的，这也会影响到区块的打包。</p>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。</li>
-<li><a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/" target="_blank" rel="noopener">我的文章列表，点此可查看</a></li>
-<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/" target="_blank" rel="noopener">原文链接</a>。</li>
-</ol>
-</blockquote>
-<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
-
-<p><img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align="center"></p>
-<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/12/11/ethereum-design-of-txpool/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+         
+          <!--/noindex-->
         
       
     </div>
