@@ -11,5 +11,6 @@ tags: ['公众号']
 1. [Golang并发模型：轻松入门select](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)
 
 <!--more-->
+1. [Golang并发实践：笔记本秒变暖宝宝](https://mp.weixin.qq.com/s/cdU_NsUZecT4WUxdqNDnCg)
 
 <img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align=center />
