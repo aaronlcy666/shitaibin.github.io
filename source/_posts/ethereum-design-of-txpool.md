@@ -16,7 +16,7 @@ tags: ['以太坊']
 
 以太坊内部有个重要的内部功能是txpool，从字面意思就能看出来，交易池就是存放交易的池子。它在以太坊中的位置如下图，只要有新交易，无论是本节点创建的，还是其他peer节点广播来的，都会先加入到交易池里，在打包区块的时候，就从这个池子里提取，区块产生之后，共识区块，交易上链。
 
-![txpool主图](http://cdn.lessisbetter.site/2018-txpool主图.png)
+![txpool主图](http://cdn.lessisbetter.site/2018-txpool-position.png)
 
 txpool有4个功能：
 
@@ -29,7 +29,7 @@ txpool有4个功能：
 
 我们来一张稍微详细点的模块交互图，看txpool怎么实现上面4个功能的。
 
-![txpool模块交互](http://cdn.lessisbetter.site/2018-txpool模块交互.png)
+![txpool模块交互](http://cdn.lessisbetter.site/2018-txpool-module-interactive.png)
 
 ### 缓存功能的设计
 

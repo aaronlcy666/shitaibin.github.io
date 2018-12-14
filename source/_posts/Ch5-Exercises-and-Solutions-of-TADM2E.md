@@ -141,7 +141,7 @@ for j from 1 to m
 Suppose an arithmetic expression is given as a tree. Each leaf is an integer and each internal node is one of the standard arithmetical operations `(+,−,*,/)`. For example, the expression `2+3*4+(3*4)/5` is represented by the tree in Figure 5.17(a). 
 Give an O(n) algorithm for evaluating such an expression, where there are n nodes in the tree.
 
-![Figure 5.17](http://cdn.lessisbetter.site/Figure 5.17.JPG)
+![Figure 5.17](http://cdn.lessisbetter.site/Figure_5.17.JPG)
 
 解答
 
