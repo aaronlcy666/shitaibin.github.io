@@ -19,12 +19,13 @@ Golang的并发模式灵感来自现实世界，这些模式是通用的，毫�
 - **FAN-OUT模式：多个goroutine从同一个通道读取数据，直到该通道关闭。**OUT是一种张开的模式，所以又被称为扇出，可以用来分发任务。
 - **FAN-IN模式：1个goroutine从多个通道读取数据，直到这些通道关闭。**IN是一种收敛的模式，所以又被称为扇入，用来收集处理的结果。
 
-![fan-in和fan-out.png](https://upload-images.jianshu.io/upload_images/10901752-727b047a9808439d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![fan-in和fan-out.png](http://cdn.lessisbetter.site/2018-12-fan-in-fan-out.png
+)
 
 
 ### FAN-IN和FAN-OUT实践
 
-我们这次试用FAN-OUT和FAN-IN，解决[《Golang并发模型：轻松入门流水线模型》](https://segmentfault.com/a/1190000017142506?_ea=5178632)中提到的问题：计算一个整数切片中元素的平方值并把它打印出来。
+我们这次试用FAN-OUT和FAN-IN，解决[《Golang并发模型：轻松入门流水线模型》](http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/)中提到的问题：计算一个整数切片中元素的平方值并把它打印出来。
 
 - `producer()`保持不变，负责生产数据。
 - `squre()`也不变，负责计算平方值。

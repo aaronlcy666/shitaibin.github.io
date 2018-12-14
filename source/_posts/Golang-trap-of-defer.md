@@ -158,11 +158,14 @@ defer及defer函数的执行顺序分2步：
 
 最后，看下误解读者文章的截图，看看你能不能发现那篇文章作者的思路问题。
 
-![截图1.png](https://upload-images.jianshu.io/upload_images/10901752-c8f93e67dfd8a320.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![截图1.png](http://cdn.lessisbetter.site/2018-12-misleading-defer-1.png
+)
 
-![截图2.png](https://upload-images.jianshu.io/upload_images/10901752-3c4a3f89cd2c89d7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![截图2.png](http://cdn.lessisbetter.site/2018-12-misleading-defer-2.png
+)
 
-![截图3.png](https://upload-images.jianshu.io/upload_images/10901752-fcfed5ac6d53e6a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![截图3.png](http://cdn.lessisbetter.site/2018-12-misleading-defer-3.png
+)
 
 
 上文的作者的目的想知道defer是在return之前，还是之后执行，所以做了这么个测试，他把上面的代码和修改成下面的代码，发现等效后，就给出了错误结论：defer确实是在return之前调用的。

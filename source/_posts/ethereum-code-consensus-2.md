@@ -20,7 +20,7 @@ tags: ['以太坊']
 
 engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类，分别介绍它们的功能和使用场景。
 
-![engine接口调用图](http://upload-images.jianshu.io/upload_images/10901752-25ab78421e7b8edd.png-own?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240) 
+![engine接口调用图](http://cdn.lessisbetter.site/2018-12-engine-interface.png) 
 
 
 ### 验证区块类
