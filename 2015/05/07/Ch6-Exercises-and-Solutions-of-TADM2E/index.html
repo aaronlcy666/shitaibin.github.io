@@ -116,18 +116,18 @@
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Weighted-graphs-TADM2E 该页面答案，也是由用户编辑的，不确定是完全的正确。 MST6-2 最短路径与MST题目 Is the path between two vertices in a mi">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-2-1.JPG">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-2.JPG">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-3.JPG">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-12%20b.-own">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-14.png-own">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-16%20a.png-own">
-<meta property="og:image" content="http://cdn.lessisbetter.site/Ex%206-16%20b.png-own">
-<meta property="og:updated_time" content="2018-12-01T03:03:41.387Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-2-1.JPG">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-2.JPG">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-3.JPG">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-12%20b.-own">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-14.png-own">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-16%20a.png-own">
+<meta property="og:image" content="http://cdn.lessisbetter.site/Ex-206-16%20b.png-own">
+<meta property="og:updated_time" content="2018-12-14T02:01:02.358Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法设计手册第二版第六章课后习题解答">
 <meta name="twitter:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Weighted-graphs-TADM2E 该页面答案，也是由用户编辑的，不确定是完全的正确。 MST6-2 最短路径与MST题目 Is the path between two vertices in a mi">
-<meta name="twitter:image" content="http://cdn.lessisbetter.site/Ex%206-2-1.JPG">
+<meta name="twitter:image" content="http://cdn.lessisbetter.site/Ex-206-2-1.JPG">
 
 
 
@@ -406,7 +406,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-01 11:03:41" itemprop="dateModified" datetime="2018-12-01T11:03:41+08:00">2018-12-01</time>
+                <time title="Modified: 2018-12-14 10:01:02" itemprop="dateModified" datetime="2018-12-14T10:01:02+08:00">2018-12-14</time>
               
             
           </span>
@@ -461,14 +461,14 @@
 <p>解答</p>
 <p>MST中两点间的路径不是该两点在整个图中的最短路径。</p>
 <p><strong>反例：</strong>使用习题5-1的图，使用Kruskal得到的MST是：</p>
-<p><img src="http://cdn.lessisbetter.site/Ex%206-2-1.JPG" alt="习题5-1图"></p>
-<p><img src="http://cdn.lessisbetter.site/Ex%206-2.JPG" alt="习题5-1图的MST"></p>
+<p><img src="http://cdn.lessisbetter.site/Ex-206-2-1.JPG" alt="习题5-1图"></p>
+<p><img src="http://cdn.lessisbetter.site/Ex-206-2.JPG" alt="习题5-1图的MST"></p>
 <p>路径A-&gt;I：A-&gt;D-&gt;G-&gt;J-&gt;I。路径长度为13，而在整个图中，路劲为A-&gt;I，长度为9。结果已显然。</p>
 <h3><span id="6-3-最短路径与mst">6-3 最短路径与MST</span></h3><p>题目</p>
 <p>Assume that all edges in the graph have distinct edge weights (i.e., no pair of edges have the same weight). Is the path between a pair of vertices in a minimum spanning tree necessarily a shortest path between the two vertices in the full graph? Give a proof or a counterexample.</p>
 <p>解答</p>
 <p>否。</p>
-<p><img src="http://cdn.lessisbetter.site/Ex%206-3.JPG" alt="反例图及其MST"></p>
+<p><img src="http://cdn.lessisbetter.site/Ex-206-3.JPG" alt="反例图及其MST"></p>
 <p>考虑B到D的路径，在图中路径长度为6，而在MST中路径长度为7。</p>
 <h3><span id="6-4-prim和kruskal得到mst是否相同">6-4 Prim和Kruskal得到MST是否相同</span></h3><p>题目</p>
 <p>Can Prim’s and Kruskal’s algorithm yield different minimum spanning trees? Explain why or why not.</p>
@@ -548,7 +548,7 @@
 <p>Devise an efficient data structure to handle the following operations on a weighted directed graph:</p>
 <p>(a) Merge two given components.<br>(b) Locate which component contains a given vertex v.<br>(c) Retrieve a minimum edge from a given component.</p>
 <p>解答</p>
-<p>在课本的并查集操作，得到的并查集是这样的。<br><img src="http://cdn.lessisbetter.site/Ex%206-12%20b.-own" alt="原始并查集结果"></p>
+<p>在课本的并查集操作，得到的并查集是这样的。<br><img src="http://cdn.lessisbetter.site/Ex-206-12%20b.-own" alt="原始并查集结果"></p>
 <p>要想确定两个顶点在不在一个集合内，需要找到代表这个集合的根节点，find的效率并不高，他需要多次递归才能得到根节点。</p>
 <p>如果能提高find的效率，并查集的操作也将提高很多。常见的做法是，<a href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure" target="_blank" rel="noopener">路径压缩</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int find(set_union *s, int x)  </span><br><span class="line">&#123;  </span><br><span class="line"> if (s-&gt;p\[x\] != x)  </span><br><span class="line"> s-&gt;p\[x\] = find(s, s-&gt;p\[x\]);  </span><br><span class="line">  </span><br><span class="line"> return s-&gt;p\[x\];  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -557,7 +557,7 @@
 <p>解答</p>
 <p>如果是无向图的话，执行Dijkstra算法即可，然后倒转所有的路径。但是，题目指明是基于有向图的问题。</p>
 <p>另外，Kruskal算法是All-Pairs最短路径，如果想到的算法时间复杂度大于O(n3)，那还不如直接使用Kruskal。</p>
-<p><img src="http://cdn.lessisbetter.site/Ex%206-14.png-own" alt="6-14图"></p>
+<p><img src="http://cdn.lessisbetter.site/Ex-206-14.png-own" alt="6-14图"></p>
 <p>如上图,假设要求从s到t的最短路径，并且已经求得c1,c2,c3到t的最短路径，那么s到t的最短路径应当为 <code>W[s,t] = min(W[s,c1]+W[c1,t], W[s,c2]+W[c2,t], W[s,c3]+W[c3,t])</code>。</p>
 <p>自然而然，应当想到了递归解法。Oh，接下来貌似你要考虑一下这些问题：</p>
 <ol>
@@ -571,9 +571,9 @@
 <p>(a) Give an example of a weighted connected graph G=(V,E) and a vertex v, such that the minimum spanning tree of G is the same as the shortest-path spanning tree rooted at v.<br>(b) Give an example of a weighted connected directed graph G=(V,E) and a vertex v, such that the <em>minimum-cost spanning tree</em> of G is very different from the shortest-path spanning tree rooted at v.<br>(c) Can the two trees be completely disjointed?</p>
 <p>解答</p>
 <p>(a) 图G、MST、SP构成的树都是下图：</p>
-<p><img src="http://cdn.lessisbetter.site/Ex%206-16%20a.png-own" alt="Ex 6-16 a"></p>
+<p><img src="http://cdn.lessisbetter.site/Ex-206-16%20a.png-own" alt="Ex 6-16 a"></p>
 <p>(b) minimum-cost spanning tree就是MST，看到这个刚开始还觉得这是不是一个新东西。</p>
-<p><img src="http://cdn.lessisbetter.site/Ex%206-16%20b.png-own" alt="Ex 6-16 b"></p>
+<p><img src="http://cdn.lessisbetter.site/Ex-206-16%20b.png-own" alt="Ex 6-16 b"></p>
 <p>(c) What is ‘completely disjointed’?</p>
 <h3><span id="6-17-mst的边与sp的边">6-17 MST的边与SP的边</span></h3><p>题目</p>
 <p>Either prove the following or give a counterexample:</p>

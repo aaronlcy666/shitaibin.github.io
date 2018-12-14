@@ -116,13 +116,13 @@
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。 第1步：安装易用的pprofgolang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-a22225547774f6aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-d730135324afd4f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2018-11-17T12:23:09.736Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-cpu-pprof.png">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-mem.pprof.png">
+<meta property="og:updated_time" content="2018-12-14T01:41:42.196Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="轻松入门Golang pprof实用不忽悠">
 <meta name="twitter:description" content="网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。 第1步：安装易用的pprofgolang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof">
-<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/10901752-a22225547774f6aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:image" content="http://cdn.lessisbetter.site/2018-12-cpu-pprof.png">
 
 
 
@@ -401,7 +401,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-11-17 20:23:09" itemprop="dateModified" datetime="2018-11-17T20:23:09+08:00">2018-11-17</time>
+                <time title="Modified: 2018-12-14 09:41:42" itemprop="dateModified" datetime="2018-12-14T09:41:42+08:00">2018-12-14</time>
               
             
           </span>
@@ -467,13 +467,13 @@
 <p>例子：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile046201825/cpu.pprof &gt; cpu.pdf</span><br></pre></td></tr></table></figure>
 <p>效果：</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/10901752-a22225547774f6aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="cpu pprof"></p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-cpu-pprof.png" alt="cpu pprof"></p>
 <p>5步已经结束，你已经学会使用cpu pprof了吗？</p>
 <h1><span id="轻松获取内存ppfo">轻松获取内存ppfo</span></h1><p>如果你掌握了cpu pprof，mem pprof轻而易举就能拿下，只需要改1行代码：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">defer</span> profile.Start(profile.MemProfile).Stop()</span><br></pre></td></tr></table></figure>
 <p>效果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile986580758/mem.pprof &gt; mem.pdf</span><br></pre></td></tr></table></figure>
-<p><img src="https://upload-images.jianshu.io/upload_images/10901752-d730135324afd4f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mem pprof"></p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-mem.pprof.png" alt="mem pprof"></p>
 <blockquote>
 <p>如果这篇文章对你有帮助，请点个赞/喜欢，让我知道我的写作是有价值的，感谢。</p>
 </blockquote>

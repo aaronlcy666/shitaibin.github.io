@@ -116,12 +116,12 @@
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/10901752-25ab78421e7b8edd.png-own?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2018-09-01T07:38:58.801Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-engine-interface.png">
+<meta property="og:updated_time" content="2018-12-14T01:12:35.266Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="以太坊源码分析：共识（2）">
 <meta name="twitter:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
-<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/10901752-25ab78421e7b8edd.png-own?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:image" content="http://cdn.lessisbetter.site/2018-12-engine-interface.png">
 
 
 
@@ -400,7 +400,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-09-01 15:38:58" itemprop="dateModified" datetime="2018-09-01T15:38:58+08:00">2018-09-01</time>
+                <time title="Modified: 2018-12-14 09:12:35" itemprop="dateModified" datetime="2018-12-14T09:12:35+08:00">2018-12-14</time>
               
             
           </span>
@@ -453,7 +453,7 @@
 <a id="more"></a>
 <p>接下来我们看一下<code>engine</code>具体定义了哪些功能，还有各功能的使用场景。</p>
 <h2><span id="engine定义的具体功能">engine定义的具体功能</span></h2><p>engine有3类功能，验证区块类、产生区块类、辅助类。因为产生区块在前，验证区块在后，接下来采用产生区块类、验证区块类、辅助类，分别介绍它们的功能和使用场景。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/10901752-25ab78421e7b8edd.png-own?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="engine接口调用图"> </p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-engine-interface.png" alt="engine接口调用图"> </p>
 <h3><span id="验证区块类">验证区块类</span></h3><ol>
 <li><code>Prepare</code>：初始化区块头信息，不同的共识算法初始化不同。使用场景是，worker创建work的时候调用。</li>
 <li><code>Finalize</code>：根据数据生成“基本定型”的区块，但区块头中还缺少部分数据。使用场景是，1）模拟区块链的时候，被<code>GenerateChain</code>调用，用来生成区块链。2）交易状态管理时，被<code>StateProcessor.Process</code>调用用来执行交易。3）worker创建work的时候调用。</li>

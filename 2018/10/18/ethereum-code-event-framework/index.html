@@ -116,14 +116,14 @@
 <meta property="og:site_name" content="随风">
 <meta property="og:description" content="过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。 以太坊的事件框架是一个单独的基础模块，存在于目录go-ethereum/event中，它有2中独立的事件框架实现，老点的叫TypeMu">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-b57b451a81f18d8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-9193e438ada4507c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10901752-4d43e8c697211588.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2018-10-18T01:41:29.084Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-event-framework.png">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-typemux.png">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-event-feed.png">
+<meta property="og:updated_time" content="2018-12-14T01:36:31.627Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="以太坊源码分析之事件框架">
 <meta name="twitter:description" content="过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。 以太坊的事件框架是一个单独的基础模块，存在于目录go-ethereum/event中，它有2中独立的事件框架实现，老点的叫TypeMu">
-<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/10901752-b57b451a81f18d8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:image" content="http://cdn.lessisbetter.site/2018-12-event-framework.png">
 
 
 
@@ -385,12 +385,24 @@
                 
               
 
-              <time title="Created: 2018-10-18 20:16:01 / Modified: 09:41:29" itemprop="dateCreated datePublished" datetime="2018-10-18T20:16:01+08:00">2018-10-18</time>
+              <time title="Created: 2018-10-18 20:16:01" itemprop="dateCreated datePublished" datetime="2018-10-18T20:16:01+08:00">2018-10-18</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-14 09:36:31" itemprop="dateModified" datetime="2018-12-14T09:36:31+08:00">2018-12-14</time>
               
             
           </span>
@@ -442,7 +454,7 @@
 <p><code>Feed</code>的特点是，它通常不存在阻塞的情况，会及时的把事件通知给你，但需要你为<strong>每类事件</strong>都建立一个Feed，然后不同的事件去不同的Feed上订阅和发送，这其实挺烦人的，如果你用错了Feed，会导致panic。</p>
 <p>接下来，介绍下这种简单事件框架的抽象模型，然后再回归到以太坊，介绍下<code>TypeMux</code>和<code>Feed</code>。</p>
 <a id="more"></a>
-<h2><span id="事件框架的抽象结构">事件框架的抽象结构</span></h2><p><img src="https://upload-images.jianshu.io/upload_images/10901752-b57b451a81f18d8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="原始事件框架抽象结构"></p>
+<h2><span id="事件框架的抽象结构">事件框架的抽象结构</span></h2><p><img src="http://cdn.lessisbetter.site/2018-12-event-framework.png" alt="原始事件框架抽象结构"></p>
 <p>如上图，轻量级的事件框架会把所有的被订阅的事件收集起来，然后把每个订阅者组合成一个列表，当事件框架收到某个事件的时候，就把订阅该事件的所有订阅者找出来，然后把这个事件发给他们。</p>
 <p>它需要具有2个功能：</p>
 <ol>
@@ -462,7 +474,7 @@
 <li>订阅和取消订阅。订阅通过函数<code>TypeMux.Subscribe()</code>，入参为要订阅的事件类型，会返回<code>TypeMuxSubscription</code>给订阅者，订阅者可通过此控制订阅，通过<code>TypeMuxSubscription.Unsubscribe()</code> 可以取消订阅。</li>
 <li>发布事件和传递事件。<code>TypeMux.Post()</code>，入参为事件类型，根据订阅表找出该事件的订阅者列表，遍历列表，依次向每个订阅者传递事件，如果前一个没有传递完成进入阻塞，会导致后边的订阅者不能及时收到事件。</li>
 </ol>
-<p><img src="https://upload-images.jianshu.io/upload_images/10901752-9193e438ada4507c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="TypeMux抽象结构"></p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-typemux.png" alt="TypeMux抽象结构"></p>
 <h3><span id="typemux源码速递">TypeMux源码速递</span></h3><p><code>TypeMux</code>的精简组成：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A TypeMux dispatches events to registered receivers. Receivers can be</span></span><br><span class="line"><span class="comment">// registered to handle events of certain type. Any operation</span></span><br><span class="line"><span class="comment">// called after mux is stopped will return ErrMuxClosed.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The zero value is ready to use.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Deprecated: use Feed</span></span><br><span class="line"><span class="comment">// 本质：哈希列表，每个事件的订阅者都存到对于的列表里</span></span><br><span class="line"><span class="keyword">type</span> TypeMux <span class="keyword">struct</span> &#123;</span><br><span class="line">	mutex   sync.RWMutex <span class="comment">// 锁</span></span><br><span class="line">	subm    <span class="keyword">map</span>[reflect.Type][]*TypeMuxSubscription <span class="comment">// 订阅表：所有事件类型的所有订阅者</span></span><br><span class="line">	stopped <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>订阅：</p>
@@ -483,7 +495,7 @@
 </ol>
 <p>Feed和TypeMux相同的是，它们都是推模式，不同的是Feed是异步的，如果有些订阅者阻塞了，没关系，它会继续向后面的订阅者发送事件/消息。</p>
 <p>Feed是一个一对多的事件流框架。<strong>每个类型的事件都需要一个与之对应的Feed</strong>，订阅者通过这个Feed进行订阅事件，发布者通过这个Feed发布事件。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/10901752-4d43e8c697211588.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Feed抽象结构"></p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-event-feed.png" alt="Feed抽象结构"></p>
 <p>看下Feed是如何实现2个功能的：</p>
 <ol>
 <li>订阅和取消订阅：<code>Feed.Subscribe()</code>，入参是一个通道，通常是有缓冲的，就算是无缓存也不会造成Feed阻塞，Feed会校验这个通道的类型和本Feed管理的事件类型是否一致，然后把通道保存下来，返回给订阅者一个<code>Subscription</code>，可以通过它取消订阅和读取通道错误。</li>
