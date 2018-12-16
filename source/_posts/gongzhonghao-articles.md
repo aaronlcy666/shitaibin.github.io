@@ -7,7 +7,7 @@ tags: ['公众号']
 公众号：一起学Golang，分享有料的Go语言技术。以下是公众号历史文章，希望对你有用：
 1. [Golang并发模型：轻松入门流水线模型](https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw)
 1. [Golang并发模型：轻松入门流水线FAN模式](https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ)
-1. [Golang并发：并发协程的优雅退出](https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ)
+1. [Golang并发模型：并发协程的优雅退出](https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ)
 1. [Golang并发模型：轻松入门select](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)
 
 <!--more-->
