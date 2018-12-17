@@ -108,28 +108,27 @@
 
 
 
-  <meta name="description" content="网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。 第1步：安装易用的pprofgolang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof">
-<meta name="keywords" content="Golang,pprof">
+  <meta name="description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select{}阻塞">
+<meta name="keywords" content="Golang">
 <meta property="og:type" content="article">
-<meta property="og:title" content="轻松入门Golang pprof实用不忽悠">
-<meta property="og:url" content="http://shitaibin.github.io/2018/11/07/Golang-pprof-step-by-step/index.html">
+<meta property="og:title" content="Golang并发模型：select进阶">
+<meta property="og:url" content="http://shitaibin.github.io/2018/12/17/golang-selete-advance/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。 第1步：安装易用的pprofgolang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof">
+<meta property="og:description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select{}阻塞">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-cpu-pprof.png">
-<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-mem.pprof.png">
-<meta property="og:updated_time" content="2018-12-14T01:41:42.196Z">
+<meta property="og:image" content="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png">
+<meta property="og:updated_time" content="2018-12-17T12:23:39.624Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="轻松入门Golang pprof实用不忽悠">
-<meta name="twitter:description" content="网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。 第1步：安装易用的pprofgolang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof">
-<meta name="twitter:image" content="http://cdn.lessisbetter.site/2018-12-cpu-pprof.png">
+<meta name="twitter:title" content="Golang并发模型：select进阶">
+<meta name="twitter:description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select{}阻塞">
+<meta name="twitter:image" content="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://shitaibin.github.io/2018/11/07/Golang-pprof-step-by-step/"/>
+  <link rel="canonical" href="http://shitaibin.github.io/2018/12/17/golang-selete-advance/"/>
 
 
 
@@ -139,7 +138,7 @@
   };
 </script>
 
-  <title>轻松入门Golang pprof实用不忽悠 | 随风</title>
+  <title>Golang并发模型：select进阶 | 随风</title>
   
 
 
@@ -342,7 +341,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/11/07/Golang-pprof-step-by-step/">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/12/17/golang-selete-advance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -359,7 +358,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">轻松入门Golang pprof实用不忽悠
+          <h1 class="post-title" itemprop="name headline">Golang并发模型：select进阶
               
             
           </h1>
@@ -384,24 +383,12 @@
                 
               
 
-              <time title="Created: 2018-11-07 21:13:56" itemprop="dateCreated datePublished" datetime="2018-11-07T21:13:56+08:00">2018-11-07</time>
+              <time title="Created: 2018-12-17 20:22:09 / Modified: 20:23:39" itemprop="dateCreated datePublished" datetime="2018-12-17T20:22:09+08:00">2018-12-17</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-14 09:41:42" itemprop="dateModified" datetime="2018-12-14T09:41:42+08:00">2018-12-14</time>
               
             
           </span>
@@ -416,8 +403,8 @@
                 <i class="fa fa-comment-o"></i>
               </span>
               
-                <a href="/2018/11/07/Golang-pprof-step-by-step/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/11/07/Golang-pprof-step-by-step/" itemprop="commentsCount"></span>
+                <a href="/2018/12/17/golang-selete-advance/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/12/17/golang-selete-advance/" itemprop="commentsCount"></span>
                 </a>
               
             
@@ -445,39 +432,49 @@
       
 
       
-        <p>网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。</p>
-<h1><span id="第1步安装易用的pprof">第1步：安装易用的pprof</span></h1><p>golang自带的prof包是runtime/pprof，这个是低级别的，需要你手动做一些设置等等周边工作，不利于我们快速上手，利用pprof帮助我们解决实际的问题。这里推荐davecheney封装的pprof，它可以1行代码，让你用上pprof，专心解决自己的代码问题，下载：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/pkg/profile</span><br></pre></td></tr></table></figure>
+        <p>最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。</p>
+<p>前一篇文章<a href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg" target="_blank" rel="noopener">《Golang并发模型：轻松入门select》</a>介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。</p>
+<ol>
+<li><code>nil</code>的通道永远阻塞</li>
+<li>如何跳出<code>for-select</code></li>
+<li><code>select{}</code>阻塞</li>
+</ol>
 <a id="more"></a>
-<h1><span id="第2步安装graphviz">第2步：安装graphviz</span></h1><p>pprof生成的prof文件时二进制的，需要把这个二进制的文件转换为我们人类可读的，graphviz可以帮助我们把二进制的prof文件转换为图像。Mac安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install graphviz</span><br></pre></td></tr></table></figure>
-<p>其他系统安装参考这里<a href="https://www.graphviz.org/download/" target="_blank" rel="noopener">Graphviz Download</a>。</p>
-<h1><span id="第3步修改你的main函数">第3步：修改你的main函数</span></h1><p>只需要为<code>hi.go</code>增加这一行，<code>defer profile.Start().Stop()</code>，程序运行时，默认就会记录cpu数据: </p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/pkg/profile"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">defer</span> profile.Start().Stop()</span><br><span class="line"></span><br><span class="line">	sl := makeSlice()</span><br><span class="line">	fmt.Printf(<span class="string">"sum = %d\n"</span>, sumSlice(sl))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">makeSlice</span><span class="params">()</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	sl := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">10000000</span>)</span><br><span class="line">	<span class="keyword">for</span> idx := <span class="keyword">range</span> sl &#123;</span><br><span class="line">		sl[idx] = idx</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sl</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sumSlice</span><span class="params">(sl []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	sum := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> _, x := <span class="keyword">range</span> sl &#123;</span><br><span class="line">		sum += x</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> sum</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1><span id="第4步编译运行你的函数">第4步：编译运行你的函数</span></h1><p>编译和执行<code>hi.go</code>。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go build hi.go</span><br><span class="line">./hi</span><br></pre></td></tr></table></figure>
-<p>应当看到类似的结果，它输出了生成的cpu.pprof的路径：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">2018/11/07 19:47:21 profile: cpu profiling enabled, /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile046201825/cpu.pprof</span><br><span class="line">sum = 49999995000000</span><br><span class="line">2018/11/07 19:47:21 profile: cpu profiling disabled, /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile046201825/cpu.pprof</span><br></pre></td></tr></table></figure>
-<h1><span id="第5步可视化prof">第5步：可视化prof</span></h1><p>可视化有多种方式，可以转换为text、pdf、svg等等。text命令是</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof --text /path/to/yourbinary /var/path/to/cpu.pprof</span><br></pre></td></tr></table></figure>
-<p>结果是：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof -text ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile046201825/cpu.pprof</span><br><span class="line">File: hi</span><br><span class="line">Type: cpu</span><br><span class="line">Time: Nov 7, 2018 at 7:47pm (CST)</span><br><span class="line">Duration: 202.18ms, Total samples = 50ms (24.73%)</span><br><span class="line">Showing nodes accounting <span class="keyword">for</span> 50ms, 100% of 50ms total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br><span class="line">      40ms 80.00% 80.00%       40ms 80.00%  main.makeSlice /Users/shitaibin/go/src/github.com/shitaibin/awesome/hi.go</span><br><span class="line">      10ms 20.00%   100%       10ms 20.00%  main.sumSlice /Users/shitaibin/go/src/github.com/shitaibin/awesome/hi.go</span><br><span class="line">         0     0%   100%       50ms   100%  main.main /Users/shitaibin/go/src/github.com/shitaibin/awesome/hi.go</span><br><span class="line">         0     0%   100%       50ms   100%  runtime.main /usr/<span class="built_in">local</span>/go/src/runtime/proc.go</span><br></pre></td></tr></table></figure>
-<p>还有pdf这种效果更好：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof --pdf /path/to/yourbinary /var/path/to/cpu.pprof &gt; cpu.pdf</span><br></pre></td></tr></table></figure>
-<p>例子：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile046201825/cpu.pprof &gt; cpu.pdf</span><br></pre></td></tr></table></figure>
-<p>效果：</p>
-<p><img src="http://cdn.lessisbetter.site/2018-12-cpu-pprof.png" alt="cpu pprof"></p>
-<p>5步已经结束，你已经学会使用cpu pprof了吗？</p>
-<h1><span id="轻松获取内存ppfo">轻松获取内存ppfo</span></h1><p>如果你掌握了cpu pprof，mem pprof轻而易举就能拿下，只需要改1行代码：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">defer</span> profile.Start(profile.MemProfile).Stop()</span><br></pre></td></tr></table></figure>
-<p>效果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile986580758/mem.pprof &gt; mem.pdf</span><br></pre></td></tr></table></figure>
-<p><img src="http://cdn.lessisbetter.site/2018-12-mem.pprof.png" alt="mem pprof"></p>
+<h3><span id="nil的通道永远阻塞"><code>nil</code>的通道永远阻塞</span></h3><p><strong>当<code>case</code>上读一个通道时，如果这个通道是<code>nil</code>，则该<code>case</code>永远阻塞</strong>。这个功能有1个妙用，<code>select</code>通常处理的是多个通道，当某个读通道关闭了，但不想<code>select</code>再继续关注此<code>case</code>，继续处理其他<code>case</code>，把该通道设置为<code>nil</code>即可。<br>下面是一个合并程序等待两个输入通道都关闭后才退出的例子，就使用了这个特性。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">combine</span><span class="params">(inCh1, inCh2 &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="comment">// 输出通道</span></span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动协程合并数据</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> x, open := &lt;-inCh1:</span><br><span class="line">				<span class="keyword">if</span> !open &#123;</span><br><span class="line">					inCh1 = <span class="literal">nil</span></span><br><span class="line">					<span class="keyword">continue</span></span><br><span class="line">				&#125;</span><br><span class="line">				out&lt;-x</span><br><span class="line">			<span class="keyword">case</span> x, open := &lt;-inCh2:</span><br><span class="line">				<span class="keyword">if</span> !open &#123;</span><br><span class="line">					inCh2 = <span class="literal">nil</span></span><br><span class="line">					<span class="keyword">continue</span></span><br><span class="line">				&#125;</span><br><span class="line">				out&lt;-x</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 当ch1和ch2都关闭是才退出</span></span><br><span class="line">			<span class="keyword">if</span> inCh1 == <span class="literal">nil</span> &amp;&amp; inCh2 == <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3><span id="如何跳出for-select">如何跳出for-select</span></h3><p><strong><code>break</code>在<code>select</code>内的并不能跳出<code>for-select</code>循环</strong>。看下面的例子，<code>consume</code>函数从通道<code>inCh</code>不停读数据，期待在<code>inCh</code>关闭后退出<code>for-select</code>循环，但结果是永远没有退出。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(inCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"for: %d\n"</span>, i)</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> x, open := &lt;-inCh:</span><br><span class="line">			<span class="keyword">if</span> !open &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(<span class="string">"read: %d\n"</span>, x)</span><br><span class="line">		&#125;</span><br><span class="line">		i++</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"combine-routine exit"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜ go run x.go</span><br><span class="line"><span class="keyword">for</span>: 0</span><br><span class="line"><span class="built_in">read</span>: 0</span><br><span class="line"><span class="keyword">for</span>: 1</span><br><span class="line"><span class="built_in">read</span>: 1</span><br><span class="line"><span class="keyword">for</span>: 2</span><br><span class="line"><span class="built_in">read</span>: 2</span><br><span class="line"><span class="keyword">for</span>: 3</span><br><span class="line">gen <span class="built_in">exit</span></span><br><span class="line"><span class="keyword">for</span>: 4</span><br><span class="line"><span class="keyword">for</span>: 5</span><br><span class="line"><span class="keyword">for</span>: 6</span><br><span class="line"><span class="keyword">for</span>: 7</span><br><span class="line"><span class="keyword">for</span>: 8</span><br><span class="line">... // never stop</span><br></pre></td></tr></table></figure></p>
+<p>既然<code>break</code>不能跳出<code>for-select</code>，那怎么办呢？给你3个锦囊：</p>
+<ol>
+<li>在满足条件的<code>case</code>内，使用<code>return</code>，如果有结尾工作，尝试交给<code>defer</code>。</li>
+<li>在<code>select</code>外<code>for</code>内使用<code>break</code>挑出循环，如<code>combine</code>函数。</li>
+<li>使用<code>goto</code>。</li>
+</ol>
+<h3><span id="select永远阻塞"><code>select{}</code>永远阻塞</span></h3><p><code>select{}</code>的效果等价于创建了1个通道，直接从通道读数据：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">&lt;-ch</span><br></pre></td></tr></table></figure></p>
+<p>但是，这个写起来多麻烦啊！没<code>select{}</code>简洁啊。<br>但是，永远阻塞能有什么用呢！？<br>当你开发一个并发程序的时候，<code>main</code>函数千万不能在子协程干完活前退出啊，不然所有的协程都<strong>被迫退出</strong>了，还怎么提供服务呢？<br>比如，写了个Web服务程序，端口监听、后端处理等等都在子协程跑起来了，<code>main</code>函数这时候能退出吗？</p>
+<h3><span id="select应用场景">select应用场景</span></h3><p>最后，介绍下我常用的<code>select</code>场景：</p>
+<ol>
+<li>无阻塞的读、写通道。即使通道是带缓存的，也是存在阻塞的情况，使用select可以完美的解决阻塞读写，这篇文章我之前发在了个人博客，后面给大家介绍下。</li>
+<li>给某个请求/处理/操作，设置超时时间，一旦超时时间内无法完成，则停止处理。</li>
+<li><code>select</code>本色：多通道处理</li>
+</ol>
+<h3><span id="并发系列文章推荐">并发系列文章推荐</span></h3><ol>
+<li><a href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ" target="_blank" rel="noopener">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg" target="_blank" rel="noopener">Golang并发模型：轻松入门select</a></li>
+</ol>
 <blockquote>
-<p>如果这篇文章对你有帮助，请点个赞/喜欢，让我知道我的写作是有价值的，感谢。</p>
+<ol>
+<li>如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。</li>
+<li><a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/" target="_blank" rel="noopener">我的文章列表，点此可查看</a></li>
+<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/" target="_blank" rel="noopener">原文链接</a>。</li>
+</ol>
 </blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
+<p><img src="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align="center"></p>
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>
 
@@ -502,8 +499,6 @@
           
             <a href="/tags/Golang/" rel="tag"># Golang</a>
           
-            <a href="/tags/pprof/" rel="tag"># pprof</a>
-          
         </div>
       
 
@@ -515,8 +510,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/11/03/Golang-channel-read-and-write-without-blocking/" rel="next" title="一招教你无阻塞读写Golang channel">
-                <i class="fa fa-chevron-left"></i> 一招教你无阻塞读写Golang channel
+              <a href="/2018/12/11/gongzhonghao-articles/" rel="next" title="公众号文章列表">
+                <i class="fa fa-chevron-left"></i> 公众号文章列表
               </a>
             
           </div>
@@ -524,10 +519,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/10/Golang-trap-of-defer/" rel="prev" title="Golang defer的陷阱">
-                Golang defer的陷阱 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -815,7 +806,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">第1步：安装易用的pprof</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">第2步：安装graphviz</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">第3步：修改你的main函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">第4步：编译运行你的函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">第5步：可视化prof</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text">轻松获取内存ppfo</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">nil的通道永远阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">如何跳出for-select</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">select{}永远阻塞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">select应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
             
 
           </div>
