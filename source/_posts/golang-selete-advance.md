@@ -123,7 +123,7 @@ ch := make(chan int)
 
 > 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
 > 2. [我的文章列表，点此可查看](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
-> 3. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)。
+> 3. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/17/golang-selete-advance/)。
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
