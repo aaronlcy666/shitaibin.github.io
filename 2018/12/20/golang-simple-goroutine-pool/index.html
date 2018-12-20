@@ -108,29 +108,30 @@
 
 
 
-  <meta name="description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
-<meta name="keywords" content="以太坊">
+  <meta name="description" content="goroutine是非常轻量的，不会暂用太多资源，基本上有多少任务，我们可以开多少goroutine去处理。但有时候，我们还是想控制一下。 比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。 控制使用资源并不是协程池目的，使">
+<meta name="keywords" content="Golang">
 <meta property="og:type" content="article">
-<meta property="og:title" content="以太坊源码分析：交易缓冲池txpool">
-<meta property="og:url" content="http://shitaibin.github.io/2018/12/11/ethereum-design-of-txpool/index.html">
+<meta property="og:title" content="Golang并发模型：轻松入门协程池">
+<meta property="og:url" content="http://shitaibin.github.io/2018/12/20/golang-simple-goroutine-pool/index.html">
 <meta property="og:site_name" content="随风">
-<meta property="og:description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
+<meta property="og:description" content="goroutine是非常轻量的，不会暂用太多资源，基本上有多少任务，我们可以开多少goroutine去处理。但有时候，我们还是想控制一下。 比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。 控制使用资源并不是协程池目的，使">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://cdn.lessisbetter.site/2018-txpool-position.png">
-<meta property="og:image" content="http://cdn.lessisbetter.site/2018-txpool-module-interactive.png">
-<meta property="og:image" content="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
-<meta property="og:updated_time" content="2018-12-14T03:58:52.021Z">
+<meta property="og:image" content="http://cnd.lessisbetter.site/2018-12-simple-goroutine-pool.png">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-goroutine-pool-code-1.png">
+<meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-goroutine-pool-code-2.png">
+<meta property="og:image" content="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png">
+<meta property="og:updated_time" content="2018-12-20T04:56:31.537Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="以太坊源码分析：交易缓冲池txpool">
-<meta name="twitter:description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
-<meta name="twitter:image" content="http://cdn.lessisbetter.site/2018-txpool-position.png">
+<meta name="twitter:title" content="Golang并发模型：轻松入门协程池">
+<meta name="twitter:description" content="goroutine是非常轻量的，不会暂用太多资源，基本上有多少任务，我们可以开多少goroutine去处理。但有时候，我们还是想控制一下。 比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。 控制使用资源并不是协程池目的，使">
+<meta name="twitter:image" content="http://cnd.lessisbetter.site/2018-12-simple-goroutine-pool.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://shitaibin.github.io/2018/12/11/ethereum-design-of-txpool/"/>
+  <link rel="canonical" href="http://shitaibin.github.io/2018/12/20/golang-simple-goroutine-pool/"/>
 
 
 
@@ -140,7 +141,7 @@
   };
 </script>
 
-  <title>以太坊源码分析：交易缓冲池txpool | 随风</title>
+  <title>Golang并发模型：轻松入门协程池 | 随风</title>
   
 
 
@@ -343,7 +344,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/12/11/ethereum-design-of-txpool/">
+    <link itemprop="mainEntityOfPage" href="http://shitaibin.github.io/2018/12/20/golang-simple-goroutine-pool/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -360,7 +361,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">以太坊源码分析：交易缓冲池txpool
+          <h1 class="post-title" itemprop="name headline">Golang并发模型：轻松入门协程池
               
             
           </h1>
@@ -385,24 +386,12 @@
                 
               
 
-              <time title="Created: 2018-12-11 10:51:00" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
+              <time title="Created: 2018-12-20 12:54:28 / Modified: 12:56:31" itemprop="dateCreated datePublished" datetime="2018-12-20T12:54:28+08:00">2018-12-20</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-14 11:58:52" itemprop="dateModified" datetime="2018-12-14T11:58:52+08:00">2018-12-14</time>
               
             
           </span>
@@ -417,8 +406,8 @@
                 <i class="fa fa-comment-o"></i>
               </span>
               
-                <a href="/2018/12/11/ethereum-design-of-txpool/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/12/11/ethereum-design-of-txpool/" itemprop="commentsCount"></span>
+                <a href="/2018/12/20/golang-simple-goroutine-pool/#SOHUCS" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2018/12/20/golang-simple-goroutine-pool/" itemprop="commentsCount"></span>
                 </a>
               
             
@@ -446,80 +435,48 @@
       
 
       
-        <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
+        <p>goroutine是非常轻量的，不会暂用太多资源，基本上有多少任务，我们可以开多少goroutine去处理。但有时候，我们还是想控制一下。</p>
+<p>比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。</p>
+<p>控制使用资源并不是协程池目的，<strong>使用协程池是为了更好并发、程序鲁棒性、容错性等</strong>。废话少说，快速入门协程池才是这篇文章的目的。</p>
+<p><strong>协程池指的是预先分配固定数量的goroutine处理相同的任务</strong>，和线程池是类似的，不同点是协程池中处理任务的是协程，线程池中处理任务的是线程。</p>
+<h3><span id="最简单的协程池模型">最简单的协程池模型</span></h3><p><img src="http://cnd.lessisbetter.site/2018-12-simple-goroutine-pool.png" alt="简单协程池模型"></p>
+<p>上面这个图展示了最简单的协程池的样子。先<strong>把协程池作为一个整体看，它使用2个通道，左边的<code>jobCh</code>是任务通道，任务会从这个通道中流进来，右边的<code>retCh</code>是结果通道，协程池处理任务后得到的结果会写入这个通道</strong>。至于协程池中，有多少协程处理任务，这是外部不关心的。</p>
+<p>看一下协程池内部，图中画了5个goroutine，实际goroutine的数量是依具体情况而定的。<strong>协程池内每个协程都从<code>jobCh</code>读任务、处理任务，然后将结果写入到<code>retCh</code>。</strong></p>
+<h3><span id="示例">示例</span></h3><p>模型看懂了，看个小例子吧。</p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-goroutine-pool-code-1.png" alt="示例代码1"></p>
+<p><code>workerPool()</code>会创建1个简单的协程池，协程的数量可以通入参数<code>n</code>执行，并且还指定了<code>jobCh</code>和<code>retCh</code>两个参数。</p>
+<p><code>worker()</code>是协程池中的协程，入参分布是它的ID、job通道和结果通道。使用<code>for-range</code>从<code>jobCh</code>读取任务，直到<code>jobCh</code>关闭，然后一个最简单的任务：生成1个字符串，证明自己处理了某个任务，并把字符串作为结果写入<code>retCh</code>。</p>
+<p><img src="http://cdn.lessisbetter.site/2018-12-goroutine-pool-code-2.png" alt="示例代码2"></p>
+<p><code>main()</code>启动<code>genJob</code>获取存放任务的通道<code>jobCh</code>，然后创建<code>retCh</code>，它的缓存空间是200，并使用<code>workerPool</code>启动一个有5个协程的协程池。1s之后，关闭<code>retCh</code>，然后开始从<code>retCh</code>中读取协程池处理结果，并打印。</p>
+<p><code>genJob</code>启动一个协程，并生产n个任务，写入到<code>jobCh</code>。</p>
+<p>示例运行结果如下，一共产生了10个任务，显示大部分工作都被<code>worker 2</code>这个协程抢走了，如果我们设置的任务成千上万，协程池长时间处理任务，每个协程处理的工作数量就会均衡很多。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜ go run simple_goroutine_pool.go</span><br><span class="line">worker 2 processed job: 4</span><br><span class="line">worker 2 processed job: 5</span><br><span class="line">worker 2 processed job: 6</span><br><span class="line">worker 2 processed job: 7</span><br><span class="line">worker 2 processed job: 8</span><br><span class="line">worker 2 processed job: 9</span><br><span class="line">worker 0 processed job: 1</span><br><span class="line">worker 3 processed job: 2</span><br><span class="line">worker 4 processed job: 3</span><br><span class="line">worker 1 processed job: 0</span><br></pre></td></tr></table></figure></p>
+<h3><span id="回顾">回顾</span></h3><p>最简单的协程池模型就这么简单，再回头看下协程池及周边由哪些组成：</p>
 <ol>
-<li>txpool的在交易中的位置和作用。</li>
-<li>txpool的功能，核心组成部分queued和pending。</li>
-<li>txpool如何实现它的功能。</li>
-<li>txpool源码的重要关注点。</li>
+<li><strong>协程池内的一定数量的协程。</strong></li>
+<li><strong>任务队列</strong>，即<code>jobCh</code>，存在协程池不能立即处理任务的情况，所以需要队列把任务先暂存。</li>
+<li><strong>结果队列</strong>，即<code>retCh</code>，同上，协程池处理任务的结果，也存在不能被下游立刻提取的情况，要暂时保存。</li>
 </ol>
-<a id="more"></a>
-<p>以太坊内部有个重要的内部功能是txpool，从字面意思就能看出来，交易池就是存放交易的池子。它在以太坊中的位置如下图，只要有新交易，无论是本节点创建的，还是其他peer节点广播来的，都会先加入到交易池里，在打包区块的时候，就从这个池子里提取，区块产生之后，共识区块，交易上链。</p>
-<p><img src="http://cdn.lessisbetter.site/2018-txpool-position.png" alt="txpool主图"></p>
-<p>txpool有4个功能：</p>
-<ol>
-<li>作为存放交易的缓冲区，大量交易到来时，先存起来</li>
-<li>为打包区块服务，合适交易会被打包到区块</li>
-<li>清理交易</li>
-<li>当交易的数量多于缓冲区大小时，过滤/惩罚发送大量交易的账户（攻击者）</li>
+<p><strong>协程池最简要（核心）的逻辑是所有协程从任务读取任务，处理后把结果存放到结果队列。</strong></p>
+<h3><span id="go并发系列文章">Go并发系列文章</span></h3><ol>
+<li><a href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ" target="_blank" rel="noopener">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg" target="_blank" rel="noopener">Golang并发模型：轻松入门select</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw" target="_blank" rel="noopener">Golang并发模型：select进阶</a></li>
+<li><a href="https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA" target="_blank" rel="noopener">Golang并发模型：轻松入门协程池</a></li>
 </ol>
-<p>我们来一张稍微详细点的模块交互图，看txpool怎么实现上面4个功能的。</p>
-<p><img src="http://cdn.lessisbetter.site/2018-txpool-module-interactive.png" alt="txpool模块交互"></p>
-<h3><span id="缓存功能的设计">缓存功能的设计</span></h3><p>txpool中的交易分为queued和pending 2种，其中<strong>queued存放未来的、当前无法执行的交易</strong>。以太坊使用nonce值决定某个账户的交易顺序，多条交易值nonce值必须连续，如果和过去的交易不连续，则无法执行，我们不妨使用nonce值，标记交易的号码，nonce为10的交易，称为第10号交易。举个例子，当前账户的nonce是10，txpool中有该账户的第100号交易，但txpool中没有第11~99号交易，这些交易的缺失，造成第100号交易无法执行，所以第100号交易就是未来的交易、不可执行的交易，存放在queue中。</p>
-<p><strong>pending存放可执行的交易</strong>。比如我们把上面的11~99号交易补全了，那么11~100号交易都可以进入到pending，因为这些交易都是连续的，都可以打包进区块。</p>
-<p>当节点收到交易（本地节点发起的或peer广播来的）时，会先存放到queued，txpool在某些情况下，把queued中可执行的交易，转移到pending中。</p>
-<h3><span id="为区块打包服务">为区块打包服务</span></h3><p><strong>这是txpool最核心的功能</strong>，worker在打包区块的时候，会获取<strong>所有的pending交易</strong>，但这些交易还存在txpool中，worker只是读取出来，至于txpool何时删除交易，稍后从txpool清理交易的角度单独在看。</p>
-<h3><span id="清理交易">清理交易</span></h3><p>txpool清理交易有以下<strong>几种条件</strong>，符合任意以下1条的，都是<strong>无效交易，会被从pending或者queued中移除</strong>：</p>
-<ol>
-<li>交易的nonce值已经低于账户在当前高度上的nonce值，代表交易已过期，交易已经上链就属于这种情况</li>
-<li>交易的GasLimit大于区块的GasLimit，区块容不下交易</li>
-<li>账户的余额已不足以支持该交易要消耗的费用</li>
-<li>交易的数量超过了queued和pending的缓冲区大小，需要进行清理</li>
-</ol>
-<p>交易清理主要有<strong>3个场景</strong>：</p>
-<ol>
-<li><p>txpool订阅了<code>ChainHeadEvent</code>事件，该事件代表主链上有新区块产生，txpool会根据最新的区块，检查每个账号的交易，有些无效的会被删除，有些由于区块回滚会从pending移动到queued，然后把queued中可执行的交易移动到pending，为下一轮区块打包组号准备。</p>
-</li>
-<li><p>queued交易移动到pending被称为“提升”（promote），这个过程中，同样会检查交易，当交易不符合以上条件时，就会被直接从queued中删除。</p>
-</li>
-<li>删除停留在queued中超过3小时的交易，3小时这个超时时间是可以通过<code>geth</code>的启动参数调整的。txpool记录了某个账户交易进入pending的时间，如果这个时间超过了3小时，代表该账号的交易迟迟不能被主链打包，既然无法被主链接受，就删除掉在queued中本来就无法执行的交易。</li>
-</ol>
-<h3><span id="惩罚恶意账号">惩罚恶意账号</span></h3><p>这也是txpool很重要的一个属性，可以防止恶意账户以发起大量垃圾交易。防止恶意用户造成：</p>
-<ol>
-<li>占用txpool空间</li>
-<li>浪费节点大量内存和CPU</li>
-<li>降低打包性能</li>
-</ol>
-<p><strong>只有当交易的总数量超过缓冲区大小时，txpool才会认为有恶意账户发起大量交易。</strong>pending和queued缓冲区大小不同，但处理策略类似：</p>
-<ol>
-<li>pending的缓冲区容量是4096，当pending的交易数量多于此时，就会运行检查，每个账号的交易数量是否多于16，把这些账号搜集出来，进行循环依次清理，什么意思呢？就是每轮只删除（移动到queued）这些账号的每个账号1条交易，然后看数量是否降下来了，不满足再进行下一轮，直到满足。</li>
-<li>queued的缓冲区容量是1024，超过之后清理策略和pending差不多，但这里可是真删除了。</li>
-</ol>
-<p>该部分功能未抽象成单独的函数，而是在<code>promoteExecutables()</code>中，就是在每次把queued交易转移到pending后执行的。</p>
-<p><strong>本地交易的特权</strong>，txpool虽然对交易有诸多限制，但如果交易是本节点的账号发起的，以上数量限制等都对他无效。所以，如果你用本节点账号不停的发送交易，并不会被认为是攻击者，你用<code>txpool.status</code>命令，可以查看到交易的数量，肯定可以大于4096，我曾达到过60000+。</p>
-<h3><span id="重点关注的源码">重点关注的源码</span></h3><p>txpool的主要设计上面就讲完了，如果你想把txpool的代码阅读一番，我建议你重点关注一下这些函数和变量，按图索骥能就完全掌握txpool的实现。</p>
-<ul>
-<li><code>TxPoolConfig</code>：txpool的配置参数</li>
-<li><code>chainHeadCh</code>：txpool订阅了新区块事件</li>
-<li><code>pending</code>：pending的交易，每个账号都有一个交易列表</li>
-<li><code>queue</code>：queued的交易，每个账号都有一个交易列表</li>
-<li><code>loop</code>：txpool的事件处理函数</li>
-<li><code>addTx</code>：添加1条交易的源头，你能找到类似的函数</li>
-<li><code>promoteExecutables</code>：queued交易移动到pending</li>
-<li><code>reset</code>：根据当前区块的最新高度，重置txpool中的交易</li>
-</ul>
-<p>仔细阅读一遍，你会发现txpool会涉及多个锁（TxPool.mu, TxPool.all, TxPool.priced.all），所以当txpool中的交易很多时，它的性能是很低的，这也会影响到区块的打包。</p>
 <blockquote>
 <ol>
 <li>如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。</li>
-<li><a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/" target="_blank" rel="noopener">我的文章列表，点此可查看</a></li>
-<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/" target="_blank" rel="noopener">原文链接</a>。</li>
+<li>如果喜欢本文，随意转载，但请保留此<a href="http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/" target="_blank" rel="noopener">原文链接</a>。</li>
+<li><a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/" target="_blank" rel="noopener">博客文章列表，点此可查看</a></li>
 </ol>
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="http://cdn.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align="center"></p>
+<p><img src="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align="center"></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+
       
     </div>
 
@@ -542,7 +499,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/以太坊/" rel="tag"># 以太坊</a>
+            <a href="/tags/Golang/" rel="tag"># Golang</a>
           
         </div>
       
@@ -555,8 +512,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/" rel="next" title="Golang并发模型：并发协程的优雅退出">
-                <i class="fa fa-chevron-left"></i> Golang并发模型：并发协程的优雅退出
+              <a href="/2018/12/17/golang-selete-advance/" rel="next" title="Golang并发模型：select进阶">
+                <i class="fa fa-chevron-left"></i> Golang并发模型：select进阶
               </a>
             
           </div>
@@ -564,10 +521,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/12/11/gongzhonghao-articles/" rel="prev" title="公众号文章列表">
-                公众号文章列表 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -855,7 +808,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">缓存功能的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">为区块打包服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">清理交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">惩罚恶意账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">重点关注的源码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">最简单的协程池模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">回顾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">Go并发系列文章</span></a></li></ol></div>
             
 
           </div>
