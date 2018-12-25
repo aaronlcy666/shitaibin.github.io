@@ -53,13 +53,19 @@ def download(file_path):
         if "lanshiren" in img_name:
             continue
 
+        # skip download if img is exist
+        fpath = 'img_backup/' + img_name
+        if os.path.isfile(fpath):
+            print "skip: ",img_name
+            continue
+
         # download img
         request = urllib2.Request(img_url)
         response = urllib2.urlopen(request)
         img_contents = response.read()
         
         # write to file
-        f_img = open('img_backup/' + img_name, 'wb')
+        f_img = open(fpath, 'wb')
         f_img.write(img_contents)
         f_img.close()
     f_md.close()

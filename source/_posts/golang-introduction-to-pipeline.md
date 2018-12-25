@@ -112,6 +112,9 @@ func main() {
 
 如果你没了解过流水线，建议自己把以上的程序写一遍，如果遇到问题解决了，那才真正掌握了流水线模型的思路。
 
+### 完整示例代码
+本文所有代码都在仓库，可查看完整示例代码：https://github.com/Shitaibin/golang_pipeline_step_by_step
+
 ### 并发系列文章推荐
 - [Golang并发模型：轻松入门流水线模型](http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/)
 - [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/)
