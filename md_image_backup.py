@@ -19,7 +19,7 @@ def search(path, word):
     for filename in os.listdir(path):
         fp = os.path.join(path, filename)
         if os.path.isfile(fp) and word in filename:
-            print "processing:", fp
+            # print "processing:", fp
             download(str(fp))
         elif os.path.isdir(fp):
             search(fp, word)
@@ -48,7 +48,7 @@ def download(file_path):
         # extract img name from image url
         urlname = img_url.split(u"/")
         img_name = urlname[len(urlname) - 1]
-        print "name: %s, url: %s" % (img_name, img_url)
+        # print "name: %s, url: %s" % (img_name, img_url)
 
         if "lanshiren" in img_name:
             continue
@@ -56,10 +56,11 @@ def download(file_path):
         # skip download if img is exist
         fpath = 'img_backup/' + img_name
         if os.path.isfile(fpath):
-            print "skip: ",img_name
+            # print "skip: ",img_name
             continue
 
         # download img
+        print "download img", img_name
         request = urllib2.Request(img_url)
         response = urllib2.urlopen(request)
         img_contents = response.read()
@@ -71,8 +72,10 @@ def download(file_path):
     f_md.close()
 
 if __name__ == "__main__":
+    print "Image backup start"
     source_dir = "./source"
     if len(sys.argv) > 1:
         source_dir = sys.argv[1]
 
     search(source_dir, '.md')
+    print "Image backup finish"
