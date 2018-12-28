@@ -27,13 +27,52 @@ goroutine是非常轻量的，不会暂用太多资源，基本上有多少任�
 ### 示例
 模型看懂了，看个小例子吧。
 
-![示例代码1](http://cdn.lessisbetter.site/2018-12-goroutine-pool-code-1.png)
+```go
+func workerPool(n int, jobCh <-chan int, retCh chan<- string) {
+	for i := 0; i < n; i++ {
+		go worker(i, jobCh, retCh)
+	}
+}
+
+func worker(id int, jobCh <-chan int, retCh chan<- string) {
+	cnt := 0
+	for job := range jobCh {
+		cnt++
+		ret := fmt.Sprintf("worker %d processed job: %d, it's the %dth processed by me.", id, job, cnt)
+		retCh <- ret
+	}
+}
+```
 
 `workerPool()`会创建1个简单的协程池，协程的数量可以通入参数`n`执行，并且还指定了`jobCh`和`retCh`两个参数。
 
 `worker()`是协程池中的协程，入参分布是它的ID、job通道和结果通道。使用`for-range`从`jobCh`读取任务，直到`jobCh`关闭，然后一个最简单的任务：生成1个字符串，证明自己处理了某个任务，并把字符串作为结果写入`retCh`。
 
-![示例代码2](http://cdn.lessisbetter.site/2018-12-goroutine-pool-code-2.png)
+```go
+func main() {
+	jobCh := genJob(10000)
+	retCh := make(chan string, 10000)
+	workerPool(5, jobCh, retCh)
+
+	time.Sleep(time.Second)
+	close(retCh)
+	for ret := range retCh {
+		fmt.Println(ret)
+	}
+}
+
+func genJob(n int) <-chan int {
+	jobCh := make(chan int, 200)
+	go func() {
+		for i := 0; i < n; i++ {
+			jobCh <- i
+		}
+		close(jobCh)
+	}()
+
+	return jobCh
+}
+```
 
 `main()`启动`genJob`获取存放任务的通道`jobCh`，然后创建`retCh`，它的缓存空间是200，并使用`workerPool`启动一个有5个协程的协程池。1s之后，关闭`retCh`，然后开始从`retCh`中读取协程池处理结果，并打印。
 
@@ -61,6 +100,11 @@ worker 1 processed job: 0
 3. **结果队列**，即`retCh`，同上，协程池处理任务的结果，也存在不能被下游立刻提取的情况，要暂时保存。
 
 **协程池最简要（核心）的逻辑是所有协程从任务读取任务，处理后把结果存放到结果队列。**
+
+### 示例源码
+
+本文所有示例源码，及历史文章、代码都存储在Github：[https://github.com/Shitaibin/golang_step_by_step/tree/master/goroutine_pool](https://github.com/Shitaibin/golang_step_by_step/tree/master/goroutine_pool)
+
 
 ### Go并发系列文章
 
