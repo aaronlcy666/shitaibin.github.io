@@ -1,4 +1,4 @@
-title: "Github Pages + Hexo部署总结"
+title: "博客配置"
 date: 2015-05-01 16:47:40
 tags: ["Github Pages", "Hexo"]
 
@@ -16,13 +16,15 @@ tags: ["Github Pages", "Hexo"]
 
 如果不能回答问题1，或者也不能坚持，还是放弃吧，因为搭博客很烦人，如果不能坚持，大博客就变成浪费时间了，不如写写代码。
 
-我现在搭这个博客，是为了把 **The Algorithm Design Manual** 上的部分习题记录下来。找一件事做，才有东西可写，才能坚持下去。
+我写博客，是为了记录和分享，当下的技术思考。
 
-# 参考资料
+# 博客配置
 
-参考资料众多，我再写一篇就是，重复造轮子了。
-
-参考资料：https://hexo.io/zh-cn/docs/ ，官网资料，精简实用。
+框架：Hexo，静态博客
+主题：Next
+服务器：Github pages
+评论：[Valine](https://valine.js.org/)，静态博客不能存数据，评论借助Valie存在[LeanCloud](https://leancloud.cn/)
+阅读数：[busuanzi](http://ibruce.info/2015/04/04/busuanzi/)，阅读数存储在卜算子的服务器
 
 安装时有以下建议：
 1. 安装Node.js后，更改为国内源，不然安装Hexo慢。
