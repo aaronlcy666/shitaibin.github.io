@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 随风
-subtitle: 云象区块链招区块链工程师，内推请邮件shitb[@]yunphant.com
-description: 啊哈，被你找到了！关注我的公众号吧，我也在下面的社区出没，欢迎探讨。不过瘾？点[关于]试试
+title: 大彬的博客
+subtitle: 大道至简 The less the better
+description: 区块链架构师
 author: 大彬
-keywords:
+keywords: 区块链 Golang 后端 技术 人生 编程
 language:
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://shitaibin.github.io
+url: http://lessisbetter.site
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
