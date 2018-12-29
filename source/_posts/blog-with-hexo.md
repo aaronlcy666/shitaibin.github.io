@@ -28,5 +28,7 @@ tags: ["Github Pages", "Hexo"]
 1. 网站图标：准备好图标图片，然后去[Favicon](https://realfavicongenerator.net)网站制作，最后放到`/themes/next/source/images`目录。
 
 
+## 配置参考
+1. https://www.jianshu.com/p/9f0e90cc32c2
 
 
