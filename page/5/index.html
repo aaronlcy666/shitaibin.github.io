@@ -32,10 +32,6 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
 
 
 
@@ -58,34 +54,34 @@
 
 <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.6.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.6.0">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
-
-
-
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
 
 
 
 
 
 
-<script type="text/javascript" id="hexo.configurations">
+
+
+
+<script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
     scheme: 'Muse',
-    version: '6.5.0',
+    version: '6.6.0',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: false,
     fastclick: false,
@@ -128,13 +124,13 @@
 
 
 
-<script type="text/javascript" id="page.configurations">
+<script id="page.configurations">
   CONFIG.page = {
     sidebar: "",
   };
 </script>
 
-  <title>随风</title>
+  <title>随风 – 云象区块链招区块链工程师，内推请邮件shitb[@]yunphant.com</title>
   
 
 
@@ -147,8 +143,9 @@
 
 
 
+
   <noscript>
-  <style type="text/css">
+  <style>
     .use-motion .motion-element,
     .use-motion .brand,
     .use-motion .menu-item,
@@ -167,10 +164,8 @@
       top: initial;
     }
 
-    .use-motion {
-      .logo-line-before i { left: initial; }
-      .logo-line-after i { right: initial; }
-    }
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
@@ -189,7 +184,7 @@
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+  <div class="site-meta">
     
 
     <div class="custom-logo-site-title">
@@ -203,6 +198,7 @@
       
         <p class="site-subtitle">云象区块链招区块链工程师，内推请邮件shitb[@]yunphant.com</p>
       
+    
     
   </div>
 
@@ -292,6 +288,14 @@
 
       
       
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />Search</a>
+        </li>
+      
     </ul>
   
 
@@ -300,6 +304,33 @@
 
   
 
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
   
 </nav>
 
@@ -358,7 +389,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2016/01/09/project-and-custom-package/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">对自定义包的引用</a>
+                <a href="/2016/01/09/project-and-custom-package/" class="post-title-link" itemprop="url">对自定义包的引用</a>
               
             
           </h1>
@@ -410,15 +441,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2016/01/09/project-and-custom-package/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2016/01/09/project-and-custom-package/" class="cy_cmt_count" data-xid="2016/01/09/project-and-custom-package/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/09/project-and-custom-package/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2016/01/09/project-and-custom-package/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -457,7 +487,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -472,7 +502,7 @@
     
 
     
-       
+      
     
     
 
@@ -533,7 +563,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2016/01/08/package-unittest-import-error/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">Python自定义包下不同目录单元测试的导入错误</a>
+                <a href="/2016/01/08/package-unittest-import-error/" class="post-title-link" itemprop="url">Python自定义包下不同目录单元测试的导入错误</a>
               
             
           </h1>
@@ -585,15 +615,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2016/01/08/package-unittest-import-error/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2016/01/08/package-unittest-import-error/" class="cy_cmt_count" data-xid="2016/01/08/package-unittest-import-error/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/08/package-unittest-import-error/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2016/01/08/package-unittest-import-error/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -632,7 +661,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -647,7 +676,7 @@
     
 
     
-       
+      
     
     
 
@@ -708,7 +737,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2016/01/07/never-stop-learning/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">不要限制学习</a>
+                <a href="/2016/01/07/never-stop-learning/" class="post-title-link" itemprop="url">不要限制学习</a>
               
             
           </h1>
@@ -760,15 +789,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2016/01/07/never-stop-learning/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2016/01/07/never-stop-learning/" class="cy_cmt_count" data-xid="2016/01/07/never-stop-learning/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/07/never-stop-learning/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2016/01/07/never-stop-learning/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -811,7 +839,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -826,7 +854,7 @@
     
 
     
-       
+      
     
     
 
@@ -887,7 +915,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/12/27/things-about-github/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">Github二三事</a>
+                <a href="/2015/12/27/things-about-github/" class="post-title-link" itemprop="url">Github二三事</a>
               
             
           </h1>
@@ -939,15 +967,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/27/things-about-github/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/27/things-about-github/" class="cy_cmt_count" data-xid="2015/12/27/things-about-github/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/27/things-about-github/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/12/27/things-about-github/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -1003,7 +1030,7 @@
     
 
     
-       
+      
     
     
 
@@ -1064,7 +1091,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/12/22/python-unittest-in-action/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">Python单元测试实践</a>
+                <a href="/2015/12/22/python-unittest-in-action/" class="post-title-link" itemprop="url">Python单元测试实践</a>
               
             
           </h1>
@@ -1116,15 +1143,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/22/python-unittest-in-action/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/22/python-unittest-in-action/" class="cy_cmt_count" data-xid="2015/12/22/python-unittest-in-action/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/22/python-unittest-in-action/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/12/22/python-unittest-in-action/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -1163,7 +1189,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -1178,7 +1204,7 @@
     
 
     
-       
+      
     
     
 
@@ -1239,7 +1265,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/12/21/think-about-personal-management/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">个人管理的思考</a>
+                <a href="/2015/12/21/think-about-personal-management/" class="post-title-link" itemprop="url">个人管理的思考</a>
               
             
           </h1>
@@ -1291,15 +1317,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/21/think-about-personal-management/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/21/think-about-personal-management/" class="cy_cmt_count" data-xid="2015/12/21/think-about-personal-management/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/21/think-about-personal-management/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/12/21/think-about-personal-management/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -1336,7 +1361,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -1351,7 +1376,7 @@
     
 
     
-       
+      
     
     
 
@@ -1412,7 +1437,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/12/13/hexo-errors/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">Hexo博客错误汇总</a>
+                <a href="/2015/12/13/hexo-errors/" class="post-title-link" itemprop="url">Hexo博客错误汇总</a>
               
             
           </h1>
@@ -1464,15 +1489,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/13/hexo-errors/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/13/hexo-errors/" class="cy_cmt_count" data-xid="2015/12/13/hexo-errors/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/13/hexo-errors/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/12/13/hexo-errors/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -1507,7 +1531,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -1522,7 +1546,7 @@
     
 
     
-       
+      
     
     
 
@@ -1583,7 +1607,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/12/12/back-up-your-blog/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">搭好博客勤备份</a>
+                <a href="/2015/12/12/back-up-your-blog/" class="post-title-link" itemprop="url">搭好博客勤备份</a>
               
             
           </h1>
@@ -1635,15 +1659,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/12/back-up-your-blog/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/12/back-up-your-blog/" class="cy_cmt_count" data-xid="2015/12/12/back-up-your-blog/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/12/back-up-your-blog/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/12/12/back-up-your-blog/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -1683,7 +1706,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -1698,7 +1721,7 @@
     
 
     
-       
+      
     
     
 
@@ -1759,7 +1782,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/12/01/Well-Prepared-For-Campus-Recruit/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">校园招聘哪些事</a>
+                <a href="/2015/12/01/Well-Prepared-For-Campus-Recruit/" class="post-title-link" itemprop="url">校园招聘哪些事</a>
               
             
           </h1>
@@ -1811,15 +1834,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/12/01/Well-Prepared-For-Campus-Recruit/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/12/01/Well-Prepared-For-Campus-Recruit/" class="cy_cmt_count" data-xid="2015/12/01/Well-Prepared-For-Campus-Recruit/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/01/Well-Prepared-For-Campus-Recruit/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/12/01/Well-Prepared-For-Campus-Recruit/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -1854,7 +1876,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -1869,7 +1891,7 @@
     
 
     
-       
+      
     
     
 
@@ -1930,7 +1952,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2015/11/30/How-to-Select-Programming-Language/" class="post-title-link" itemprop="http://shitaibin.github.io/page/5/index.html">如何选择编程语言</a>
+                <a href="/2015/11/30/How-to-Select-Programming-Language/" class="post-title-link" itemprop="url">如何选择编程语言</a>
               
             
           </h1>
@@ -1982,15 +2004,14 @@
           
             
               <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2015/11/30/How-to-Select-Programming-Language/#SOHUCS" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">Comments: </span> <span id="url::http://shitaibin.github.io/2015/11/30/How-to-Select-Programming-Language/" class="cy_cmt_count" data-xid="2015/11/30/How-to-Select-Programming-Language/" itemprop="commentsCount" ></span>
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/11/30/How-to-Select-Programming-Language/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">Comments: </span> <span class="post-comments-count valine-comment-count" data-xid="/2015/11/30/How-to-Select-Programming-Language/" itemprop="commentCount"></span>
                 </a>
-              
+              </span>
             
           
 
@@ -2030,7 +2051,7 @@
                 Read more &raquo;
               </a>
             </div>
-         
+          
           <!--/noindex-->
         
       
@@ -2045,7 +2066,7 @@
     
 
     
-       
+      
     
     
 
@@ -2103,7 +2124,7 @@
 
       
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -2319,7 +2340,7 @@
           
 
         </div>
-      </section>
+      </div>
 
       
 
@@ -2355,12 +2376,30 @@
 
 
 
-  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v6.5.0</div>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v6.6.0</div>
 
 
 
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -2381,7 +2420,7 @@
     
 
     
-	
+
     
 
     
@@ -2389,7 +2428,7 @@
 
   
 
-<script type="text/javascript">
+<script>
   if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
     window.Promise = null;
   }
@@ -2422,57 +2461,42 @@
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
-
-
-
-  
-  
-
-  
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
-
 
 
   
 
 
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+  
 
   
 
 
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
 
 
   
-    <script id="cy_cmt_num" src="https://changyan.sohu.com/upload/plugins/plugins.list.count.js?clientId=cytWFoIIw"></script>
-  
-
-
-
-
 
 
 
@@ -2482,11 +2506,396 @@
 
 
 
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
   
+  
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(function (item) {
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '5wONOK6aHhhREYCzyLmC4htM-gzGzoHsz',
+        appKey: 'xzxGTbe7Mg76GXDApd5Vx8xw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        meta:guest,
+        pageSize:'10' || 10,
+        visitor: false
+    });
+  </script>
+
+
+
+
+  
+
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=6.6.0"></script>
+
+
 
   
 
   
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 
