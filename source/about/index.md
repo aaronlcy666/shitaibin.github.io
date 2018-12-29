@@ -21,9 +21,9 @@ toc: false
 
 - [Stack Overflow](https://stackoverflow.com/users/4296218/james-shi)
 - [Segment Fault](https://segmentfault.com/u/lessisbetter)
-- [CSDN](https://me.csdn.net/m0_43499523)
 - [简书](https://www.jianshu.com/u/947f3ccdd481)
-- [GitHub](github.com/shitaibin)
+- [GitHub](https://github.com/shitaibin)
+- [CSDN](https://me.csdn.net/m0_43499523)
 - [博客园](https://www.cnblogs.com/lifeathappiness)
 - [个人博客](http://lessisbetter.site/)
 
