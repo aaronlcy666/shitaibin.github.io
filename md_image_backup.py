@@ -50,7 +50,7 @@ def download(file_path):
         img_name = urlname[len(urlname) - 1]
         # print "name: %s, url: %s" % (img_name, img_url)
 
-        if "lanshiren" in img_name:
+        if "lanshiren" in img_name || len(img_name) == 0:
             continue
 
         # skip download if img is exist
