@@ -361,6 +361,181 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/03/13/review-SQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="技术与人生 | 区块链架构师">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大彬的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2016/03/13/review-SQL/" class="post-title-link" itemprop="url">SQL回顾总结</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2016-03-13 14:47:20" itemprop="dateCreated datePublished" datetime="2016-03-13T14:47:20+08:00">2016-03-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-12-01 11:03:41" itemprop="dateModified" datetime="2018-12-01T11:03:41+08:00">2018-12-01</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/03/13/review-SQL/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2016/03/13/review-SQL/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>本博文中的所有内容，可以在MySQL 5.6.21中运行。</p>
+</blockquote>
+<p>MySQL 5.1在线参考手册：<a href="http://doc.mysql.cn/mysql5/refman-5.1-zh.html-chapter/" target="_blank" rel="noopener">时光机</a></p>
+<h1 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h1><h2 id="限制行号和偏倚量。"><a href="#限制行号和偏倚量。" class="headerlink" title="限制行号和偏倚量。"></a>限制行号和偏倚量。</h2><p>从第OFFSET+1开始，共获取LIMIT个结果。可以用来求某列，第OFFSET+1大或小的行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> products</span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">3</span></span><br><span class="line"><span class="keyword">OFFSET</span> <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> products</span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">2</span>,<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2016/03/13/review-SQL/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2016/01/09/project-and-custom-package/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1914,182 +2089,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="技术与人生 | 区块链架构师">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/" class="post-title-link" itemprop="url">算法设计手册第二版第六章课后习题解答</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2015-05-07 20:36:44" itemprop="dateCreated datePublished" datetime="2015-05-07T20:36:44+08:00">2015-05-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-12-14 11:49:34" itemprop="dateModified" datetime="2018-12-14T11:49:34+08:00">2018-12-14</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>列出的解答仅为自己的思路，仅供参考，欢迎指出错误。</p>
-</blockquote>
-<h2 id="题目Wiki及参考答案"><a href="#题目Wiki及参考答案" class="headerlink" title="题目Wiki及参考答案"></a>题目Wiki及参考答案</h2><p><a href="http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Weighted-graphs-TADM2E" target="_blank" rel="noopener">http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Weighted-graphs-TADM2E</a></p>
-<p>该页面答案，也是由用户编辑的，不确定是完全的正确。</p>
-<h2 id="MST"><a href="#MST" class="headerlink" title="MST"></a>MST</h2><h3 id="6-2-最短路径与MST"><a href="#6-2-最短路径与MST" class="headerlink" title="6-2 最短路径与MST"></a>6-2 最短路径与MST</h3><p>题目</p>
-<p>Is the path between two vertices in a minimum spanning tree necessarily a shortest path between the two vertices in the full graph? Give a proof or a counterexample.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2015/05/07/Ch6-Exercises-and-Solutions-of-TADM2E/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2137,7 +2136,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">57</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
