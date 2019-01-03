@@ -1,6 +1,6 @@
 ---
 title: Golang并发模型：轻松入门select
-date: 2019-12-13 19:04:38
+date: 2018-12-13 19:04:38
 tags: ['Golang']
 ---
 
@@ -117,8 +117,8 @@ Time to sleep
 
 - [Golang并发模型：轻松入门流水线模型](https://mp.weixin.qq.com/s?__biz=Mzg3MTA0NDQ1OQ==&mid=2247483671&idx=1&sn=1706ffa6deee44a367c34ef84448f55f&scene=21#wechat_redirect)
 -  [Golang并发模型：轻松入门流水线FAN模式](https://mp.weixin.qq.com/s?__biz=Mzg3MTA0NDQ1OQ==&mid=2247483680&idx=1&sn=de463ebbd088c0acf6c2f0b5f179f38d&scene=21#wechat_redirect)
--  [Golang并发模型：并发协程的优雅退出](https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ)
-- [Golang并发模型：轻松入门select](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)
+- [Golang并发模型：并发协程的优雅退出](https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ)
+- [Golang并发模型：轻松入门select](http://lessisbetter.site/2018/12/13/golang-slect/)
 
 > 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
 > 2. [我的文章列表，点此可查看](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
