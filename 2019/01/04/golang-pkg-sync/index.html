@@ -113,7 +113,7 @@
 <meta property="og:description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png">
-<meta property="og:updated_time" content="2019-01-04T08:41:58.345Z">
+<meta property="og:updated_time" content="2019-01-05T02:10:18.925Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Golang并发的次优选择：sync包">
 <meta name="twitter:description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通">
@@ -423,12 +423,24 @@
                 
               
 
-              <time title="创建时间：2019-01-04 21:31:48 / 修改时间：16:41:58" itemprop="dateCreated datePublished" datetime="2019-01-04T21:31:48+08:00">2019-01-04</time>
+              <time title="创建时间：2019-01-04 21:31:48" itemprop="dateCreated datePublished" datetime="2019-01-04T21:31:48+08:00">2019-01-04</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-05 10:10:18" itemprop="dateModified" datetime="2019-01-05T10:10:18+08:00">2019-01-05</time>
               
             
           </span>
@@ -492,6 +504,7 @@
 <li>Map：自带锁的map</li>
 </ol>
 <p>这篇文章是sync包的入门文章，所以只介绍常用的结构和方法：<code>Mutex</code>、<code>RWMutex</code>、<code>WaitGroup</code>、<code>Once</code>，而<code>Cond</code>、<code>Pool</code>和<code>Map</code>留给大家自行探索，或有需求再介绍。</p>
+<a id="more"></a>
 <h3><span id="互斥锁">互斥锁</span></h3><p>常做并发工作的朋友对互斥锁应该不陌生，Golang里<strong>互斥锁需要确保的是某段时间内，不能有多个协程同时访问一段代码（临界区）</strong>。</p>
 <p>互斥锁被称为<code>Mutex</code>，它有2个函数，<code>Lock()</code>和<code>Unlock()</code>分别是获取锁和释放锁，如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mutex</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span> <span class="title">Lock</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span> <span class="title">Unlock</span><span class="params">()</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure></p>
 <p><strong><code>Mutex</code>的初始值为未锁的状态，并且<code>Mutex</code>通常作为结构体的匿名成员存在</strong>。</p>
