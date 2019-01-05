@@ -120,7 +120,7 @@
 <meta property="og:image" content="http://cdn.lessisbetter.site/image-20180821143403650.png-own">
 <meta property="og:image" content="http://cdn.lessisbetter.site/image-20180822103401508.png-own">
 <meta property="og:image" content="http://cdn.lessisbetter.site/image-20180822103701006.png-own">
-<meta property="og:updated_time" content="2018-12-01T03:03:41.386Z">
+<meta property="og:updated_time" content="2019-01-05T06:46:47.364Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="以太坊源码分析：fetcher模块和区块传播">
 <meta name="twitter:description" content="前言这篇文章从区块传播策略入手，介绍新区块是如何传播到远端节点，以及新区块加入到远端节点本地链的过程，同时会介绍fetcher模块，fetcher的功能是处理Peer通知的区块信息。在介绍过程中，还会涉及到p2p，eth等模块，不会专门介绍，而是专注区块的传播和加入区块链的过程。 当前代码是以太坊Release 1.8，如果版本不同，代码上可能存在差异。">
@@ -447,7 +447,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-12-01 11:03:41" itemprop="dateModified" datetime="2018-12-01T11:03:41+08:00">2018-12-01</time>
+                <time title="修改时间：2019-01-05 14:46:47" itemprop="dateModified" datetime="2019-01-05T14:46:47+08:00">2019-01-05</time>
               
             
           </span>
@@ -627,6 +627,13 @@
 <li><code>forgetBlock(hash common.Hash)</code>：用于从队列中移除一个区块。</li>
 </ol>
 <p>最后了，再回到开始看看fetcher模块和新区块的传播流程，有没有豁然开朗。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/08/30/ethereum-fetcher-module-and-block-propagate/">http://lessisbetter.site/2018/08/30/ethereum-fetcher-module-and-block-propagate/</a></li>
+</ol>
+</blockquote>
 
       
     </div>

@@ -113,7 +113,7 @@
 <meta property="og:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.lessisbetter.site/2018-12-engine-interface.png">
-<meta property="og:updated_time" content="2018-12-14T01:12:35.266Z">
+<meta property="og:updated_time" content="2019-01-05T06:45:14.873Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="以太坊源码分析：共识（2）">
 <meta name="twitter:description" content="前言engine是以太坊封定义的一个接口，它的功能可以分为3类：  验证区块类，主要用在将区块加入到区块链前，对区块进行共识验证。 产生区块类，主要用在挖矿时。 辅助类。">
@@ -440,7 +440,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-12-14 09:12:35" itemprop="dateModified" datetime="2018-12-14T09:12:35+08:00">2018-12-14</time>
+                <time title="修改时间：2019-01-05 14:45:14" itemprop="dateModified" datetime="2019-01-05T14:45:14+08:00">2019-01-05</time>
               
             
           </span>
@@ -521,6 +521,13 @@
 <li>Q：谁实现engine<br>A：以太坊中的Ethash和Clique实现了<code>engine</code>，Ethash是基于PoW的共识，Clique是基于PoA的共识。</li>
 <li>Q：为什么<code>insertChain</code>没有调用<code>VerifySeal</code>？<br>A：因为<code>Seal()</code>修改的是header中的部分数据，在验证区块头的时候，会被调用。只是调用流程在Ethash和Clique中的实现略有不同，后续讲解。</li>
 </ul>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-2/">http://lessisbetter.site/2018/06/22/ethereum-code-consensus-2/</a></li>
+</ol>
+</blockquote>
 
       
     </div>

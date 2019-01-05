@@ -107,14 +107,14 @@
   <meta name="description" content="在看《Go入门指南》的一种用闭包处理错误的模式时，里面提到了一种错误的优雅处理方式，减少我们重复写if err:=f(); err !=  nil{}式的代码，感觉很心动，做了下测试，结论如下：  能减少if err式的代码，代码可以变清新整洁。 使用存在限制：只有当错误需要结束调用时才可以使用这种方法，如果被调用函数返回错误，但调用者函数需处理错误后，向下继续执行，则不能采用这种方法。">
 <meta name="keywords" content="Golang">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何优雅的处理Golang错误[TODO]">
+<meta property="og:title" content="如何优雅的处理Golang错误">
 <meta property="og:url" content="http://lessisbetter.site/2018/10/24/go-handle-error/index.html">
 <meta property="og:site_name" content="大彬的博客">
 <meta property="og:description" content="在看《Go入门指南》的一种用闭包处理错误的模式时，里面提到了一种错误的优雅处理方式，减少我们重复写if err:=f(); err !=  nil{}式的代码，感觉很心动，做了下测试，结论如下：  能减少if err式的代码，代码可以变清新整洁。 使用存在限制：只有当错误需要结束调用时才可以使用这种方法，如果被调用函数返回错误，但调用者函数需处理错误后，向下继续执行，则不能采用这种方法。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-24T09:43:35.009Z">
+<meta property="og:updated_time" content="2019-01-05T06:40:06.076Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何优雅的处理Golang错误[TODO]">
+<meta name="twitter:title" content="如何优雅的处理Golang错误">
 <meta name="twitter:description" content="在看《Go入门指南》的一种用闭包处理错误的模式时，里面提到了一种错误的优雅处理方式，减少我们重复写if err:=f(); err !=  nil{}式的代码，感觉很心动，做了下测试，结论如下：  能减少if err式的代码，代码可以变清新整洁。 使用存在限制：只有当错误需要结束调用时才可以使用这种方法，如果被调用函数返回错误，但调用者函数需处理错误后，向下继续执行，则不能采用这种方法。">
 
 
@@ -132,7 +132,7 @@
   };
 </script>
 
-  <title>如何优雅的处理Golang错误[TODO] | 大彬的博客</title>
+  <title>如何优雅的处理Golang错误 | 大彬的博客</title>
   
 
 
@@ -395,7 +395,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何优雅的处理Golang错误[TODO]
+          <h1 class="post-title" itemprop="name headline">如何优雅的处理Golang错误
 
               
             
@@ -421,12 +421,24 @@
                 
               
 
-              <time title="创建时间：2018-10-24 14:38:41 / 修改时间：17:43:35" itemprop="dateCreated datePublished" datetime="2018-10-24T14:38:41+08:00">2018-10-24</time>
+              <time title="创建时间：2018-10-24 14:38:41" itemprop="dateCreated datePublished" datetime="2018-10-24T14:38:41+08:00">2018-10-24</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-05 14:40:06" itemprop="dateModified" datetime="2019-01-05T14:40:06+08:00">2019-01-05</time>
               
             
           </span>
@@ -504,6 +516,13 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"errors"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	errorHandler(test)()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> err error</span><br><span class="line">	err = a()</span><br><span class="line">	check(err)</span><br><span class="line"></span><br><span class="line">	err = b()</span><br><span class="line">	check(err)</span><br><span class="line"></span><br><span class="line">	_, err = c(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">	check(err)</span><br><span class="line"></span><br><span class="line">	_, err = d(<span class="number">1</span>, <span class="number">0</span>)</span><br><span class="line">	check(err)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">check</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 封装f：为传入的函数增加defer</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">errorHandler</span><span class="params">(f <span class="keyword">func</span>()</span>) <span class="title">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> r := <span class="built_in">recover</span>(); r != <span class="literal">nil</span> &#123;</span><br><span class="line">				log.Println(<span class="string">"got error: "</span>, r)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line"></span><br><span class="line">		f()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">a</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> errors.New(<span class="string">"error in a"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">b</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> errors.New(<span class="string">"error in b"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">c</span><span class="params">(x, y <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> x + y, errors.New(<span class="string">"error in c"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">d</span><span class="params">(x, y <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> y == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>, errors.New(<span class="string">"error in d, divided by 0"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> x / y, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>结果：<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2018/10/24 17:36:41 got error:  error <span class="keyword">in</span> a</span><br></pre></td></tr></table></figure></p>
 <h1><span id="还能再一次优雅吗">还能再一次优雅吗</span></h1><p><code>errorHandler()</code>函数不够通用，它只接受无入参，无返回的函数。</p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/10/24/go-handle-error/">http://lessisbetter.site/2018/10/24/go-handle-error/</a></li>
+</ol>
+</blockquote>
 
       
     </div>
