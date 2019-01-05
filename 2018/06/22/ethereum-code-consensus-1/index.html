@@ -107,7 +107,7 @@
   <meta name="description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
 <meta name="keywords" content="以太坊">
 <meta property="og:type" content="article">
-<meta property="og:title" content="以太坊源码分析：共识（1）">
+<meta property="og:title" content="以太坊源码分析：共识（1）矿工">
 <meta property="og:url" content="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/index.html">
 <meta property="og:site_name" content="大彬的博客">
 <meta property="og:description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
@@ -116,9 +116,9 @@
 <meta property="og:image" content="http://cdn.lessisbetter.site/2018-06-22-121152.jpg">
 <meta property="og:image" content="http://cdn.lessisbetter.site/2018-06-22-121154.jpg">
 <meta property="og:image" content="http://cdn.lessisbetter.site/2018-06-22-121151.jpg">
-<meta property="og:updated_time" content="2019-01-05T06:45:07.772Z">
+<meta property="og:updated_time" content="2019-01-05T06:49:55.085Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="以太坊源码分析：共识（1）">
+<meta name="twitter:title" content="以太坊源码分析：共识（1）矿工">
 <meta name="twitter:description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
 <meta name="twitter:image" content="http://cdn.lessisbetter.site/2018-06-22-121153.jpg">
 
@@ -137,7 +137,7 @@
   };
 </script>
 
-  <title>以太坊源码分析：共识（1） | 大彬的博客</title>
+  <title>以太坊源码分析：共识（1）矿工 | 大彬的博客</title>
   
 
 
@@ -202,7 +202,7 @@
     </div>
     
       
-        <p class="site-subtitle">大道至简 The less the better</p>
+        <p class="site-subtitle">大道至简 LIB = less is better</p>
       
     
     
@@ -400,7 +400,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">以太坊源码分析：共识（1）
+          <h1 class="post-title" itemprop="name headline">以太坊源码分析：共识（1）矿工
 
               
             
@@ -443,7 +443,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-01-05 14:45:07" itemprop="dateModified" datetime="2019-01-05T14:45:07+08:00">2019-01-05</time>
+                <time title="修改时间：2019-01-05 14:49:55" itemprop="dateModified" datetime="2019-01-05T14:49:55+08:00">2019-01-05</time>
               
             
           </span>
@@ -536,14 +536,14 @@
 <li><code>update()</code>：负责处理外部事件。它是死循环，主要处理3种事件：1）ChainHeadEvent，有了新区块头，所以得切换到挖下一个高度的区块，2）ChainSideEvent，收到了uncle区块，缓存起来，3）TxPreEvent，预处理交易，如果在挖矿执行<code>commitNewWork</code>，如果未挖矿，则交易设置为未决状态。</li>
 <li><code>wait()</code>：负责处理agent挖矿的结果。它是死循环，一直等待接收agent发回的result，然后把区块加入到本地数据库，如果没有问题，就发布<code>NewMinedBlockEvent</code>事件，通告其他节点挖到了一个新块。</li>
 </ol>
-<p><img src="http://cdn.lessisbetter.site/2018-06-22-121154.jpg" alt="img"></p>
+<p><img src="http://cdn.lessisbetter.site/2018-06-22-121154.jpg" alt="img"><br><em>图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除</em></p>
 <h3><span id="agent的主要函数">agent的主要函数</span></h3><p>主要2个函数:</p>
 <ol>
 <li><code>update()</code>：负责接收worker发来的任务（work）。它是死循环，把work交给mine去挖矿。</li>
-<li><code>mine()</code>：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。<br><img src="http://cdn.lessisbetter.site/2018-06-22-121151.jpg" alt="img"></li>
+<li><code>mine()</code>：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。<br><img src="http://cdn.lessisbetter.site/2018-06-22-121151.jpg" alt="img"><br> <em>图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除</em></li>
 </ol>
 <blockquote>
-<p>最后两张图片来源网络，侵删。<br> No newline at end of file</p>
+<p>最后两张图片来源网络，侵删。</p>
 </blockquote>
 <blockquote>
 <ol>
@@ -602,8 +602,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/06/22/ethereum-code-consensus-2/" rel="prev" title="以太坊源码分析：共识（2）">
-                以太坊源码分析：共识（2） <i class="fa fa-chevron-right"></i>
+              <a href="/2018/06/22/ethereum-code-consensus-2/" rel="prev" title="以太坊源码分析：共识（2）接口">
+                以太坊源码分析：共识（2）接口 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
