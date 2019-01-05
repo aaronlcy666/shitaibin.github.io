@@ -1,5 +1,5 @@
 ---
-title: 以太坊源码分析：共识（1）
+title: 以太坊源码分析：共识（1）矿工
 date: 2018-06-22 20:12:57
 tags: ['以太坊']
 ---
@@ -64,6 +64,7 @@ tags: ['以太坊']
 3. `wait()`：负责处理agent挖矿的结果。它是死循环，一直等待接收agent发回的result，然后把区块加入到本地数据库，如果没有问题，就发布`NewMinedBlockEvent`事件，通告其他节点挖到了一个新块。
 
 ![img](http://cdn.lessisbetter.site/2018-06-22-121154.jpg)
+*图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除*
 
 ### agent的主要函数
 
@@ -72,11 +73,10 @@ tags: ['以太坊']
 1. `update()`：负责接收worker发来的任务（work）。它是死循环，把work交给mine去挖矿。
 2. `mine()`：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。 
    ![img](http://cdn.lessisbetter.site/2018-06-22-121151.jpg)
-
+    *图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除*
 
 
 > 最后两张图片来源网络，侵删。
- No newline at end of file
 
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
