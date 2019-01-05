@@ -109,7 +109,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="探索Golang定时器的陷阱">
 <meta property="og:url" content="http://lessisbetter.site/2018/09/04/explore-golang-timer/index.html">
-<meta property="og:site_name" content="大彬的博客">
+<meta property="og:site_name" content="LIB">
 <meta property="og:description" content="所谓陷阱，就是它不是你认为的那样，这种认知误差可能让你的软件留下隐藏Bug。刚好Timer就有3个陷阱，我们会讲1）Reset的陷阱和2）通道的陷阱，3）Stop的陷阱与Reset的陷阱类似，自己探索吧。 Reset的陷阱在哪Timer.Reset()函数的返回值是bool类型，我们看一个问题三连：  它的返回值代表什么呢？ 我们想要的成功是什么？ 失败是什么？   成功：一段时间之后定时器超时，">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2019-01-05T06:36:10.201Z">
@@ -132,7 +132,7 @@
   };
 </script>
 
-  <title>探索Golang定时器的陷阱 | 大彬的博客</title>
+  <title>探索Golang定时器的陷阱 | LIB</title>
   
 
 
@@ -191,13 +191,13 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">大彬的博客</span>
+        <span class="site-title">LIB</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
     
       
-        <p class="site-subtitle">大道至简 LIB = less is better</p>
+        <p class="site-subtitle">大道至简 less is better</p>
       
     
     
@@ -239,7 +239,7 @@
         
         
           
-          <li class="menu-item menu-item-关于">
+          <li class="menu-item menu-item-标签云">
 
     
     
@@ -249,24 +249,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-文章列表">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
 
   </li>
         
@@ -290,7 +273,7 @@
         
         
           
-          <li class="menu-item menu-item-标签">
+          <li class="menu-item menu-item-文章列表">
 
     
     
@@ -300,7 +283,24 @@
 
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
 
   </li>
         
@@ -387,7 +387,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬的博客">
+      <meta itemprop="name" content="LIB">
     </span>
 
     

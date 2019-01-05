@@ -109,7 +109,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何优雅的处理Golang错误">
 <meta property="og:url" content="http://lessisbetter.site/2018/10/24/go-handle-error/index.html">
-<meta property="og:site_name" content="大彬的博客">
+<meta property="og:site_name" content="LIB">
 <meta property="og:description" content="在看《Go入门指南》的一种用闭包处理错误的模式时，里面提到了一种错误的优雅处理方式，减少我们重复写if err:=f(); err !=  nil{}式的代码，感觉很心动，做了下测试，结论如下：  能减少if err式的代码，代码可以变清新整洁。 使用存在限制：只有当错误需要结束调用时才可以使用这种方法，如果被调用函数返回错误，但调用者函数需处理错误后，向下继续执行，则不能采用这种方法。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2019-01-05T06:40:06.076Z">
@@ -132,7 +132,7 @@
   };
 </script>
 
-  <title>如何优雅的处理Golang错误 | 大彬的博客</title>
+  <title>如何优雅的处理Golang错误 | LIB</title>
   
 
 
@@ -191,13 +191,13 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">大彬的博客</span>
+        <span class="site-title">LIB</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
     
       
-        <p class="site-subtitle">大道至简 LIB = less is better</p>
+        <p class="site-subtitle">大道至简 less is better</p>
       
     
     
@@ -239,7 +239,7 @@
         
         
           
-          <li class="menu-item menu-item-关于">
+          <li class="menu-item menu-item-标签云">
 
     
     
@@ -249,24 +249,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-文章列表">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
 
   </li>
         
@@ -290,7 +273,7 @@
         
         
           
-          <li class="menu-item menu-item-标签">
+          <li class="menu-item menu-item-文章列表">
 
     
     
@@ -300,7 +283,24 @@
 
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
 
   </li>
         
@@ -387,7 +387,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬的博客">
+      <meta itemprop="name" content="LIB">
     </span>
 
     

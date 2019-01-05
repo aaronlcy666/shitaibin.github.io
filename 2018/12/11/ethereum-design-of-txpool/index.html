@@ -109,7 +109,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="以太坊源码分析：交易缓冲池txpool">
 <meta property="og:url" content="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/index.html">
-<meta property="og:site_name" content="大彬的博客">
+<meta property="og:site_name" content="LIB">
 <meta property="og:description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.lessisbetter.site/2018-txpool-position.png">
@@ -136,7 +136,7 @@
   };
 </script>
 
-  <title>以太坊源码分析：交易缓冲池txpool | 大彬的博客</title>
+  <title>以太坊源码分析：交易缓冲池txpool | LIB</title>
   
 
 
@@ -195,13 +195,13 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">大彬的博客</span>
+        <span class="site-title">LIB</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
     
       
-        <p class="site-subtitle">大道至简 LIB = less is better</p>
+        <p class="site-subtitle">大道至简 less is better</p>
       
     
     
@@ -243,7 +243,7 @@
         
         
           
-          <li class="menu-item menu-item-关于">
+          <li class="menu-item menu-item-标签云">
 
     
     
@@ -253,24 +253,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-文章列表">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
 
   </li>
         
@@ -294,7 +277,7 @@
         
         
           
-          <li class="menu-item menu-item-标签">
+          <li class="menu-item menu-item-文章列表">
 
     
     
@@ -304,7 +287,24 @@
 
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
 
   </li>
         
@@ -391,7 +391,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬的博客">
+      <meta itemprop="name" content="LIB">
     </span>
 
     
