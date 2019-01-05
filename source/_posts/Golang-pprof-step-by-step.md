@@ -141,8 +141,9 @@ go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile
 ```
 
 
-![mem pprof](http://cdn.lessisbetter.site/2018-12-mem.pprof.png
-)
+![mem pprof](http://cdn.lessisbetter.site/2018-12-mem.pprof.png)
 
 
-> 如果这篇文章对你有帮助，请点个赞/喜欢，让我知道我的写作是有价值的，感谢。
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/11/07/Golang-pprof-step-by-step/](http://lessisbetter.site/2018/11/07/Golang-pprof-step-by-step/)

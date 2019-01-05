@@ -185,4 +185,6 @@ defer及defer函数的执行顺序分2步：
 - [Defer statements](https://golang.org/ref/spec#Defer_statements)
 - [Is golang defer statement execute before or after return statement?](https://stackoverflow.com/questions/52718143/is-golang-defer-statement-execute-before-or-after-return-statement)
 
-> 如果这篇文章对你有帮助，请点个赞/喜欢，让我知道我的写作是有价值的，感谢。
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/11/10/Golang-trap-of-defer/](http://lessisbetter.site/2018/11/10/Golang-trap-of-defer/)

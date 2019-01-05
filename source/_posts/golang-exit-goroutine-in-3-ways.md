@@ -132,8 +132,10 @@ func worker(stopCh <-chan struct{}) {
 - [Golang并发模型：轻松入门流水线FAN模式](http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/)
 - [Golang并发模型：并发协程的优雅退出](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
 
-> 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)。
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>

@@ -123,8 +123,9 @@ func main() {
 下一篇，我将介绍流水线模型的FAN-IN、FAN-OUT，欢迎关注。
 
 
-> 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/)。
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/](http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/)
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>

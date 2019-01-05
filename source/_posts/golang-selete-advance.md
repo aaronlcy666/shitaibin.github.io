@@ -121,10 +121,9 @@ ch := make(chan int)
 1. [Golang并发模型：轻松入门select](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)
 
 
-> 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. [我的文章列表，点此可查看](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
-> 3. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/17/golang-selete-advance/)。
-
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/12/11/gongzhonghao-articles/](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 

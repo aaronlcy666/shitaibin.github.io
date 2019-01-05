@@ -115,10 +115,10 @@ worker 1 processed job: 0
 1. [Golang并发模型：select进阶](https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw)
 1. [Golang并发模型：轻松入门协程池](https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA)
 
-> 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. 如果喜欢本文，随意转载，但请保留此[原文链接](http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/)。
-> 3. [博客文章列表，点此可查看](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
 
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/12/11/gongzhonghao-articles/](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 

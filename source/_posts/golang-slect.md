@@ -120,10 +120,10 @@ Time to sleep
 - [Golang并发模型：并发协程的优雅退出](https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ)
 - [Golang并发模型：轻松入门select](http://lessisbetter.site/2018/12/13/golang-slect/)
 
-> 1. 如果这篇文章对你有帮助，请点个赞/喜欢，鼓励我持续分享，感谢。
-> 2. [我的文章列表，点此可查看](http://lessisbetter.site/2018/12/11/gongzhonghao-articles/)
-> 3. 如果喜欢本文，随意转载，但请保留此[原文链接](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)。
 
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg](https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg)
 
 ![一起学Golang-分享有料的Go语言技术](https://upload-images.jianshu.io/upload_images/10901752-0de86c464c34a5f7.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/258/)
 
