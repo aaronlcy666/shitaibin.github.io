@@ -340,9 +340,9 @@ Only once
 1. [Golang并发的次优选择：sync包](http://lessisbetter.site/2019/01/04/golang-pkg-sync/)
 
 
-> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有新文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
-> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/11/03/Golang-channel-read-and-write-without-blocking/](http://lessisbetter.site/2018/11/03/Golang-channel-read-and-write-without-blocking/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/01/04/golang-pkg-sync/](http://lessisbetter.site/2019/01/04/golang-pkg-sync/)
 
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
