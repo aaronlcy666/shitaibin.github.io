@@ -275,7 +275,7 @@ type stateObject struct {
     // DB error.
     // State objects are used by the consensus core and VM which are
     // unable to deal with database-level errors. Any error that occurs
-    // during a database read is memoized here and will eventually be returned
+    // during a database read is memoized http://lessisbetter.site/2018/06/22/ethereum-code-statedb/ and will eventually be returned
     // by StateDB.Commit.
     // VM不处理db层的错误，先记录下来，最后返回，只能保存1个错误，保存存的第一个错误
     dbErr error
@@ -439,7 +439,7 @@ type StateDB struct {
    // DB error.
    // State objects are used by the consensus core and VM which are
    // unable to deal with database-level errors. Any error that occurs
-   // during a database read is memoized here and will eventually be returned
+   // during a database read is memoized http://lessisbetter.site/2018/06/22/ethereum-code-statedb/ and will eventually be returned
    // by StateDB.Commit.
    dbErr error
 
@@ -620,7 +620,7 @@ func (s *StateDB) Finalise(deleteEmptyObjects bool) {
          // touch-event will still be recorded in the journal. Since ripeMD is a special snowflake,
          // it will persist in the journal even though the journal is reverted. In this special circumstance,
          // it may exist in `s.journal.dirties` but not in `s.stateObjects`.
-         // Thus, we can safely ignore it here
+         // Thus, we can safely ignore it http://lessisbetter.site/2018/06/22/ethereum-code-statedb/
          continue
       }
 
@@ -784,3 +784,6 @@ func (self *StateDB) RevertToSnapshot(revid int) {
 
 在journal.go中有更多的日志操作，以及每种类型操作需要记录的数据。
 
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/06/22/ethereum-code-statedb/](http://lessisbetter.site/2018/06/22/ethereum-code-statedb/)

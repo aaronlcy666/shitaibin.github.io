@@ -1133,3 +1133,7 @@ case filter := <-f.bodyFilter:
 
 
 最后了，再回到开始看看fetcher模块和新区块的传播流程，有没有豁然开朗。
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/08/30/ethereum-fetcher-module-and-block-propagate/](http://lessisbetter.site/2018/08/30/ethereum-fetcher-module-and-block-propagate/)

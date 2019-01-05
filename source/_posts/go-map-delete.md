@@ -171,3 +171,7 @@ func printMemStats() {
 参考资料 
 ---------------
 - http://blog.cyeam.com/json/2017/11/02/go-map-delete
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/09/29/go-map-delete/](http://lessisbetter.site/2018/09/29/go-map-delete/)

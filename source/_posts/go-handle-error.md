@@ -1,5 +1,5 @@
 ---
-title: 如何优雅的处理Golang错误[TODO]
+title: 如何优雅的处理Golang错误
 date: 2018-10-24 14:38:41
 tags: ['Golang']
 ---
@@ -233,3 +233,7 @@ func d(x, y int) (int, error) {
 # 还能再一次优雅吗
 
 `errorHandler()`函数不够通用，它只接受无入参，无返回的函数。
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/10/24/go-handle-error/](http://lessisbetter.site/2018/10/24/go-handle-error/)
