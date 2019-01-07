@@ -68,7 +68,7 @@ StateDB，从名字就能看出来，是用来存储状态的数据库。它把T
 
 StateDB定义了2个接口：`Trie`和`Database`：Trie建立在Database之上，Trie的数据存放在Database中。
 
-![img](http://cdn.lessisbetter.site/2018-06-22-100624.jpg-own)
+![img](http://img.lessisbetter.site/2018-06-22-100624.jpg-own)
 
 - Trie被定义为**带有缓存的KV数据库**。你可以通过它快速存储、更新、删除数据。
 - Database被定义为一个打开Trie、拷贝Trie的数据库。它不直接对外访问，不能直接使用它存取数据。
@@ -118,23 +118,23 @@ StateDB使用Trie存放stateObject，是账户地址到账户信息的映射，�
 
 stateObject使用Trie存放数据，这些数据被称为storage，实现对某个账户的状态数据的存储和修改，key是数据的hash值，value是状态数据。
 
-![img](http://cdn.lessisbetter.site/2018-06-22-100654.jpg-own)
+![img](http://img.lessisbetter.site/2018-06-22-100654.jpg-own)
 
 StateDB和stateObject都使用Database存放了自己的Trie，他们使用的是同一个DB。
 但从逻辑层次上看，他们满足这种关系：
 
-![img](http://cdn.lessisbetter.site/2018-06-22-100700.jpg-own)
+![img](http://img.lessisbetter.site/2018-06-22-100700.jpg-own)
 
 ### 事务和回滚设计
 
 stateDB这个KV数据库，实现了类似传统数据库的事务和回滚设计。每一个交易都是一个事务，每一个交易的执行，都是一次状态转移，在执行交易之前，先创建当前的快照，执行交易的过程中，会记录状态数据的每一次修改，如果交易执行失败，则进行回滚，交易执行完毕，会把所有修改的状态数据写入到Trie，然后更新Trie的根。
 在生成1个区块的时候，会进行很多次Finalise，回滚是不能跨越交易的，也就是说，当前交易失败了，我不能回滚到上上一条交易。生成区块的时候，最后一次Finalize的Trie的Root，会保存到区块头的Header.Root。当区块要写入到区块链的时候，会执行一次Commit。
 
-![img](http://cdn.lessisbetter.site/2018-06-22-100711.jpg-own)
+![img](http://img.lessisbetter.site/2018-06-22-100711.jpg-own)
 
 关于Finalise和Commit的主要调用关系如下图：
 
-![img](http://cdn.lessisbetter.site/2018-06-22-100716.jpg-own)
+![img](http://img.lessisbetter.site/2018-06-22-100716.jpg-own)
 
 Finalise的主要调用场景是：
 
@@ -746,7 +746,7 @@ func (db *cachingDB) ContractCode(addrHash, codeHash common.Hash) ([]byte, error
 
 以太坊使用记录每一步状态的变化来支持回滚，每一步变化就是日志。假如从状态A转移到状态B，需要经过8步，在第1不的时候创建了snapshot，执行到第6步的时候出现了错误，回滚操作就是：把操作2，3，4，5步之前的数据，以5，4，3，2的顺序设置回去。
 
-![img](http://cdn.lessisbetter.site/2018-06-22-100745.jpg-own)
+![img](http://img.lessisbetter.site/2018-06-22-100745.jpg-own)
 
 
 

@@ -31,19 +31,19 @@ tags: ['shadowsocks']
 - 设置自动代理模式
 - 填写服务器信息
 
-![shadowsocks配置1](http://cdn.lessisbetter.site/image-20180906200452853.png)
+![shadowsocks配置1](http://img.lessisbetter.site/image-20180906200452853.png)
 
-![shadowsocks服务器配置](http://cdn.lessisbetter.site/image-20180906200930519.png)
+![shadowsocks服务器配置](http://img.lessisbetter.site/image-20180906200930519.png)
 
 # Chrome设置
 
 应用商店安装[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，shadowsocks默认端口为1080，配置如下：
 
-![Omega代理设置](http://cdn.lessisbetter.site/image-20180906201214614.png)
+![Omega代理设置](http://img.lessisbetter.site/image-20180906201214614.png)
 
 浏览器启用代理，自动切换代理的方式自行百度：
 
-![image-20180906201322243](http://cdn.lessisbetter.site/image-20180906201322243.png)
+![image-20180906201322243](http://img.lessisbetter.site/image-20180906201322243.png)
 
 浏览器可科学上网了。
 

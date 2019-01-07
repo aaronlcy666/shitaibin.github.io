@@ -13,4 +13,4 @@ shitb@yunphant.com
 
 
 招聘要求，请在新标签页打开。
-![](http://cdn.lessisbetter.site/2018-12-yunphant-jobs.jpeg)
+![](http://img.lessisbetter.site/2018-12-yunphant-jobs.jpeg)

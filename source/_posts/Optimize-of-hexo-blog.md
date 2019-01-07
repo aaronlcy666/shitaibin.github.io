@@ -7,7 +7,7 @@ toc: false
 
 用Firebug看了一下加载速度，OMG!
 
-![加载速度](http://cdn.lessisbetter.site/loading-speed.JPG-own)
+![加载速度](http://img.lessisbetter.site/loading-speed.JPG-own)
 
 
 <!--more-->

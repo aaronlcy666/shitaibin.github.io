@@ -122,7 +122,7 @@ worker 1 processed job: 0
 
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<img src="http://cdn.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
+<img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center />
 
 
 
