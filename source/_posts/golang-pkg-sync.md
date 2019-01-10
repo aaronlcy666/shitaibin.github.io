@@ -249,28 +249,26 @@ open the box together
 
 WaitGroup也常用在协程池的处理上，协程池等待所有协程退出，把上篇文章[《Golang并发模型：轻松入门协程池》](http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/)的例子改下：
 ```go
-package main
+func workerPool(n int, jobCh <-chan int, retCh chan<- string) {
+	var wg sync.WaitGroup
+	wg.Add(n)
+	for i := 0; i < n; i++ {
+		go worker(&wg, i, jobCh, retCh)
+	}
 
-import (
-	"fmt"
-	"sync"
-)
+	wg.Wait()
+	close(retCh)
+}
 
-func main() {
-	var once sync.Once
-	onceBody := func() {
-		fmt.Println("Only once")
+func worker(wg *sync.WaitGroup, id int, jobCh <-chan int, retCh chan<- string) {
+	cnt := 0
+	for job := range jobCh {
+		cnt++
+		ret := fmt.Sprintf("worker %d processed job: %d, it's the %dth processed by me.", id, job, cnt)
+		retCh <- ret
 	}
-	done := make(chan bool)
-	for i := 0; i < 10; i++ {
-		go func() {
-			once.Do(onceBody)
-			done <- true
-		}()
-	}
-	for i := 0; i < 10; i++ {
-		<-done
-	}
+
+	wg.Done()
 }
 ```
 ### 单次执行
