@@ -159,7 +159,6 @@ Bank exit
 
 
 
-```
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
 > 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/01/14/golang-channel-and-mutex/](http://lessisbetter.site/2019/01/14/golang-channel-and-mutex/)
@@ -171,4 +170,3 @@ Bank exit
 
 
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
-```
