@@ -12,6 +12,7 @@ tags: ['公众号']
 1. [Golang并发模型：select进阶](https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw)
 1. [Golang并发模型：轻松入门协程池](https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA)
 1. [Golang并发的次优选择：sync包](https://mp.weixin.qq.com/s/UpYbmFTowjCPU83W3DxP6Q)
+1. [Golang并发：再也不愁选channel还是选锁](https://mp.weixin.qq.com/s/JcED2qgJEj8LaBckVZBhDA)
 
 <!--more-->
 1. [Golang并发实践：笔记本秒变暖宝宝](https://mp.weixin.qq.com/s/cdU_NsUZecT4WUxdqNDnCg)
