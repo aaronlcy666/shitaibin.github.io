@@ -121,7 +121,6 @@ ch2 := make(chan int, 0)
 // 有缓冲，异步
 ch3 := make(chan int, 1)
 ```
-
 ```go
 // 使用5个`do`协程同时处理输入数据
 func test() {

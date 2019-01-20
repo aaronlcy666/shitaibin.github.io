@@ -60,7 +60,7 @@ def download(file_path):
             continue
 
         # download img
-        print "download img", img_name
+        print "download img", img_name, img_url
         request = urllib2.Request(img_url)
         response = urllib2.urlopen(request)
         img_contents = response.read()
