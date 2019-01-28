@@ -204,7 +204,7 @@ case msg.Code == NewBlockMsg:
 	)
 	// Update the peers total difficulty if better than the previous
 	// 如果收到的块的难度大于peer之前的，以及自己本地的，就去和这个peer同步
-	// 问题：就只用了一下块里的hash指，为啥不直接使用这个块呢，如果这个块不能用，干嘛不少发送些数据，减少网络负载呢。
+	// 问题：就只用了一下块里的hash值，为啥不直接使用这个块呢，如果这个块不能用，干嘛不少发送些数据，减少网络负载呢。
 	// 答案：实际上，这个块加入到了优先级队列中，当fetcher的loop检查到当前下一个区块的高度，正是队列中有的，则不再向peer请求
 	// 该区块，而是直接使用该区块，检查无误后交给block chain执行insertChain
 	if _, td := p.Head(); trueTD.Cmp(td) > 0 {
@@ -597,7 +597,7 @@ type Fetcher struct {
 
 
 
-`NewBlockHashesMsg`消息的处理[前面的小节已经讲过了](#NewBlockHashesMsg的处理)，不记得可向前翻看。这里从`announced`的状态处理说起。`loop()`中，`fetchTimer`超时后，代表了收到了消息通知，需要处理，会从`announced`中选择出需要处理的通知，然后创建请求，请求区块头，由于可能有很多节点都通知了它某个区块的Hash，所以随机的从这些发送消息的Peer中选择一个Peer，发送请求的时候，为每个Peer都创建了单独的协程。
+`NewBlockHashesMsg`消息的处理[前面的小节已经讲过了](#NewBlockHashesMsg的处理)，不记得可向前翻看。这里从`announced`的状态处理说起。`loop()`中，`fetchTimer`超时后，代表了收到了消息通知，需要处理，会从`announced`中选择出需要处理的通知，然后创建请求，请求区块头，由于可能有很多节点都通知了它某个区块的Hash，所以**随机**的从这些发送消息的Peer中选择一个Peer，发送请求的时候，为每个Peer都创建了单独的协程。
 
 ```go
 case <-fetchTimer.C:
@@ -805,7 +805,7 @@ func (f *Fetcher) FilterHeaders(peer string, headers []*types.Header, time time.
 }
 ```
 
-接下来要看`f.headerFilter`的处理，这段代码有90行，它做了一下几件事：
+接下来要看`f.headerFilter`的处理，这段代码有90行，它做了以下几件事：
 
 1. 从`f.headerFilter`取出`filter`，然后取出过滤任务`task`。
 2. 它把区块头分成3类：`unknown`这不是分是要返回给调用者的，即`handleMsg()`, `incomplete`存放还需要获取body的区块头，`complete`存放只包含区块头的区块。遍历所有的区块头，填到到对应的分类中，具体的判断可看18行的注释，记住宏观中将的状态转移图。
@@ -1127,7 +1127,7 @@ case filter := <-f.bodyFilter:
 
 至此，fetcher获取完整区块的流程讲完了，fetcher模块中80%的代码也都贴出来了，还有2个值得看看的函数：
 
-1. `forgetHash(hash common.Hash) `：用于清空指定hash指的记/状态录信息。
+1. `forgetHash(hash common.Hash) `：用于清空指定hash值的记/状态录信息。
 2. `forgetBlock(hash common.Hash)`：用于从队列中移除一个区块。
 
 
