@@ -35,6 +35,19 @@ tags: ['shadowsocks']
 
 ![shadowsocks服务器配置](http://img.lessisbetter.site/image-20180906200930519.png)
 
+## 更易用的Shadowsocks软件
+
+[ShadowsocksX-NG-R8](https://raw.githubusercontent.com/VeniZ/ShadowsocksX-NG-R8-Bakup/master/ShadowsocksX-NG-R8.dmg)可单独使用，不需要配置Chrome插件，使用用的PAC白名单上网模式，可以减少很多配置，并且体验更好。
+
+设置步骤：
+1. 添加服务器信息。
+2. 设置全局模式
+3. 更新PAC列表
+4. 访问Google搜索
+5. 设置为PAC模式
+
+![](http://img.lessisbetter.site/2019-01-ss-ng.png)
+
 # Chrome设置
 
 应用商店安装[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，shadowsocks默认端口为1080，配置如下：

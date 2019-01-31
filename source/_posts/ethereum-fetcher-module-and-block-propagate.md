@@ -246,7 +246,9 @@ case op := <-f.inject:
 
 // enqueue schedules a new future import operation, if the block to be imported
 // has not yet been seen.
-// 把导入的新区块放进来
+// 把导入的新区块加入到队列，主要操作queue, queues, queued这3个变量，quque用来保存要插入的区块，
+// 按高度排序，queues记录了在队列中某个peer传来的区块的数量，用来做对抗DoS攻击，queued用来
+// 判断某个区块是否已经在队列，防止2次插入，浪费时间
 func (f *Fetcher) enqueue(peer string, block *types.Block) {
 	hash := block.Hash()
 
@@ -572,8 +574,8 @@ type Fetcher struct {
 
 	// Block cache
 	// queue，优先级队列，高度做优先级
-	// queues，统计peer通告了多少块
-	// queued，代表这个块如队列了，
+	// queues，queued队列中某个peer发来的区块数量
+	// queued，等待插入到区块链的区块，实际插入时从queue取，queued就是用来快速判断区块是否在队列的
 	queue  *prque.Prque            // Queue containing the import operations (block number sorted)
 	queues map[string]int          // Per peer block counts to prevent memory exhaustion
 	queued map[common.Hash]*inject // Set of already queued blocks (to dedupe imports)
