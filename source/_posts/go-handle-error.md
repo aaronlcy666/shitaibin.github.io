@@ -142,10 +142,10 @@ func d(x, y int) (int, error) {
 	}
 	return x / y, nil
 }
-
+```
 
 输出结果：
-```go
+```
 2018/10/24 17:29:35 got error:  error in a
 ```
 
