@@ -56,7 +56,7 @@ for x := range ch{
 ## 2. 使用`_,ok`判断channel是否关闭
 
 - 场景：读channel，但不确定channel是否关闭时
-- 原理：读已关闭的channel会造成panic，如果不确定channel，需要使用`ok`进行检测。ok的结果和含义：
+- 原理：读已关闭的channel会读到零值，如果不确定channel，需要使用`ok`进行检测。ok的结果和含义：
     - `true`：读到数据，并且通道没有关闭。
     - `false`：通道关闭，无数据读到。
 - 用法：
