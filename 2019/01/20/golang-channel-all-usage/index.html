@@ -114,7 +114,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-op_on_channel.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-01-20T11:53:09.658Z">
+<meta property="og:updated_time" content="2019-02-01T07:25:34.034Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="总结了才知道，原来channel有这么多用法！">
 <meta name="twitter:description" content="这篇文章总结了channel的10种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。 在介绍10种操作前，先简要介绍下channel的使用场景、基本操作和注意事项。 channel的使用场景把channel用在数据流动的地方：  消息传递、消息过滤 信号广播 事件订阅与广播 请求、响应转发 任务分发 结果汇总 并发控制 同步与异步 …  channel的基本">
@@ -424,12 +424,24 @@
                 
               
 
-              <time title="创建时间：2019-01-20 19:44:28 / 修改时间：19:53:09" itemprop="dateCreated datePublished" datetime="2019-01-20T19:44:28+08:00">2019-01-20</time>
+              <time title="创建时间：2019-01-20 19:44:28" itemprop="dateCreated datePublished" datetime="2019-01-20T19:44:28+08:00">2019-01-20</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-02-01 15:25:34" itemprop="dateModified" datetime="2019-02-01T15:25:34+08:00">2019-02-01</time>
               
             
           </span>
@@ -519,7 +531,7 @@
 </ul>
 <h2><span id="2-使用_ok判断channel是否关闭">2. 使用<code>_,ok</code>判断channel是否关闭</span></h2><ul>
 <li>场景：读channel，但不确定channel是否关闭时</li>
-<li>原理：读已关闭的channel会造成panic，如果不确定channel，需要使用<code>ok</code>进行检测。ok的结果和含义：<ul>
+<li>原理：读已关闭的channel会读到零值，如果不确定channel，需要使用<code>ok</code>进行检测。ok的结果和含义：<ul>
 <li><code>true</code>：读到数据，并且通道没有关闭。</li>
 <li><code>false</code>：通道关闭，无数据读到。</li>
 </ul>
@@ -722,7 +734,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">64</span>
+                    <span class="site-state-item-count">66</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -847,7 +859,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">55</span>
+                      
+                    
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
