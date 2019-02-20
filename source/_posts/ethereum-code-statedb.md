@@ -1,7 +1,7 @@
 ---
 title: 以太坊源码分析：statedb
 date: 2018-06-22 18:10:54
-tags: ['以太坊']
+tags: ['以太坊', '区块链']
 toc: false
 ---
 
