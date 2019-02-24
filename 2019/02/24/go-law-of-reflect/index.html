@@ -104,18 +104,18 @@
 
 
 
-  <meta name="description" content="各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。 这篇文章主要介绍反射和接口的关系，解释内在的关系和原理，更适合做reflect的入门文章，而不像大多教程\书籍中对反射的介绍：直接介绍reflect.Type(), reflect.Value()">
+  <meta name="description" content="各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。 这篇文章主要介绍反射和接口的关系，解释内在的关系和原理。 反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。 类型反射构建在类型系统之上，Go是静态类型语言，每一个变">
 <meta name="keywords" content="Golang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go高级实践：反射3定律">
 <meta property="og:url" content="http://lessisbetter.site/2019/02/24/go-law-of-reflect/index.html">
 <meta property="og:site_name" content="LIB">
-<meta property="og:description" content="各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。 这篇文章主要介绍反射和接口的关系，解释内在的关系和原理，更适合做reflect的入门文章，而不像大多教程\书籍中对反射的介绍：直接介绍reflect.Type(), reflect.Value()">
+<meta property="og:description" content="各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。 这篇文章主要介绍反射和接口的关系，解释内在的关系和原理。 反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。 类型反射构建在类型系统之上，Go是静态类型语言，每一个变">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-02-24T10:29:41.095Z">
+<meta property="og:updated_time" content="2019-02-24T10:39:35.843Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go高级实践：反射3定律">
-<meta name="twitter:description" content="各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。 这篇文章主要介绍反射和接口的关系，解释内在的关系和原理，更适合做reflect的入门文章，而不像大多教程\书籍中对反射的介绍：直接介绍reflect.Type(), reflect.Value()">
+<meta name="twitter:description" content="各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。 这篇文章主要介绍反射和接口的关系，解释内在的关系和原理。 反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。 类型反射构建在类型系统之上，Go是静态类型语言，每一个变">
 
 
 
@@ -421,7 +421,7 @@
                 
               
 
-              <time title="创建时间：2019-02-24 18:28:52 / 修改时间：18:29:41" itemprop="dateCreated datePublished" datetime="2019-02-24T18:28:52+08:00">2019-02-24</time>
+              <time title="创建时间：2019-02-24 18:28:52 / 修改时间：18:39:35" itemprop="dateCreated datePublished" datetime="2019-02-24T18:28:52+08:00">2019-02-24</time>
             
 
             
@@ -479,7 +479,7 @@
       
         <p>各位学习Go语言的朋友，周末好，这次跟大家聊一聊Go语言的一个高级话题：反射。</p>
 <p>这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。</p>
-<p><strong>这篇文章主要介绍反射和接口的关系，解释内在的关系和原理，更适合做reflect的入门文章</strong>，而不像大多教程\书籍中对反射的介绍：直接介绍reflect.Type(), reflect.Value()的使用。</p>
+<p><strong>这篇文章主要介绍反射和接口的关系，解释内在的关系和原理</strong>。</p>
 <p>反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。</p>
 <h2><span id="类型">类型</span></h2><p>反射构建在类型系统之上，Go是静态类型语言，每一个变量都有<strong>静态类型</strong>，在编译时就确定下来了。</p>
 <p>比如：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> j MyInt</span><br></pre></td></tr></table></figure></p>
