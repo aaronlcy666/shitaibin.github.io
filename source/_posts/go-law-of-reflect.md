@@ -10,7 +10,7 @@ tags: ['Golang']
 
 这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。
 
-**这篇文章主要介绍反射和接口的关系，解释内在的关系和原理，更适合做reflect的入门文章**，而不像大多教程\书籍中对反射的介绍：直接介绍reflect.Type(), reflect.Value()的使用。
+**这篇文章主要介绍反射和接口的关系，解释内在的关系和原理**。
 
 反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。
 
@@ -154,4 +154,4 @@ fmt.Println("setable:", v2.CanSet())
 
 
 ## 参考资料
-1. https://blog.golang.org/laws-of-reflection
+1. [https://blog.golang.org/laws-of-reflection](https://blog.golang.org/laws-of-reflection)
