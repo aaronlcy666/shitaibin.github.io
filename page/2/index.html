@@ -378,6 +378,211 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="技术与人生 | 区块链架构师">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LIB">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/12/20/golang-simple-goroutine-pool/" class="post-title-link" itemprop="url">Golang并发模型：轻松入门协程池</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-20 12:54:28" itemprop="dateCreated datePublished" datetime="2018-12-20T12:54:28+08:00">2018-12-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-07 14:45:43" itemprop="dateModified" datetime="2019-01-07T14:45:43+08:00">2019-01-07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/12/20/golang-simple-goroutine-pool/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2018/12/20/golang-simple-goroutine-pool/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>goroutine是非常轻量的，不会暂用太多资源，基本上有多少任务，我们可以开多少goroutine去处理。但有时候，我们还是想控制一下。</p>
+<p>比如，我们有A、B两类工作，不想把太多资源花费在B类务上，而是花在A类任务上。对于A，我们可以来1个开一个goroutine去处理，对于B，我们可以使用一个协程池，协程池里有5个线程去处理B类任务，这样B消耗的资源就不会太多。</p>
+<p>控制使用资源并不是协程池目的，<strong>使用协程池是为了更好并发、程序鲁棒性、容错性等</strong>。废话少说，快速入门协程池才是这篇文章的目的。</p>
+<p><strong>协程池指的是预先分配固定数量的goroutine处理相同的任务</strong>，和线程池是类似的，不同点是协程池中处理任务的是协程，线程池中处理任务的是线程。</p>
+<h3><span id="最简单的协程池模型">最简单的协程池模型</span></h3><p><img src="http://cnd.lessisbetter.site/2018-12-simple-goroutine-pool.png" alt="简单协程池模型"></p>
+<p>上面这个图展示了最简单的协程池的样子。先<strong>把协程池作为一个整体看，它使用2个通道，左边的<code>jobCh</code>是任务通道，任务会从这个通道中流进来，右边的<code>retCh</code>是结果通道，协程池处理任务后得到的结果会写入这个通道</strong>。至于协程池中，有多少协程处理任务，这是外部不关心的。</p>
+<p>看一下协程池内部，图中画了5个goroutine，实际goroutine的数量是依具体情况而定的。<strong>协程池内每个协程都从<code>jobCh</code>读任务、处理任务，然后将结果写入到<code>retCh</code>。</strong></p>
+<h3><span id="示例">示例</span></h3><p>模型看懂了，看个小例子吧。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">workerPool</span><span class="params">(n <span class="keyword">int</span>, jobCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, retCh <span class="keyword">chan</span>&lt;- <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; n; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> worker(i, jobCh, retCh)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">worker</span><span class="params">(id <span class="keyword">int</span>, jobCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>, retCh <span class="keyword">chan</span>&lt;- <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	cnt := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> job := <span class="keyword">range</span> jobCh &#123;</span><br><span class="line">		cnt++</span><br><span class="line">		ret := fmt.Sprintf(<span class="string">"worker %d processed job: %d, it's the %dth processed by me."</span>, id, job, cnt)</span><br><span class="line">		retCh &lt;- ret</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>workerPool()</code>会创建1个简单的协程池，协程的数量可以通入参数<code>n</code>执行，并且还指定了<code>jobCh</code>和<code>retCh</code>两个参数。</p>
+<p><code>worker()</code>是协程池中的协程，入参分布是它的ID、job通道和结果通道。使用<code>for-range</code>从<code>jobCh</code>读取任务，直到<code>jobCh</code>关闭，然后一个最简单的任务：生成1个字符串，证明自己处理了某个任务，并把字符串作为结果写入<code>retCh</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	jobCh := genJob(<span class="number">10000</span>)</span><br><span class="line">	retCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>, <span class="number">10000</span>)</span><br><span class="line">	workerPool(<span class="number">5</span>, jobCh, retCh)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	<span class="built_in">close</span>(retCh)</span><br><span class="line">	<span class="keyword">for</span> ret := <span class="keyword">range</span> retCh &#123;</span><br><span class="line">		fmt.Println(ret)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">genJob</span><span class="params">(n <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	jobCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">200</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; n; i++ &#123;</span><br><span class="line">			jobCh &lt;- i</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">close</span>(jobCh)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> jobCh</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>main()</code>启动<code>genJob</code>获取存放任务的通道<code>jobCh</code>，然后创建<code>retCh</code>，它的缓存空间是200，并使用<code>workerPool</code>启动一个有5个协程的协程池。1s之后，关闭<code>retCh</code>，然后开始从<code>retCh</code>中读取协程池处理结果，并打印。</p>
+<p><code>genJob</code>启动一个协程，并生产n个任务，写入到<code>jobCh</code>。</p>
+<p>示例运行结果如下，一共产生了10个任务，显示大部分工作都被<code>worker 2</code>这个协程抢走了，如果我们设置的任务成千上万，协程池长时间处理任务，每个协程处理的工作数量就会均衡很多。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜ go run simple_goroutine_pool.go</span><br><span class="line">worker 2 processed job: 4</span><br><span class="line">worker 2 processed job: 5</span><br><span class="line">worker 2 processed job: 6</span><br><span class="line">worker 2 processed job: 7</span><br><span class="line">worker 2 processed job: 8</span><br><span class="line">worker 2 processed job: 9</span><br><span class="line">worker 0 processed job: 1</span><br><span class="line">worker 3 processed job: 2</span><br><span class="line">worker 4 processed job: 3</span><br><span class="line">worker 1 processed job: 0</span><br></pre></td></tr></table></figure></p>
+<h3><span id="回顾">回顾</span></h3><p>最简单的协程池模型就这么简单，再回头看下协程池及周边由哪些组成：</p>
+<ol>
+<li><strong>协程池内的一定数量的协程。</strong></li>
+<li><strong>任务队列</strong>，即<code>jobCh</code>，存在协程池不能立即处理任务的情况，所以需要队列把任务先暂存。</li>
+<li><strong>结果队列</strong>，即<code>retCh</code>，同上，协程池处理任务的结果，也存在不能被下游立刻提取的情况，要暂时保存。</li>
+</ol>
+<p><strong>协程池最简要（核心）的逻辑是所有协程从任务读取任务，处理后把结果存放到结果队列。</strong></p>
+<h3><span id="示例源码">示例源码</span></h3><p>本文所有示例源码，及历史文章、代码都存储在Github：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/goroutine_pool" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_step_by_step/tree/master/goroutine_pool</a></p>
+<h3><span id="go并发系列文章">Go并发系列文章</span></h3><ol>
+<li><a href="https://mp.weixin.qq.com/s/YB5XZ5NatniHSYBQ3AHONw" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
+<li><a href="https://mp.weixin.qq.com/s/68FGjm7PFN5VbVF0zL-PlQ" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线FAN模式</a></li>
+<li><a href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ" target="_blank" rel="noopener">Golang并发模型：并发协程的优雅退出</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ACh-TGlPo72r4e6pbh52vg" target="_blank" rel="noopener">Golang并发模型：轻松入门select</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ZfBcxvqiyks_s7cAD-zGCw" target="_blank" rel="noopener">Golang并发模型：select进阶</a></li>
+<li><a href="https://mp.weixin.qq.com/s/fINhzg3eNi9YFi5qZ_JzGA" target="_blank" rel="noopener">Golang并发模型：轻松入门协程池</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/12/11/gongzhonghao-articles/">http://lessisbetter.site/2018/12/11/gongzhonghao-articles/</a></li>
+</ol>
+</blockquote>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+
+<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align="center"></p>
+<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/17/golang-selete-advance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1959,183 +2164,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/10/Golang-trap-of-defer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="技术与人生 | 区块链架构师">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LIB">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/11/10/Golang-trap-of-defer/" class="post-title-link" itemprop="url">Golang defer的陷阱</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-11-10 20:23:37" itemprop="dateCreated datePublished" datetime="2018-11-10T20:23:37+08:00">2018-11-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-01-07 14:45:43" itemprop="dateModified" datetime="2019-01-07T14:45:43+08:00">2019-01-07</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/11/10/Golang-trap-of-defer/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2018/11/10/Golang-trap-of-defer/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>你是不是觉得defer很简单、很好用，但也许你掉坑里了都不知道！</p>
-<p>这篇文章不介绍defer的常用功能，而是介绍你在用defer时，也许会踩的坑。</p>
-<p>defer允许我们进行一些函数执行完成后的收尾工作，并且代码更加简洁，例如： </p>
-<ol>
-<li><p>关闭文件流： </p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// open a file</span></span><br><span class="line"><span class="keyword">defer</span> file.Close()</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/11/10/Golang-trap-of-defer/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2183,7 +2211,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">66</span>
+                    <span class="site-state-item-count">67</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
