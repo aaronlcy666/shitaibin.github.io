@@ -155,3 +155,12 @@ fmt.Println("setable:", v2.CanSet())
 
 ## 参考资料
 1. [https://blog.golang.org/laws-of-reflection](https://blog.golang.org/laws-of-reflection)
+
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/02/24/go-law-of-reflect/](http://lessisbetter.site/2019/02/24/go-law-of-reflect/)
+
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
