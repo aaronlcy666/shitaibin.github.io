@@ -154,4 +154,19 @@ govendor“安装”软件包的时候做了啥呢？其实就是把依赖的包
     └── vendor.json
 ```
 
-> 如果这篇文章对你有帮助，请点个赞/喜欢，让我知道我的写作是有价值的，感谢。
+# govendor进阶
+
+## 指定package版本、分支：`@`
+
+```
+govendor fetch path/to/package@version1
+```
+
+## 下载完整的package包：`/^`
+
+govendor默认不下载完整的包，编译过程可能提示某文件不存在，尝试下载完整的package。
+
+```
+govendor fetch path/to/package/^
+```
+

@@ -12,6 +12,7 @@ tags: ['区块链']
 1. [区块链+跨境支付](https://mp.weixin.qq.com/s/J2rpRiaEsl2c0kLWSu4e3Q)
 1. [区块链+供应链金融](https://mp.weixin.qq.com/s/Yhht-PBLxvl9rRu5RiXuqg)
 1. [区块链+信用证](https://mp.weixin.qq.com/s/TGjDimw9BK7f-KfuDZvJqg)
+1. [区块链+福费廷](https://mp.weixin.qq.com/s/BjnNpnzYgd_Kv6nvaElrfg)，福费廷业务历史久远，银行在国际贸易买卖双方的中间，诸多的不透明因素增加银行的风险，国内多家银行使用区块链重塑了福费廷业务，只有当买卖双方都参与进来，才能更好的塑造基于区块链的福费廷业务
 
 
 云象在区块链上的解决方案有：
