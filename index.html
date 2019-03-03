@@ -423,7 +423,7 @@
                 
               
 
-              <time title="创建时间：2019-03-03 15:32:15 / 修改时间：15:42:13" itemprop="dateCreated datePublished" datetime="2019-03-03T15:32:15+08:00">2019-03-03</time>
+              <time title="创建时间：2019-03-03 15:32:15 / 修改时间：16:00:25" itemprop="dateCreated datePublished" datetime="2019-03-03T15:32:15+08:00">2019-03-03</time>
             
 
             
@@ -515,7 +515,7 @@
 </ul>
 <p>PPT在此：<a href="https://speakerdeck.com/kavya719/understanding-channels" target="_blank" rel="noopener">Understanding Channels</a>，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)</p>
 <p>微信二维码跳转：<br><img src="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png" alt=""></p>
-<h3><span id="channel是怎么实现的">channel是怎么实现的？</span></h3><p><a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，实现如此的如此精简，却发挥如此大的作用！！！</p>
+<h3><span id="channel是怎么实现的">channel是怎么实现的？</span></h3><p><a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
 <p>看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。</p>
 <p>另外，推荐一篇在Medium（国外高质量文章社区）上获得500+赞的源码分析文章，非常详细。</p>
 <p>文章链接：<a href="https://codeburst.io/diving-deep-into-the-golang-channels-549fd4ed21a8" target="_blank" rel="noopener">Diving deep into the golang channels</a></p>
@@ -527,15 +527,15 @@
 <li>channel的goroutine安全，是通过mutex实现的。</li>
 <li>channel的FIFO，是通过循环队列实现的。</li>
 <li>channel的通信：在goroutine间传递数据，是通过仅共享hchan+数据拷贝实现的。</li>
-<li>channel的阻塞和唤醒goroutine，是通过goroutine子挂起和对方goroutine唤醒实现的。</li>
+<li>channel的阻塞是通过goroutine自己挂起，唤醒goroutine是通过对方goroutine唤醒实现的。</li>
 </ul>
 <p>channel的其他实现：</p>
 <ul>
 <li>发送goroutine是可以访问接收goroutine的内存空间的，接收goroutine也是可以直接访问发送goroutine的内存空间的，看<code>sendDirect</code>、<code>recvDirect</code>函数。</li>
 <li>无缓冲的channel始终都是直接访问对方goroutine内存的方式，把手伸到别人的内存，把数据放到接收变量的内存，或者从发送goroutine的内存拷贝到自己内存。省掉了对方再加锁获取数据的过程。</li>
-<li>接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的，这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看<code>gopark</code>、<code>goready</code>函数。</li>
+<li>接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的，这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看<code>gopark</code>、<code>goready</code>函数在<code>chan.go</code>中的调用。</li>
 <li>接收goroutine当channel关闭时，读channel会得到0值，并不是channel保存了0值，而是它发现channel关闭了，把接收数据的变量的值设置为0值。</li>
-<li>channel的操作调用，是通过reflect实现的，可以看reflect包的<code>makechan</code>, <code>chansend</code>, <code>chanrecv</code>函数。</li>
+<li>channel的操作/调用，是通过reflect实现的，可以看reflect包的<code>makechan</code>, <code>chansend</code>, <code>chanrecv</code>函数。</li>
 </ul>
 <p>如果阅读<a href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go" target="_blank" rel="noopener">chan_test.go</a>还会学到一些骚操作，比如：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> &lt;-stopCh &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -549,7 +549,7 @@
 <ol>
 <li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
 <li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://img.lessisbetter.site/2019/03/03/golang-channel-design-and-source/" target="_blank" rel="noopener">http://img.lessisbetter.site/2019/03/03/golang-channel-design-and-source/</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/" target="_blank" rel="noopener">http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/</a></li>
 </ol>
 </blockquote>
 <p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
