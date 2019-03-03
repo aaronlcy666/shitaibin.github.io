@@ -64,7 +64,7 @@ PPT在此：[Understanding Channels](https://speakerdeck.com/kavya719/understand
 
 ### channel是怎么实现的？
 
-[chan.go](https://github.com/golang/go/blob/master/src/runtime/chan.go)是channel的主要实现文件，只有700行，十分佩服Go团队，实现如此的如此精简，却发挥如此大的作用！！！
+[chan.go](https://github.com/golang/go/blob/master/src/runtime/chan.go)是channel的主要实现文件，只有700行，十分佩服Go团队，**实现的如此精简，却发挥如此大的作用**！！！
 
 看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。
 
@@ -84,15 +84,15 @@ channel的4个特性的实现：
 - channel的goroutine安全，是通过mutex实现的。
 - channel的FIFO，是通过循环队列实现的。
 - channel的通信：在goroutine间传递数据，是通过仅共享hchan+数据拷贝实现的。
-- channel的阻塞和唤醒goroutine，是通过goroutine子挂起和对方goroutine唤醒实现的。
+- channel的阻塞是通过goroutine自己挂起，唤醒goroutine是通过对方goroutine唤醒实现的。
 
 
 channel的其他实现：
 - 发送goroutine是可以访问接收goroutine的内存空间的，接收goroutine也是可以直接访问发送goroutine的内存空间的，看`sendDirect`、`recvDirect`函数。
 - 无缓冲的channel始终都是直接访问对方goroutine内存的方式，把手伸到别人的内存，把数据放到接收变量的内存，或者从发送goroutine的内存拷贝到自己内存。省掉了对方再加锁获取数据的过程。
-- 接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的，这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看`gopark`、`goready`函数。
+- 接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的，这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看`gopark`、`goready`函数在`chan.go`中的调用。
 - 接收goroutine当channel关闭时，读channel会得到0值，并不是channel保存了0值，而是它发现channel关闭了，把接收数据的变量的值设置为0值。
-- channel的操作调用，是通过reflect实现的，可以看reflect包的`makechan`, `chansend`, `chanrecv`函数。
+- channel的操作/调用，是通过reflect实现的，可以看reflect包的`makechan`, `chansend`, `chanrecv`函数。
 
 
 如果阅读[chan_test.go](https://github.com/golang/go/blob/master/src/runtime/chan_test.go)还会学到一些骚操作，比如：
@@ -121,7 +121,7 @@ if stop := <-stopCh; stop {
 
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
-> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://img.lessisbetter.site/2019/03/03/golang-channel-design-and-source/](http://img.lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/](http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
