@@ -117,6 +117,7 @@ if stop := <-stopCh; stop {
 
 - chan.go：https://github.com/golang/go/blob/master/src/runtime/chan.go
 - chan_test.go：https://github.com/golang/go/blob/master/src/runtime/chan_test.go
+- Understanding channels在Github的备份: https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf
 
 
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
