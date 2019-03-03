@@ -46,7 +46,7 @@ func producer(nums ...int) <-chan int {
 	go func() {
 		defer close(out)
 		for _, n := range nums {
-			out <- i
+			out <- n
 		}
 	}()
 	return out

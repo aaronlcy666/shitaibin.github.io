@@ -24,6 +24,9 @@ tag: ['TODO']
 1. [如何优雅的处理Golang错误](http://lessisbetter.site/2018/10/24/go-handle-error/)
 1. [反射3定律](http://lessisbetter.site/2019/02/24/go-law-of-reflect/)
 
+### 高阶
+1. [深入理解channel：设计+源码](http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
+
 ## 以太坊
 
 ### 共识
@@ -43,3 +46,11 @@ tag: ['TODO']
 ### 框架
 1. [以太坊源码分析之事件框架](http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/)
 
+
+## Linux
+
+1. [查看Linux运行程序的文件路径](http://lessisbetter.site/2019/03/01/linux-location-of-process/)
+
+
+## 书籍
+1. [书籍推荐1](http://lessisbetter.site/2019/02/16/book-recommend-1/)
