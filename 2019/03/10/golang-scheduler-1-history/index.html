@@ -120,7 +120,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-concurrency-parallelism.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-03-10T09:51:13.309Z">
+<meta property="og:updated_time" content="2019-03-10T10:21:00.093Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go语言高阶：调度器系列（1）起源">
 <meta name="twitter:description" content="如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。 如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。 希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它">
@@ -430,7 +430,7 @@
                 
               
 
-              <time title="创建时间：2019-03-10 17:25:57 / 修改时间：17:51:13" itemprop="dateCreated datePublished" datetime="2019-03-10T17:25:57+08:00">2019-03-10</time>
+              <time title="创建时间：2019-03-10 17:25:57 / 修改时间：18:21:00" itemprop="dateCreated datePublished" datetime="2019-03-10T17:25:57+08:00">2019-03-10</time>
             
 
             
@@ -546,7 +546,7 @@
 <li><strong>P</strong>：<strong>Processor，它包含了运行goroutine的资源</strong>，如果线程想运行goroutine，必须先获取P，P中还包含了可运行的G队列。</li>
 <li>work stealing：当M绑定的P没有可运行的G时，它可以从其他运行的M’那里偷取G。</li>
 </ul>
-<p>现在，<strong>调度器中3个重要的缩写你都接触到了，回顾一下</strong>：</p>
+<p>现在，<strong>调度器中3个重要的缩写你都接触到了，所有文章都用这几个缩写，请牢记</strong>：</p>
 <ul>
 <li><strong>G</strong>: goroutine </li>
 <li><strong>M</strong>: 工作线程 </li>
