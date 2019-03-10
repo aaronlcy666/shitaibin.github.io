@@ -187,3 +187,11 @@ M想要执行、放回G都必须访问全局G队列，并且M有多个，即多�
 4. https://golang.org/doc/faq#goroutines
 5. https://golang.org/s/go11sched
 6. https://golang.org/src/runtime/proc.go
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/03/10/golang-scheduler-1-history](http://lessisbetter.site/2019/03/10/golang-scheduler-1-history)
+
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
