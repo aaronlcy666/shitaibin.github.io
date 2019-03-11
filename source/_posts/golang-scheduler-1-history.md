@@ -66,6 +66,8 @@ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上
 
 **用户态线程实际有个名字叫协程（co-routine）**，为了容易区分，我们使用协程指用户态线程，使用线程指内核态线程。
 
+> User-level threads, application-level threads, Green threads都指一样的东西，就是不受OS感知的线程，如果你Google cotouine相关的资料，会看到它指的就是用户态线程，在[green thread的维基百科](https://en.wikipedia.org/wiki/Green_threads)里，看Green thread的实现列表，你会看到好很多cotouine实现，比如Java、Lua、Go、Erlang、Common Lisp、Haskell、Rust、PHP、Stackless Python，所以，我认为用户态线程就是协程。
+
 协程跟线程是有区别的，线程由CPU调度是抢占式的，**协程由用户态调度是协作式的**，一个协程让出CPU后，才执行下一个协程。
 
 协程和线程有3种映射关系：
