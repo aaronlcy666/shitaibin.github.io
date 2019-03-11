@@ -440,7 +440,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-03-11 19:27:59" itemprop="dateModified" datetime="2019-03-11T19:27:59+08:00">2019-03-11</time>
+                <time title="修改时间：2019-03-11 19:41:45" itemprop="dateModified" datetime="2019-03-11T19:41:45+08:00">2019-03-11</time>
               
             
           </span>
@@ -512,7 +512,7 @@
 <p>你可能知道：线程分为内核态线程和用户态线程，用户态线程需要绑定内核态线程，CPU并不能感知用户态线程的存在，它只知道它在运行1个线程，这个线程实际是内核态线程。</p>
 <p><strong>用户态线程实际有个名字叫协程（co-routine）</strong>，为了容易区分，我们使用协程指用户态线程，使用线程指内核态线程。</p>
 <blockquote>
-<p>User-level threads, application-level threads, Green threads都指一样的东西，就是不受OS感知的线程，如果你Google cotouine相关的资料，会看到它指的就是用户态线程，在<a href="https://en.wikipedia.org/wiki/Green_threads" target="_blank" rel="noopener">green thread的维基百科</a>里，看Green thread的实现列表，你会看到好很多cotouine实现，比如Java、Lua、Go、Erlang、Common Lisp、Haskell、Rust、PHP、Stackless Python，所以，我认为用户态线程就是协程。</p>
+<p>User-level threads, Application-level threads, Green threads都指一样的东西，就是不受OS感知的线程，如果你Google coroutine相关的资料，会看到它指的就是用户态线程，在<a href="https://en.wikipedia.org/wiki/Green_threads" target="_blank" rel="noopener">Green threads的维基百科</a>里，看Green threads的实现列表，你会看到好很多coroutine实现，比如Java、Lua、Go、Erlang、Common Lisp、Haskell、Rust、PHP、Stackless Python，所以，我认为用户态线程就是协程。</p>
 </blockquote>
 <p>协程跟线程是有区别的，线程由CPU调度是抢占式的，<strong>协程由用户态调度是协作式的</strong>，一个协程让出CPU后，才执行下一个协程。</p>
 <p>协程和线程有3种映射关系：</p>
