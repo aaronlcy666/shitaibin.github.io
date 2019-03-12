@@ -41,6 +41,7 @@ tags: ['Mac', 'Chrome']
 
 ### 办公
 - Copy Clip2：保存复制文本，对于程序员和文字重度工作者很重要
+- Clipy：同上，但免费
 - 疯狂番茄：番茄工作法，只用来当定时器用，配合Things
 - Things：安排好工作（More Than TODO）
 - iThoughtx：思维导图
@@ -69,3 +70,5 @@ Command + Shift + 4 选取部分屏幕区域，保存图片在桌面
 - Diigo Web Collector：最好用的是给网页加标注，就像用PDF一样，可以从库中查看所有标记。
 - EasyReader：让浏览网页更清晰，对付杂乱的网站很有用。
 - Proxy SwitchyOmega：用Google查资料必备。
+- Sourcegraph：在线浏览代码神器，简直在线版的VS Code
+- 印象笔记插件
