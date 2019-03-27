@@ -115,7 +115,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-go-tool-trace.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-for-print-syscall.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-03-26T14:21:56.174Z">
+<meta property="og:updated_time" content="2019-03-27T05:41:25.144Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go调度器系列（2）宏观看调度器">
 <meta name="twitter:description" content="上一篇文章《Go语言高阶：调度器系列（1）起源》，学goroutine调度器之前的一些背景知识，这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理。 三个角度分别是：  调度器的宏观组成 调度器的生命周期 GMP的可视化感受  在开始前，先回忆下调度器相关的3个缩写：  G: goroutine，每个G都代表1个goroutine">
@@ -425,12 +425,24 @@
                 
               
 
-              <time title="创建时间：2019-03-26 17:29:29 / 修改时间：22:21:56" itemprop="dateCreated datePublished" datetime="2019-03-26T17:29:29+08:00">2019-03-26</time>
+              <time title="创建时间：2019-03-26 17:29:29" itemprop="dateCreated datePublished" datetime="2019-03-26T17:29:29+08:00">2019-03-26</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-27 13:41:25" itemprop="dateModified" datetime="2019-03-27T13:41:25+08:00">2019-03-27</time>
               
             
           </span>
@@ -590,11 +602,11 @@
 </ol>
 <h3><span id="示例代码">示例代码</span></h3><p>本文所有示例代码都在Github，可通过阅读原文访问：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/scheduler" target="_blank" rel="noopener">golang_step_by_step/tree/master/scheduler</a></p>
 <h3><span id="参考资料">参考资料</span></h3><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/28058856" target="_blank" rel="noopener">Go程序的“一生”: https://zhuanlan.zhihu.com/p/28058856</a></li>
-<li><a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/" target="_blank" rel="noopener">也谈goroutine调度器: https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/</a></li>
-<li><a href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs" target="_blank" rel="noopener">Debug trace, 当前调度器设计人Dmitry Vyukov的文章: https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs</a></li>
-<li><a href="https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ" target="_blank" rel="noopener">Go tool trace中文翻译: https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ</a></li>
-<li><a href="https://dave.cheney.net/tag/godebug" target="_blank" rel="noopener">Dave关于GODEBUG的介绍:https://dave.cheney.net/tag/godebug</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/28058856" target="_blank" rel="noopener">Go程序的“一生”</a></li>
+<li><a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/" target="_blank" rel="noopener">也谈goroutine调度器</a></li>
+<li><a href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs" target="_blank" rel="noopener">Debug trace, 当前调度器设计人Dmitry Vyukov的文章</a></li>
+<li><a href="https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ" target="_blank" rel="noopener">Go tool trace中文翻译</a></li>
+<li><a href="https://dave.cheney.net/tag/godebug" target="_blank" rel="noopener">Dave关于GODEBUG的介绍</a></li>
 </ul>
 <blockquote>
 <p>最近的感受是：自己懂是一个层次，能写出来需要抬升一个层次，给他人讲懂又需要抬升一个层次。希望朋友们有所收获。</p>
