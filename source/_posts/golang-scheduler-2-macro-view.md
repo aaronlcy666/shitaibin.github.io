@@ -236,11 +236,11 @@ Hello scheduler
 
 ### 参考资料
 
-- [Go程序的“一生”: https://zhuanlan.zhihu.com/p/28058856](https://zhuanlan.zhihu.com/p/28058856)
-- [也谈goroutine调度器: https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/](https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/)
-- [Debug trace, 当前调度器设计人Dmitry Vyukov的文章: https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs](https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs)
-- [Go tool trace中文翻译: https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ](https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ)
-- [Dave关于GODEBUG的介绍:https://dave.cheney.net/tag/godebug](https://dave.cheney.net/tag/godebug)
+- [Go程序的“一生”](https://zhuanlan.zhihu.com/p/28058856)
+- [也谈goroutine调度器](https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/)
+- [Debug trace, 当前调度器设计人Dmitry Vyukov的文章](https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs)
+- [Go tool trace中文翻译](https://mp.weixin.qq.com/s/nf_-AH_LeBN3913Pt6CzQQ)
+- [Dave关于GODEBUG的介绍](https://dave.cheney.net/tag/godebug)
 
 
 
