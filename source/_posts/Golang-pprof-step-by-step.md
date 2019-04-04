@@ -126,7 +126,7 @@ go tool pprof -pdf ./hi /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile
 
 5步已经结束，你已经学会使用cpu pprof了吗？
 
-# 轻松获取内存ppfo
+# 轻松获取内存pprof
 
 如果你掌握了cpu pprof，mem pprof轻而易举就能拿下，只需要改1行代码：
 
