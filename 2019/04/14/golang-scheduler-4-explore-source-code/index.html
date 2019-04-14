@@ -112,7 +112,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-04-shcedule-flow.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-04-14T07:49:52.044Z">
+<meta property="og:updated_time" content="2019-04-14T07:59:28.875Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go调度器系列（4）源码阅读与探索">
 <meta name="twitter:description" content="各位朋友，这次想跟大家分享一下Go调度器源码阅读相关的知识和经验，网络上已经有很多剖析源码的好文章，所以这篇文章不是又一篇源码剖析文章，注重的不是源码分析分享，而是带给大家一些学习经验，希望大家能更好的阅读和掌握Go调度器的实现。 本文主要分2个部分：  解决如何阅读源码的问题。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。 带给你一个探索Go调度器实现的办法。源">
@@ -422,7 +422,7 @@
                 
               
 
-              <time title="创建时间：2019-04-14 15:38:59 / 修改时间：15:49:52" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
+              <time title="创建时间：2019-04-14 15:38:59 / 修改时间：15:59:28" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
             
 
             
@@ -484,7 +484,7 @@
 <li><strong>解决如何阅读源码的问题</strong>。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。</li>
 <li><strong>带给你一个探索Go调度器实现的办法</strong>。源码都到手了，你可以修改、<strong>窥探</strong>，通过这种方式解决阅读源码过程中的疑问，验证一些想法。比如：负责调度的是g0，怎么才能<code>schedule()</code>在执行时，当前是g0呢？</li>
 </ol>
-<h2><span id="如何阅读源码">如何阅读源码</span></h2><h3><span id="阅读前提">阅读前提</span></h3><p>已经掌握Go调度器的设计和原理。如果你还无法回答以下问题：</p>
+<h2><span id="如何阅读源码">如何阅读源码</span></h2><h3><span id="阅读前提">阅读前提</span></h3><p>阅读Go源码前，最好已经掌握Go调度器的设计和原理，如果你还无法回答以下问题：</p>
 <ol>
 <li>为什么需要Go调度器？</li>
 <li>Go调度器与系统调度器有什么区别和关系/联系？</li>
