@@ -396,7 +396,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/04/14/golang-scheduler-4-explore-source-code/" class="post-title-link" itemprop="url">Go调度器系列（3）图解调度原理</a>
+                <a href="/2019/04/14/golang-scheduler-4-explore-source-code/" class="post-title-link" itemprop="url">Go调度器系列（4）源码阅读与探索</a>
               
             
           </h1>
@@ -421,7 +421,7 @@
                 
               
 
-              <time title="创建时间：2019-04-14 15:38:59 / 修改时间：15:43:37" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
+              <time title="创建时间：2019-04-14 15:38:59 / 修改时间：15:49:52" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
             
 
             
@@ -475,7 +475,7 @@
 <p>本文主要分2个部分：</p>
 <ol>
 <li><strong>解决如何阅读源码的问题</strong>。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。</li>
-<li><strong>带给你一个探索Go调度器实现的办法</strong>。源码都到手了，你可以修改、“<strong>窥探</strong>”，通过这种方式解决阅读源码过程中的疑问，验证一些想法。比如：负责调度的是g0，怎么才能<code>schedule()</code>在执行时，当前是g0呢？</li>
+<li><strong>带给你一个探索Go调度器实现的办法</strong>。源码都到手了，你可以修改、<strong>窥探</strong>，通过这种方式解决阅读源码过程中的疑问，验证一些想法。比如：负责调度的是g0，怎么才能<code>schedule()</code>在执行时，当前是g0呢？</li>
 </ol>
 <h2><span id="如何阅读源码">如何阅读源码</span></h2><h3><span id="阅读前提">阅读前提</span></h3><p>已经掌握Go调度器的设计和原理。如果你还无法回答以下问题：</p>
 <ol>
@@ -509,10 +509,9 @@
 <p><img src="http://img.lessisbetter.site/2019-04-shcedule-flow.png" alt=""></p>
 <h2><span id="如何探索调度器">如何探索调度器</span></h2><p>这部分教你探索Go调度器的源码，验证想法，主要思想就是，下载Go的源码，添加调试打印，编译修改的源文件，生成修改的go，然后使用修改go运行测试代码，观察结果。</p>
 <h3><span id="下载和编译go">下载和编译Go</span></h3><ol>
-<li>Github下载，并且换到go1.11.2分支，本文所有代码修改都基于go1.11.2版本。</li>
-</ol>
+<li><p>Github下载，并且换到go1.11.2分支，本文所有代码修改都基于go1.11.2版本。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ GODIR=<span class="variable">$GOPATH</span>/src/github.com/golang/go</span><br><span class="line">$ mkdir -p <span class="variable">$GODIR</span></span><br><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/..</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/golang/go.git</span><br><span class="line">$ <span class="built_in">cd</span> go</span><br><span class="line">$ git fetch origin go1.11.2</span><br><span class="line">$ git checkout origin/go1.11.2</span><br><span class="line">$ git checkout -b go1.11.2</span><br><span class="line">$ git checkout go1.11.2</span><br></pre></td></tr></table></figure>
-<ol start="2">
+</li>
 <li><p>初次编译，会跑测试，耗时长一点</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/src</span><br><span class="line">$ ./all.bash</span><br></pre></td></tr></table></figure>
 </li>
@@ -520,16 +519,15 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span>  <span class="variable">$GODIR</span>/src</span><br><span class="line">$ time ./make.bash</span><br><span class="line">Building Go cmd/dist using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go toolchain1 using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go bootstrap cmd/go (go_bootstrap) using Go toolchain1.</span><br><span class="line">Building Go toolchain2 using go_bootstrap and Go toolchain1.</span><br><span class="line">Building Go toolchain3 using go_bootstrap and Go toolchain2.</span><br><span class="line">Building packages and commands <span class="keyword">for</span> linux/amd64.</span><br><span class="line">---</span><br><span class="line">Installed Go <span class="keyword">for</span> linux/amd64 <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go</span><br><span class="line">Installed commands <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go/bin</span><br><span class="line"></span><br><span class="line">real	1m11.675s</span><br><span class="line">user	4m4.464s</span><br><span class="line">sys	0m18.312s</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p>编译好的go和gofmt在<code>$GODIR/bin</code>目录。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ll <span class="variable">$GODIR</span>/bin</span><br><span class="line">total 16044</span><br><span class="line">-rwxrwxr-x 1 vnt vnt 13049123 Apr 14 10:53 go</span><br><span class="line">-rwxrwxr-x 1 vnt vnt  3377614 Apr 14 10:53 gofmt</span><br></pre></td></tr></table></figure>
+<p>编译好的go和gofmt在<code>$GODIR/bin</code>目录。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ll <span class="variable">$GODIR</span>/bin</span><br><span class="line">total 16044</span><br><span class="line">-rwxrwxr-x 1 vnt vnt 13049123 Apr 14 10:53 go</span><br><span class="line">-rwxrwxr-x 1 vnt vnt  3377614 Apr 14 10:53 gofmt</span><br></pre></td></tr></table></figure></p>
 <ol start="4">
 <li><p>为了防止我们修改的go和过去安装的go冲突，创建igo软连接，指向修改的go。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p ~/testgo/bin</span><br><span class="line">$ <span class="built_in">cd</span> ~/testgo/bin</span><br><span class="line">$ ln -sf <span class="variable">$GODIR</span>/bin/go igo</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>最后，把<code>~/testgo/bin</code>加入到<code>PATH</code>，就能使用<code>igo</code>来编译代码了，运行下igo，应当获得go1.11.2的版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ igo version</span><br><span class="line">go version go1.11.2 linux/amd64</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ igo version</span><br><span class="line">go version go1.11.2 linux/amd64</span><br></pre></td></tr></table></figure>
 <p>当前，已经掌握编译和使用修改的go的办法，接下来就以1个简单的例子，教大家如何验证想法。</p>
 <h3><span id="验证schedule由g0执行">验证schedule()由g0执行</span></h3><p>阅读源码的文章，你已经知道了g0是负责调度的，并且g0是全局变量，可在runtime包的任何地方直接使用，看到<code>schedule()</code>代码如下（所在文件：<code>$GODIR/src/runtime/proc.go</code>）：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">"schedule: holding locks"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// m已经被某个g锁定，先停止当前m，等待g可运行时，再执行g，并且还得到了g所在的p</span></span><br><span class="line">	<span class="keyword">if</span> _g_.m.lockedg != <span class="number">0</span> &#123;</span><br><span class="line">		stoplockedm()</span><br><span class="line">		execute(_g_.m.lockedg.ptr(), <span class="literal">false</span>) <span class="comment">// Never returns.</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -550,6 +548,14 @@
 <h3><span id="参考资料">参考资料</span></h3><ol>
 <li><a href="https://golang.org/doc/install/source" target="_blank" rel="noopener">Installing Go from source</a></li>
 </ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/</a></li>
+</ol>
+</blockquote>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
 
           
         
