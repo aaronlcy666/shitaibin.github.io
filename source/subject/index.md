@@ -27,6 +27,14 @@ tag: ['TODO']
 ### 高阶
 1. [深入理解channel：设计+源码](http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
 
+### Go调度器
+
+1. [Go调度器系列（1）起源](http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/)
+1. [Go调度器系列（2）宏观看调度器](http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/)
+1. [Go调度器系列（3）图解调度原理](http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/)
+1. [Go调度器系列（4）源码阅读与探索](http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/)
+
+
 ## 以太坊
 
 ### 共识
