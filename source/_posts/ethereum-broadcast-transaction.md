@@ -18,7 +18,7 @@ tags: ['区块链','以太坊']
 2. 节点把收到的交易插入`txpool`。
 3. 可打包（`nonce`值连续）的交易加入`txpool.pending`，不可打包的交易(`nonce`值存在断开)插入到`txpool.queued`。
 4. 交易进入`txpool.pending`后，`txpool`发布`NewTxsEvent`。
-5. `Protocol Manager`收到事件后，将交易加入到连接的peer的交易队列（得缓冲一下，不一定能很快发我，比较连接上有很多类型的数据需要传送）。
+5. `Protocol Manager`收到事件后，`txBroadcastLoop`将交易加入到连接的peer的交易队列（得缓冲一下，不一定能很快发，毕竟连接上有很多类型的数据需要传送）。
 6. 各peer协程从各自的交易队列取交易合成消息，发送给peer。
 7. peer收到交易消息后，加入`txpool`，回到步骤2。
 
