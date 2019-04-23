@@ -1181,12 +1181,24 @@
                 
               
 
-              <time title="创建时间：2019-03-15 21:01:43 / 修改时间：15:18:19" itemprop="dateCreated datePublished" datetime="2019-03-15T21:01:43+08:00">2019-03-15</time>
+              <time title="创建时间：2019-03-15 21:01:43" itemprop="dateCreated datePublished" datetime="2019-03-15T21:01:43+08:00">2019-03-15</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-04-23 10:40:30" itemprop="dateModified" datetime="2019-04-23T10:40:30+08:00">2019-04-23</time>
               
             
           </span>
@@ -1239,7 +1251,7 @@
 <li>节点把收到的交易插入<code>txpool</code>。</li>
 <li>可打包（<code>nonce</code>值连续）的交易加入<code>txpool.pending</code>，不可打包的交易(<code>nonce</code>值存在断开)插入到<code>txpool.queued</code>。</li>
 <li>交易进入<code>txpool.pending</code>后，<code>txpool</code>发布<code>NewTxsEvent</code>。</li>
-<li><code>Protocol Manager</code>收到事件后，将交易加入到连接的peer的交易队列（得缓冲一下，不一定能很快发我，比较连接上有很多类型的数据需要传送）。</li>
+<li><code>Protocol Manager</code>收到事件后，<code>txBroadcastLoop</code>将交易加入到连接的peer的交易队列（得缓冲一下，不一定能很快发，毕竟连接上有很多类型的数据需要传送）。</li>
 <li>各peer协程从各自的交易队列取交易合成消息，发送给peer。</li>
 <li>peer收到交易消息后，加入<code>txpool</code>，回到步骤2。</li>
 </ol>
