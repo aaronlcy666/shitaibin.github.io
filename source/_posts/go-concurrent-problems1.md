@@ -4,6 +4,53 @@ date: 2019-05-03 09:23:17
 tags: ['Go']
 ---
 
+### Once
+
+这个once的实现有没有什么问题？
+
+```go
+type Once struct {
+	m    sync.Mutex
+	done uint32
+}
+
+func (o *Once) Do(f func()) {
+	if o.done == 1 {
+		return
+	}
+
+	o.m.Lock()
+	defer o.m.Unlock()
+	if o.done == 0 {
+		o.done = 1
+		f()
+	}
+}
+```
+
+有。f可能在不同的核上执行执行，造成f被执行多次。当前的并发都是基于多核的，在多核架构上，CPU的L1、L2的缓存是核独有的，L3缓存才是多核共享的，如果核1把某个变量改了，暂时只保存在核1的L1、L2上，核2是看不到，只有当变量写入到L3，被核2看到才能保证数据的一致性。
+
+所以，在核1上`o.done = 1`后，核2看到的`o.done`依然是0，在获取锁之后可能又把f执行了1次。
+
+那有什么办法可以解决CPU之间的数据不一致性？答：原子操作。原子操作在修改变量的值后，会也让其他核立马看到数据的变动。Once.Do的官方实现就使用的原子操作：
+
+```go
+func (o *Once) Do(f func()) {
+	if atomic.LoadUint32(&o.done) == 1 {
+		return
+	}
+	// Slow-path.
+	o.m.Lock()
+	defer o.m.Unlock()
+	if o.done == 0 {
+		defer atomic.StoreUint32(&o.done, 1)
+		f()
+	}
+}
+```
+
+关于缓存，可以看鸟窝的[《cacheline 对 Go 程序的影响》](https://colobu.com/2019/01/24/cacheline-affects-performance-in-go/)和知乎[《细说Cache-L1/L2/L3/TLB》](https://zhuanlan.zhihu.com/p/31875174)。
+
 ### Wait Group
 
 ```go
@@ -449,4 +496,9 @@ type slice struct {
 func append(slice []Type, elems ...Type) []Type
 ```
 
-所以，两个协程同时写，是不安全的，并且大概率可能存在数据丢失，所以结果可能不是2000，。
+所以，两个协程同时写，是不安全的，并且大概率可能存在数据丢失，所以结果可能不是2000。
+
+
+### 源码
+
+[golang_step_by_step](https://github.com/Shitaibin/golang_step_by_step/tree/master/problems)
