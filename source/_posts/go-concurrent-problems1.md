@@ -234,6 +234,8 @@ Cycle 112: 513 MB
 
 `sync.Pool`用来存放经常使用的临时对象，如果每次这些内存被GC回收，会加大GC的压力，Pool的出现就是为**减缓**GC的压力，而不是完全不让GC回收Pool的内存。
 
+关于Pool不可错过Dave在[高性能Go程序的这段介绍](https://dave.cheney.net/high-performance-go-workshop/gopherchina-2019.html#using_sync_pool)。
+
 ### channel 1
 
 ```go
