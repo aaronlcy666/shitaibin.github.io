@@ -199,6 +199,11 @@ func main() {
 }
 ```
 
+
+# 补充
+1. 在Github的讨论：https://github.com/developer-learning/reading-go/issues/371
+2. 跟曹大的讨论：我认为1个P某个时刻上1个G，1个P又1个timerBucket，这就形成了一一对应的关系，认为timerBucket锁没用。曹大最后说到了goroutine栈扩容，如果不加锁，g1运行到操作定时器的某个函数时，比如deltimerLocked，进行了栈扩容，后来其他goroutine g2执行，那岂不是就是多个goroutine访问timerBucket了，g1还没操作完，g2又操作了？然后曹大扔给我了栈扩容文章：https://github.com/go-internals-cn/go-internals/tree/master/chapter1_assembly_primer
+
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
 > 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2018/09/04/explore-golang-timer/](http://lessisbetter.site/2018/09/04/explore-golang-timer/)
