@@ -376,6 +376,196 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/18/linux-simulate-bad-network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="技术与人生 | 区块链架构师">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LIB">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/18/linux-simulate-bad-network/" class="post-title-link" itemprop="url">Linux内网测试环境模拟网络丢包和延时</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-18 15:37:05" itemprop="dateCreated datePublished" datetime="2019-05-18T15:37:05+08:00">2019-05-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-16 15:37:43" itemprop="dateModified" datetime="2019-05-16T15:37:43+08:00">2019-05-16</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/18/linux-simulate-bad-network/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2019/05/18/linux-simulate-bad-network/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>本文源自同事分享，在此基础之上做简要修改而成。</p>
+</blockquote>
+<p>Linux下有2traffic control（简写TC）和netem这2个工具。Netem 是 Linux 2.6 及以上内核版本提供的一个网络模拟功能模块，该功能模块可以用来在性能良好的局域网中，模拟出复杂的互联网传输性能，诸如低带宽、传输延迟、丢包等等情况。使用 Linux 2.6 (或以上) 版本内核的很多发行版 Linux 都开启了该内核功能，比如Fedora、Ubuntu、Redhat、OpenSuse、CentOS、Debian等等。TC可以用来控制 netem 的工作模式，可完成如下功能：（故障模拟） 模拟时延，丢包，重复包，乱序，控制带宽等。</p>
+<p>本文介绍简单的使用方法，更详细的介绍及用法见：<a href="https://wiki.linuxfoundation.org/networking/netem" target="_blank" rel="noopener">wiki:network emulation</a>。</p>
+<h1><span id="tc实现原理">TC实现原理</span></h1><p>TC用于Linux内核的流量控制，主要是通过在输出端口处建立一个队列来实现流量控制。接收包从输入接口（Input Interface）进来后，经过流量限制（Ingress Policing）丢弃不符合规定的数据包，由输入多路分配器（Input De-Multiplexing）进行判断选择：如果接收包的目的是本主机，那么将该包送给上层处理；否则需要进行转发，将接收包交到转发块（Forwarding Block）处理。转发块同时也接收本主机上层（TCP、UDP等）产生的包。转发块通过查看路由表，决定所处理包的下一跳。然后，对包进行排列以便将它们传送到输出接口（Output Interface）。一般我们只能限制网卡发送的数据包，不能限制网卡接收的数据包，所以我们可以通过改变发送次序来控制传输速率。Linux流量控制主要是在输出接口排列时进行处理和实现的。</p>
+<h1><span id="使用方法">使用方法</span></h1><p>以下模拟命令可配合使用，实现即延迟又丢包等情况。</p>
+<h2><span id="模拟延迟传输">模拟延迟传输</span></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem delay 100ms</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为延迟100毫秒发送。<br>更真实的情况下，延迟值不会这么精确，会有一定的波动，我们可以用下面的情况来模拟出带有波动性的延迟值：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem delay 100ms 50ms</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为延迟 100ms ± 50ms （50 ~ 150 ms 之间的任意值）发送。<br>还可以更进一步加强这种波动的随机性：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem delay 100ms 50ms 30%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为 100ms ，同时，大约有 30% 的包会延迟 ± 50ms 发送。
+　　</p>
+<h2><span id="模拟网络丢包">模拟网络丢包</span></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem loss 10%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为随机丢掉 10% 的数据包。<br>也可以设置丢包的成功率：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem loss 10% 30%</span><br></pre></td></tr></table></figure>
+<h2><span id="模拟包重复">模拟包重复</span></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem duplicate 10%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为随机产生 10% 的重复数据包 。</p>
+<h2><span id="模拟包损坏">模拟包损坏</span></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem corrupt 1%</span><br></pre></td></tr></table></figure>
+<h2><span id="模拟包乱序">模拟包乱序</span></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc change dev eth0 root netem delay 10ms reorder 10% 50%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为:有 10% 的数据包（50%相关）会被立即发送，其他的延迟 10 秒。</p>
+<h2><span id="删除设备及显示设置">删除设备及显示设置</span></h2><p>显示配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc sh dev eth0</span><br></pre></td></tr></table></figure>
+<p>删除配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc sh dev eth0</span><br></pre></td></tr></table></figure>
+<h1><span id="参考资料">参考资料</span></h1><p><a href="https://www.cnblogs.com/fsw-blog/p/4788036.html" target="_blank" rel="noopener">Linux网络流量控制工具—Netem</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/03/go-concurrent-problems1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2290,198 +2480,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/04/ssh-problems/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="技术与人生 | 区块链架构师">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LIB">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/04/ssh-problems/" class="post-title-link" itemprop="url">SSH问题记录</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-04 11:07:20" itemprop="dateCreated datePublished" datetime="2019-03-04T11:07:20+08:00">2019-03-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-03-05 13:09:17" itemprop="dateModified" datetime="2019-03-05T13:09:17+08:00">2019-03-05</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/04/ssh-problems/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2019/03/04/ssh-problems/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。</p>
-<h4><span id="连不上1">连不上1</span></h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data /Users/shitaibin/.ssh/config</span><br><span class="line">debug1: Reading configuration data /etc/ssh/ssh_config</span><br><span class="line">debug1: /etc/ssh/ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_rsa type 0</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_rsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_dsa type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_dsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ecdsa type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ed25519 type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ed25519-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_xmss type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &apos;nameXXX&apos;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
-<p>Google一下，</p>
-<ul>
-<li>原因：MTU太大了，造成了丢包。</li>
-<li>方案：把MTU改小，服务器和本机最好都修改，因为无论哪一方的报文再大被丢包都会造成连接失败。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ifconfig eth0 mtu 1200</span><br></pre></td></tr></table></figure>
-<p>或</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; /sys/class/net/eth0/mtu</span><br></pre></td></tr></table></figure>
-<h3><span id="连不上2">连不上2</span></h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-fail1.png" alt=""></p>
-<p>出现: <code>command not found</code>。</p>
-<ul>
-<li>原因：iterm的profile配置中，Command那项只显示一行，把它ctrl-a全部拷贝出来，发现不仅<code>ssh vnt@47..123</code>，后面还多了2行ip，启动的时候把ip当命令发给服务器，导致出现了此错误。</li>
-<li>方案：修改Command只包含ssh命令。</li>
-</ul>
-<h3><span id="连接断开">连接断开</span></h3><p>都是国外服务器，通信延迟有点高，ping一下，延迟都在300ms以上，经常操作着就卡住了，然后一会报错：<code>packet_write_wait:  Broken pipe</code>。</p>
-<ul>
-<li>原因：通信不好造成连接断开。</li>
-<li>方案：加心跳配置。</li>
-</ul>
-<p>服务器端或客户端其中一边加就行了，优先加客户端，因为我Mac经常连各种服务器：</p>
-<p>文件：~/.ssh/config</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ServerAliveInterval 60</span><br></pre></td></tr></table></figure>
-<p>如果服务器被多人连，服务器端也得设置：</p>
-<p>文件： /etc/ssh/sshd_config</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClientAliveInterval 60</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2529,7 +2527,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">79</span>
+                    <span class="site-state-item-count">80</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
