@@ -118,7 +118,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-concurrency-parallelism.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-04-15T02:46:01.168Z">
+<meta property="og:updated_time" content="2019-05-17T15:46:59.834Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go调度器系列（1）起源">
 <meta name="twitter:description" content="如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。 如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。 希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它">
@@ -445,7 +445,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-04-15 10:46:01" itemprop="dateModified" datetime="2019-04-15T10:46:01+08:00">2019-04-15</time>
+                <time title="修改时间：2019-05-17 23:46:59" itemprop="dateModified" datetime="2019-05-17T23:46:59+08:00">2019-05-17</time>
               
             
           </span>
@@ -530,7 +530,7 @@
 <ul>
 <li>N:1，N个协程绑定1个线程，优点就是<strong>协程在用户态线程即完成切换，不会陷入到内核态，这种切换非常的轻量快速</strong>。但也有很大的缺点，1个进程的所有协程都绑定在1个线程上，一是某个程序用不了硬件的多核加速能力，二是一旦某协程阻塞，造成线程阻塞，本进程的其他协程都无法执行了，根本就没有并发的能力了。</li>
 <li>1:1，1个协程绑定1个线程，这种最容易实现。协程的调度都由CPU完成了，不存在N:1缺点，但有一个缺点是协程的创建、删除和切换的代价都由CPU完成，有点略显昂贵了。</li>
-<li>M:N，M个协程绑定1个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂。</li>
+<li>M:N，M个协程绑定N个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂。</li>
 </ul>
 <p>协程是个好东西，不少语言支持了协程，比如：Lua、Erlang、Java（C++即将支持），就算语言不支持，也有库支持协程，比如C语言的coroutine（风云大牛作品）、Kotlin的kotlinx.coroutines、Python的gevent。</p>
 <h3 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h3><p><strong>Go语言的诞生就是为了支持高并发</strong>，有2个支持高并发的模型：CSP和Actor。<a href="https://golang.org/doc/faq" target="_blank" rel="noopener">鉴于Occam和Erlang都选用了CSP</a>(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。</p>
