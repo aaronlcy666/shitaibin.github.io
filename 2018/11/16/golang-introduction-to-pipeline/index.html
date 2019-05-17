@@ -493,10 +493,10 @@
       
         <p>Golang作为一个实用主义的编程语言，非常注重性能，在语言特性上天然支持并发，它有多种并发模型，通过流水线模型系列文章，你会更好的使用Golang并发特性，提高你的程序性能。</p>
 <p>这篇文章主要介绍流水线模型的流水线概念，后面文章介绍流水线模型的FAN-IN和FAN-OUT，最后介绍下如何合理的关闭流水线的协程。</p>
-<h3><span id="golang的并发核心思路">Golang的并发核心思路</span></h3><p>Golang并发核心思路是关注数据流动。数据流动的过程交给channel，数据处理的每个环节都交给goroutine，把这些流程画起来，有始有终形成一条线，那就能构成流水线模型。</p>
+<h3 id="Golang的并发核心思路"><a href="#Golang的并发核心思路" class="headerlink" title="Golang的并发核心思路"></a>Golang的并发核心思路</h3><p>Golang并发核心思路是关注数据流动。数据流动的过程交给channel，数据处理的每个环节都交给goroutine，把这些流程画起来，有始有终形成一条线，那就能构成流水线模型。</p>
 <p>但我们先从简单的入手。</p>
 <a id="more"></a>
-<h3><span id="从一个简单的流水线入手">从一个简单的流水线入手</span></h3><p>流水线并不是什么新奇的概念，它能极大的提高生产效率，在当代社会流水线非常普遍，我们用的几乎任何产品（手机、电脑、汽车、水杯），都是从流水线上生产出来的。以汽车为例，整个汽车流水线要经过几百个组装点，而在某个组装点只组装固定的零部件，然后传递给下一个组装点，最终一台完整的汽车从流水线上生产出来。</p>
+<h3 id="从一个简单的流水线入手"><a href="#从一个简单的流水线入手" class="headerlink" title="从一个简单的流水线入手"></a>从一个简单的流水线入手</h3><p>流水线并不是什么新奇的概念，它能极大的提高生产效率，在当代社会流水线非常普遍，我们用的几乎任何产品（手机、电脑、汽车、水杯），都是从流水线上生产出来的。以汽车为例，整个汽车流水线要经过几百个组装点，而在某个组装点只组装固定的零部件，然后传递给下一个组装点，最终一台完整的汽车从流水线上生产出来。</p>
 <p><img src="http://img.lessisbetter.site/2018-12-car_pipeline.jpeg" alt="car_pipeline.jpeg"></p>
 <p>Golang的并发模型灵感其实都来自我们生活，对软件而言，高的生产效率就是高的性能。</p>
 <p><strong>在Golang中，流水线由多个阶段组成，每个阶段之间通过channel连接，每个节点可以由多个同时运行的goroutine组成。</strong></p>
@@ -520,14 +520,14 @@
 <p>结果：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  awesome git:(master) ✗ go run hi.go</span><br><span class="line">  1  4  9 16</span><br></pre></td></tr></table></figure>
 <p>这是一种原始的流水线模型，这种原始能让我们掌握流水线的思路。</p>
-<h3><span id="流水线的特点">流水线的特点</span></h3><ol>
+<h3 id="流水线的特点"><a href="#流水线的特点" class="headerlink" title="流水线的特点"></a>流水线的特点</h3><ol>
 <li>每个阶段把数据通过channel传递给下一个阶段。</li>
 <li>每个阶段要创建1个goroutine和1个通道，这个goroutine向里面写数据，函数要返回这个通道。</li>
 <li>有1个函数来组织流水线，我们例子中是main函数。</li>
 </ol>
 <p>如果你没了解过流水线，建议自己把以上的程序写一遍，如果遇到问题解决了，那才真正掌握了流水线模型的思路。</p>
-<h3><span id="完整示例代码">完整示例代码</span></h3><p>本文所有代码都在仓库，可查看完整示例代码：<a href="https://github.com/Shitaibin/golang_pipeline_step_by_step" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_pipeline_step_by_step</a></p>
-<h3><span id="并发系列文章推荐">并发系列文章推荐</span></h3><ul>
+<h3 id="完整示例代码"><a href="#完整示例代码" class="headerlink" title="完整示例代码"></a>完整示例代码</h3><p>本文所有代码都在仓库，可查看完整示例代码：<a href="https://github.com/Shitaibin/golang_pipeline_step_by_step" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_pipeline_step_by_step</a></p>
+<h3 id="并发系列文章推荐"><a href="#并发系列文章推荐" class="headerlink" title="并发系列文章推荐"></a>并发系列文章推荐</h3><ul>
 <li><a href="http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/">Golang并发模型：轻松入门流水线模型</a></li>
 <li><a href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">Golang并发模型：轻松入门流水线FAN模式</a></li>
 <li><a href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/">Golang并发模型：并发协程的优雅退出</a></li>
@@ -924,7 +924,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Golang的并发核心思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">从一个简单的流水线入手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">流水线的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">完整示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Golang的并发核心思路"><span class="nav-number">1.</span> <span class="nav-text">Golang的并发核心思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从一个简单的流水线入手"><span class="nav-number">2.</span> <span class="nav-text">从一个简单的流水线入手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流水线的特点"><span class="nav-number">3.</span> <span class="nav-text">流水线的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#完整示例代码"><span class="nav-number">4.</span> <span class="nav-text">完整示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发系列文章推荐"><span class="nav-number">5.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
             
 
           </div>

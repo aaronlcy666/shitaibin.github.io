@@ -484,7 +484,7 @@
         
           
             <p>最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。</p>
-<h4><span id="连不上1">连不上1</span></h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
+<h4 id="连不上1"><a href="#连不上1" class="headerlink" title="连不上1"></a>连不上1</h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data /Users/shitaibin/.ssh/config</span><br><span class="line">debug1: Reading configuration data /etc/ssh/ssh_config</span><br><span class="line">debug1: /etc/ssh/ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_rsa type 0</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_rsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_dsa type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_dsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ecdsa type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ed25519 type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ed25519-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_xmss type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &apos;nameXXX&apos;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
 <p>Google一下，</p>
 <ul>
@@ -494,14 +494,14 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ifconfig eth0 mtu 1200</span><br></pre></td></tr></table></figure>
 <p>或</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; /sys/class/net/eth0/mtu</span><br></pre></td></tr></table></figure>
-<h3><span id="连不上2">连不上2</span></h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
+<h3 id="连不上2"><a href="#连不上2" class="headerlink" title="连不上2"></a>连不上2</h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
 <p><img src="http://img.lessisbetter.site/2019-03-fail1.png" alt=""></p>
 <p>出现: <code>command not found</code>。</p>
 <ul>
 <li>原因：iterm的profile配置中，Command那项只显示一行，把它ctrl-a全部拷贝出来，发现不仅<code>ssh vnt@47..123</code>，后面还多了2行ip，启动的时候把ip当命令发给服务器，导致出现了此错误。</li>
 <li>方案：修改Command只包含ssh命令。</li>
 </ul>
-<h3><span id="连接断开">连接断开</span></h3><p>都是国外服务器，通信延迟有点高，ping一下，延迟都在300ms以上，经常操作着就卡住了，然后一会报错：<code>packet_write_wait:  Broken pipe</code>。</p>
+<h3 id="连接断开"><a href="#连接断开" class="headerlink" title="连接断开"></a>连接断开</h3><p>都是国外服务器，通信延迟有点高，ping一下，延迟都在300ms以上，经常操作着就卡住了，然后一会报错：<code>packet_write_wait:  Broken pipe</code>。</p>
 <ul>
 <li>原因：通信不好造成连接断开。</li>
 <li>方案：加心跳配置。</li>
@@ -670,7 +670,7 @@
 <li>How：channel是如何实现的？</li>
 </ul>
 <p>这篇文章，就来回答这3个问题。</p>
-<h3><span id="channel解决什么问题">channel解决什么问题？</span></h3><p>在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。</p>
+<h3 id="channel解决什么问题？"><a href="#channel解决什么问题？" class="headerlink" title="channel解决什么问题？"></a>channel解决什么问题？</h3><p>在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。</p>
 <p>Golang是Google为了解决高并发搜索而设计的，它们想使用简单的方式，高效解决并发问题，最后做成了，然后又把Golang开源了出来，以及到处推广，所以Golang自从诞生之初，就风风火火。</p>
 <p>从Golang文档中，我们可以知道，为啥Golang设计了channel，以及channel解决了什么问题？</p>
 <p><a href="https://golang.org/doc/#go_concurrency_patterns" target="_blank" rel="noopener">Go Concurrency Patterns:</a></p>
@@ -678,7 +678,7 @@
 <p>Concurrency is the key to designing high performance network services. Go’s concurrency primitives (goroutines and channels) provide a simple and efficient means of expressing concurrent execution. In this talk we see how tricky concurrency problems can be solved gracefully with simple Go code.</p>
 </blockquote>
 <p>Golang使用<code>goroutine</code>和<code>channel</code>简单、高效的解决并发问题，<strong>channel解决的是goroutine之间的通信</strong>。</p>
-<h3><span id="channel是怎么设计的">channel是怎么设计的？</span></h3><p>我们以为channel是一个通道：</p>
+<h3 id="channel是怎么设计的？"><a href="#channel是怎么设计的？" class="headerlink" title="channel是怎么设计的？"></a>channel是怎么设计的？</h3><p>我们以为channel是一个通道：</p>
 <p><img src="http://img.lessisbetter.site/2019-03-pipeline.jpeg" alt=""></p>
 <p>实际上，channel的内在是这样的：</p>
 <p><img src="http://img.lessisbetter.site/2019-03-channel_design.png" alt=""></p>
@@ -705,13 +705,13 @@
 </ul>
 <p>PPT在此：<a href="https://speakerdeck.com/kavya719/understanding-channels" target="_blank" rel="noopener">Understanding Channels</a>，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)</p>
 <p>微信二维码跳转：<br><img src="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png" alt=""></p>
-<h3><span id="channel是怎么实现的">channel是怎么实现的？</span></h3><p><a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
+<h3 id="channel是怎么实现的？"><a href="#channel是怎么实现的？" class="headerlink" title="channel是怎么实现的？"></a>channel是怎么实现的？</h3><p><a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
 <p>看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。</p>
 <p>另外，推荐一篇在Medium（国外高质量文章社区）上获得500+赞的源码分析文章，非常详细。</p>
 <p>文章链接：<a href="https://codeburst.io/diving-deep-into-the-golang-channels-549fd4ed21a8" target="_blank" rel="noopener">Diving deep into the golang channels</a></p>
 <p>微信二维码跳转：</p>
 <p><img src="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png" alt=""></p>
-<h3><span id="我学到了什么">我学到了什么？</span></h3><p>阅读channel源码我学到了一些东西，分享给大家。</p>
+<h3 id="我学到了什么？"><a href="#我学到了什么？" class="headerlink" title="我学到了什么？"></a>我学到了什么？</h3><p>阅读channel源码我学到了一些东西，分享给大家。</p>
 <p>channel的4个特性的实现：</p>
 <ul>
 <li>channel的goroutine安全，是通过mutex实现的。</li>
@@ -731,7 +731,7 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> &lt;-stopCh &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>而不是写成：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> stop := &lt;-stopCh; stop &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>这就是关于channel的设计和实现的分享，希望你通过Kavya的PPT和代码阅读能深入了解channel。</p>
-<h3><span id="链接">链接</span></h3><ul>
+<h3 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h3><ul>
 <li>chan.go：<a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/chan.go</a></li>
 <li>chan_test.go：<a href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/chan_test.go</a></li>
 <li>Understanding channels在Github的备份: <a href="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf" target="_blank" rel="noopener">https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf</a></li>
@@ -898,7 +898,7 @@
             <p>通过ps及top命令查看进程信息时，看不到进程的绝对路径，可以使用：<code>sudo ls -l /proc/PID</code>查看。</p>
 <p>Linux在启动一个进程时，系统会在/proc下创建一个以PID命名的文件夹，在该文件夹下会有该进程的信息，其中包括一个名为exe的文件即记录了绝对路径。</p>
 <p><img src="http://img.lessisbetter.site/2019-03-proc_path.png" alt=""></p>
-<h2><span id="解决的问题">解决的问题</span></h2><p>发现服务器上并没有运行耗CPU的服务，但top查看时，总存在占用CPU 60%的进程，kill一段时间后，又会出现新进程，名字变化而已，并且名字类似系统服务的名字，怀疑是恶意程序（挖矿木马）。</p>
+<h2 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题"></a>解决的问题</h2><p>发现服务器上并没有运行耗CPU的服务，但top查看时，总存在占用CPU 60%的进程，kill一段时间后，又会出现新进程，名字变化而已，并且名字类似系统服务的名字，怀疑是恶意程序（挖矿木马）。</p>
 <p>找到创建该进程的父进程，杀死父进程后，再杀死此恶意程序，最后从磁盘删除。</p>
 <p>在top中，按f选择要显示的列，通过向下箭头找到PPID，按空格选中，按q退出，看到恶意进程的父进程。</p>
 <p><img src="http://img.lessisbetter.site/2019-03-top_f.png" alt=""></p>
@@ -1068,20 +1068,20 @@
         
           
             <p>网络上有很多好的资源，学来用即可。</p>
-<h2><span id="go">Go</span></h2><ol>
+<h2 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h2><ol>
 <li><a href="http://xargin.com/go-timer/" target="_blank" rel="noopener">曹大：Go 系列文章5 : 定时器</a>，相当深刻，学完还讨论了一下</li>
 </ol>
-<h2><span id="git">Git</span></h2><ul>
+<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><ul>
 <li>Commit规范：<a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="noopener">Commit message 和 Change log 编写指南</a></li>
 <li>commit检查工具：<a href="https://github.com/conventional-changelog/commitlint" target="_blank" rel="noopener">commitlint</a></li>
 <li>commit生成relase：<a href="https://github.com/conventional-changelog/conventional-changelog" target="_blank" rel="noopener">conventional-changelog</a></li>
 </ul>
-<h2><span id="分布式一致性">分布式一致性</span></h2><ol>
+<h2 id="分布式一致性"><a href="#分布式一致性" class="headerlink" title="分布式一致性"></a>分布式一致性</h2><ol>
 <li><a href="https://danielw.cn/network-failure-models" target="_blank" rel="noopener">分布式系统中的网络模型和故障模型</a></li>
 <li><a href="https://danielw.cn/history-of-distributed-systems-1" target="_blank" rel="noopener">分布式系统一致性的发展历史 (一)</a></li>
 <li><a href="https://danielw.cn/history-of-distributed-systems-2" target="_blank" rel="noopener">分布式系统一致性的发展历史 (二)</a></li>
 </ol>
-<h2><span id="p2p">P2P</span></h2><ol>
+<h2 id="P2P"><a href="#P2P" class="headerlink" title="P2P"></a>P2P</h2><ol>
 <li><a href="https://colobu.com/2018/03/26/distributed-hash-table/" target="_blank" rel="noopener">DHT 分布式哈希表</a></li>
 </ol>
 
@@ -1251,7 +1251,7 @@
 <p>这篇文章是从我过去的学习笔记修改来的，内容主要来自Go Blog的一篇文章《The law of reflection》。</p>
 <p><strong>这篇文章主要介绍反射和接口的关系，解释内在的关系和原理</strong>。</p>
 <p>反射来自元编程，指通过类型检查变量本身数据结构的方式，只有部分编程语言支持反射。</p>
-<h2><span id="类型">类型</span></h2><p>反射构建在类型系统之上，Go是静态类型语言，每一个变量都有<strong>静态类型</strong>，在编译时就确定下来了。</p>
+<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>反射构建在类型系统之上，Go是静态类型语言，每一个变量都有<strong>静态类型</strong>，在编译时就确定下来了。</p>
 <p>比如：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> j MyInt</span><br></pre></td></tr></table></figure></p>
 <p>i和j的<strong>底层类型</strong>都是<code>int</code>，但i的静态类型是<code>int</code>，j的静态类型是<code>MyInt</code>，这两个是不同类型，是不能直接赋值的，需要类型强制转换。</p>
 <p>接口类型比较特殊，接口类型的变量被多种对象类型赋值，看起来像动态语言的特性，但变量类型始终是接口类型，Go是静态的。举例：</p>
@@ -1260,7 +1260,7 @@
 <blockquote>
 <p>最特别：空接口<code>interface{}</code>的变量可以被任何类型的值赋值，但类型一直都是<code>interface{}</code>。</p>
 </blockquote>
-<h2><span id="接口的表示">接口的表示</span></h2><p>Russ Cox（Go语言创始人）在他的<a href="https://research.swtch.com/2009/12/go-data-structures-interfaces.html" target="_blank" rel="noopener">博客详细介绍了Go语言接口</a>，结论是：</p>
+<h2 id="接口的表示"><a href="#接口的表示" class="headerlink" title="接口的表示"></a>接口的表示</h2><p>Russ Cox（Go语言创始人）在他的<a href="https://research.swtch.com/2009/12/go-data-structures-interfaces.html" target="_blank" rel="noopener">博客详细介绍了Go语言接口</a>，结论是：</p>
 <p>接口类型的变量存储的是<strong>一对数据</strong>：</p>
 <ol>
 <li>变量实际的值</li>
@@ -1270,7 +1270,7 @@
 <p>r是接口类型变量，保存了<strong>值tty和tty的类型</strong><code>*os.File</code>，所以才能使用<strong>类型断言</strong>判断r保存的值的静态类型：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> w io.Writer</span><br><span class="line">w = r.(io.Writer)</span><br></pre></td></tr></table></figure></p>
 <p>虽然r中包含了tty和它的类型，包含了tty的所有函数，但r是接口类型，决定了r只能调用接口<code>io.Reader</code>中包含的函数。</p>
 <p>记住：<strong>接口变量保存的不是接口类型的值，还是英语说起来更方便：Interfaces do not hold interface values.</strong></p>
-<h2><span id="反射的3条定律">反射的3条定律</span></h2><h3><span id="定律1从接口值到反射对象">定律1：从接口值到反射对象</span></h3><p>反射是一种检测存储在接口变量中值和类型的机制。通过<code>reflect</code>包的一些函数，可以把接口转换为反射定义的对象。</p>
+<h2 id="反射的3条定律"><a href="#反射的3条定律" class="headerlink" title="反射的3条定律"></a>反射的3条定律</h2><h3 id="定律1：从接口值到反射对象"><a href="#定律1：从接口值到反射对象" class="headerlink" title="定律1：从接口值到反射对象"></a>定律1：从接口值到反射对象</h3><p>反射是一种检测存储在接口变量中值和类型的机制。通过<code>reflect</code>包的一些函数，可以把接口转换为反射定义的对象。</p>
 <p>掌握<code>reflect</code>包的以下函数：</p>
 <ol>
 <li><code>reflect.ValueOf({}interface) reflect.Value</code>：获取某个变量的值，但值是通过<code>reflect.Value</code>对象描述的。</li>
@@ -1280,10 +1280,10 @@
 </ol>
 <p>再解释下Kind和Type的区别，比如：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> x MyInt = <span class="number">7</span></span><br><span class="line">v := reflect.ValueOf(x)</span><br></pre></td></tr></table></figure></p>
 <p>v.Kind()得到的是Int，而Type得到是<code>MyInt</code>。</p>
-<h3><span id="定律2从反射对象到接口值">定律2：从反射对象到接口值</span></h3><p>定律2是定律1的逆向过程，上面我们学了：<code>普通变量 -&gt; 接口变量 -&gt; 反射对象</code>的过程，这是从<code>反射对象 -&gt; 接口变量</code>的过程，使用的是<code>Value</code>的<code>Interface</code>函数，是把实际的值赋值给空接口变量，它的声明如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Interface</span><span class="params">()</span> <span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br></pre></td></tr></table></figure></p>
+<h3 id="定律2：从反射对象到接口值"><a href="#定律2：从反射对象到接口值" class="headerlink" title="定律2：从反射对象到接口值"></a>定律2：从反射对象到接口值</h3><p>定律2是定律1的逆向过程，上面我们学了：<code>普通变量 -&gt; 接口变量 -&gt; 反射对象</code>的过程，这是从<code>反射对象 -&gt; 接口变量</code>的过程，使用的是<code>Value</code>的<code>Interface</code>函数，是把实际的值赋值给空接口变量，它的声明如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Interface</span><span class="params">()</span> <span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br></pre></td></tr></table></figure></p>
 <p>回忆一下：接口变量存储了实际的值和值的类型，<code>Println</code>可以根据接口变量实际存储的类型自动识别其值并打印。</p>
 <p>注意事项：如果Value是结构体的非导出字段，调用该函数会导致panic。</p>
-<h3><span id="定律3当反射对象所存的值是可设置时反射对象才可修改">定律3：当反射对象所存的值是可设置时，反射对象才可修改</span></h3><p>从定律1入手理解，定律3就不再那么难懂。</p>
+<h3 id="定律3：当反射对象所存的值是可设置时，反射对象才可修改"><a href="#定律3：当反射对象所存的值是可设置时，反射对象才可修改" class="headerlink" title="定律3：当反射对象所存的值是可设置时，反射对象才可修改"></a>定律3：当反射对象所存的值是可设置时，反射对象才可修改</h3><p>从定律1入手理解，定律3就不再那么难懂。</p>
 <p>Settability is a property of a reflection Value, and not all reflection Values have it.</p>
 <p>可设置指的是，可以通过Value设置原始变量的值。</p>
 <p>通过函数的例子思考一下可设置：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(x <span class="keyword">int</span>)</span></span></span><br></pre></td></tr></table></figure></p>
@@ -1306,7 +1306,7 @@
 <li>…</li>
 </ul>
 <p><strong>设置函数这么多，到底该选用哪个Set函数？</strong><br>根据<code>Value.Kind()</code>的结果去获得变量的底层类型，然后选用该类别的Set函数。</p>
-<h2><span id="参考资料">参考资料</span></h2><ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
 <li><a href="https://blog.golang.org/laws-of-reflection" target="_blank" rel="noopener">https://blog.golang.org/laws-of-reflection</a></li>
 </ol>
 <blockquote>
@@ -1474,7 +1474,7 @@
 <li>开发人员综合技能书籍</li>
 <li>团队协作书籍</li>
 </ol>
-<h3><span id="go语言技术书籍和资料">Go语言技术书籍和资料</span></h3><p><strong>1.《Effective Go》</strong><br>每一个Golang开发人员都应当把Effective Go多读几篇，它能帮助你理解Go、掌握Go，培养Go思维，用Go的思维去解决问题，而不是利用你已有的编程（C/C++/Java/Python）思维去写Go代码，防止写出蹩脚、笨拙的Go代码。</p>
+<h3 id="Go语言技术书籍和资料"><a href="#Go语言技术书籍和资料" class="headerlink" title="Go语言技术书籍和资料"></a>Go语言技术书籍和资料</h3><p><strong>1.《Effective Go》</strong><br>每一个Golang开发人员都应当把Effective Go多读几篇，它能帮助你理解Go、掌握Go，培养Go思维，用Go的思维去解决问题，而不是利用你已有的编程（C/C++/Java/Python）思维去写Go代码，防止写出蹩脚、笨拙的Go代码。</p>
 <p><img src="http://img.lessisbetter.site/2019-02-Effective-go.png" alt=""></p>
 <p>你可以从这篇文章中理解：</p>
 <ul>
@@ -1490,11 +1490,11 @@
 <p><strong>3. Google</strong></p>
 <p>Google即不是书籍也不是资料，但是在查找Golang资料中最有用的工具，并且能找到很好、很有用的Go英文资料。搜索的正确姿势是：“golang topic”，优先看Golang官方（<code>*.golang.org</code>）的资料。比如我要学习reflect相关的知识，我会先看Golang博客的文章：</p>
 <p><img src="http://img.lessisbetter.site/2019-02-google-go.png" alt=""></p>
-<h3><span id="综合技能">综合技能</span></h3><p><strong>1.《软技能 代码之外的生存指南》</strong><br><img src="http://img.lessisbetter.site/2019-02-soft-skill.png" alt=""></p>
+<h3 id="综合技能"><a href="#综合技能" class="headerlink" title="综合技能"></a>综合技能</h3><p><strong>1.《软技能 代码之外的生存指南》</strong><br><img src="http://img.lessisbetter.site/2019-02-soft-skill.png" alt=""></p>
 <p><strong>技术之外必读的一本书</strong>，在理财文章推荐提到的，我们作为一个人，需要注重的是全面的发展，不能只关注技术能力的建设。《软技能》从职业篇、自我营销篇、学习篇、生产力篇、理财篇、健身篇、精神篇等7个方面，介绍软件行业从业人员所需的代码之外的技能，以及如何培养。</p>
 <p><strong>2.《高效能人士的7个习惯》</strong><br><img src="http://img.lessisbetter.site/2019-02-7-habits.png" alt=""></p>
 <p>如果你想在职业发展走的顺利，你必须注重工作效率。这本书的帮助其实不仅仅是工作，而是个人的方方面面都可以得到效率的提升。</p>
-<h3><span id="团队协作书籍">团队协作书籍</span></h3><p>除了个人开发者除外，我们大多数技术人都在团队之中，团队合作和生产效率是至关重要的话题。</p>
+<h3 id="团队协作书籍"><a href="#团队协作书籍" class="headerlink" title="团队协作书籍"></a>团队协作书籍</h3><p>除了个人开发者除外，我们大多数技术人都在团队之中，团队合作和生产效率是至关重要的话题。</p>
 <p>很多公司的研发流程都采用敏捷，尤其是科技巨头，如果你们已经采用了敏捷，或者即将采用敏捷，我建议好好读下下面这2本书。对于团队，带来的不仅仅是团队效率的提升，还有更高的软件质量、更高的生产力等等，对于个人，你的综合能力能不断提升，在团队中出类拔萃。</p>
 <p><strong>《学习敏捷 构建高效团队》</strong><br><img src="http://img.lessisbetter.site/2019-02-learn-agile.png" alt=""></p>
 <p>非常好的敏捷入门书籍，带你理解敏捷思维和实践，以及介绍多种敏捷方法，比如Scrum、XP（极限编程）、看板、精益，这些思维，绝对能帮助你成为更出色的工程师，为你如何搭建一支高效的研发团队提供一些思路。</p>
@@ -1831,24 +1831,24 @@
 <p>后面可能分享理财和读书等方面的思考，因为技术人，首先是一个人，那必然就有生活，生活就需要money，你不理财，最后只能一穷二白，辛辛苦苦一年的劳动，可能所剩无几，甚至负数了，几年后别人过着舒服的生活了，而你还在苦逼的挤公交、地铁。</p>
 <p>读书是获取知识最廉价的方式，知识改变命运不是闹着玩的，读大学没用这些言论是扯淡的，你看那些CEO、CTO，或者你身边的非常牛的人，哪个不读书？如果你不喜欢读书，大概是心里没有目标，没有找到自己喜欢的书。</p>
 <p>预告到此打住，如果希望读到理财和读书的文章的话，在春节期间，记得关注文章推送，不妨<strong>给一起学Golang加星标</strong>。</p>
-<h2><span id="技术人有哪些角色岗位">技术人有哪些角色/岗位？</span></h2><p>技术人常说自己是靠手艺、靠技术吃饭的，最初只是开发/测试/运维工程师，后面一路打怪升级，经历高级、资深工程师到达首席架构师、技术总监、技术VP、CTO，这些顶级的技术角色，哪些才是你的未来？</p>
+<h2 id="技术人有哪些角色-岗位？"><a href="#技术人有哪些角色-岗位？" class="headerlink" title="技术人有哪些角色/岗位？"></a>技术人有哪些角色/岗位？</h2><p>技术人常说自己是靠手艺、靠技术吃饭的，最初只是开发/测试/运维工程师，后面一路打怪升级，经历高级、资深工程师到达首席架构师、技术总监、技术VP、CTO，这些顶级的技术角色，哪些才是你的未来？</p>
 <p>如果你热爱技术，愿意靠技术生活，或者立志使用技术改变世界，你可能就会走到上面列出的技术岗位，<strong>你是否想过你的未来在哪？</strong></p>
 <p>如果你想到了，你是否了解这些不同岗位的区别，以及需要的能力？</p>
-<h2><span id="架构师">架构师</span></h2><p>架构师是一个公司的核心技术人员，是公司技术团队中的<strong>技术佼佼者</strong>，对架构师主要要求是技术能力。</p>
+<h2 id="架构师"><a href="#架构师" class="headerlink" title="架构师"></a>架构师</h2><p>架构师是一个公司的核心技术人员，是公司技术团队中的<strong>技术佼佼者</strong>，对架构师主要要求是技术能力。</p>
 <p>如果你喜欢深入研究技术，架构师就是你很好的目标。</p>
-<h2><span id="首席架构师">首席架构师</span></h2><p>首席架构师应当是<strong>公司技术最牛的人</strong>，但同时是公司所有架构师的管理人，需要有<strong>一定的人员管理能力</strong>，所以首席架构师的主要能力栈是：</p>
+<h2 id="首席架构师"><a href="#首席架构师" class="headerlink" title="首席架构师"></a>首席架构师</h2><p>首席架构师应当是<strong>公司技术最牛的人</strong>，但同时是公司所有架构师的管理人，需要有<strong>一定的人员管理能力</strong>，所以首席架构师的主要能力栈是：</p>
 <ol>
 <li>技术能力</li>
 <li>人员管理能力</li>
 </ol>
 <p>如果你深入研究技术，能用技术解决公司遇到的业务难题，还具备一些人员管理能力，不妨在成为架构师后，将目标再提升1个level，成为公司首席架构师。</p>
-<h2><span id="技术总监">技术总监</span></h2><p>技术总监这个岗位，一般在大、中公司才有，它是<strong>技术和管理能力比较均衡的1个岗位</strong>，技术上不如某些架构师、首席架构师，但管理能力要比架构师高，它的主要能力栈和架构师相同：</p>
+<h2 id="技术总监"><a href="#技术总监" class="headerlink" title="技术总监"></a>技术总监</h2><p>技术总监这个岗位，一般在大、中公司才有，它是<strong>技术和管理能力比较均衡的1个岗位</strong>，技术上不如某些架构师、首席架构师，但管理能力要比架构师高，它的主要能力栈和架构师相同：</p>
 <ol>
 <li>技术能力</li>
 <li>人员管理能力 </li>
 </ol>
 <p>如果在技术圈摸爬滚打了一段时间，发现自己擅长沟通、上下级管理、员工心理、决策能力强，也许你的目标可以设定为技术经理或技术总监。</p>
-<h2><span id="技术vp">技术VP</span></h2><p>技术VP（副总裁）更是公司规模比较大时才有的技术岗位，技术VP是<strong>CTO的副手</strong>，公司只有1个CTO，但通常有多个技术VP，负责公司不同业务的技术，技术VP管着多个技术总监。技术VP也是技术出身，但比技术总监高一个level，除了技术能力和人员管理能力外，还要求技术VP有很强的体系搭建能力，体系搭建是一个很复杂的能力，总结来讲就是要管事的能力，比如要管理研发质量、进度、节奏、人员等等。</p>
+<h2 id="技术VP"><a href="#技术VP" class="headerlink" title="技术VP"></a>技术VP</h2><p>技术VP（副总裁）更是公司规模比较大时才有的技术岗位，技术VP是<strong>CTO的副手</strong>，公司只有1个CTO，但通常有多个技术VP，负责公司不同业务的技术，技术VP管着多个技术总监。技术VP也是技术出身，但比技术总监高一个level，除了技术能力和人员管理能力外，还要求技术VP有很强的体系搭建能力，体系搭建是一个很复杂的能力，总结来讲就是要管事的能力，比如要管理研发质量、进度、节奏、人员等等。</p>
 <p>技术总监的主要能力栈：</p>
 <ol>
 <li>技术能力</li>
@@ -1856,7 +1856,7 @@
 <li>体系搭建能力</li>
 </ol>
 <p>如果你发现自己技术够牛，也能带人，还能管事，技术VP绝对会是一个非常好的目标，但是你估计头都大了，怎么要管这么多🙂。</p>
-<h2><span id="cto">CTO</span></h2><p>只要带O的都很了不起，想想CEO、COO、CFO等等，<strong>CTO是一个公司的直接技术负责人</strong>，出了问题CEO可是要拿CTO是问的，而不是那群技术VP，CTO要和各种O沟通，要让整个技术团队，用技术把产品做出来，跟上业务的脚步。</p>
+<h2 id="CTO"><a href="#CTO" class="headerlink" title="CTO"></a>CTO</h2><p>只要带O的都很了不起，想想CEO、COO、CFO等等，<strong>CTO是一个公司的直接技术负责人</strong>，出了问题CEO可是要拿CTO是问的，而不是那群技术VP，CTO要和各种O沟通，要让整个技术团队，用技术把产品做出来，跟上业务的脚步。</p>
 <p>CTO是个多面手，他的主要能力栈：</p>
 <ol>
 <li>很强的技术能力，尤其在创业早起，必须撸起袖子带所有人一起干，但是CTO的技术不能是最牛的，公司稳定后，他需要分配更多的精力负责技术团队的各项事务，如果CTO技术是最牛的，他必然是整个技术团队的瓶颈。</li>
@@ -1869,7 +1869,7 @@
 <p>关于领导力，我根据郭炜的描述，做了一个导图，把一个大的、复杂的能力拆解，感觉目标就清晰了。</p>
 <p><img src="http://img.lessisbetter.site/2019-01-leadership.png" alt=""><br><em>根据领导力300讲文章《技术领导力就是“成事”的能力》制作</em></p>
 <p>也许我上面的文章不一定准确，甚至有些地方不一定对，但这不重要，重要的是你如果还没有职业目标和职业规划，反思一下你是否喜欢技术，是否希望在技术上长期发展？如果答案是肯定的，你应当<strong>为自己负责</strong>，设定一个目标和一个实现目标的计划。</p>
-<h2><span id="附录">附录</span></h2><p><strong>如何找到自己的兴趣和能力</strong></p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><strong>如何找到自己的兴趣和能力</strong></p>
 <p>兴趣、能力和我们的职业目标有什么关系？关系大了去了。你不喜欢coding，就写不出高质量的代码，你不喜欢钻研技术，就成不了架构师，你不喜欢业务，就无法成为技术管理者，你不喜欢“事多”就成不了技术VP、CTO。</p>
 <p><strong>基于自己的兴趣和能力，设定最适合自己的目标，这样才能让目标实现</strong>。</p>
 <p>But很多人都有一个特（问）点（题），不了解自己。你问他“你喜欢做什么？”，通常哑口无言，啥也说出来。那我教你，如何发现自己的兴趣或者能力。</p>
@@ -1883,7 +1883,7 @@
 <p>如果第4个还没有答案，我建议你给自己一段时间，了解自己，从今天开始写<strong>成功日记</strong>，每天写一个，记录自己今天做的好的事情，不论工作还是生活。</p>
 <p>每月回顾过去的成功日记，其中写的最多的就是你的<strong>特长</strong>，也许你一两个月就发现自己擅长的事情，也许要半年，也许要1年，但终究你能发现自己的能力，那时你会更加自信。</p>
 <p><strong>文章不精，希望你有所收获。</strong></p>
-<h2><span id="写在最后">写在最后</span></h2><p>其实，我对自己的了解还不够深入，这是我必须坦诚的。但我们对自己的了解程度，和对世界的认知，这种“内在”的认知，会通过我们日常的行为<strong>映射</strong>出来，体现在我们的待人接物，同样也会决定着我们人生的高度、工作的高度。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>其实，我对自己的了解还不够深入，这是我必须坦诚的。但我们对自己的了解程度，和对世界的认知，这种“内在”的认知，会通过我们日常的行为<strong>映射</strong>出来，体现在我们的待人接物，同样也会决定着我们人生的高度、工作的高度。</p>
 <p>想让自己的思想和视野站上一个更高的高度，我购买了极客时间《技术领导力300讲》这个课程，听、读了很多CEO、CTO等的观点后，想输出下，这篇文章的主要内容是我读郭炜的《你的能力模型决定你的职位》这篇文章“贩卖”出来的，不如原文好，为了避免广告嫌疑，我不在此放分享链接了。<strong>真心想读</strong>的朋友，可以后台私信，我发给你。极客时间分享的文章最多能被10个人阅读，所以只发给前10个留言的朋友。</p>
 <blockquote>
 <ol>
@@ -2239,13 +2239,13 @@
         
           
             <p>区块链诞生之初就和金融有着某种“天然”的联系，今天就聊一下区块链的一个应用场景：区块链在资产证券化中的利用。</p>
-<h1><span id="什么是资产证券化">什么是资产证券化？</span></h1><blockquote>
+<h1 id="什么是资产证券化？"><a href="#什么是资产证券化？" class="headerlink" title="什么是资产证券化？"></a>什么是资产证券化？</h1><blockquote>
 <p>资产证券化是指以基础资产未来所产生的现金流为偿付支持，通过结构化设计进行信用增级，在此基础上发行资产支持证券（Asset-backed Securities, ABS）的过程。</p>
 </blockquote>
 <p>不了解金融的朋友可能对资产证券化不熟悉，甚至根本没听说过。我就用我的粗浅理解为技术朋友介绍下，先看证券，大家多少对股票、债券多少有些了解，它们都属于证券，是证券中的某一个类别。那什么又是资产呢？通俗的来讲能拿来做抵押的就是资产。用大白话讲资产证券化就是：<strong>贷款人把能产生未来现金流的资产转变为证券换取贷款的融资方式</strong>。</p>
-<h1><span id="abs和普通人的关系">ABS和普通人的关系</span></h1><p>18年这么火的P2P你参与了么？这里也有资产证券化，如果你在P2P平台投了钱，你则是投资人，你在P2P平台借了钱，则是债券人。</p>
+<h1 id="ABS和普通人的关系"><a href="#ABS和普通人的关系" class="headerlink" title="ABS和普通人的关系"></a>ABS和普通人的关系</h1><p>18年这么火的P2P你参与了么？这里也有资产证券化，如果你在P2P平台投了钱，你则是投资人，你在P2P平台借了钱，则是债券人。</p>
 <p>还有就是，你租商场的商铺、车位了么？商场把商铺、车位这些作为基础资产，这些资产通过出租等能有稳定的未来收益，然后卖给你，从你手里拿钱，继续去运营，每年给分红，到期买回之类的，虽然没有进行证券化，但总体的原理是一致的，<strong>你清楚里面的流程么？你想想你的身边有没有人买了商铺，最后商场跑路了？</strong>。</p>
-<h1><span id="资产证券化的流程">资产证券化的流程</span></h1><p>我把资产证券化的流程进行了抽象和简化，实际比这复杂的多，整个过程有：</p>
+<h1 id="资产证券化的流程"><a href="#资产证券化的流程" class="headerlink" title="资产证券化的流程"></a>资产证券化的流程</h1><p>我把资产证券化的流程进行了抽象和简化，实际比这复杂的多，整个过程有：</p>
 <ul>
 <li>债权人，拥有基础资产，期望获得资金</li>
 <li>受托人，不一定是银行，比如P2P公司</li>
@@ -2255,7 +2255,7 @@
 <p>一图胜前言，看下图：</p>
 <p><img src="http://img.lessisbetter.site/2019-01-abs.png" alt=""></p>
 <p>债权人把基础资产拿出来，向受托人（机构）证明资产是可以产生未来现金流的，受托人也要辨认这个基础资产到底好不好，然后用你好的基础资产发行证券（债券），把证券卖给投资人，说这个资产很好，贷款企业可以按时产生现金流，非常稳定，吹了不少，然后你感觉不错就投资了，资金进了受托人口袋，然后，受托人把钱再带给债权人，从中赚取利息。</p>
-<h1><span id="资产证券化的问题">资产证券化的问题</span></h1><p>如果投过P2P，相信大家一定不会忘记2018年P2P的炸雷，这其中暗藏着许多风险，根本就不是普通投资者能看到的：</p>
+<h1 id="资产证券化的问题"><a href="#资产证券化的问题" class="headerlink" title="资产证券化的问题"></a>资产证券化的问题</h1><p>如果投过P2P，相信大家一定不会忘记2018年P2P的炸雷，这其中暗藏着许多风险，根本就不是普通投资者能看到的：</p>
 <ol>
 <li>贷款企业信用是否良好？怎么证明？基础资产是否真实？能否产生稳定的现金流？</li>
 <li>担保企业信用等级如何，如果贷款企业不能还款，担保企业能不能还款？</li>
@@ -2270,7 +2270,7 @@
 <li>……</li>
 </ol>
 <p><strong>不易监管，问题积累，增加风险，导致暴雷，所以政府说了，我们要稳金融，稳金融就得控制风险</strong>。</p>
-<h1><span id="资产证券化牵手区块链">资产证券化牵手区块链</span></h1><p>作为一个技术人，我们虽然无力直接参与稳金融，但是，我们可以从技术角度思考下，是不是又解决、优化的办法呢？</p>
+<h1 id="资产证券化牵手区块链"><a href="#资产证券化牵手区块链" class="headerlink" title="资产证券化牵手区块链"></a>资产证券化牵手区块链</h1><p>作为一个技术人，我们虽然无力直接参与稳金融，但是，我们可以从技术角度思考下，是不是又解决、优化的办法呢？</p>
 <p><strong>区块链有去中心化、去信任、不可篡改、可靠的特性，可以解决当前ABS的一些问题</strong>，比如：</p>
 <ol>
 <li>使用区块链放篡改和溯源的能力，解决信任问题、基础资产虚假有效的问题</li>
@@ -2278,12 +2278,12 @@
 <li>区块链的透明对于国家监管也特别有利</li>
 <li>资金流动的地方就有清算，各ABS参与方很容易通过区块链进行清算</li>
 </ol>
-<h1><span id="云象区块链资产证券化解决方案">云象区块链资产证券化解决方案</span></h1><p>云象区块链作为区块链行业的领先者，依托多年的区块链技术积累，推出了<strong>云象区块链ABS解决方案，目标是通过价值互联网盘活基础资产</strong>，基于区块链技术建立标准的数据流转体系、协同方式和披露办法，提高资产端与资金端对接效率，帮助投资者穿透基础资产和回款状态，对盘活基础资产具有十分重要的意义。</p>
+<h1 id="云象区块链资产证券化解决方案"><a href="#云象区块链资产证券化解决方案" class="headerlink" title="云象区块链资产证券化解决方案"></a>云象区块链资产证券化解决方案</h1><p>云象区块链作为区块链行业的领先者，依托多年的区块链技术积累，推出了<strong>云象区块链ABS解决方案，目标是通过价值互联网盘活基础资产</strong>，基于区块链技术建立标准的数据流转体系、协同方式和披露办法，提高资产端与资金端对接效率，帮助投资者穿透基础资产和回款状态，对盘活基础资产具有十分重要的意义。</p>
 <p><a href="https://www.yunphant.com/solution/securitization" target="_blank" rel="noopener">想了解云象区块链ABS解决方案？戳这里！</a></p>
 <blockquote>
 <p>技术人讲业务，难免有不准确的地方，如果不对请重喷！</p>
 </blockquote>
-<h2><span id="扩展阅读">扩展阅读</span></h2><p><a href="https://mp.weixin.qq.com/s/9P3hcbQHdWOnyVgr9VpzMw" target="_blank" rel="noopener">如何用“区块链+稳定币”技术来提升资产证券化市场运作效率</a></p>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p><a href="https://mp.weixin.qq.com/s/9P3hcbQHdWOnyVgr9VpzMw" target="_blank" rel="noopener">如何用“区块链+稳定币”技术来提升资产证券化市场运作效率</a></p>
 
           
         

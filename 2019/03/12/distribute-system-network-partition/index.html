@@ -481,7 +481,7 @@
         <p>分布式系统永远离不开对网络分区的考虑，大名鼎鼎的CAP定理更是指出有P的情况下，只能A和C二选一，虽然CAP的提出人Brewer在2012年又写文章说大家对CAP是有误解的，尤其是三选二，但这不在讨论范围，我们只探究下网络分区。</p>
 <p>下图来自Wiki。</p>
 <p><img src="http://img.lessisbetter.site/2019-03-Network_Partition_for_Optimization-2.png" alt=""></p>
-<h3><span id="定义">定义</span></h3><p>WIKI给的定义是：<strong>网络分区指由于网络设备的failure，造成网络分裂为多个独立的组</strong>。</p>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>WIKI给的定义是：<strong>网络分区指由于网络设备的failure，造成网络分裂为多个独立的组</strong>。</p>
 <p>Gilbert和Lynch在论文中定义分区容忍性的：<strong>网络允许丢失一个节点发给另一个节点的任意多的消息</strong>。</p>
 <p>我认为Gilbert和Lynch给的更有通用意义，因为造成网络分区的不仅仅是网络设备的failure，两个节点无法再交互的时候就形成分区了，分区原因有：</p>
 <ul>
@@ -489,7 +489,7 @@
 <li>节点failure：节点的软件或者硬件坏了，节点成为故障节点。当故障的节点非常多，故障节点和正常节点就不在1个分区，如果正常的节点数量达不到quorum，分布式系统无法正常运作。</li>
 </ul>
 <p>所以我认为网络分区的原因即有Network failure又有Node failure。</p>
-<h3><span id="网络分区和网络模型">网络分区和网络模型</span></h3><p><img src="http://img.lessisbetter.site/2019-03-network-partion-1.jpg" alt=""></p>
+<h3 id="网络分区和网络模型"><a href="#网络分区和网络模型" class="headerlink" title="网络分区和网络模型"></a>网络分区和网络模型</h3><p><img src="http://img.lessisbetter.site/2019-03-network-partion-1.jpg" alt=""></p>
 <p>我们考虑下网络分区的检测。</p>
 <ul>
 <li>同步网络下，橘黄色节点和青色节点间的通信中断，就当网线断裂好了，节点向对方发送的消息如果在超时时间内没有收到响应，就可以认为消息丢失，形成了网络分区。</li>
@@ -874,7 +874,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">网络分区和网络模型</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络分区和网络模型"><span class="nav-number">2.</span> <span class="nav-text">网络分区和网络模型</span></a></li></ol></div>
             
 
           </div>

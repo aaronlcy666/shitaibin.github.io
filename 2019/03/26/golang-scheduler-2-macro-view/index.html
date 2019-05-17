@@ -507,7 +507,7 @@
 <li><strong>P</strong>: 处理器，它包含了运行Go代码的资源。</li>
 </ul>
 <p>3者的简要关系是P拥有G，M必须和一个P关联才能运行P拥有的G。 </p>
-<h3><span id="调度器的功能">调度器的功能</span></h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《Go语言高阶：调度器系列（1）起源》</a>中介绍了协程和线程的关系，协程需要运行在线程之上，线程由CPU进行调度。</p>
+<h3 id="调度器的功能"><a href="#调度器的功能" class="headerlink" title="调度器的功能"></a>调度器的功能</h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">《Go语言高阶：调度器系列（1）起源》</a>中介绍了协程和线程的关系，协程需要运行在线程之上，线程由CPU进行调度。</p>
 <p>在Go中，<strong>线程是运行goroutine的实体，调度器的功能是把可运行的goroutine分配到工作线程上</strong>。</p>
 <p>Go的调度器也是经过了多个版本的开发才是现在这个样子的，</p>
 <ul>
@@ -518,7 +518,7 @@
 <blockquote>
 <p>在<code>$GOROOT/src/runtime/proc.go</code>的开头注释中包含了对Scheduler的重要注释，介绍Scheduler的设计曾拒绝过3种方案以及原因，本文不再介绍了，希望你不要忽略为数不多的官方介绍。</p>
 </blockquote>
-<h3><span id="scheduler的宏观组成">Scheduler的宏观组成</span></h3><p><a href="https://tonybai.com/" target="_blank" rel="noopener">Tony Bai</a>在<a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/" target="_blank" rel="noopener">《也谈goroutine调度器》</a>中的这幅图，展示了goroutine调度器和系统调度器的关系，而不是把二者割裂开来，并且从宏观的角度展示了调度器的重要组成。</p>
+<h3 id="Scheduler的宏观组成"><a href="#Scheduler的宏观组成" class="headerlink" title="Scheduler的宏观组成"></a>Scheduler的宏观组成</h3><p><a href="https://tonybai.com/" target="_blank" rel="noopener">Tony Bai</a>在<a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/" target="_blank" rel="noopener">《也谈goroutine调度器》</a>中的这幅图，展示了goroutine调度器和系统调度器的关系，而不是把二者割裂开来，并且从宏观的角度展示了调度器的重要组成。</p>
 <p><img src="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png" alt=""></p>
 <p>自顶向下是调度器的4个部分：</p>
 <ol>
@@ -528,7 +528,7 @@
 <li><strong>M</strong>：线程想运行任务就得获取P，从P的本地队列获取G，P队列为空时，M也会尝试从全局队列<strong>拿</strong>一批G放到P的本地队列，或从其他P的本地队列<strong>偷</strong>一半放到自己P的本地队列。M运行G，G执行之后，M会从P获取下一个G，不断重复下去。</li>
 </ol>
 <p><strong>Goroutine调度器和OS调度器是通过M结合起来的，每个M都代表了1个内核线程，OS调度器负责把内核线程分配到CPU的核上执行</strong>。</p>
-<h3><span id="调度器的生命周期">调度器的生命周期</span></h3><p>接下来我们从另外一个宏观角度——生命周期，认识调度器。</p>
+<h3 id="调度器的生命周期"><a href="#调度器的生命周期" class="headerlink" title="调度器的生命周期"></a>调度器的生命周期</h3><p>接下来我们从另外一个宏观角度——生命周期，认识调度器。</p>
 <p>所有的Go程序运行都会经过一个完整的调度器生命周期：从创建到结束。</p>
 <p><img src="http://img.lessisbetter.site/2019-03-scheduler-lifetime.png" alt=""></p>
 <p>即使下面这段简单的代码：</p>
@@ -544,7 +544,7 @@
 <li>G退出，再次回到M获取可运行的G，这样重复下去，直到<code>main.main</code>退出，<code>runtime.main</code>执行Defer和Panic处理，或调用<code>runtime.exit</code>退出程序。</li>
 </ol>
 <p>调度器的生命周期几乎占满了一个Go程序的一生，<code>runtime.main</code>的goroutine执行之前都是为调度器做准备工作，<code>runtime.main</code>的goroutine运行，才是调度器的真正开始，直到<code>runtime.main</code>结束而结束。</p>
-<h3><span id="gmp的可视化感受">GMP的可视化感受</span></h3><p>上面的两个宏观角度，都是根据文档、代码整理出来，最后我们从可视化角度感受下调度器，有2种方式。</p>
+<h3 id="GMP的可视化感受"><a href="#GMP的可视化感受" class="headerlink" title="GMP的可视化感受"></a>GMP的可视化感受</h3><p>上面的两个宏观角度，都是根据文档、代码整理出来，最后我们从可视化角度感受下调度器，有2种方式。</p>
 <p><strong>方式1：go tool trace</strong></p>
 <p>trace记录了运行时的信息，能提供可视化的Web页面。</p>
 <p>简单测试代码：main函数创建trace，trace会运行在单独的goroutine中，然后main打印”Hello trace”退出。</p>
@@ -593,15 +593,15 @@
 <li>第3处：代码中使用fmt进行打印，会进行系统调用，P1系统调用的次数很多，说明我们的用例函数基本在P1上运行。</li>
 <li>第4处和第5处：M0上运行了G1，G1的状态为3（系统调用），G进行系统调用时，M会和P解绑，但M会记住之前的P，所以M0仍然记绑定了P1，而P1称未绑定M。</li>
 </ul>
-<h3><span id="总结时刻">总结时刻</span></h3><p>这篇文章，从3个宏观的角度介绍了调度器，也许你依然不知道调度器的原理，心里感觉模模糊糊，没关系，一步一步走，通过这篇文章希望你了解了：</p>
+<h3 id="总结时刻"><a href="#总结时刻" class="headerlink" title="总结时刻"></a>总结时刻</h3><p>这篇文章，从3个宏观的角度介绍了调度器，也许你依然不知道调度器的原理，心里感觉模模糊糊，没关系，一步一步走，通过这篇文章希望你了解了：</p>
 <ol>
 <li>Go调度器和OS调度器的关系</li>
 <li>Go调度器的生命周期/总体流程</li>
 <li>P的数量等于GOMAXPROCS</li>
 <li>M需要通过绑定的P获取G，然后执行G，不断重复这个过程</li>
 </ol>
-<h3><span id="示例代码">示例代码</span></h3><p>本文所有示例代码都在Github，可通过阅读原文访问：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/scheduler" target="_blank" rel="noopener">golang_step_by_step/tree/master/scheduler</a></p>
-<h3><span id="参考资料">参考资料</span></h3><ul>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><p>本文所有示例代码都在Github，可通过阅读原文访问：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/scheduler" target="_blank" rel="noopener">golang_step_by_step/tree/master/scheduler</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
 <li><a href="https://zhuanlan.zhihu.com/p/28058856" target="_blank" rel="noopener">Go程序的“一生”</a></li>
 <li><a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/" target="_blank" rel="noopener">也谈goroutine调度器</a></li>
 <li><a href="https://software.intel.com/en-us/blogs/2014/05/10/debugging-performance-issues-in-go-programs" target="_blank" rel="noopener">Debug trace, 当前调度器设计人Dmitry Vyukov的文章</a></li>
@@ -998,7 +998,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">调度器的功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">Scheduler的宏观组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">调度器的生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">GMP的可视化感受</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">总结时刻</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#调度器的功能"><span class="nav-number">1.</span> <span class="nav-text">调度器的功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scheduler的宏观组成"><span class="nav-number">2.</span> <span class="nav-text">Scheduler的宏观组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调度器的生命周期"><span class="nav-number">3.</span> <span class="nav-text">调度器的生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GMP的可视化感受"><span class="nav-number">4.</span> <span class="nav-text">GMP的可视化感受</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结时刻"><span class="nav-number">5.</span> <span class="nav-text">总结时刻</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码"><span class="nav-number">6.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>

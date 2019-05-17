@@ -510,11 +510,11 @@
 </ol>
 <p>我们来一张稍微详细点的模块交互图，看txpool怎么实现上面4个功能的。</p>
 <p><img src="http://img.lessisbetter.site/2018-txpool-module-interactive.png" alt="txpool模块交互"></p>
-<h3><span id="缓存功能的设计">缓存功能的设计</span></h3><p>txpool中的交易分为queued和pending 2种，其中<strong>queued存放未来的、当前无法执行的交易</strong>。以太坊使用nonce值决定某个账户的交易顺序，多条交易值nonce值必须连续，如果和过去的交易不连续，则无法执行，我们不妨使用nonce值，标记交易的号码，nonce为10的交易，称为第10号交易。举个例子，当前账户的nonce是10，txpool中有该账户的第100号交易，但txpool中没有第11~99号交易，这些交易的缺失，造成第100号交易无法执行，所以第100号交易就是未来的交易、不可执行的交易，存放在queue中。</p>
+<h3 id="缓存功能的设计"><a href="#缓存功能的设计" class="headerlink" title="缓存功能的设计"></a>缓存功能的设计</h3><p>txpool中的交易分为queued和pending 2种，其中<strong>queued存放未来的、当前无法执行的交易</strong>。以太坊使用nonce值决定某个账户的交易顺序，多条交易值nonce值必须连续，如果和过去的交易不连续，则无法执行，我们不妨使用nonce值，标记交易的号码，nonce为10的交易，称为第10号交易。举个例子，当前账户的nonce是10，txpool中有该账户的第100号交易，但txpool中没有第11~99号交易，这些交易的缺失，造成第100号交易无法执行，所以第100号交易就是未来的交易、不可执行的交易，存放在queue中。</p>
 <p><strong>pending存放可执行的交易</strong>。比如我们把上面的11~99号交易补全了，那么11~100号交易都可以进入到pending，因为这些交易都是连续的，都可以打包进区块。</p>
 <p>当节点收到交易（本地节点发起的或peer广播来的）时，会先存放到queued，txpool在某些情况下，把queued中可执行的交易，转移到pending中。</p>
-<h3><span id="为区块打包服务">为区块打包服务</span></h3><p><strong>这是txpool最核心的功能</strong>，worker在打包区块的时候，会获取<strong>所有的pending交易</strong>，但这些交易还存在txpool中，worker只是读取出来，至于txpool何时删除交易，稍后从txpool清理交易的角度单独在看。</p>
-<h3><span id="清理交易">清理交易</span></h3><p>txpool清理交易有以下<strong>几种条件</strong>，符合任意以下1条的，都是<strong>无效交易，会被从pending或者queued中移除</strong>：</p>
+<h3 id="为区块打包服务"><a href="#为区块打包服务" class="headerlink" title="为区块打包服务"></a>为区块打包服务</h3><p><strong>这是txpool最核心的功能</strong>，worker在打包区块的时候，会获取<strong>所有的pending交易</strong>，但这些交易还存在txpool中，worker只是读取出来，至于txpool何时删除交易，稍后从txpool清理交易的角度单独在看。</p>
+<h3 id="清理交易"><a href="#清理交易" class="headerlink" title="清理交易"></a>清理交易</h3><p>txpool清理交易有以下<strong>几种条件</strong>，符合任意以下1条的，都是<strong>无效交易，会被从pending或者queued中移除</strong>：</p>
 <ol>
 <li>交易的nonce值已经低于账户在当前高度上的nonce值，代表交易已过期，交易已经上链就属于这种情况</li>
 <li>交易的GasLimit大于区块的GasLimit，区块容不下交易</li>
@@ -529,7 +529,7 @@
 </li>
 <li>删除停留在queued中超过3小时的交易，3小时这个超时时间是可以通过<code>geth</code>的启动参数调整的。txpool记录了某个账户交易进入pending的时间，如果这个时间超过了3小时，代表该账号的交易迟迟不能被主链打包，既然无法被主链接受，就删除掉在queued中本来就无法执行的交易。</li>
 </ol>
-<h3><span id="惩罚恶意账号">惩罚恶意账号</span></h3><p>这也是txpool很重要的一个属性，可以防止恶意账户以发起大量垃圾交易。防止恶意用户造成：</p>
+<h3 id="惩罚恶意账号"><a href="#惩罚恶意账号" class="headerlink" title="惩罚恶意账号"></a>惩罚恶意账号</h3><p>这也是txpool很重要的一个属性，可以防止恶意账户以发起大量垃圾交易。防止恶意用户造成：</p>
 <ol>
 <li>占用txpool空间</li>
 <li>浪费节点大量内存和CPU</li>
@@ -542,7 +542,7 @@
 </ol>
 <p>该部分功能未抽象成单独的函数，而是在<code>promoteExecutables()</code>中，就是在每次把queued交易转移到pending后执行的。</p>
 <p><strong>本地交易的特权</strong>，txpool虽然对交易有诸多限制，但如果交易是本节点的账号发起的，以上数量限制等都对他无效。所以，如果你用本节点账号不停的发送交易，并不会被认为是攻击者，你用<code>txpool.status</code>命令，可以查看到交易的数量，肯定可以大于4096，我曾达到过60000+。</p>
-<h3><span id="重点关注的源码">重点关注的源码</span></h3><p>txpool的主要设计上面就讲完了，如果你想把txpool的代码阅读一番，我建议你重点关注一下这些函数和变量，按图索骥能就完全掌握txpool的实现。</p>
+<h3 id="重点关注的源码"><a href="#重点关注的源码" class="headerlink" title="重点关注的源码"></a>重点关注的源码</h3><p>txpool的主要设计上面就讲完了，如果你想把txpool的代码阅读一番，我建议你重点关注一下这些函数和变量，按图索骥能就完全掌握txpool的实现。</p>
 <ul>
 <li><code>TxPoolConfig</code>：txpool的配置参数</li>
 <li><code>chainHeadCh</code>：txpool订阅了新区块事件</li>
@@ -945,7 +945,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">缓存功能的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">为区块打包服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">清理交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">惩罚恶意账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">重点关注的源码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存功能的设计"><span class="nav-number">1.</span> <span class="nav-text">缓存功能的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为区块打包服务"><span class="nav-number">2.</span> <span class="nav-text">为区块打包服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理交易"><span class="nav-number">3.</span> <span class="nav-text">清理交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惩罚恶意账号"><span class="nav-number">4.</span> <span class="nav-text">惩罚恶意账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重点关注的源码"><span class="nav-number">5.</span> <span class="nav-text">重点关注的源码</span></a></li></ol></div>
             
 
           </div>

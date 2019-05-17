@@ -512,7 +512,7 @@
 <li>G进行系统调用，如何保证P的其他G’可以被执行，而不是饿死。</li>
 <li>Go调度器的抢占。</li>
 </ol>
-<h3><span id="12场景">12场景</span></h3><blockquote>
+<h3 id="12场景"><a href="#12场景" class="headerlink" title="12场景"></a>12场景</h3><blockquote>
 <p>提示：图在前，场景描述在后。</p>
 </blockquote>
 <p><img src="http://img.lessisbetter.site/2019-04-image-20190331190809649-4030489.png" alt=""></p>
@@ -547,14 +547,14 @@
 <p><strong>场景10</strong>：假定当前除了m3和m4为自旋线程，还有m5和m6为自旋线程，g8创建了g9，g8进行了<strong>阻塞的系统调用</strong>，m2和p2立即解绑，p2会执行以下判断：如果p2本地队列有g、全局队列有g或有空闲的m，p2都会立马唤醒1个m和它绑定，否则p2则会加入到空闲P列表，等待m来获取可用的p。本场景中，p2本地队列有g，可以和其他自旋线程m5绑定。</p>
 <p><strong>场景11</strong>：（无图场景）g8创建了g9，假如g8进行了<strong>非阻塞系统调用</strong>（CGO会是这种方式，见<code>cgocall()</code>），m2和p2会解绑，但m2会记住p，然后g8和m2进入系统调用状态。当g8和m2退出系统调用时，会尝试获取p2，如果无法获取，则获取空闲的p，如果依然没有，g8会被记为可运行状态，并加入到全局队列。</p>
 <p><strong>场景12</strong>：（无图场景）Go调度在go1.12实现了抢占，应该更精确的称为<strong>请求式抢占</strong>，那是因为go调度器的抢占和OS的线程抢占比起来很柔和，不暴力，不会说线程时间片到了，或者更高优先级的任务到了，执行抢占调度。<strong>go的抢占调度柔和到只给goroutine发送1个抢占请求，至于goroutine何时停下来，那就管不到了</strong>。抢占请求需要满足2个条件中的1个：1）G进行系统调用超过20us，2）G运行超过10ms。调度器在启动的时候会启动一个单独的线程sysmon，它负责所有的监控工作，其中1项就是抢占，发现满足抢占条件的G时，就发出抢占请求。</p>
-<h3><span id="场景融合">场景融合</span></h3><p>如果把上面所有的场景都融合起来，就能构成下面这幅图了，它从整体的角度描述了Go调度器各部分的关系。图的上半部分是G的创建、负债均衡和work stealing，下半部分是M不停寻找和执行G的迭代过程。</p>
+<h3 id="场景融合"><a href="#场景融合" class="headerlink" title="场景融合"></a>场景融合</h3><p>如果把上面所有的场景都融合起来，就能构成下面这幅图了，它从整体的角度描述了Go调度器各部分的关系。图的上半部分是G的创建、负债均衡和work stealing，下半部分是M不停寻找和执行G的迭代过程。</p>
 <p>如果你看这幅图还有些似懂非懂，建议赶紧开始看<a href="github.com/qyuhen/book">雨痕大神的Golang源码剖析</a>，章节：并发调度。</p>
 <p><img src="http://img.lessisbetter.site/2019-04-arch.png" alt=""></p>
 <p>总结，Go调度器和OS调度器相比，是相当的轻量与简单了，但它已经足以撑起goroutine的调度工作了，并且让Go具有了原生（强大）并发的能力，这是伟大的。如果你记住的不多，你一定要记住这一点：<strong>Go调度本质是把大量的goroutine分配到少量线程上去执行，并利用多核并行，实现更强大的并发。</strong></p>
-<h3><span id="下集预告">下集预告</span></h3><p>下篇会是源码层面的内容了，关于源码分析的书籍、文章可以先看起来了，先剧透一篇图，希望阅读下篇文章赶紧关注本公众号。</p>
+<h3 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h3><p>下篇会是源码层面的内容了，关于源码分析的书籍、文章可以先看起来了，先剧透一篇图，希望阅读下篇文章赶紧关注本公众号。</p>
 <p><img src="http://img.lessisbetter.site/2019-04-flow.png" alt=""></p>
-<h3><span id="推荐阅读">推荐阅读</span></h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a><br><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></p>
-<h3><span id="参考资料">参考资料</span></h3><p>在学习调度器的时候，看了很多文章，这里列一些重要的：</p>
+<h3 id="推荐阅读"><a href="#推荐阅读" class="headerlink" title="推荐阅读"></a>推荐阅读</h3><p><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a><br><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>在学习调度器的时候，看了很多文章，这里列一些重要的：</p>
 <ol>
 <li><a href="https://morsmachine.dk/go-scheduler" target="_blank" rel="noopener">The Go scheduler</a></li>
 <li><a href="https://rakyll.org/scheduler/" target="_blank" rel="noopener">Go’s work-stealing scheduler</a>，<a href="https://lingchao.xin/post/gos-work-stealing-scheduler.html" target="_blank" rel="noopener">中文翻译版</a></li>
@@ -952,7 +952,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">12场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">场景融合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">下集预告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">推荐阅读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#12场景"><span class="nav-number">1.</span> <span class="nav-text">12场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#场景融合"><span class="nav-number">2.</span> <span class="nav-text">场景融合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下集预告"><span class="nav-number">3.</span> <span class="nav-text">下集预告</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐阅读"><span class="nav-number">4.</span> <span class="nav-text">推荐阅读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>

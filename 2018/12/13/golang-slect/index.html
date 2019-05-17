@@ -497,7 +497,7 @@
 </ol>
 <p>在Golang里，select就是干这个事的：到吃饭了去吃饭，该睡觉了就睡觉，没事干就打豆豆。</p>
 <p>结束发散，我们看下select的功能，以及它能做啥。</p>
-<h3><span id="select功能">select功能</span></h3><p><strong>在多个通道上进行读或写操作，让函数可以处理多个事情，但1次只处理1个。以下特性也都必须熟记于心：</strong></p>
+<h3 id="select功能"><a href="#select功能" class="headerlink" title="select功能"></a>select功能</h3><p><strong>在多个通道上进行读或写操作，让函数可以处理多个事情，但1次只处理1个。以下特性也都必须熟记于心：</strong></p>
 <ol>
 <li>每次执行select，都会只执行其中1个case或者执行default语句。</li>
 <li>当没有case或者default可以执行时，select则阻塞，等待直到有1个case可以执行。</li>
@@ -512,7 +512,7 @@
 <li>有<code>case</code>可以执行，所以<code>default</code>不会执行。</li>
 </ol>
 <p>这个测试的结果是<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go run example.go</span><br><span class="line">Write 1</span><br></pre></td></tr></table></figure></p>
-<h3><span id="用打豆豆实践select">用打豆豆实践select</span></h3><p>来，我们看看select怎么实现打豆豆：<code>eat()</code>函数会启动1个协程，该协程先睡几秒，事件不定，然后喊你吃饭，<code>main()</code>函数中的<code>sleep</code>是个定时器，每3秒喊你吃1次饭，<code>select</code>则处理3种情况：</p>
+<h3 id="用打豆豆实践select"><a href="#用打豆豆实践select" class="headerlink" title="用打豆豆实践select"></a>用打豆豆实践select</h3><p>来，我们看看select怎么实现打豆豆：<code>eat()</code>函数会启动1个协程，该协程先睡几秒，事件不定，然后喊你吃饭，<code>main()</code>函数中的<code>sleep</code>是个定时器，每3秒喊你吃1次饭，<code>select</code>则处理3种情况：</p>
 <ol>
 <li>从<code>eatCh</code>中读到数据，代表有人喊我吃饭，我要吃饭了。</li>
 <li>从<code>sleep.C</code>中读到数据，代表闹钟时间到了，我要睡觉。</li>
@@ -523,8 +523,8 @@
 <p>现在我们不打豆豆了，你把<code>default</code>和下面的打印注释掉，多运行几次，有时候会吃饭，有时候会睡觉，比如这样：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Mom call you eating</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br></pre></td></tr></table></figure></p>
 <p><strong>select很简单但功能很强大，它让golang的并发功能变的更强大。这篇文章写的啰嗦了点，重点是为下一篇文章做铺垫，下一篇我们将介绍下select的高级用法。</strong></p>
 <p><strong>select的应用场景很多，让我总结一下，放在下一篇文章中吧。</strong></p>
-<h3><span id="完整代码">完整代码</span></h3><p>可在Github查看：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select</a></p>
-<h3><span id="并发系列文章推荐">并发系列文章推荐</span></h3><ul>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>可在Github查看：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select</a></p>
+<h3 id="并发系列文章推荐"><a href="#并发系列文章推荐" class="headerlink" title="并发系列文章推荐"></a>并发系列文章推荐</h3><ul>
 <li><a href="https://mp.weixin.qq.com/s?__biz=Mzg3MTA0NDQ1OQ==&amp;mid=2247483671&amp;idx=1&amp;sn=1706ffa6deee44a367c34ef84448f55f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线模型</a></li>
 <li><a href="https://mp.weixin.qq.com/s?__biz=Mzg3MTA0NDQ1OQ==&amp;mid=2247483680&amp;idx=1&amp;sn=de463ebbd088c0acf6c2f0b5f179f38d&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">Golang并发模型：轻松入门流水线FAN模式</a></li>
 <li><a href="https://mp.weixin.qq.com/s/RjomKnfwCTy7tC9gbpPxCQ" target="_blank" rel="noopener">Golang并发模型：并发协程的优雅退出</a></li>
@@ -917,7 +917,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">select功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">用打豆豆实践select</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">完整代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#select功能"><span class="nav-number">1.</span> <span class="nav-text">select功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用打豆豆实践select"><span class="nav-number">2.</span> <span class="nav-text">用打豆豆实践select</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#完整代码"><span class="nav-number">3.</span> <span class="nav-text">完整代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并发系列文章推荐"><span class="nav-number">4.</span> <span class="nav-text">并发系列文章推荐</span></a></li></ol></div>
             
 
           </div>

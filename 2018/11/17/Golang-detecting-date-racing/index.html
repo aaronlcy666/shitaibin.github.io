@@ -492,7 +492,7 @@
 <p>背景知识</p>
 <p>数据竞争是并发情况下，存在多线程/协程读写相同数据的情况，必须存在至少一方写。另外，全是读的情况下是不存在数据竞争的。</p>
 </blockquote>
-<h1><span id="使用race检测数据竞争">使用race检测数据竞争</span></h1><p><code>go build</code>有个标记<code>race</code>可以帮助检测代码中的数据竞争。</p>
+<h1 id="使用race检测数据竞争"><a href="#使用race检测数据竞争" class="headerlink" title="使用race检测数据竞争"></a>使用race检测数据竞争</h1><p><code>go build</code>有个标记<code>race</code>可以帮助检测代码中的数据竞争。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  awesome git:(master) ✗ go <span class="built_in">help</span> build</span><br><span class="line">//.... omit</span><br><span class="line">-race</span><br><span class="line">		<span class="built_in">enable</span> data race detection.</span><br><span class="line">		Supported only on linux/amd64, freebsd/amd64, darwin/amd64 and windows/amd64.</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>下面举个栗子：</p>
@@ -890,7 +890,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">使用race检测数据竞争</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用race检测数据竞争"><span class="nav-number">1.</span> <span class="nav-text">使用race检测数据竞争</span></a></li></ol></div>
             
 
           </div>
