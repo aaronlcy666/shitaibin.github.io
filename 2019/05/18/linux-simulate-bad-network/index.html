@@ -107,11 +107,11 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux内网测试环境模拟网络丢包和延时">
 <meta property="og:url" content="http://lessisbetter.site/2019/05/18/linux-simulate-bad-network/index.html">
-<meta property="og:site_name" content="LIB">
+<meta property="og:site_name" content="大彬 LIB">
 <meta property="og:description" content="本文源自同事分享，在此基础之上做简要修改而成。  Linux下有2traffic control（简写TC）和netem这2个工具。Netem 是 Linux 2.6 及以上内核版本提供的一个网络模拟功能模块，该功能模块可以用来在性能良好的局域网中，模拟出复杂的互联网传输性能，诸如低带宽、传输延迟、丢包等等情况。使用 Linux 2.6 (或以上) 版本内核的很多发行版 Linux 都开启了该内">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-05-16T08:39:13.576Z">
+<meta property="og:updated_time" content="2019-05-17T03:33:05.187Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux内网测试环境模拟网络丢包和延时">
 <meta name="twitter:description" content="本文源自同事分享，在此基础之上做简要修改而成。  Linux下有2traffic control（简写TC）和netem这2个工具。Netem 是 Linux 2.6 及以上内核版本提供的一个网络模拟功能模块，该功能模块可以用来在性能良好的局域网中，模拟出复杂的互联网传输性能，诸如低带宽、传输延迟、丢包等等情况。使用 Linux 2.6 (或以上) 版本内核的很多发行版 Linux 都开启了该内">
@@ -132,7 +132,7 @@
   };
 </script>
 
-  <title>Linux内网测试环境模拟网络丢包和延时 | LIB</title>
+  <title>Linux内网测试环境模拟网络丢包和延时 | 大彬 LIB</title>
   
 
 
@@ -191,7 +191,7 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">LIB</span>
+        <span class="site-title">大彬 LIB</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -387,7 +387,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LIB">
+      <meta itemprop="name" content="大彬 LIB">
     </span>
 
     
@@ -438,7 +438,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-05-16 16:39:13" itemprop="dateModified" datetime="2019-05-16T16:39:13+08:00">2019-05-16</time>
+                <time title="修改时间：2019-05-17 11:33:05" itemprop="dateModified" datetime="2019-05-17T11:33:05+08:00">2019-05-17</time>
               
             
           </span>
@@ -514,7 +514,7 @@
 <h2 id="删除设备及显示设置"><a href="#删除设备及显示设置" class="headerlink" title="删除设备及显示设置"></a>删除设备及显示设置</h2><p>显示配置：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc sh dev eth0</span><br></pre></td></tr></table></figure>
 <p>删除配置：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc sh dev eth0</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qd del dev eth0 root</span><br></pre></td></tr></table></figure>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://www.cnblogs.com/fsw-blog/p/4788036.html" target="_blank" rel="noopener">Linux网络流量控制工具—Netem</a></p>
 <blockquote>
 <ol>
