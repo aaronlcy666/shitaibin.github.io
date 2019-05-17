@@ -89,7 +89,7 @@ tc qdisc sh dev eth0
 删除配置：
 
 ```bash
-tc qdisc sh dev eth0
+tc qd del dev eth0 root
 ```
 
 # 参考资料
