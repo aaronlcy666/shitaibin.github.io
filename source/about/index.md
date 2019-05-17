@@ -9,7 +9,7 @@ toc: false
 
 大彬，区块链架构师，区块链和Golang技术传播者，现就职云象区块链团队，关注区块链技术和生态的发展，致力于可商业落地的区块链技术。曾在华为工作，对消息和事件框架有深入研究。
 
-可以在以下社区联系到我，也欢迎关注我的个人公众号。
+可以在以下社区联系到我，欢迎关注公众号：一起学Golang。
 
 - [Stack Overflow](https://stackoverflow.com/users/4296218/james-shi)
 - [Segment Fault](https://segmentfault.com/u/lessisbetter)
@@ -19,4 +19,4 @@ toc: false
 
 
 <!-- ![公众号](http://img.lessisbetter.site/image/jpg/qrcode_together_golang.jpg) -->
-<img src="http://img.lessisbetter.site/image/jpg/qrcode_together_golang.jpg" width="256" hegiht="30" align=center />
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" align=center />
