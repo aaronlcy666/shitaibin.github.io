@@ -106,7 +106,7 @@
 <meta name="keywords" content="Go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="实战Go内存泄露">
-<meta property="og:url" content="http://lessisbetter.site/2019/05/18/go-pprof-goroutine-leak/index.html">
+<meta property="og:url" content="http://lessisbetter.site/2019/05/18/go-goroutine-leak/index.html">
 <meta property="og:site_name" content="大彬 LIB">
 <meta property="og:description" content="最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。 关于Go的内存泄露有这么一句话不知道你听过没有：  10次内存泄露，有9次是goroutine泄露。  我所解决的问题，也是goroutine泄露导致的内存泄露，所以这篇文章主要介绍Go程序的">
 <meta property="og:locale" content="zh-CN">
@@ -118,7 +118,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-05-18T09:31:08.003Z">
+<meta property="og:updated_time" content="2019-05-18T09:35:32.348Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="实战Go内存泄露">
 <meta name="twitter:description" content="最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。 关于Go的内存泄露有这么一句话不知道你听过没有：  10次内存泄露，有9次是goroutine泄露。  我所解决的问题，也是goroutine泄露导致的内存泄露，所以这篇文章主要介绍Go程序的">
@@ -129,7 +129,7 @@
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2019/05/18/go-pprof-goroutine-leak/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/"/>
 
 
 
@@ -385,7 +385,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/18/go-pprof-goroutine-leak/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -428,7 +428,7 @@
                 
               
 
-              <time title="创建时间：2019-05-18 10:30:47 / 修改时间：17:31:08" itemprop="dateCreated datePublished" datetime="2019-05-18T10:30:47+08:00">2019-05-18</time>
+              <time title="创建时间：2019-05-18 10:30:47 / 修改时间：17:35:32" itemprop="dateCreated datePublished" datetime="2019-05-18T10:30:47+08:00">2019-05-18</time>
             
 
             
@@ -447,8 +447,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/05/18/go-pprof-goroutine-leak/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2019/05/18/go-pprof-goroutine-leak/" itemprop="commentCount"></span>
+                <a href="/2019/05/18/go-goroutine-leak/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2019/05/18/go-goroutine-leak/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -717,7 +717,7 @@
 <ol>
 <li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
 <li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="here">here</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">http://lessisbetter.site/2019/05/18/go-goroutine-leak/</a></li>
 </ol>
 </blockquote>
 <p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
