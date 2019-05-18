@@ -1,7 +1,7 @@
 ---
 title: Go面试题：并发
 date: 2019-05-03 09:23:17
-tags: ['Go']
+tags: ['Golang']
 ---
 
 ### Once
