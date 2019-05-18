@@ -824,7 +824,7 @@ goroutine泄露的本质是channel阻塞，无法继续向下执行，导致此g
 
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
-> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[here](here)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/05/18/go-goroutine-leak/](http://lessisbetter.site/2019/05/18/go-goroutine-leak/)
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
