@@ -35,7 +35,11 @@ channel可进行`3种操作`：
 
 把这3种操作和3种channel状态可以组合出`9种情况`：
 
-![](http://img.lessisbetter.site/2019-01-op_on_channel.png)
+| 操作      | nil的channel | 正常channel | 已关闭channel |
+| --------- | ------------ | ----------- | ------------- |
+| <- ch     | 阻塞         | 成功或阻塞  | 读到零值      |
+| ch <-     | 阻塞         | 成功或阻塞  | panic         |
+| close(ch) | panic        | 成功        | panic         |
 
 对于nil通道的情况，也并非完全遵循上表，**有1个特殊场景**：当`nil`的通道在`select`的某个`case`中时，这个case会阻塞，但不会造成死锁。
 
