@@ -110,13 +110,12 @@
 <meta property="og:site_name" content="大彬 LIB">
 <meta property="og:description" content="这篇文章总结了channel的10种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。 在介绍10种操作前，先简要介绍下channel的使用场景、基本操作和注意事项。 channel的使用场景把channel用在数据流动的地方：  消息传递、消息过滤 信号广播 事件订阅与广播 请求、响应转发 任务分发 结果汇总 并发控制 同步与异步 …  channel的基本">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-01-op_on_channel.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-03-02T07:30:35.794Z">
+<meta property="og:updated_time" content="2019-05-30T02:19:59.572Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="总结了才知道，原来channel有这么多用法！">
 <meta name="twitter:description" content="这篇文章总结了channel的10种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。 在介绍10种操作前，先简要介绍下channel的使用场景、基本操作和注意事项。 channel的使用场景把channel用在数据流动的地方：  消息传递、消息过滤 信号广播 事件订阅与广播 请求、响应转发 任务分发 结果汇总 并发控制 同步与异步 …  channel的基本">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-01-op_on_channel.png">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
 
 
 
@@ -439,7 +438,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-03-02 15:30:35" itemprop="dateModified" datetime="2019-03-02T15:30:35+08:00">2019-03-02</time>
+                <time title="修改时间：2019-05-30 10:19:59" itemprop="dateModified" datetime="2019-05-30T10:19:59+08:00">2019-05-30</time>
               
             
           </span>
@@ -517,7 +516,36 @@
 <li>关闭</li>
 </ol>
 <p>把这3种操作和3种channel状态可以组合出<code>9种情况</code>：</p>
-<p><img src="http://img.lessisbetter.site/2019-01-op_on_channel.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>nil的channel</th>
+<th>正常channel</th>
+<th>已关闭channel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;- ch</td>
+<td>阻塞</td>
+<td>成功或阻塞</td>
+<td>读到零值</td>
+</tr>
+<tr>
+<td>ch &lt;-</td>
+<td>阻塞</td>
+<td>成功或阻塞</td>
+<td>panic</td>
+</tr>
+<tr>
+<td>close(ch)</td>
+<td>panic</td>
+<td>成功</td>
+<td>panic</td>
+</tr>
+</tbody>
+</table>
 <p>对于nil通道的情况，也并非完全遵循上表，<strong>有1个特殊场景</strong>：当<code>nil</code>的通道在<code>select</code>的某个<code>case</code>中时，这个case会阻塞，但不会造成死锁。</p>
 <p><em>参考代码请看：<a href="https://dave.cheney.net/2014/03/19/channel-axioms" target="_blank" rel="noopener">https://dave.cheney.net/2014/03/19/channel-axioms</a></em></p>
 <p>下面介绍使用channel的10种常用操作。</p>
