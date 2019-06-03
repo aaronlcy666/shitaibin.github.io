@@ -1,5 +1,4 @@
-toc: false
--------------
+
 
 ## LIB
 
@@ -17,6 +16,14 @@ toc: false
 - [GitHub](https://github.com/shitaibin)
 - [CSDN](https://me.csdn.net/m0_43499523)
 
+## 公众号
 
 <!-- ![公众号](http://img.lessisbetter.site/image/jpg/qrcode_together_golang.jpg) -->
 <img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" align=center />
+
+## 技术分享PPT
+
+| 日期           | 活动                   | 分享PPT                                                      |
+| -------------- | ---------------------- | ------------------------------------------------------------ |
+| 2019年06月02日 | Go语言中文网杭州MeetUp | [Go语言思维FirstClassFunction](http://img.lessisbetter.site/Go语言思维First-class-function.pdf) |
+
