@@ -445,16 +445,6 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/10/29/Golang-trap-of-waitgroup/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2018/10/29/Golang-trap-of-waitgroup/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -587,9 +577,9 @@
           
 
   
-    <div class="comments" id="comments">
+    <div id="gitalk-container">
     </div>
-
+    
   
 
 
@@ -1079,32 +1069,33 @@
 
 
 
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+
+
   
   
-  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
 
-  <script>
-    var GUEST = ['nick','mail','link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(function (item) {
-      return GUEST.indexOf(item)>-1;
-    });
-    new Valine({
-        el: '#comments' ,
-        verify: false,
-        notify: true,
-        appId: '5wONOK6aHhhREYCzyLmC4htM-gzGzoHsz',
-        appKey: 'xzxGTbe7Mg76GXDApd5Vx8xw',
-        placeholder: '免登陆，说点什么吧（如果文章有错误，请指出并留下依据哦）',
-        avatar:'mm',
-        meta:guest,
-        pageSize:'10' || 10,
-        visitor: false
-    });
-  </script>
+  
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.css">
 
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
 
+   <script>
+        var gitalk = new Gitalk({
+          clientID: '42138cdfb007b8368d81',
+          clientSecret: '317f1e9c0f7579358dcefb5402abe1bcc3e7388a',
+          repo: 'shitaibin.github.io',
+          owner: 'Shitaibin',
+          admin: ['Shitaibin'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')
+       </script>
 
 
   
