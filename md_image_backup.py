@@ -13,6 +13,10 @@ import requests
 import urllib
 import urllib2
 
+# encoding=utf8  
+reload(sys)  
+sys.setdefaultencoding('utf8')   
+
 
 # search find all markdown files
 def search(path, word):
