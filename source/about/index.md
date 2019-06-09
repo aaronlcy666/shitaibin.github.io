@@ -23,7 +23,7 @@
 
 ## 技术分享PPT
 
-| 日期           | 活动                   | 分享PPT                                                      |
-| -------------- | ---------------------- | ------------------------------------------------------------ |
-| 2019年06月02日 | Go语言中文网杭州MeetUp | [Go语言思维FirstClassFunction](http://img.lessisbetter.site/Go语言思维First-class-function.pdf) |
+| 日期    | 活动       | 分享PPT                                                     | 文章 |
+| ------ | ---------- | ---------------------------------------------------------- | --- |
+| 2019年06月02日 | Go语言中文网杭州MeetUp | [Go语言思维FirstClassFunction](http://img.lessisbetter.site/Go语言思维First-class-function.pdf) | [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/) |
 

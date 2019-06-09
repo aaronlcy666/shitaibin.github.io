@@ -18,11 +18,14 @@ tag: ['TODO']
 
 ### 内存管理
 1. [Go的map中删除子map，内存会自动释放吗？](http://lessisbetter.site/2018/09/29/go-map-delete/)
+1. [实战Go内存泄露](http://lessisbetter.site/2019/05/18/go-goroutine-leak/)
 
 ### 其他
 1. [探索Golang定时器的陷阱](http://lessisbetter.site/2018/09/04/explore-golang-timer/)
 1. [如何优雅的处理Golang错误](http://lessisbetter.site/2018/10/24/go-handle-error/)
 1. [反射3定律](http://lessisbetter.site/2019/02/24/go-law-of-reflect/)
+1. [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/)
+
 
 ### 高阶
 1. [深入理解channel：设计+源码](http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
