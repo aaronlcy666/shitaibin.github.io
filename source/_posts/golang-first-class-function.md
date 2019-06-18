@@ -17,9 +17,6 @@ tags: ['Golang']
 
 线下分享后，证明选题选对了，大家都能听懂，所以现在不了解First class function的朋友不用着急，后面我会层层推进的方式介绍，相信你一定能理解，那就进入正文吧。
 
-目录优先奉上
-
-[TOC]
 
 # First class function in Go
 
