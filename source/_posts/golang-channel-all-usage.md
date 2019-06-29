@@ -370,7 +370,7 @@ func (h *Handler) loop() error {
 
 没数据需要传递时，传递空struct
 
-### 用法：
+### 用法
 
 ```go
 // 上例中的Handler.stopCh就是一个例子，stopCh并不需要传递任何数据
