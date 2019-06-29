@@ -100,7 +100,6 @@ real	1m11.675s
 user	4m4.464s
 sys	0m18.312s
 ```
-
 编译好的go和gofmt在`$GODIR/bin`目录。
 ```bash
 $ ll $GODIR/bin
