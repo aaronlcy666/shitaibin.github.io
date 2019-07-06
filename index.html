@@ -421,7 +421,7 @@
                 
               
 
-              <time title="创建时间：2019-07-06 23:19:39 / 修改时间：23:20:32" itemprop="dateCreated datePublished" datetime="2019-07-06T23:19:39+08:00">2019-07-06</time>
+              <time title="创建时间：2019-07-06 23:19:39 / 修改时间：23:30:05" itemprop="dateCreated datePublished" datetime="2019-07-06T23:19:39+08:00">2019-07-06</time>
             
 
             
@@ -472,10 +472,8 @@
 <p><strong>本文基于go1.11.2，不同版本Go的内存管理可能存在差别，比如1.9与1.11的mheap定义就是差别比较大的，后续看源码的时候，请注意你的go版本，但无论你用哪个go版本，这都是一个优秀的资料，因为内存管理的思想和框架始终未变。</strong></p>
 <p>Go这门语言抛弃了C/C++中的开发者管理内存的方式：主动申请与主动释放，增加了逃逸分析和GC，将开发者从内存管理中释放出来，让开发者有更多的精力去关注软件设计，而不是底层的内存问题。这是Go语言成为高生产力语言的原因之一。</p>
 <p>我们不需要精通内存的管理，因为它确实很复杂，但掌握内存的管理，可以让你写出更高质量的代码，另外，还能助你定位Bug。</p>
-<p><strong>这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，发现内存架构特点，提高自己架构或软件设计的能力。</strong></p>
+<p><strong>这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，拥有更好的编码思维和架构思维。</strong></p>
 <p>最后，这不是一篇源码分析文章，因为Go源码分析的文章已经有很多了，这些源码文章能够帮助你去学习具体的工程实践和奇淫巧计了，文章的末尾会推荐一些优秀文章，如果你对内存感兴趣，建议每一篇都去看一下，挑出自己喜欢的，多花时间研究下。</p>
-<p>目录：</p>
-<p>[TOC]</p>
 <h2 id="1-存储基础知识回顾"><a href="#1-存储基础知识回顾" class="headerlink" title="1. 存储基础知识回顾"></a>1. 存储基础知识回顾</h2><p>这部分我们简单回顾一下计算机存储体系、虚拟内存、栈和堆，以及堆内存的管理，这部分内容对理解和掌握Go内存管理比较重要，建议忘记或不熟悉的朋友不要跳过。</p>
 <h3 id="存储金字塔"><a href="#存储金字塔" class="headerlink" title="存储金字塔"></a>存储金字塔</h3><p><img src="http://img.lessisbetter.site/2019-07-data-heirarchy.jpg" alt="img"></p>
 <p>这幅图表达了计算机的存储体系，从上至下依次是：</p>
@@ -679,16 +677,31 @@
 </ol>
 <h2 id="6-参考资料"><a href="#6-参考资料" class="headerlink" title="6. 参考资料"></a>6. 参考资料</h2><p>除了文章中已经推荐的文章，再推荐几篇值得读的文章：</p>
 <ol>
-<li><p>全成的内存分配文章，有不少帮助：<a href="https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5" target="_blank" rel="noopener">https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5</a></p>
-</li>
-<li><p>异常详细的源码分析文章，看完这篇我就不想写源码分析的文章了：<a href="https://www.cnblogs.com/zkweb/p/7880099.html" target="_blank" rel="noopener">https://www.cnblogs.com/zkweb/p/7880099.html</a></p>
-</li>
-<li><p>从硬件讲起的一篇文章，也是有点意思：<a href="https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR" target="_blank" rel="noopener">https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR</a></p>
-</li>
-<li><p>这篇文章的总流程图很棒：<a href="http://media.newbmiao.com/blog/malloc.png" target="_blank" rel="noopener">http://media.newbmiao.com/blog/malloc.png</a></p>
+<li>全成的内存分配文章，有不少帮助：<a href="https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5" target="_blank" rel="noopener">https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5</a></li>
+<li>异常详细的源码分析文章，看完这篇我就不想写源码分析的文章了：<a href="https://www.cnblogs.com/zkweb/p/7880099.html" target="_blank" rel="noopener">https://www.cnblogs.com/zkweb/p/7880099.html</a></li>
+<li>从硬件讲起的一篇文章，也是有点意思：<a href="https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR" target="_blank" rel="noopener">https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR</a><blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="here">here</a></li>
+</ol>
+</blockquote>
 </li>
 </ol>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+<ol start="4">
+<li>这篇文章的总流程图很棒：<a href="http://media.newbmiao.com/blog/malloc.png" target="_blank" rel="noopener">http://media.newbmiao.com/blog/malloc.png</a></li>
+</ol>
 <h2 id="7-彩蛋"><a href="#7-彩蛋" class="headerlink" title="7. 彩蛋"></a>7. 彩蛋</h2><p>在查阅资料时，多篇文章都提到了这本书《<a href="http://man7.org/tlpi/" target="_blank" rel="noopener">The Linux Programming Interface</a>》，关于Thread Cache有兴趣去读一下本书第31章。</p>
+<hr>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">http://lessisbetter.site/2019/07/06/go-memory-allocation/</a></li>
+</ol>
+</blockquote>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
 
           
         
