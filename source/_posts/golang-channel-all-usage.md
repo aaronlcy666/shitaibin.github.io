@@ -80,7 +80,7 @@ ok的结果和含义：
 
 从关闭的channel读值读到是channel所传递数据类型的零值，这个零值有可能是发送者发送的，也可能是channel关闭了。
 
-`_, ok := <-ch`与select配合使用的，当ok为false时，代表了channel已经close。下面解释原因，` _,ok := <-ch`对于的函数是`func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)`，入参block含义是当前goroutine是否可阻塞，当block为false代表的是select操作，不可阻塞当前goroutine的在channel操作，否则是普通操作（即`_, ok`不在select中）。返回值selected代表当前操作是否成功，主要为select服务，返回**received代表是否从channel读到有效值**。它有3种返回值情况：
+`_, ok := <-ch`与select配合使用的，当ok为false时，代表了channel已经close。下面解释原因，` _,ok := <-ch`对应的函数是`func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)`，入参block含义是当前goroutine是否可阻塞，当block为false代表的是select操作，不可阻塞当前goroutine的在channel操作，否则是普通操作（即`_, ok`不在select中）。返回值selected代表当前操作是否成功，主要为select服务，返回**received代表是否从channel读到有效值**。它有3种返回值情况：
 1. block为false，即执行select时，如果channel为空，返回(false,false)，代表select操作失败，没接收到值。
 2. 否则，如果channel已经关闭，并且没有数据，ep即接收数据的变量设置为零值，返回(true,false)，代表select操作成功，但channel已关闭，没读到有效值。
 3. 否则，其他读到有效数据的情况，返回(true,ture)。
