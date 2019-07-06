@@ -5,8 +5,6 @@ tags: ['Go']
 ---
 
 
-
-
 新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。
 
 这篇文章**主要介绍Go内存分配和Go内存管理**，会轻微涉及内存申请和释放，以及Go垃圾回收。
@@ -25,13 +23,10 @@ Go这门语言抛弃了C/C++中的开发者管理内存的方式：主动申请�
 
 我们不需要精通内存的管理，因为它确实很复杂，但掌握内存的管理，可以让你写出更高质量的代码，另外，还能助你定位Bug。
 
-**这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，发现内存架构特点，提高自己架构或软件设计的能力。**
+**这篇文章采用层层递进的方式，依次会介绍关于存储的基本知识，Go内存管理的“前辈”TCMalloc，然后是Go的内存管理和分配，最后是总结。这么做的目的是，希望各位能通过全局的认识和思考，拥有更好的编码思维和架构思维。**
 
 最后，这不是一篇源码分析文章，因为Go源码分析的文章已经有很多了，这些源码文章能够帮助你去学习具体的工程实践和奇淫巧计了，文章的末尾会推荐一些优秀文章，如果你对内存感兴趣，建议每一篇都去看一下，挑出自己喜欢的，多花时间研究下。
 
-目录：
-
-[TOC]
 
 ## 1. 存储基础知识回顾
 
@@ -434,16 +429,29 @@ func sysUnused(v unsafe.Pointer, n uintptr) {
 除了文章中已经推荐的文章，再推荐几篇值得读的文章：
 
 1. 全成的内存分配文章，有不少帮助：<https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5>
-
 2. 异常详细的源码分析文章，看完这篇我就不想写源码分析的文章了：<https://www.cnblogs.com/zkweb/p/7880099.html>
-
 3. 从硬件讲起的一篇文章，也是有点意思：<https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR>
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[here](here)
 
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 4. 这篇文章的总流程图很棒：<http://media.newbmiao.com/blog/malloc.png>
 
 ## 7. 彩蛋
 
 在查阅资料时，多篇文章都提到了这本书《[The Linux Programming Interface](http://man7.org/tlpi/)》，关于Thread Cache有兴趣去读一下本书第31章。
 
+-------
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/07/06/go-memory-allocation/](http://lessisbetter.site/2019/07/06/go-memory-allocation/)
+
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 
 
