@@ -111,7 +111,7 @@
 <meta property="og:description" content="这篇文章总结了channel的11种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。 在介绍11种操作前，先简要介绍下channel的使用场景、基本操作和注意事项。 channel的使用场景把channel用在数据流动的地方：  消息传递、消息过滤 信号广播 事件订阅与广播 请求、响应转发 任务分发 结果汇总 并发控制 同步与异步 …  channel的基本">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-06-29T02:37:13.774Z">
+<meta property="og:updated_time" content="2019-07-01T01:50:25.355Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="总结了才知道，原来channel有这么多用法！">
 <meta name="twitter:description" content="这篇文章总结了channel的11种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。 在介绍11种操作前，先简要介绍下channel的使用场景、基本操作和注意事项。 channel的使用场景把channel用在数据流动的地方：  消息传递、消息过滤 信号广播 事件订阅与广播 请求、响应转发 任务分发 结果汇总 并发控制 同步与异步 …  channel的基本">
@@ -438,7 +438,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-29 10:37:13" itemprop="dateModified" datetime="2019-06-29T10:37:13+08:00">2019-06-29</time>
+                <time title="修改时间：2019-07-01 09:50:25" itemprop="dateModified" datetime="2019-07-01T09:50:25+08:00">2019-07-01</time>
               
             
           </span>
@@ -547,7 +547,7 @@
 <pre><code>- `true`：读到通道数据，不确定是否关闭，可能channel还有保存的数据，但channel已关闭。
 - `false`：通道关闭，无数据读到。
 </code></pre><p>从关闭的channel读值读到是channel所传递数据类型的零值，这个零值有可能是发送者发送的，也可能是channel关闭了。</p>
-<p><code>_, ok := &lt;-ch</code>与select配合使用的，当ok为false时，代表了channel已经close。下面解释原因，<code>_,ok := &lt;-ch</code>对于的函数是<code>func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)</code>，入参block含义是当前goroutine是否可阻塞，当block为false代表的是select操作，不可阻塞当前goroutine的在channel操作，否则是普通操作（即<code>_, ok</code>不在select中）。返回值selected代表当前操作是否成功，主要为select服务，返回<strong>received代表是否从channel读到有效值</strong>。它有3种返回值情况：</p>
+<p><code>_, ok := &lt;-ch</code>与select配合使用的，当ok为false时，代表了channel已经close。下面解释原因，<code>_,ok := &lt;-ch</code>对应的函数是<code>func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool)</code>，入参block含义是当前goroutine是否可阻塞，当block为false代表的是select操作，不可阻塞当前goroutine的在channel操作，否则是普通操作（即<code>_, ok</code>不在select中）。返回值selected代表当前操作是否成功，主要为select服务，返回<strong>received代表是否从channel读到有效值</strong>。它有3种返回值情况：</p>
 <ol>
 <li>block为false，即执行select时，如果channel为空，返回(false,false)，代表select操作失败，没接收到值。</li>
 <li>否则，如果channel已经关闭，并且没有数据，ep即接收数据的变量设置为零值，返回(true,false)，代表select操作成功，但channel已关闭，没读到有效值。</li>
@@ -742,7 +742,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-count">83</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -873,7 +873,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">57</span>
+                      
+                    
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
