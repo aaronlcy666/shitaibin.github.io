@@ -431,13 +431,6 @@ func sysUnused(v unsafe.Pointer, n uintptr) {
 1. 全成的内存分配文章，有不少帮助：<https://juejin.im/post/5c888a79e51d456ed11955a8#heading-5>
 2. 异常详细的源码分析文章，看完这篇我就不想写源码分析的文章了：<https://www.cnblogs.com/zkweb/p/7880099.html>
 3. 从硬件讲起的一篇文章，也是有点意思：<https://www.infoq.cn/article/IEhRLwmmIM7-11RYaLHR>
-> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
-> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
-> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[here](here)
-
-
-<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
 4. 这篇文章的总流程图很棒：<http://media.newbmiao.com/blog/malloc.png>
 
 ## 7. 彩蛋
