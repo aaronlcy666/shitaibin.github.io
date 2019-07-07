@@ -131,7 +131,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-mcentral.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-go-mheap.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-07-07T02:16:35.528Z">
+<meta property="og:updated_time" content="2019-07-07T03:13:14.472Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go内存分配那些事，就这么简单！">
 <meta name="twitter:description" content="新老朋友好久不见，我是大彬，这篇文章准备了很久，不是在拖延，而是中间做了一些其他事情，耽搁了一些。 这篇文章主要介绍Go内存分配和Go内存管理，会轻微涉及内存申请和释放，以及Go垃圾回收。 从非常宏观的角度看，Go的内存管理就是下图这个样子，我们今天主要关注其中标红的部分。   友情提醒： 文章有点长，建议先收藏，后阅读，绝对是学习内存管理的好资料。  本文基于go1.11.2，不同版本Go的内存">
@@ -458,7 +458,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-07 10:16:35" itemprop="dateModified" datetime="2019-07-07T10:16:35+08:00">2019-07-07</time>
+                <time title="修改时间：2019-07-07 11:13:14" itemprop="dateModified" datetime="2019-07-07T11:13:14+08:00">2019-07-07</time>
               
             
           </span>
@@ -621,7 +621,7 @@
 <h4 id="Page"><a href="#Page" class="headerlink" title="Page"></a>Page</h4><p>与TCMalloc中的Page相同，x64下1个Page的大小是8KB。上图的最下方，1个浅蓝色的长方形代表1个Page。</p>
 <h4 id="Span"><a href="#Span" class="headerlink" title="Span"></a>Span</h4><p>与TCMalloc中的Span相同，<strong>Span是内存管理的基本单位</strong>，代码中为<code>mspan</code>，<strong>一组连续的Page组成1个Span</strong>，所以上图一组连续的浅蓝色长方形代表的是一组Page组成的1个Span，另外，1个淡紫色长方形为1个Span。</p>
 <h4 id="mcache"><a href="#mcache" class="headerlink" title="mcache"></a>mcache</h4><p>mcache与TCMalloc中的ThreadCache类似，<strong>mcache保存的是各种大小的Span，并按Span class分类，小对象直接从mcache分配内存，它起到了缓存的作用，并且可以无锁访问</strong>。</p>
-<p>但mcache与ThreadCache也有不同点，TCMalloc中是每个线程1个ThreadCache，Go中是<strong>每个P拥有1个mcache</strong>，因为在Go程序中，当前最多有GOMAXPROCS个线程在运行，所以最多需要GOMAXPROCS个mcache就可以保证各线程对mcache的无锁访问，线程的运行又是与P绑定的，把mcache交给P刚刚好。</p>
+<p>但mcache与ThreadCache也有不同点，TCMalloc中是每个线程1个ThreadCache，Go中是<strong>每个P拥有1个mcache</strong>，因为在Go程序中，当前最多有GOMAXPROCS个线程在用户态运行，所以最多需要GOMAXPROCS个mcache就可以保证各线程对mcache的无锁访问，线程的运行又是与P绑定的，把mcache交给P刚刚好。</p>
 <h4 id="mcentral"><a href="#mcentral" class="headerlink" title="mcentral"></a>mcentral</h4><p>mcentral与TCMalloc中的CentralCache类似，<strong>是所有线程共享的缓存，需要加锁访问</strong>，它按Span class对Span分类，串联成链表，当mcache的某个级别Span的内存被分配光时，它会向mcentral申请1个当前级别的Span。</p>
 <p>但mcentral与CentralCache也有不同点，CentralCache是每个级别的Span有1个链表，mcache是每个级别的Span有2个链表，这和mcache申请内存有关，稍后我们再解释。</p>
 <h4 id="mheap"><a href="#mheap" class="headerlink" title="mheap"></a>mheap</h4><p>mheap与TCMalloc中的PageHeap类似，<strong>它是堆内存的抽象，把从OS申请出的内存页组织成Span，并保存起来</strong>。当mcentral的Span不够用时会向mheap申请，mheap的Span不够用时会向OS申请，向OS的内存申请是按页来的，然后把申请来的内存页生成Span组织起来，同样也是需要加锁访问的。</p>
