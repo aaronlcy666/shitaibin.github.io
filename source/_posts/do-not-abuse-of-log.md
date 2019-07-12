@@ -73,3 +73,10 @@ tags: ['Go', 'log']
 2. 只在“可能”出问题的地方打印日志，一些能根据上下文日志推断的地方，就无需再增加日志。
 3. 日志打印不要调用函数。
 
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/](http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/)
+
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
