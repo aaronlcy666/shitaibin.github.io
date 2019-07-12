@@ -1,7 +1,7 @@
 ---
 title: 总结了才知道，原来channel有这么多用法！
 date: 2019-01-20 19:44:28
-tags: ['Golang']
+tags: ['Go']
 ---
 
 这篇文章总结了channel的11种常用操作，以一个更高的视角看待channel，会给大家带来对channel更全面的认识。

@@ -1,7 +1,7 @@
 ---
 title: Golang并发的次优选择：sync包
 date: 2019-01-04 21:31:48
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

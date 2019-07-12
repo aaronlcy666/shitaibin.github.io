@@ -1,7 +1,7 @@
 ---
 title: 深入理解channel：设计+源码
 date: 2019-03-03 15:32:15
-tags: ['Golang']
+tags: ['Go']
 ---
 
 channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：

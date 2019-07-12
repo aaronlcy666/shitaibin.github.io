@@ -1,7 +1,7 @@
 ---
 title: Golang defer的陷阱
 date: 2018-11-10 20:23:37
-tags: ['Golang']
+tags: ['Go']
 ---
 
 你是不是觉得defer很简单、很好用，但也许你掉坑里了都不知道！

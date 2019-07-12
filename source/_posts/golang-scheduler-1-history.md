@@ -1,7 +1,7 @@
 ---
 title: Go调度器系列（1）起源
 date: 2019-03-10 17:25:57
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

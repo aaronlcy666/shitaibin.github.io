@@ -1,7 +1,7 @@
 ---
 title: Go高级实践：反射3定律
 date: 2019-02-24 18:28:52
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

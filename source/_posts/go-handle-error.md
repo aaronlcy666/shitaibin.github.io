@@ -1,7 +1,7 @@
 ---
 title: 如何优雅的处理Golang错误
 date: 2018-10-24 14:38:41
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

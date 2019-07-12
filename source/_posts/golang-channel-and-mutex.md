@@ -1,7 +1,7 @@
 ---
 title: Golang并发：再也不愁选channel还是选锁
 date: 2019-01-14 21:43:41
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

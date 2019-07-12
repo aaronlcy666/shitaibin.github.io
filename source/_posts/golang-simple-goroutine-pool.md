@@ -1,7 +1,7 @@
 ---
 title: Golang并发模型：轻松入门协程池
 date: 2018-12-20 12:54:28
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

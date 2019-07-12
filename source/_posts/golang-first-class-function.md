@@ -1,7 +1,7 @@
 ---
 title: First class function in Go
 date: 2019-06-09 22:00:26
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

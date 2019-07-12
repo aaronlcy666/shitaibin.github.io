@@ -1,6 +1,6 @@
 ---
 title: golang-favorite-packages
-tags: ['Golang']
+tags: ['Go']
 ---
 
 

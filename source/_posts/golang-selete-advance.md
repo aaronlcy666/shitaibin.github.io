@@ -1,7 +1,7 @@
 ---
 title: Golang并发模型：select进阶
 date: 2018-12-17 20:22:09
-tags: ['Golang']
+tags: ['Go']
 ---
 
 最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。
