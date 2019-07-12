@@ -103,14 +103,14 @@
 
 
   <meta name="description" content="无论是无缓冲通道，还是有缓冲通道，都存在阻塞的情况，教你一招再也不遇到channel阻塞的问题。 这篇文章会介绍，哪些情况会存在阻塞，以及如何使用select解决阻塞。 阻塞场景阻塞场景共4个，有缓存和无缓冲各2个。 无缓冲通道的特点是，发送的数据需要被读取后，发送才会完成，它阻塞场景：  通道中无数据，但执行读通道。 通道中无数据，向通道写数据，但无协程读取。">
-<meta name="keywords" content="Golang,Channel">
+<meta name="keywords" content="Go,Channel">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一招教你无阻塞读写Golang channel">
 <meta property="og:url" content="http://lessisbetter.site/2018/11/03/Golang-channel-read-and-write-without-blocking/index.html">
 <meta property="og:site_name" content="大彬 LIB">
 <meta property="og:description" content="无论是无缓冲通道，还是有缓冲通道，都存在阻塞的情况，教你一招再也不遇到channel阻塞的问题。 这篇文章会介绍，哪些情况会存在阻塞，以及如何使用select解决阻塞。 阻塞场景阻塞场景共4个，有缓存和无缓冲各2个。 无缓冲通道的特点是，发送的数据需要被读取后，发送才会完成，它阻塞场景：  通道中无数据，但执行读通道。 通道中无数据，向通道写数据，但无协程读取。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-05T06:06:28.206Z">
+<meta property="og:updated_time" content="2019-07-12T00:39:16.332Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一招教你无阻塞读写Golang channel">
 <meta name="twitter:description" content="无论是无缓冲通道，还是有缓冲通道，都存在阻塞的情况，教你一招再也不遇到channel阻塞的问题。 这篇文章会介绍，哪些情况会存在阻塞，以及如何使用select解决阻塞。 阻塞场景阻塞场景共4个，有缓存和无缓冲各2个。 无缓冲通道的特点是，发送的数据需要被读取后，发送才会完成，它阻塞场景：  通道中无数据，但执行读通道。 通道中无数据，向通道写数据，但无协程读取。">
@@ -436,7 +436,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-01-05 14:06:28" itemprop="dateModified" datetime="2019-01-05T14:06:28+08:00">2019-01-05</time>
+                <time title="修改时间：2019-07-12 08:39:16" itemprop="dateModified" datetime="2019-07-12T08:39:16+08:00">2019-07-12</time>
               
             
           </span>
@@ -536,7 +536,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Golang/" rel="tag"><i class="fa fa-tag"></i> Golang</a>
+            <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
           
             <a href="/tags/Channel/" rel="tag"><i class="fa fa-tag"></i> Channel</a>
           
@@ -770,9 +770,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">59</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

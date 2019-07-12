@@ -103,14 +103,14 @@
 
 
   <meta name="description" content="结论在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。 实验在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。 做2个对比实验，实验1：普通的map，map保存到是int到int的映射，会执行dele">
-<meta name="keywords" content="Golang,map">
+<meta name="keywords" content="Go,map">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go的map中删除子map，内存会自动释放吗？">
 <meta property="og:url" content="http://lessisbetter.site/2018/09/29/go-map-delete/index.html">
 <meta property="og:site_name" content="大彬 LIB">
 <meta property="og:description" content="结论在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。 实验在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。 做2个对比实验，实验1：普通的map，map保存到是int到int的映射，会执行dele">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-05T06:39:44.255Z">
+<meta property="og:updated_time" content="2019-07-12T00:39:16.331Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go的map中删除子map，内存会自动释放吗？">
 <meta name="twitter:description" content="结论在Go中，map中存放map，上层map执行delete，子层map占用的内存会释放，无需手动先释放子map内存，再在上层map执行删除。 实验在C++中，如果使用了map包含map的数据结构，当要释放上层map的某一项时，需要手动释放对应的子map占用的内存，而在Go中，垃圾回收让内存管理变得如此简单。 做2个对比实验，实验1：普通的map，map保存到是int到int的映射，会执行dele">
@@ -436,7 +436,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-01-05 14:39:44" itemprop="dateModified" datetime="2019-01-05T14:39:44+08:00">2019-01-05</time>
+                <time title="修改时间：2019-07-12 08:39:16" itemprop="dateModified" datetime="2019-07-12T08:39:16+08:00">2019-07-12</time>
               
             
           </span>
@@ -530,7 +530,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Golang/" rel="tag"><i class="fa fa-tag"></i> Golang</a>
+            <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
           
             <a href="/tags/map/" rel="tag"><i class="fa fa-tag"></i> map</a>
           
@@ -764,9 +764,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">59</span>
+                    <span class="site-state-item-count">58</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
