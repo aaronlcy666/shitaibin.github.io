@@ -1,7 +1,7 @@
 ---
 title: 轻松入门Golang pprof实用不忽悠
 date: 2018-11-7 21:13:56
-tags: ['Golang', 'pprof']
+tags: ['Go', 'pprof']
 ---
 
 网上已搜索golang pprof，资料不少，简明高效的一个没看到，这篇文章5步教你用会pprof获取cpu和内存prof。

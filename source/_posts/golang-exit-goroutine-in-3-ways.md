@@ -1,7 +1,7 @@
 ---
 title: Golang并发模型：并发协程的优雅退出
 date: 2018-12-02 11:26:04
-tags: ['Golang', 'goroutine']
+tags: ['Go', 'goroutine']
 ---
 
 

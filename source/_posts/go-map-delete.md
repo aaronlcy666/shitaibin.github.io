@@ -1,6 +1,6 @@
 title: Go的map中删除子map，内存会自动释放吗？
 date: 2018-09-29 20:06:39
-tags: ['Golang', 'map']
+tags: ['Go', 'map']
 -----
 
 结论

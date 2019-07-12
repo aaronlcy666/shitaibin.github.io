@@ -1,7 +1,7 @@
 ---
 title: Go依赖包管理工具，3分钟掌握govendor
 date: 2018-11-17 20:25:34
-tags: ['Golang', 'govendor']
+tags: ['Go', 'govendor']
 ---
 
 

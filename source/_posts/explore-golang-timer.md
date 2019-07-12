@@ -1,7 +1,7 @@
 ---
 title: 探索Golang定时器的陷阱
 date: 2018-09-04 17:43:41
-tags: ['Golang', '定时器']
+tags: ['Go', '定时器']
 ---
 
 

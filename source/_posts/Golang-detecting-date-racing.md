@@ -1,7 +1,7 @@
 ---
 title: 轻松检测Golang并发的数据竞争
 date: 2018-11-17 20:27:09
-tags: ['Golang', '数据竞争']
+tags: ['Go']
 ---
 
 Golang中我们使用Channel或者sync.Mutex等锁保护数据，有没有一种机制可以检测代码中的数据竞争呢？

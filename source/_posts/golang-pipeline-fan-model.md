@@ -1,7 +1,7 @@
 ---
 title: Golang并发模型：轻松入门流水线FAN模式
 date: 2018-11-28 21:17:30
-tags: ['Golang', 'Pipeline']
+tags: ['Go', 'Pipeline']
 ---
 
 

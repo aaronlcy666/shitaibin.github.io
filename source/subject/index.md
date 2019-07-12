@@ -16,26 +16,29 @@ tag: ['TODO']
 1. [Golang并发模型：轻松入门协程池](http://lessisbetter.site/2018/12/20/golang-simple-goroutine-pool/)
 1. [Golang并发的次优选择：sync包](http://lessisbetter.site/2019/01/04/golang-pkg-sync/)
 
-### 内存管理
-1. [Go的map中删除子map，内存会自动释放吗？](http://lessisbetter.site/2018/09/29/go-map-delete/)
-1. [实战Go内存泄露](http://lessisbetter.site/2019/05/18/go-goroutine-leak/)
-
-### 其他
-1. [探索Golang定时器的陷阱](http://lessisbetter.site/2018/09/04/explore-golang-timer/)
-1. [如何优雅的处理Golang错误](http://lessisbetter.site/2018/10/24/go-handle-error/)
-1. [反射3定律](http://lessisbetter.site/2019/02/24/go-law-of-reflect/)
-1. [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/)
-
-
-### 高阶
-1. [深入理解channel：设计+源码](http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
-
 ### Go调度器
 
 1. [Go调度器系列（1）起源](http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/)
 1. [Go调度器系列（2）宏观看调度器](http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/)
 1. [Go调度器系列（3）图解调度原理](http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/)
 1. [Go调度器系列（4）源码阅读与探索](http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/)
+
+### 内存管理
+
+1. [Go的map中删除子map，内存会自动释放吗？](http://lessisbetter.site/2018/09/29/go-map-delete/)
+1. [实战Go内存泄露](http://lessisbetter.site/2019/05/18/go-goroutine-leak/)
+1. [Go内存分配那些事，就这么简单！](http://lessisbetter.site/2019/07/06/go-memory-allocation/)
+1. [你滥用log了吗](http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/)
+
+### 其他
+
+1. [深入理解channel：设计+源码](http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/)
+1. [探索Golang定时器的陷阱](http://lessisbetter.site/2018/09/04/explore-golang-timer/)
+1. [如何优雅的处理Golang错误](http://lessisbetter.site/2018/10/24/go-handle-error/)
+1. [反射3定律](http://lessisbetter.site/2019/02/24/go-law-of-reflect/)
+1. [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/)
+
+
 
 
 ## 以太坊

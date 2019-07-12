@@ -1,7 +1,7 @@
 ---
 title: Golang并发模型：轻松入门流水线模型
 date: 2018-11-16 20:14:51
-tags: ['Golang', 'Pipeline']
+tags: ['Go', 'Pipeline']
 ---
 
 

@@ -1,7 +1,7 @@
 ---
 title: 一招教你无阻塞读写Golang channel
 date: 2018-11-3 20:19:57
-tags: ['Golang', 'Channel']
+tags: ['Go', 'Channel']
 ---
 
 无论是无缓冲通道，还是有缓冲通道，都存在阻塞的情况，教你一招再也不遇到channel阻塞的问题。
