@@ -1,7 +1,7 @@
 ---
 title: VSCode V.S. Goland
 date: 2018-06-02 18:40:01
-tags: ['Goland', 'Golang']
+tags: ['Go','IDE']
 ---
 
 Goland是我目前（2018年06月02日）体验过的最方便/高效的Golang IDE。
