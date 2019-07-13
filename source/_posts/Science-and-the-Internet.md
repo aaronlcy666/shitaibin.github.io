@@ -1,7 +1,7 @@
 ---
 title: 让终端科学上网
 date: 2018-09-06 20:35:40
-tags: ['shadowsocks']
+tags: ['Mac']
 ---
 
 

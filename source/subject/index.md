@@ -65,6 +65,11 @@ tag: ['TODO']
 
 1. [查看Linux运行程序的文件路径](http://lessisbetter.site/2019/03/01/linux-location-of-process/)
 
+### 代理与镜像
+
+1. [让终端科学上网](http://lessisbetter.site/2018/09/06/Science-and-the-Internet/)
+1. [让镜像飞，加速你的开发](http://lessisbetter.site/2019/07/13/fast-mirrors/)
+1. [让Homebrew飞](http://lessisbetter.site/2019/07/13/better-brew/)
 
 ## 书籍
 1. [书籍推荐1](http://lessisbetter.site/2019/02/16/book-recommend-1/)
