@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss_http.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-http-set.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-socks5.png">
-<meta property="og:updated_time" content="2019-07-13T03:02:49.987Z">
+<meta property="og:updated_time" content="2019-07-13T03:24:45.060Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="让终端科学上网">
 <meta name="twitter:description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
@@ -441,7 +441,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-13 11:02:49" itemprop="dateModified" datetime="2019-07-13T11:02:49+08:00">2019-07-13</time>
+                <time title="修改时间：2019-07-13 11:24:45" itemprop="dateModified" datetime="2019-07-13T11:24:45+08:00">2019-07-13</time>
               
             
           </span>
@@ -502,7 +502,7 @@
 <li>设置为PAC模式</li>
 </ol>
 <p><img src="http://img.lessisbetter.site/2019-01-ss-ng.png" alt=""></p>
-<p>经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可开发Shadowsocks的http代理和socks5代理。</p>
+<p>经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可设置Shadowsocks的http代理和socks5代理。</p>
 <h2 id="开启HTTP代理"><a href="#开启HTTP代理" class="headerlink" title="开启HTTP代理"></a>开启HTTP代理</h2><p>点击状态栏shadowsocks图标，【HTTP代理设置…】是配置Http代理。【高级设置…】是socks5代理设置。</p>
 <p><img src="http://img.lessisbetter.site/2019-07-ss_http.png" alt=""></p>
 <p><strong>http代理支持http和https2个协议的代理</strong>，IP设置为0.0.0.0就可以为其他机器做http和https代理，如果只有本机用，可以使用默认的127。</p>
@@ -526,7 +526,7 @@
 <ul>
 <li>dynamic_chain，取消这行注释</li>
 <li>strict_chain， 注释</li>
-<li>最后一行添加<code>socks5 127.0.0.1 1080</code></li>
+<li>最后一行添加<code>socks5 127.0.0.1 1086</code></li>
 </ul>
 <p><strong>验证科学上网的唯一标准：能用wget下载google主页</strong>，什么<code>curl ip.cn</code>这种不一定准，虽然显示你的是国外IP了，说明这次<code>curl</code>走了代理，但不代表你能使用wget下载，能更新源码。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  t proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: /usr/local/etc/proxychains.conf</span><br><span class="line">[proxychains] preloading /usr/local/Cellar/proxychains-ng/4.13/lib/libproxychains4.dylib</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.13</span><br><span class="line">--2018-09-06 20:24:26--  http://www.google.com/</span><br><span class="line">正在解析主机 www.google.com (www.google.com)... 224.0.0.1</span><br><span class="line">正在连接 www.google.com (www.google.com)|224.0.0.1|:80... [proxychains] Strict chain  ...  127.0.0.1:1080  ...  www.google.com:80  ...  OK</span><br><span class="line">已连接。</span><br><span class="line">已发出 HTTP 请求，正在等待回应... 200 OK</span><br><span class="line">长度：未指定 [text/html]</span><br><span class="line">正在保存至: “index.html.10”</span><br><span class="line"></span><br><span class="line">index.html.10                    [ &lt;=&gt;                                           ]  11.11K  --.-KB/s  用时 0s</span><br><span class="line"></span><br><span class="line">2018-09-06 20:24:27 (59.9 MB/s) - “index.html.10” 已保存 [11375]</span><br></pre></td></tr></table></figure>
@@ -664,7 +664,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">85</span>
+                    <span class="site-state-item-count">86</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
