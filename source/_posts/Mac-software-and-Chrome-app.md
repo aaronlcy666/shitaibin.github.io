@@ -16,7 +16,7 @@ tags: ['Mac', 'Chrome']
 
 <!--more-->
 
-- brew：必备包管理工具，使用`proxychains brew xxx`就实现科学上网，快速下载软件了，不要设置其他源。
+- brew：必备包管理工具，然而某些原因国内慢死，你需要[让Homebrew飞](http://lessisbetter.site/2019/07/13/better-brew/)。
 - 命令行临时救命代理`export ALL_PROXY=socks5://127.0.0.1:1080`
 - proxychains：命令行代理工具
     运行一下`proxychains curl ip.gs`就能列出来配置文件目录，修改为：

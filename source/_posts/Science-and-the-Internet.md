@@ -36,7 +36,7 @@ tags: ['shadowsocks']
 ![](http://img.lessisbetter.site/2019-01-ss-ng.png)
 
 
-经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可开发Shadowsocks的http代理和socks5代理。
+经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可设置Shadowsocks的http代理和socks5代理。
 
 ## 开启HTTP代理
 
@@ -89,7 +89,7 @@ proxychains4 wget www.google.com
 
 - dynamic_chain，取消这行注释
 - strict_chain， 注释
-- 最后一行添加`socks5 127.0.0.1 1080`
+- 最后一行添加`socks5 127.0.0.1 1086`
 
 **验证科学上网的唯一标准：能用wget下载google主页**，什么`curl ip.cn`这种不一定准，虽然显示你的是国外IP了，说明这次`curl`走了代理，但不代表你能使用wget下载，能更新源码。
 
