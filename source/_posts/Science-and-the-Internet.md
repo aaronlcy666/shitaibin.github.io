@@ -18,26 +18,13 @@ tags: ['shadowsocks']
 # 软件列表
 
 - [Shadowsocks](https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9):sock5代理
-- proxychains-ng:为终端命令设置代理
+- proxychains-ng:为终端命令设置SOCKS5代理
 
 <!--more-->
 
 # shadowsocks
 
-这是Mac版本，[自行下载](https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-%E5%B8%AE%E5%8A%A9)。
-
-配置如下图2个：
-
-- 设置自动代理模式
-- 填写服务器信息
-
-![shadowsocks配置1](http://img.lessisbetter.site/image-20180906200452853.png)
-
-![shadowsocks服务器配置](http://img.lessisbetter.site/image-20180906200930519.png)
-
-## 更易用的Shadowsocks软件
-
-[ShadowsocksX-NG-R8](https://raw.githubusercontent.com/VeniZ/ShadowsocksX-NG-R8-Bakup/master/ShadowsocksX-NG-R8.dmg)可单独使用，不需要配置Chrome插件，使用用的PAC白名单上网模式，可以减少很多配置，并且体验更好。
+[ShadowsocksX-NG-R8](https://raw.githubusercontent.com/VeniZ/ShadowsocksX-NG-R8-Bakup/master/ShadowsocksX-NG-R8.dmg)是Mac版本，可单独使用，不需要配置Chrome代理插件，使用用的PAC白名单上网模式，可以减少很多配置，并且体验更好。
 
 设置步骤：
 1. 添加服务器信息。
@@ -48,19 +35,32 @@ tags: ['shadowsocks']
 
 ![](http://img.lessisbetter.site/2019-01-ss-ng.png)
 
-# Chrome设置
 
-应用商店安装[SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega)，shadowsocks默认端口为1080，配置如下：
+经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可开发Shadowsocks的http代理和socks5代理。
 
-![Omega代理设置](http://img.lessisbetter.site/image-20180906201214614.png)
+## 开启HTTP代理
 
-浏览器启用代理，自动切换代理的方式自行百度：
+点击状态栏shadowsocks图标，【HTTP代理设置...】是配置Http代理。【高级设置...】是socks5代理设置。
 
-![image-20180906201322243](http://img.lessisbetter.site/image-20180906201322243.png)
+![](http://img.lessisbetter.site/2019-07-ss_http.png)
 
-浏览器可科学上网了。
+
+**http代理支持http和https2个协议的代理**，IP设置为0.0.0.0就可以为其他机器做http和https代理，如果只有本机用，可以使用默认的127。
+
+![](http://img.lessisbetter.site/2019-07-ss-http-set.png)
+
+## 开启SOCKS5代理
+
+socks5的ip设置同http代理。
+
+![](http://img.lessisbetter.site/2019-07-ss-socks5.png)
+
 
 # 终端科学上网
+
+## 用proxychains做socks5代理
+
+> 这种能解决80%的翻墙情况。
 
 作为研发，天天和国外资源打交道，必需让终端也能科学上网，不然下载个、更新软件，或者下载源码就吐血了。
 
@@ -119,3 +119,16 @@ alias brew="py4 brew"
 alias wget="py4 wget"
 ```
 
+## 设置环境变量
+
+proxychains不支持https代理，如果设置http和socks5代理，代理一些https的连接的时候，就出问题了，经常超时、握手失败。
+
+终极解决方案是设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，执行下面的脚本，或直接黏贴到终端。
+
+```bash
+// proxy.sh
+export http_proxy=127.0.0.1:1087
+export https_proxy=127.0.0.1:1087
+```
+
+> golang.org等域名的连接，再也不是问题。
