@@ -102,30 +102,25 @@
 
 
 
-  <meta name="description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
-<meta name="keywords" content="区块链,以太坊">
+  <meta name="description" content="Homebrew源homebrew默认使用的是Github，虽然已经科学上网了，速度依然是KB级别的，相当的慢。使用国内的源，速度有质的提升，推荐2个国内的： 12https://mirrors.cloud.tencent.com/homebrew/brew.gitgit://mirrors.ustc.edu.cn/brew.git 腾讯源更多信息见：https://mirrors.cloud.t">
+<meta name="keywords" content="Mac">
 <meta property="og:type" content="article">
-<meta property="og:title" content="以太坊源码分析：共识（1）矿工">
-<meta property="og:url" content="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/index.html">
+<meta property="og:title" content="让Homebrew飞">
+<meta property="og:url" content="http://lessisbetter.site/2019/07/13/better-brew/index.html">
 <meta property="og:site_name" content="大彬 LIB">
-<meta property="og:description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
+<meta property="og:description" content="Homebrew源homebrew默认使用的是Github，虽然已经科学上网了，速度依然是KB级别的，相当的慢。使用国内的源，速度有质的提升，推荐2个国内的： 12https://mirrors.cloud.tencent.com/homebrew/brew.gitgit://mirrors.ustc.edu.cn/brew.git 腾讯源更多信息见：https://mirrors.cloud.t">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-121153.jpg">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-121152.jpg">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-121154.jpg">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-06-22-121151.jpg">
-<meta property="og:updated_time" content="2019-02-20T01:29:34.709Z">
+<meta property="og:updated_time" content="2019-07-13T03:12:54.526Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="以太坊源码分析：共识（1）矿工">
-<meta name="twitter:description" content="前言矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。 接下来我们将从以下角度介绍矿工：  角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。 一个区块产生的主要流程。 矿工的主要函数介绍，掌握矿工的主要挖矿机制。">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2018-06-22-121153.jpg">
+<meta name="twitter:title" content="让Homebrew飞">
+<meta name="twitter:description" content="Homebrew源homebrew默认使用的是Github，虽然已经科学上网了，速度依然是KB级别的，相当的慢。使用国内的源，速度有质的提升，推荐2个国内的： 12https://mirrors.cloud.tencent.com/homebrew/brew.gitgit://mirrors.ustc.edu.cn/brew.git 腾讯源更多信息见：https://mirrors.cloud.t">
 
 
 
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/07/13/better-brew/"/>
 
 
 
@@ -135,7 +130,7 @@
   };
 </script>
 
-  <title>以太坊源码分析：共识（1）矿工 | 大彬 LIB</title>
+  <title>让Homebrew飞 | 大彬 LIB</title>
   
 
 
@@ -381,7 +376,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/07/13/better-brew/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -398,7 +393,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">以太坊源码分析：共识（1）矿工
+          <h1 class="post-title" itemprop="name headline">让Homebrew飞
 
               
             
@@ -424,24 +419,12 @@
                 
               
 
-              <time title="创建时间：2018-06-22 20:12:57" itemprop="dateCreated datePublished" datetime="2018-06-22T20:12:57+08:00">2018-06-22</time>
+              <time title="创建时间：2019-07-13 11:12:17 / 修改时间：11:12:54" itemprop="dateCreated datePublished" datetime="2019-07-13T11:12:17+08:00">2019-07-13</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-02-20 09:29:34" itemprop="dateModified" datetime="2019-02-20T09:29:34+08:00">2019-02-20</time>
               
             
           </span>
@@ -482,64 +465,26 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>矿工在PoW中负责了产生区块的工作，把一大堆交易交给它，它生成一个证明自己工作了很多区块，然后将区块加入到本地区块链并且广播给其他节点。</p>
-<p>接下来我们将从以下角度介绍矿工：</p>
-<ol>
-<li>角色。矿工不是一个人，而是一类人，可以把这一类人分成若干角色。</li>
-<li>一个区块产生的主要流程。</li>
-<li>矿工的主要函数介绍，掌握矿工的主要挖矿机制。</li>
-</ol>
-<a id="more"></a>
-<p>介绍矿工由哪些部分组成，会和哪些其他模块进行交互，这些部分是如何协作产生区块的。</p>
-<h2 id="角色"><a href="#角色" class="headerlink" title="角色"></a>角色</h2><p>有3种角色：miner、worker、agent。</p>
-<ul>
-<li>miner：是矿长，负责管理整个矿场的运作，比如：启动、停止挖矿，处理外部请求，设置挖矿获得的奖励的钱包地址等等。</li>
-<li>worker：副矿长，负责具体挖矿工作的安排，把挖矿任务（Work）安排给agent。</li>
-<li>agent：真实的矿工，他们负责挖矿，把自己的劳动成果（Result）交给worker，agent默认只有1个，可以通过API创建多个。</li>
-</ul>
-<p><img src="http://img.lessisbetter.site/2018-06-22-121153.jpg" alt="img"></p>
-<h2 id="一个区块产生的主要流程"><a href="#一个区块产生的主要流程" class="headerlink" title="一个区块产生的主要流程"></a>一个区块产生的主要流程</h2><p>实际的挖矿过程基本不涉及miner，只涉及worker、agent和engine，engine是共识引擎模块，我们利用下图介绍生成一个区块的主要流程。</p>
-<blockquote>
-<p>挖矿过程中只涉及engine的3个接口：1）Prepare()挖矿前的准备工作，2）Finalize()形成一个基本定型的区块，3）Seal()形成最终的区块。</p>
-</blockquote>
-<ol>
-<li>worker把区块头、交易、交易执行的收据等传递给engine.Finalize。</li>
-<li>engine.Finalize返回一个<code>block</code>，该block的header中缺少<code>Nonce</code>和<code>MixDigest</code>，这两个值是挖矿获取的。</li>
-<li>worker把block封装到<code>work</code>，把work发送给所有的agent。</li>
-<li>agent.update把work传递给agent.mine。</li>
-<li>agent.mine把work传递给engine.Seal，调用engine.Seal挖矿。</li>
-<li>engine.Seal把<code>Nonce</code>和<code>MixDigest</code>填到区块头，生成一个<code>new block</code>交给agent.mine.</li>
-<li>agent.mine把<code>new block</code>封装成<code>Result</code>，发送给worker。</li>
-</ol>
-<p><img src="http://img.lessisbetter.site/2018-06-22-121152.jpg" alt="img"></p>
-<h2 id="矿工的主要函数"><a href="#矿工的主要函数" class="headerlink" title="矿工的主要函数"></a>矿工的主要函数</h2><p>介绍miner、worker和agent的主要函数，他们是矿工的具体运作机制。</p>
-<h3 id="miner的主要函数"><a href="#miner的主要函数" class="headerlink" title="miner的主要函数"></a>miner的主要函数</h3><p>主要关注2个函数：</p>
-<ol>
-<li><code>New()</code>：负责创建miner。还创建1个worker和1个agent，但agent还可以通过API创建，然后启动<code>update</code>函数。</li>
-<li><code>update()</code>：负责关注downloader的3个事件：StartEvent、DoneEvent、FailedEvent。StartEvent是开始同步区块，必须停止挖矿，DoneEvent和FailedEvent是同步成功或者失败，是同步的结束，已经可以挖矿了。<strong>表明：挖矿和同步区块不可同时进行，尽量降低了区块冲突的可能。</strong></li>
-</ol>
-<h3 id="worker的主要函数"><a href="#worker的主要函数" class="headerlink" title="worker的主要函数"></a>worker的主要函数</h3><p>主要是3个函数：</p>
-<ol>
-<li><code>commitNewWork()</code>：负责生成work，分配agent。这个阶段做了很多工作，调用Engine.Prepare进行准备工作，创建Header，<strong>执行交易</strong>，获取Uncle，使用Engine.Finalize形成“基本定型”的临时区块，创建Work，最后把work传递给agent。另外<code>commitNewWork</code>存在多处调用，并且worker有<code>wait</code>和<code>update</code>另外2个协程，他们都会调用<code>commitNewWork</code>，所以存在临界区需要谨慎加锁。</li>
-<li><code>update()</code>：负责处理外部事件。它是死循环，主要处理3种事件：1）ChainHeadEvent，有了新区块头，所以得切换到挖下一个高度的区块，2）ChainSideEvent，收到了uncle区块，缓存起来，3）TxPreEvent，预处理交易，如果在挖矿执行<code>commitNewWork</code>，如果未挖矿，则交易设置为未决状态。</li>
-<li><code>wait()</code>：负责处理agent挖矿的结果。它是死循环，一直等待接收agent发回的result，然后把区块加入到本地数据库，如果没有问题，就发布<code>NewMinedBlockEvent</code>事件，通告其他节点挖到了一个新块。</li>
-</ol>
-<p><img src="http://img.lessisbetter.site/2018-06-22-121154.jpg" alt="img"><br><em>图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除</em></p>
-<h3 id="agent的主要函数"><a href="#agent的主要函数" class="headerlink" title="agent的主要函数"></a>agent的主要函数</h3><p>主要2个函数:</p>
-<ol>
-<li><code>update()</code>：负责接收worker发来的任务（work）。它是死循环，把work交给mine去挖矿。</li>
-<li><code>mine()</code>：负责挖矿。它拥有挖矿的能力，调用Engine.Seal挖矿，如果挖矿成功则生成result，发送给worker。<br><img src="http://img.lessisbetter.site/2018-06-22-121151.jpg" alt="img"><br> <em>图片来自网络，原出处已不详，如果侵犯您的权益，请通知我立即删除</em></li>
-</ol>
-<blockquote>
-<p>最后两张图片来源网络，侵删。</p>
-</blockquote>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
-<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/">http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/</a></li>
-</ol>
-</blockquote>
+        <h2 id="Homebrew源"><a href="#Homebrew源" class="headerlink" title="Homebrew源"></a>Homebrew源</h2><p>homebrew默认使用的是Github，虽然已经科学上网了，速度依然是KB级别的，相当的慢。使用国内的源，速度有质的提升，推荐2个国内的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">https://mirrors.cloud.tencent.com/homebrew/brew.git</span><br><span class="line">git://mirrors.ustc.edu.cn/brew.git</span><br></pre></td></tr></table></figure>
+<p>腾讯源更多信息见：<a href="https://mirrors.cloud.tencent.com/help/homebrew-bottles.html" target="_blank" rel="noopener">https://mirrors.cloud.tencent.com/help/homebrew-bottles.html</a></p>
+<p>建议ping一下以上2个源，选延时小的。</p>
+<h2 id="下载和修改安装脚本"><a href="#下载和修改安装脚本" class="headerlink" title="下载和修改安装脚本"></a>下载和修改安装脚本</h2><p>下载官方安装脚本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install &gt;&gt; brew_install</span><br></pre></td></tr></table></figure>
+<p>修改官方脚本，把Github源替换为腾讯源：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/ruby</span><br><span class="line"># This script installs to /usr/local only. To install elsewhere (which is</span><br><span class="line"># unsupported) you can untar https://github.com/Homebrew/brew/tarball/master</span><br><span class="line"># anywhere you like.</span><br><span class="line">HOMEBREW_PREFIX = &quot;/usr/local&quot;.freeze</span><br><span class="line">HOMEBREW_REPOSITORY = &quot;/usr/local/Homebrew&quot;.freeze</span><br><span class="line">HOMEBREW_CORE_TAP = &quot;/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core&quot;.freeze</span><br><span class="line">HOMEBREW_CACHE = &quot;#&#123;ENV[&quot;HOME&quot;]&#125;/Library/Caches/Homebrew&quot;.freeze</span><br><span class="line">BREW_REPO = &quot;https://github.com/Homebrew/brew.git&quot;.freeze</span><br></pre></td></tr></table></figure>
+<p>把<code>BREW_REPO = &quot;https://github.com/Homebrew/brew.git&quot;.freeze</code>替换为<code>BREW_REPO = &quot;https://mirrors.cloud.tencent.com/homebrew/brew.git&quot;.freeze</code>。</p>
+<h2 id="运行脚本安装"><a href="#运行脚本安装" class="headerlink" title="运行脚本安装"></a>运行脚本安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ruby ~/brew_install</span><br></pre></td></tr></table></figure>
+<p>这个版本的安装脚本已经没有CORE_TAP_REPO了，所以下载homebrew core的时候依然去Github下载，非常慢，可以在brew.git下载完，control-c结束掉。</p>
+<p>把仓库<code>https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git</code>克隆到<code>/usr/local/Homebrew/Library/Taps/homebrew/</code>目录，然后再执行上面的安装脚本。</p>
+<h2 id="更换brew源"><a href="#更换brew源" class="headerlink" title="更换brew源"></a>更换brew源</h2><p>如果brew已经安装了，直接修改源就行了。</p>
+<p>1、替换brew.git和homebrew-core.git的源:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> <span class="string">"<span class="variable">$(brew --repo)</span>"</span></span><br><span class="line">git remote <span class="built_in">set</span>-url origin https://mirrors.cloud.tencent.com/homebrew/brew.git</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> <span class="string">"<span class="variable">$(brew --repo)</span>/Library/Taps/homebrew/homebrew-core"</span></span><br><span class="line">git remote <span class="built_in">set</span>-url origin https://mirrors.cloud.tencent.com/homebrew/homebrew-core.git</span><br></pre></td></tr></table></figure>
+<p>2、更新 bottles源</p>
+<p>对于bash用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles'</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<p>对于zsh用户</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.cloud.tencent.com/homebrew-bottles'</span> &gt;&gt; ~/.zshrc</span><br><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -567,9 +512,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
-          
-            <a href="/tags/以太坊/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+            <a href="/tags/Mac/" rel="tag"><i class="fa fa-tag"></i> Mac</a>
           
         </div>
       
@@ -582,8 +525,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/22/ethereum-code-statedb/" rel="next" title="以太坊源码分析：statedb">
-                <i class="fa fa-chevron-left"></i> 以太坊源码分析：statedb
+              <a href="/2019/07/12/do-not-abuse-of-log/" rel="next" title="你滥用log了吗">
+                <i class="fa fa-chevron-left"></i> 你滥用log了吗
               </a>
             
           </div>
@@ -591,10 +534,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/22/ethereum-code-consensus-2/" rel="prev" title="以太坊源码分析：共识（2）接口">
-                以太坊源码分析：共识（2）接口 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -919,7 +858,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#角色"><span class="nav-number">2.</span> <span class="nav-text">角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个区块产生的主要流程"><span class="nav-number">3.</span> <span class="nav-text">一个区块产生的主要流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矿工的主要函数"><span class="nav-number">4.</span> <span class="nav-text">矿工的主要函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#miner的主要函数"><span class="nav-number">4.1.</span> <span class="nav-text">miner的主要函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#worker的主要函数"><span class="nav-number">4.2.</span> <span class="nav-text">worker的主要函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#agent的主要函数"><span class="nav-number">4.3.</span> <span class="nav-text">agent的主要函数</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Homebrew源"><span class="nav-number">1.</span> <span class="nav-text">Homebrew源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载和修改安装脚本"><span class="nav-number">2.</span> <span class="nav-text">下载和修改安装脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行脚本安装"><span class="nav-number">3.</span> <span class="nav-text">运行脚本安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更换brew源"><span class="nav-number">4.</span> <span class="nav-text">更换brew源</span></a></li></ol></div>
             
 
           </div>
