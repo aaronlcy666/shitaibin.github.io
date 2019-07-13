@@ -26,6 +26,8 @@ tags: ['Mac']
 
 [ShadowsocksX-NG-R8](https://raw.githubusercontent.com/VeniZ/ShadowsocksX-NG-R8-Bakup/master/ShadowsocksX-NG-R8.dmg)是Mac版本，可单独使用，不需要配置Chrome代理插件，使用用的PAC白名单上网模式，可以减少很多配置，并且体验更好。
 
+最厉害的是，可以把一切TCP转为SOCKS5，也就是说http和https也都可以转换的，只配置一个socks5代理就行了。
+
 设置步骤：
 1. 添加服务器信息。
 2. 设置全局模式
@@ -60,7 +62,6 @@ socks5的ip设置同http代理。
 
 ## 用proxychains做socks5代理
 
-> 这种能解决80%的翻墙情况。
 
 作为研发，天天和国外资源打交道，必需让终端也能科学上网，不然下载个、更新软件，或者下载源码就吐血了。
 
@@ -115,15 +116,21 @@ index.html.10                    [ <=>                                          
 
 ```
 alias py4="proxychains4"
-alias brew="py4 brew"
 alias wget="py4 wget"
 ```
 
+使用这种方式还遇到过某些https就是连接超时的情况，比如`google.golang.org`，可以这么解决：
+
+```
+proxychains4 zsh
+```
+
+这样会新启动一个zsh会话，当前会话的所有连接都转换为socks5代理。
+
+
 ## 设置环境变量
 
-proxychains不支持https代理，如果设置http和socks5代理，代理一些https的连接的时候，就出问题了，经常超时、握手失败。
-
-终极解决方案是设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，执行下面的脚本，或直接黏贴到终端。
+如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，执行下面的脚本，或直接黏贴到终端。
 
 ```bash
 // proxy.sh
