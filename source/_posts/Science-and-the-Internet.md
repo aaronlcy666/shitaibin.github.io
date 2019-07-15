@@ -130,10 +130,9 @@ proxychains4 zsh
 
 ## 设置环境变量
 
-如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，执行下面的脚本，或直接黏贴到终端。
+如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，直接黏贴到终端。
 
 ```bash
-// proxy.sh
 export http_proxy=127.0.0.1:1087
 export https_proxy=127.0.0.1:1087
 ```
