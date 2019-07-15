@@ -38,3 +38,14 @@ tags: ['Linux', 'Mac']
 
 推荐使用七牛或DaoCloud的镜像。
 
+## Go modules代理
+
+现在国内已经有第三方的Go modules代理服务了，比如：
+
+1. [goproxy.io](https://goproxy.io/zh/)，是即将毕业的[盛奥飞](https://github.com/aofei)小哥捐给了七牛搭建的Go modules代理服务。
+1. [aliyun goproxy](http://mirrors.aliyun.com/goproxy/)，阿里云昨天（大概2019年07月15日）刚开放了Go modules代理服务。
+
+fabric使用vendor，下载各种东西的时候需要翻墙，即便是可以翻墙，也是有缺点的：
+
+1. 慢。
+2. 翻墙有流量限制。
