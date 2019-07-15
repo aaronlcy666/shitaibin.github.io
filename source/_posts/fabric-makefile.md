@@ -18,9 +18,11 @@ Makefile文件就在fabric的根目录下，该文件还引入了另外2个Makef
 
 即使掌握了Makefile，仍然会遇到一些问题，所以最后会给出一些建议，让你少踩一些坑。
 
-> 本文基于fabric 1.4，commit id：9dce73，不同版本可能有细微差别。
+> 本文基于fabric 1.4，commit id：9dce73，不同版本可能有细微差别，但不影响掌握构建过程。
 
-# Makefile
+# Makefile详细解读
+
+Makefile看起来有点长，磨刀不误砍柴工，花2个小时，是非常有益处的，建议多看几遍，吃透编译流程。
 
 ## fabric的Makefile
 
@@ -946,7 +948,7 @@ github.com/grpc-ecosystem/go-grpc-middleware: hash of vendored tree not equal to
 
 设置好翻墙，包括http和https代理，以便能下载Github，golang.org的包，参考[让终端科学上网](http://lessisbetter.site/2018/09/06/Science-and-the-Internet/)。
 
-> 发文时fabric还使用的vendor，如果限制fabric已经使用go mod了，建议配置国内go modules代理，这样就无需翻墙了，参考本文[结束语]。
+> 发文时fabric还使用的vendor，如果限制fabric已经使用go mod了，建议配置国内go modules代理，这样就无需翻墙了，参考本文[结束语](#结束语)。
 
 ## Linux系统包管理设置为国内的源，Mac上brew设置为腾讯源
 
