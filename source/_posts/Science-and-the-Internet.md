@@ -130,11 +130,13 @@ proxychains4 zsh
 
 ## 设置环境变量
 
-如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，直接黏贴到终端。
+如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到`.bash_profile`等，不然始终都走代理了，建议在使用的时候，设置代理即可，可以把羡慕代码直接黏贴到终端，但先换成自己的SS http代理服务的IP和端口。
 
 ```bash
-export http_proxy=127.0.0.1:1087
-export https_proxy=127.0.0.1:1087
+export http_proxy="http://192.168.102.143:1087"
+export https_proxy="http://192.168.102.143:1087"
 ```
 
-注意，不需要增加协议头，比如`export http_proxy="http://127.0.0.1:1087"`，这样是画蛇添足，填充的时候反而会造成问题，只填写IP和端口即可。
+使用`export http_proxy=127.0.0.1:1087`，大多数情况也没毛病，但由此在Docker里更新系统时，IP和端口识别不正确的情况，建议使用带协议头的方式。
+
+另外，`https_proxy="http://192.168.102.143:1087`，这让https_proxy实际走的是http代理，如果不这样设置，访问goolge某些网站的时候，可能会遇到超时、握手失败的情况。
