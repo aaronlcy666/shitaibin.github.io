@@ -939,6 +939,7 @@ dep:
 github.com/grpc-ecosystem/go-grpc-middleware: hash of vendored tree not equal to digest in Gopkg.lock
 ```
 
+[附录](#附录)中包含了构建日志，可根据构建日志看一下构建过程。
 
 # 构建建议
 
@@ -1020,6 +1021,431 @@ fabric赶紧支持go mod吧，这样再也不用翻墙了。
 # 参考资料
 
 1. [fabric工程项目构建Makefile翻译及解析](https://shanma.pro/tutorial/56688.html)
+
+# 附录
+
+一份构建日志：
+
+```
+
+➜  fabric git:(r1.4) ✗ make all
+.build/bin/peer
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/metadata.Version=1.4.2 -X github.com/hyperledger/fabric/common/metadata.CommitSHA=9dce735 -X github.com/hyperledger/fabric/common/metadata.BaseVersion=0.4.15 -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger" github.com/hyperledger/fabric/peer
+Binary available as .build/bin/peer
+.build/bin/orderer
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/metadata.Version=1.4.2 -X github.com/hyperledger/fabric/common/metadata.CommitSHA=9dce735 -X github.com/hyperledger/fabric/common/metadata.BaseVersion=0.4.15 -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger" github.com/hyperledger/fabric/orderer
+Binary available as .build/bin/orderer
+.build/bin/configtxgen
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxgen
+Binary available as .build/bin/configtxgen
+.build/bin/cryptogen
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/cryptogen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/cryptogen
+Binary available as .build/bin/cryptogen
+.build/bin/idemixgen
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/idemixgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/idemixgen
+Binary available as .build/bin/idemixgen
+.build/bin/configtxlator
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxlator/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxlator
+Binary available as .build/bin/configtxlator
+.build/bin/discover
+CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/cmd/discover/metadata.Version=1.4.2-snapshot-9dce735" github.com/hyperledger/fabric/cmd/discover
+Binary available as .build/bin/discover
+Building .build/docker/bin/peer
+# github.com/hyperledger/fabric/peer
+/tmp/go-link-829040977/000006.o: In function `pluginOpen':
+/workdir/go/src/plugin/plugin_dlopen.go:19: warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-829040977/000021.o: In function `mygetgrouplist':
+/workdir/go/src/os/user/getgrouplist_unix.go:16: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-829040977/000020.o: In function `mygetgrgid_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:38: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-829040977/000020.o: In function `mygetgrnam_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:43: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-829040977/000020.o: In function `mygetpwnam_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:33: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-829040977/000020.o: In function `mygetpwuid_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:28: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-829040977/000004.o: In function `_cgo_18049202ccd9_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:49: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+(cd sampleconfig && tar -jc *) > .build/sampleconfig.tar.bz2
+mkdir -p .build/image/peer/payload
+cp .build/docker/bin/peer .build/sampleconfig.tar.bz2 .build/image/peer/payload
+mkdir -p .build/image/peer
+Building docker peer-image
+docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-peer .build/image/peer
+Sending build context to Docker daemon  33.56MB
+Step 1/7 : FROM hyperledger/fabric-baseos:amd64-0.4.15
+ ---> 9d6ec11c60ff
+Step 2/7 : ENV FABRIC_CFG_PATH /etc/hyperledger/fabric
+ ---> Running in 3bea4b2a628b
+Removing intermediate container 3bea4b2a628b
+ ---> 8892a2046872
+Step 3/7 : RUN mkdir -p /var/hyperledger/production $FABRIC_CFG_PATH
+ ---> Running in 06437fde2305
+Removing intermediate container 06437fde2305
+ ---> 98fc3c6b0fae
+Step 4/7 : COPY payload/peer /usr/local/bin
+ ---> 635a5f0e02c4
+Step 5/7 : ADD  payload/sampleconfig.tar.bz2 $FABRIC_CFG_PATH
+ ---> d2e3f4b80946
+Step 6/7 : CMD ["peer","node","start"]
+ ---> Running in 47e57005f4f8
+Removing intermediate container 47e57005f4f8
+ ---> 59a7e54bfe1a
+Step 7/7 : LABEL org.hyperledger.fabric.version=1.4.2       org.hyperledger.fabric.base.version=0.4.15
+ ---> Running in aaacacec80e8
+Removing intermediate container aaacacec80e8
+ ---> e97b7fd4ff49
+Successfully built e97b7fd4ff49
+Successfully tagged hyperledger/fabric-peer:latest
+docker tag hyperledger/fabric-peer hyperledger/fabric-peer:amd64-1.4.2-snapshot-9dce735
+docker tag hyperledger/fabric-peer hyperledger/fabric-peer:amd64-latest
+Building .build/docker/bin/orderer
+# github.com/hyperledger/fabric/orderer
+/tmp/go-link-846385019/000018.o: In function `pluginOpen':
+/workdir/go/src/plugin/plugin_dlopen.go:19: warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-846385019/000021.o: In function `mygetgrouplist':
+/workdir/go/src/os/user/getgrouplist_unix.go:16: warning: Using 'getgrouplist' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-846385019/000020.o: In function `mygetgrgid_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:38: warning: Using 'getgrgid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-846385019/000020.o: In function `mygetgrnam_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:43: warning: Using 'getgrnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-846385019/000020.o: In function `mygetpwnam_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:33: warning: Using 'getpwnam_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-846385019/000020.o: In function `mygetpwuid_r':
+/workdir/go/src/os/user/cgo_lookup_unix.go:28: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/tmp/go-link-846385019/000004.o: In function `_cgo_18049202ccd9_C2func_getaddrinfo':
+/tmp/go-build/cgo-gcc-prolog:49: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+mkdir -p .build/image/orderer/payload
+cp .build/docker/bin/orderer .build/sampleconfig.tar.bz2 .build/image/orderer/payload
+mkdir -p .build/image/orderer
+Building docker orderer-image
+docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-orderer .build/image/orderer
+Sending build context to Docker daemon  28.09MB
+Step 1/8 : FROM hyperledger/fabric-baseos:amd64-0.4.15
+ ---> 9d6ec11c60ff
+Step 2/8 : ENV FABRIC_CFG_PATH /etc/hyperledger/fabric
+ ---> Using cache
+ ---> 8892a2046872
+Step 3/8 : RUN mkdir -p /var/hyperledger/production $FABRIC_CFG_PATH
+ ---> Using cache
+ ---> 98fc3c6b0fae
+Step 4/8 : COPY payload/orderer /usr/local/bin
+ ---> 50854bee0fa6
+Step 5/8 : ADD payload/sampleconfig.tar.bz2 $FABRIC_CFG_PATH/
+ ---> bab56963bf0f
+Step 6/8 : EXPOSE 7050
+ ---> Running in bda05dbbf18a
+Removing intermediate container bda05dbbf18a
+ ---> 7b335f36f7d2
+Step 7/8 : CMD ["orderer"]
+ ---> Running in 210013bf0e3e
+Removing intermediate container 210013bf0e3e
+ ---> b543c69c8caf
+Step 8/8 : LABEL org.hyperledger.fabric.version=1.4.2       org.hyperledger.fabric.base.version=0.4.15
+ ---> Running in c762fc3e0590
+Removing intermediate container c762fc3e0590
+ ---> aa8604c99f23
+Successfully built aa8604c99f23
+Successfully tagged hyperledger/fabric-orderer:latest
+docker tag hyperledger/fabric-orderer hyperledger/fabric-orderer:amd64-1.4.2-snapshot-9dce735
+docker tag hyperledger/fabric-orderer hyperledger/fabric-orderer:amd64-latest
+Building dockerized gotools
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/maxbrunsfeld/counterfeiter -> counterfeiter
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/golang/dep v0.5.1 -> dep
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building golang.org/x/lint/golint -> golint
+GOBIN=/opt/gotools/bin go install ./vendor/golang.org/x/lint/golint
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building golang.org/x/tools/cmd/goimports -> goimports
+GOBIN=/opt/gotools/bin go install ./vendor/golang.org/x/tools/cmd/goimports
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/golang/protobuf/protoc-gen-go -> protoc-gen-go
+GOBIN=/opt/gotools/bin go install ./vendor/github.com/golang/protobuf/protoc-gen-go
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/onsi/ginkgo/ginkgo -> ginkgo
+GOBIN=/opt/gotools/bin go install ./vendor/github.com/onsi/ginkgo/ginkgo
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/axw/gocov/gocov -> gocov
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/AlekSi/gocov-xml -> gocov-xml
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/client9/misspell/cmd/misspell -> misspell
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/vektra/mockery/cmd/mockery -> mockery
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Building github.com/estesp/manifest-tool -> manifest-tool
+make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+Installing chaintool
+curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/chaintool-1.1.3/hyperledger-fabric-chaintool-1.1.3.jar > .build/bin/chaintool
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 16.4M  100 16.4M    0     0  1142k      0  0:00:14  0:00:14 --:--:-- 2544k
+chmod +x .build/bin/chaintool
+Creating .build/goshim.tar.bz2
+mkdir -p .build/image/ccenv/payload
+cp .build/docker/gotools/bin/protoc-gen-go .build/bin/chaintool .build/goshim.tar.bz2 .build/image/ccenv/payload
+mkdir -p .build/image/ccenv
+Building docker ccenv-image
+docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-ccenv .build/image/ccenv
+Sending build context to Docker daemon  25.12MB
+Step 1/5 : FROM hyperledger/fabric-baseimage:amd64-0.4.15
+ ---> c4c532c23a50
+Step 2/5 : COPY payload/chaintool payload/protoc-gen-go /usr/local/bin/
+ ---> 44e06a863d08
+Step 3/5 : ADD payload/goshim.tar.bz2 $GOPATH/src/
+ ---> 233605b067d5
+Step 4/5 : RUN mkdir -p /chaincode/input /chaincode/output
+ ---> Running in be1909a39e06
+Removing intermediate container be1909a39e06
+ ---> 605b1c70e97f
+Step 5/5 : LABEL org.hyperledger.fabric.version=1.4.2       org.hyperledger.fabric.base.version=0.4.15
+ ---> Running in dc470f15e125
+Removing intermediate container dc470f15e125
+ ---> 7cb803c8b124
+Successfully built 7cb803c8b124
+Successfully tagged hyperledger/fabric-ccenv:latest
+docker tag hyperledger/fabric-ccenv hyperledger/fabric-ccenv:amd64-1.4.2-snapshot-9dce735
+docker tag hyperledger/fabric-ccenv hyperledger/fabric-ccenv:amd64-latest
+(cd .build/docker/gotools/bin && tar -jc *) > .build/gotools.tar.bz2
+mkdir -p .build/image/buildenv/payload
+cp .build/gotools.tar.bz2 .build/docker/gotools/bin/protoc-gen-go .build/image/buildenv/payload
+mkdir -p .build/image/buildenv
+Building docker buildenv-image
+docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-buildenv .build/image/buildenv
+Sending build context to Docker daemon  47.17MB
+Step 1/5 : FROM hyperledger/fabric-baseimage:amd64-0.4.15
+ ---> c4c532c23a50
+Step 2/5 : COPY payload/protoc-gen-go /usr/local/bin/
+ ---> 90f62f1410b4
+Step 3/5 : ADD payload/gotools.tar.bz2 /usr/local/bin/
+ ---> e27228cd3fb8
+Step 4/5 : ENV GOCACHE "/tmp"
+ ---> Running in 780e38380727
+Removing intermediate container 780e38380727
+ ---> b610d861e6ce
+Step 5/5 : LABEL org.hyperledger.fabric.version=1.4.2       org.hyperledger.fabric.base.version=0.4.15
+ ---> Running in 226095fc14b5
+Removing intermediate container 226095fc14b5
+ ---> 6ba655852ec7
+Successfully built 6ba655852ec7
+Successfully tagged hyperledger/fabric-buildenv:latest
+docker tag hyperledger/fabric-buildenv hyperledger/fabric-buildenv:amd64-1.4.2-snapshot-9dce735
+docker tag hyperledger/fabric-buildenv hyperledger/fabric-buildenv:amd64-latest
+mkdir -p .build/image/tools
+Building docker tools-image
+docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-tools -f .build/image/tools/Dockerfile .
+Sending build context to Docker daemon  179.5MB
+Step 1/14 : FROM hyperledger/fabric-baseimage:amd64-0.4.15 as builder
+ ---> c4c532c23a50
+Step 2/14 : WORKDIR /opt/gopath
+ ---> Running in bc4dd206cdcd
+Removing intermediate container bc4dd206cdcd
+ ---> c156c64ba0c0
+Step 3/14 : RUN mkdir src && mkdir pkg && mkdir bin
+ ---> Running in 752a63efe3be
+Removing intermediate container 752a63efe3be
+ ---> 001cb4d1136f
+Step 4/14 : ADD . src/github.com/hyperledger/fabric
+ ---> 5ba1e6fe79df
+Step 5/14 : WORKDIR /opt/gopath/src/github.com/hyperledger/fabric
+ ---> Running in 9b03a753a124
+Removing intermediate container 9b03a753a124
+ ---> e0eb57e0b44b
+Step 6/14 : ENV EXECUTABLES go git curl
+ ---> Running in 6b5978688143
+Removing intermediate container 6b5978688143
+ ---> 2a28ae07b3da
+Step 7/14 : RUN make configtxgen configtxlator cryptogen peer discover idemixgen
+ ---> Running in 27e814a9a148
+.build/bin/configtxgen
+CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxgen
+Binary available as .build/bin/configtxgen
+.build/bin/configtxlator
+CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxlator/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxlator
+Binary available as .build/bin/configtxlator
+.build/bin/cryptogen
+CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/cryptogen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/cryptogen
+Binary available as .build/bin/cryptogen
+.build/bin/peer
+CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/metadata.Version=1.4.2 -X github.com/hyperledger/fabric/common/metadata.CommitSHA=9dce735 -X github.com/hyperledger/fabric/common/metadata.BaseVersion=0.4.15 -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger" github.com/hyperledger/fabric/peer
+Binary available as .build/bin/peer
+.build/bin/discover
+CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/cmd/discover/metadata.Version=1.4.2-snapshot-9dce735" github.com/hyperledger/fabric/cmd/discover
+Binary available as .build/bin/discover
+.build/bin/idemixgen
+CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/idemixgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/idemixgen
+Binary available as .build/bin/idemixgen
+Removing intermediate container 27e814a9a148
+ ---> 019fcc98aafe
+Step 8/14 : FROM hyperledger/fabric-baseimage:amd64-0.4.15
+ ---> c4c532c23a50
+Step 9/14 : ENV FABRIC_CFG_PATH /etc/hyperledger/fabric
+ ---> Running in 971f1e778c1b
+Removing intermediate container 971f1e778c1b
+ ---> 3abe7ab3eda7
+Step 10/14 : RUN apt-get update && apt-get install -y jq
+ ---> Running in 0c6bc2dab637
+Get:1 http://security.ubuntu.com/ubuntu xenial-security InRelease [109 kB]
+Get:2 http://archive.ubuntu.com/ubuntu xenial InRelease [247 kB]
+Get:3 http://archive.ubuntu.com/ubuntu xenial-updates InRelease [109 kB]
+Get:4 http://security.ubuntu.com/ubuntu xenial-security/main amd64 Packages [896 kB]
+Get:5 http://archive.ubuntu.com/ubuntu xenial-backports InRelease [107 kB]
+Get:6 http://archive.ubuntu.com/ubuntu xenial/main amd64 Packages [1558 kB]
+Get:7 http://security.ubuntu.com/ubuntu xenial-security/restricted amd64 Packages [12.7 kB]
+Get:8 http://security.ubuntu.com/ubuntu xenial-security/universe amd64 Packages [569 kB]
+Get:9 http://archive.ubuntu.com/ubuntu xenial/restricted amd64 Packages [14.1 kB]
+Get:10 http://archive.ubuntu.com/ubuntu xenial/universe amd64 Packages [9827 kB]
+Get:11 http://security.ubuntu.com/ubuntu xenial-security/multiverse amd64 Packages [6117 B]
+Get:12 http://archive.ubuntu.com/ubuntu xenial/multiverse amd64 Packages [176 kB]
+Get:13 http://archive.ubuntu.com/ubuntu xenial-updates/main amd64 Packages [1277 kB]
+Get:14 http://archive.ubuntu.com/ubuntu xenial-updates/restricted amd64 Packages [13.1 kB]
+Get:15 http://archive.ubuntu.com/ubuntu xenial-updates/universe amd64 Packages [974 kB]
+Get:16 http://archive.ubuntu.com/ubuntu xenial-updates/multiverse amd64 Packages [19.1 kB]
+Get:17 http://archive.ubuntu.com/ubuntu xenial-backports/main amd64 Packages [7942 B]
+Get:18 http://archive.ubuntu.com/ubuntu xenial-backports/universe amd64 Packages [8532 B]
+Fetched 15.9 MB in 17s (896 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libonig2
+The following NEW packages will be installed:
+  jq libonig2
+0 upgraded, 2 newly installed, 0 to remove and 55 not upgraded.
+Need to get 231 kB of archives.
+After this operation, 797 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu xenial-updates/universe amd64 libonig2 amd64 5.9.6-1ubuntu0.1 [86.7 kB]
+Get:2 http://archive.ubuntu.com/ubuntu xenial-updates/universe amd64 jq amd64 1.5+dfsg-1ubuntu0.1 [144 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin:
+Fetched 231 kB in 2s (105 kB/s)
+Selecting previously unselected package libonig2:amd64.
+(Reading database ... 22655 files and directories currently installed.)
+Preparing to unpack .../libonig2_5.9.6-1ubuntu0.1_amd64.deb ...
+Unpacking libonig2:amd64 (5.9.6-1ubuntu0.1) ...
+Selecting previously unselected package jq.
+Preparing to unpack .../jq_1.5+dfsg-1ubuntu0.1_amd64.deb ...
+Unpacking jq (1.5+dfsg-1ubuntu0.1) ...
+Processing triggers for libc-bin (2.23-0ubuntu11) ...
+Setting up libonig2:amd64 (5.9.6-1ubuntu0.1) ...
+Setting up jq (1.5+dfsg-1ubuntu0.1) ...
+Processing triggers for libc-bin (2.23-0ubuntu11) ...
+Removing intermediate container 0c6bc2dab637
+ ---> bc8cfafb544f
+Step 11/14 : VOLUME /etc/hyperledger/fabric
+ ---> Running in 260f4ec6bd3e
+Removing intermediate container 260f4ec6bd3e
+ ---> 9f682419f109
+Step 12/14 : COPY --from=builder /opt/gopath/src/github.com/hyperledger/fabric/.build/bin /usr/local/bin
+ ---> ff18ec787bf5
+Step 13/14 : COPY --from=builder /opt/gopath/src/github.com/hyperledger/fabric/sampleconfig $FABRIC_CFG_PATH
+ ---> 70163f0cac4f
+Step 14/14 : LABEL org.hyperledger.fabric.version=1.4.2       org.hyperledger.fabric.base.version=0.4.15
+ ---> Running in 2f70bb608ac2
+Removing intermediate container 2f70bb608ac2
+ ---> e395ec9d27e8
+Successfully built e395ec9d27e8
+Successfully tagged hyperledger/fabric-tools:latest
+docker tag hyperledger/fabric-tools hyperledger/fabric-tools:amd64-1.4.2-snapshot-9dce735
+docker tag hyperledger/fabric-tools hyperledger/fabric-tools:amd64-latest
+All files have SPDX-License-Identifier headers
+Checking changed go files for spelling errors ...
+spell checker passed
+Checking trailing spaces ...
+DEP: Checking for dependency issues..
+LINT: Running code checks..
+Checking with gofmt
+Checking with goimports
+Checking for golang.org/x/net/context
+Checking with go vet
+METRICS: Checking for outdated reference documentation..
+cd unit-test && docker-compose down
+WARNING: The TEST_PKGS variable is not set. Defaulting to a blank string.
+WARNING: The JOB_TYPE variable is not set. Defaulting to a blank string.
+docker pull hyperledger/fabric-couchdb:amd64-0.4.15
+amd64-0.4.15: Pulling from hyperledger/fabric-couchdb
+34667c7e4631: Already exists
+d18d76a881a4: Already exists
+119c7358fbfc: Already exists
+2aaf13f3eff0: Already exists
+3f89de4cf84b: Already exists
+24194f819972: Already exists
+78e4eabd31a5: Already exists
+c7652b6bde40: Already exists
+b4646dd65c45: Already exists
+5e6defad8a30: Already exists
+7695bf5d0b9d: Pull complete
+6d9d46f66bc3: Pull complete
+4912f1b4990a: Pull complete
+f3b174a93eea: Pull complete
+3763a939777a: Pull complete
+f293593adbb6: Pull complete
+1ae53ace804f: Pull complete
+d4aa6d764b18: Pull complete
+d747b2b30e48: Pull complete
+52cbd2253fea: Pull complete
+Digest: sha256:e9c528f90c84c50dd3a79c2d2c5f1ff87264a8009a1971b269ceecace4ef1fb9
+Status: Downloaded newer image for hyperledger/fabric-couchdb:amd64-0.4.15
+docker tag hyperledger/fabric-couchdb:amd64-0.4.15 hyperledger/fabric-couchdb
+docker pull hyperledger/fabric-zookeeper:amd64-0.4.15
+amd64-0.4.15: Pulling from hyperledger/fabric-zookeeper
+34667c7e4631: Already exists
+d18d76a881a4: Already exists
+119c7358fbfc: Already exists
+2aaf13f3eff0: Already exists
+3f89de4cf84b: Already exists
+24194f819972: Already exists
+78e4eabd31a5: Already exists
+c7652b6bde40: Already exists
+b4646dd65c45: Already exists
+5e6defad8a30: Already exists
+0e045d9c2cdc: Pull complete
+7ef4d8920518: Pull complete
+dbeed81d9a45: Pull complete
+aeea025ecc4e: Pull complete
+Digest: sha256:4e4e8b8aaed7864f23d0c6c018cc8589e8e1d042413abc034dd7a6b3faacd2f0
+Status: Downloaded newer image for hyperledger/fabric-zookeeper:amd64-0.4.15
+docker tag hyperledger/fabric-zookeeper:amd64-0.4.15 hyperledger/fabric-zookeeper
+docker pull hyperledger/fabric-kafka:amd64-0.4.15
+amd64-0.4.15: Pulling from hyperledger/fabric-kafka
+34667c7e4631: Already exists
+d18d76a881a4: Already exists
+119c7358fbfc: Already exists
+2aaf13f3eff0: Already exists
+3f89de4cf84b: Already exists
+24194f819972: Already exists
+78e4eabd31a5: Already exists
+c7652b6bde40: Already exists
+b4646dd65c45: Already exists
+5e6defad8a30: Already exists
+d0459116a54a: Pull complete
+1bbcec7bfdef: Pull complete
+5911218c5933: Pull complete
+Digest: sha256:68398b1e1ee4165fd80b1a2f0e123625f489150673c7dc4816177816e43ace78
+Status: Downloaded newer image for hyperledger/fabric-kafka:amd64-0.4.15
+docker tag hyperledger/fabric-kafka:amd64-0.4.15 hyperledger/fabric-kafka
+unit-test/run.sh
+
+// 省略后面的单元测试
+```
 
 > 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
 > 2. 本文作者：[大彬](http://lessisbetter.site/about/)
