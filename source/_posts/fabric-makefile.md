@@ -1027,7 +1027,6 @@ fabric赶紧支持go mod吧，这样再也不用翻墙了。
 一份构建日志：
 
 ```
-
 ➜  fabric git:(r1.4) ✗ make all
 .build/bin/peer
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/metadata.Version=1.4.2 -X github.com/hyperledger/fabric/common/metadata.CommitSHA=9dce735 -X github.com/hyperledger/fabric/common/metadata.BaseVersion=0.4.15 -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger" github.com/hyperledger/fabric/peer

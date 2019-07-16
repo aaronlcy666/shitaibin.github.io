@@ -137,4 +137,4 @@ export http_proxy=127.0.0.1:1087
 export https_proxy=127.0.0.1:1087
 ```
 
-> golang.org等域名的连接，再也不是问题。
+注意，不需要增加协议头，比如`export http_proxy="http://127.0.0.1:1087"`，这样是画蛇添足，填充的时候反而会造成问题，只填写IP和端口即可。
