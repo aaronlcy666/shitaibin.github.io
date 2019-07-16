@@ -1008,7 +1008,7 @@ $ which tar
 现在国内已经有第三方的Go modules代理服务了，比如：
 
 1. [goproxy.io](https://goproxy.io/zh/)，是即将毕业的[盛奥飞](https://github.com/aofei)小哥捐给了七牛搭建的Go modules代理服务。
-1. [aliyun goproxy](http://mirrors.aliyun.com/goproxy/)，阿里云昨天（大概2019年07月15日）刚开放了Go modules代理服务。
+1. [aliyun goproxy](http://mirrors.aliyun.com/goproxy/)，现在阿里云开放了Go modules代理服务。
 
 fabric使用vendor，下载各种东西的时候需要翻墙，即便是可以翻墙，也是有缺点的：
 
@@ -1020,3 +1020,11 @@ fabric赶紧支持go mod吧，这样再也不用翻墙了。
 # 参考资料
 
 1. [fabric工程项目构建Makefile翻译及解析](https://shanma.pro/tutorial/56688.html)
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/07/16/fabric-makefile/](http://lessisbetter.site/2019/07/16/fabric-makefile/)
+
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center />
