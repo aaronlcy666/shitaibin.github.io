@@ -761,6 +761,14 @@ gotools指的一些列go语言的工具，并不是golang/tools仓库，具体�
 1. 少数几个支持从vendor目录直接安装
 2. 默认方式是使用go get方式安装，所以请**翻墙**
 
+另外，gotools.mk实际是在docker中运行的，也就是生成的程序都在docker镜像中，在当前host并没有运行，具体看gotools.mk调用的地方。调用处把GOBIN设置为了`.build/docker/gotools/bin`，并映射到了docker，构建后可以查看生成的程序：
+
+```bash
+➜  fabric git:(r1.4) ls .build/docker/gotools/bin
+counterfeiter  dep  ginkgo  gocov  gocov-xml  goimports  golint  manifest-tool  misspell  mockery  protoc-gen-go
+```
+
+Makefile注释：
 
 ```mk
 // gotools.mk
@@ -841,7 +849,72 @@ $(GOTOOLS_BINDIR)/%:
 	@$(MAKE) -f gotools.mk gotool.$(TOOL)
 ```
 
-## 通过Makefile定位编译问题
+
+
+# 构建建议
+
+列出几条构建建议，建议在make前先做好，会提高构建效率，并且少采坑。
+
+## 翻墙
+
+设置好翻墙，包括http和https代理，以便能下载Github，golang.org的包，参考[让终端科学上网](http://lessisbetter.site/2018/09/06/Science-and-the-Internet/)。
+
+> 发文时fabric还使用的vendor，如果限制fabric已经使用go mod了，建议配置国内go modules代理，这样就无需翻墙了，参考本文[结束语](#结束语)。
+
+## Linux系统包管理设置为国内的源，Mac上brew设置为腾讯源
+
+参考[让镜像飞，加速你的开发](http://lessisbetter.site/2019/07/13/fast-mirrors/)。
+
+## docker设置为国内的源
+
+参考[Docker镜像加速](https://yeasy.gitbooks.io/docker_practice/install/mirror.html)。
+
+## 检查GOPATH和PATH，以及http代理
+
+确保配置正确：
+
+```
+echo $http_proxy
+echo $https_proxy
+echo $GOPATH
+echo $PATH
+```
+
+## 安装docker-compose
+
+centos7下请参考：
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker-compose --version
+```
+
+## Mac上安装Gnu-tar
+
+如果未安装，可能遇到下面的错误：
+
+```
+Step 3/5 : ADD payload/goshim.tar.bz2 $GOPATH/src/
+failed to copy files: Error processing tar file(bzip2 data invalid: bad magic value in continuation file):
+make: [build/image/ccenv/.dummy-x86_64-1.0.7-snapshot-ac3fabd] Error 1
+```
+
+需要安装gnu-tar，用gnu-tar替换mac默认的bsdtar，可以用brew list gnu-tar找到gnu-tar的位置:
+
+```
+$ brew install gnu-tar --with-default-names
+$ export PATH="/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH"
+$ which tar
+/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin//tar
+```
+
+## Git升级到2.22以上版本
+
+如果未升级可能遇到上文提到的dep不存在的问题。
+
+# 通过Makefile定位编译问题
 
 这类问题是类似的，要找到报错的位置，是做哪项构建时报的错，以及报错位置的前提条件是什么。
 
@@ -939,70 +1012,51 @@ dep:
 github.com/grpc-ecosystem/go-grpc-middleware: hash of vendored tree not equal to digest in Gopkg.lock
 ```
 
-[附录](#附录)中包含了构建日志，可根据构建日志看一下构建过程。
+# 构建日志
 
-# 构建建议
+构建日志比较长，放到了[附录](#附录)中，对构建日志加了注释，可根据构建日志进一步掌握构建过程。
 
-列出几条构建建议，建议在make前先做好，会提高构建效率，并且少采坑。
+# 镜像解读
 
-## 翻墙
-
-设置好翻墙，包括http和https代理，以便能下载Github，golang.org的包，参考[让终端科学上网](http://lessisbetter.site/2018/09/06/Science-and-the-Internet/)。
-
-> 发文时fabric还使用的vendor，如果限制fabric已经使用go mod了，建议配置国内go modules代理，这样就无需翻墙了，参考本文[结束语](#结束语)。
-
-## Linux系统包管理设置为国内的源，Mac上brew设置为腾讯源
-
-参考[让镜像飞，加速你的开发](http://lessisbetter.site/2019/07/13/fast-mirrors/)。
-
-## docker设置为国内的源
-
-参考[Docker镜像加速](https://yeasy.gitbooks.io/docker_practice/install/mirror.html)。
-
-## 检查GOPATH和PATH，以及http代理
-
-确保配置正确：
+通过`make all`或`make docker`可以生成fabric的所有镜像，这些镜像可以通过`make docker-list`查看，如果使用docker images查看，会看到更多的镜像，并且发现下面这5个镜像还有另外一个"lastest"的标签，看Makefile可以知道，其实是1个镜像2个标签而已。
 
 ```
-echo $http_proxy
-echo $https_proxy
-echo $GOPATH
-echo $PATH
+➜  fabric git:(r1.4) make docker-list
+hyperledger/fabric-peer:amd64-1.4.2-snapshot-9dce7357b
+hyperledger/fabric-orderer:amd64-1.4.2-snapshot-9dce7357b
+hyperledger/fabric-ccenv:amd64-1.4.2-snapshot-9dce7357b
+hyperledger/fabric-buildenv:amd64-1.4.2-snapshot-9dce7357b
+hyperledger/fabric-tools:amd64-1.4.2-snapshot-9dce7357b
 ```
 
-## 安装docker-compose
+- fabric-peer：可以使用该镜像启动一个peer节点。
+- fabric-orderer：可以使用该镜像启动一个排序节点。
+- fabric-ccenv：这是智能合约环境镜像，ccenv是chaincode env的缩写。
+- fabric-buildenv：实际包含的是go tools.tar.bz2和protoc-gen-go的镜像。
+- fabric-tools：是fabric自身tools集合的镜像。
 
-centos7下请参考：
-```
-sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-sudo chmod +x /usr/local/bin/docker-compose
-
-docker-compose --version
-```
-
-## Mac上安装Gnu-tar
-
-如果未安装，可能遇到下面的错误：
+这几个镜像的Dockerfile文件在：`images`目录下，各镜像具体内容见各自的Dockerfile。
 
 ```
-Step 3/5 : ADD payload/goshim.tar.bz2 $GOPATH/src/
-failed to copy files: Error processing tar file(bzip2 data invalid: bad magic value in continuation file):
-make: [build/image/ccenv/.dummy-x86_64-1.0.7-snapshot-ac3fabd] Error 1
+➜  fabric git:(r1.4) tree images
+images
+├── buildenv
+│   └── Dockerfile.in
+├── ccenv
+│   └── Dockerfile.in
+├── orderer
+│   └── Dockerfile.in
+├── peer
+│   └── Dockerfile.in
+├── testenv
+│   ├── Dockerfile.alpine
+│   └── softhsm
+│       └── APKBUILD
+└── tools
+    └── Dockerfile.in
+
+7 directories, 7 files
 ```
-
-需要安装gnu-tar，用gnu-tar替换mac默认的bsdtar，可以用brew list gnu-tar找到gnu-tar的位置:
-
-```
-$ brew install gnu-tar --with-default-names
-$ export PATH="/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH"
-$ which tar
-/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin//tar
-```
-
-## Git升级到2.22以上版本
-
-如果未升级可能遇到上文提到的dep不存在的问题。
 
 # 结束语
 
@@ -1028,27 +1082,38 @@ fabric赶紧支持go mod吧，这样再也不用翻墙了。
 
 ```
 ➜  fabric git:(r1.4) ✗ make all
+// 构建native那些程序，等价make native
+// peer
 .build/bin/peer
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/metadata.Version=1.4.2 -X github.com/hyperledger/fabric/common/metadata.CommitSHA=9dce735 -X github.com/hyperledger/fabric/common/metadata.BaseVersion=0.4.15 -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger" github.com/hyperledger/fabric/peer
 Binary available as .build/bin/peer
+// orderer
 .build/bin/orderer
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/metadata.Version=1.4.2 -X github.com/hyperledger/fabric/common/metadata.CommitSHA=9dce735 -X github.com/hyperledger/fabric/common/metadata.BaseVersion=0.4.15 -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric -X github.com/hyperledger/fabric/common/metadata.DockerNamespace=hyperledger -X github.com/hyperledger/fabric/common/metadata.BaseDockerNamespace=hyperledger" github.com/hyperledger/fabric/orderer
 Binary available as .build/bin/orderer
+// configtxgen
 .build/bin/configtxgen
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxgen
 Binary available as .build/bin/configtxgen
+// cryptogen
 .build/bin/cryptogen
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/cryptogen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/cryptogen
 Binary available as .build/bin/cryptogen
+// idemixgen
 .build/bin/idemixgen
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/idemixgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/idemixgen
 Binary available as .build/bin/idemixgen
+// configtxlator
 .build/bin/configtxlator
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxlator/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxlator
 Binary available as .build/bin/configtxlator
+// discover
 .build/bin/discover
 CGO_CFLAGS=" " GOBIN=/home/centos/go/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/cmd/discover/metadata.Version=1.4.2-snapshot-9dce735" github.com/hyperledger/fabric/cmd/discover
 Binary available as .build/bin/discover
+
+// 以下这部分等价make docker
+// 构建peer镜像
 Building .build/docker/bin/peer
 # github.com/hyperledger/fabric/peer
 /tmp/go-link-829040977/000006.o: In function `pluginOpen':
@@ -1065,9 +1130,12 @@ Building .build/docker/bin/peer
 /workdir/go/src/os/user/cgo_lookup_unix.go:28: warning: Using 'getpwuid_r' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
 /tmp/go-link-829040977/000004.o: In function `_cgo_18049202ccd9_C2func_getaddrinfo':
 /tmp/go-build/cgo-gcc-prolog:49: warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+// 构建需要的压缩包
 (cd sampleconfig && tar -jc *) > .build/sampleconfig.tar.bz2
+// 复制peer需要的payload
 mkdir -p .build/image/peer/payload
 cp .build/docker/bin/peer .build/sampleconfig.tar.bz2 .build/image/peer/payload
+// 打包peer镜像
 mkdir -p .build/image/peer
 Building docker peer-image
 docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-peer .build/image/peer
@@ -1095,9 +1163,11 @@ Step 7/7 : LABEL org.hyperledger.fabric.version=1.4.2       org.hyperledger.fabr
 Removing intermediate container aaacacec80e8
  ---> e97b7fd4ff49
 Successfully built e97b7fd4ff49
+// 构建peer镜像完成，为镜像打包
 Successfully tagged hyperledger/fabric-peer:latest
 docker tag hyperledger/fabric-peer hyperledger/fabric-peer:amd64-1.4.2-snapshot-9dce735
 docker tag hyperledger/fabric-peer hyperledger/fabric-peer:amd64-latest
+// 以下为构建orderer镜像，与peer镜像过程类似
 Building .build/docker/bin/orderer
 # github.com/hyperledger/fabric/orderer
 /tmp/go-link-846385019/000018.o: In function `pluginOpen':
@@ -1148,7 +1218,10 @@ Successfully built aa8604c99f23
 Successfully tagged hyperledger/fabric-orderer:latest
 docker tag hyperledger/fabric-orderer hyperledger/fabric-orderer:amd64-1.4.2-snapshot-9dce735
 docker tag hyperledger/fabric-orderer hyperledger/fabric-orderer:amd64-latest
+// 以下开始构gotools镜像
 Building dockerized gotools
+// 以下实际在docker中运行
+// 默认go get下载，然后默认安装到$GOPATH/bin
 make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
 Building github.com/maxbrunsfeld/counterfeiter -> counterfeiter
 make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
@@ -1157,6 +1230,7 @@ Building github.com/golang/dep v0.5.1 -> dep
 make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
 make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
 Building golang.org/x/lint/golint -> golint
+// 这几个指定了安装目录/opt/gotools/bin，实际映射到.build/docker/gotools/bin/
 GOBIN=/opt/gotools/bin go install ./vendor/golang.org/x/lint/golint
 make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
 make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
@@ -1170,6 +1244,7 @@ make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
 make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
 Building github.com/onsi/ginkgo/ginkgo -> ginkgo
 GOBIN=/opt/gotools/bin go install ./vendor/github.com/onsi/ginkgo/ginkgo
+// 以下安装到$GOPATH/bin
 make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
 make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
 Building github.com/axw/gocov/gocov -> gocov
@@ -1186,6 +1261,7 @@ make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
 make[1]: Entering directory '/opt/gopath/src/github.com/hyperledger/fabric'
 Building github.com/estesp/manifest-tool -> manifest-tool
 make[1]: Leaving directory '/opt/gopath/src/github.com/hyperledger/fabric'
+// 安装chaintool，gotools镜像需要
 Installing chaintool
 curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/chaintool-1.1.3/hyperledger-fabric-chaintool-1.1.3.jar > .build/bin/chaintool
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -1193,9 +1269,11 @@ curl -fL https://nexus.hyperledger.org/content/repositories/releases/org/hyperle
 100 16.4M  100 16.4M    0     0  1142k      0  0:00:14  0:00:14 --:--:-- 2544k
 chmod +x .build/bin/chaintool
 Creating .build/goshim.tar.bz2
+// 设置ccenv的payload
 mkdir -p .build/image/ccenv/payload
 cp .build/docker/gotools/bin/protoc-gen-go .build/bin/chaintool .build/goshim.tar.bz2 .build/image/ccenv/payload
 mkdir -p .build/image/ccenv
+// 构建ccenv镜像，是chain code的环境镜像，所以简写为ccenv
 Building docker ccenv-image
 docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-ccenv .build/image/ccenv
 Sending build context to Docker daemon  25.12MB
@@ -1217,8 +1295,11 @@ Successfully built 7cb803c8b124
 Successfully tagged hyperledger/fabric-ccenv:latest
 docker tag hyperledger/fabric-ccenv hyperledger/fabric-ccenv:amd64-1.4.2-snapshot-9dce735
 docker tag hyperledger/fabric-ccenv hyperledger/fabric-ccenv:amd64-latest
+// 构建buildenv镜像
+// gotools放进压缩包
 (cd .build/docker/gotools/bin && tar -jc *) > .build/gotools.tar.bz2
 mkdir -p .build/image/buildenv/payload
+// gotools和protoc-gen-go是buildenv的payload
 cp .build/gotools.tar.bz2 .build/docker/gotools/bin/protoc-gen-go .build/image/buildenv/payload
 mkdir -p .build/image/buildenv
 Building docker buildenv-image
@@ -1240,8 +1321,13 @@ Removing intermediate container 226095fc14b5
  ---> 6ba655852ec7
 Successfully built 6ba655852ec7
 Successfully tagged hyperledger/fabric-buildenv:latest
+// gotools实际打包在了buildenv镜像中
 docker tag hyperledger/fabric-buildenv hyperledger/fabric-buildenv:amd64-1.4.2-snapshot-9dce735
 docker tag hyperledger/fabric-buildenv hyperledger/fabric-buildenv:amd64-latest
+// 打包tools镜像，它的dockerfile文件：.build/image/tools/Dockerfile
+// 从这里可以看到镜像里实际包含的是configtxgen configtxlator cryptogen peer discover idemixgen，这几个工具
+// 并对系统进行了更新
+// 所以tools镜像指的是fabric tools的镜像，而不是go tools
 mkdir -p .build/image/tools
 Building docker tools-image
 docker build --build-arg 'http_proxy=http://192.168.102.143:1087' --build-arg 'https_proxy=http://192.168.102.143:1087' -t hyperledger/fabric-tools -f .build/image/tools/Dockerfile .
@@ -1268,6 +1354,7 @@ Removing intermediate container 6b5978688143
  ---> 2a28ae07b3da
 Step 7/14 : RUN make configtxgen configtxlator cryptogen peer discover idemixgen
  ---> Running in 27e814a9a148
+//  在镜像里安装native中的各种工具，所以gotools镜像，包含的并不是gotools那几个工具
 .build/bin/configtxgen
 CGO_CFLAGS=" " GOBIN=/opt/gopath/src/github.com/hyperledger/fabric/.build/bin go install -tags "" -ldflags "-X github.com/hyperledger/fabric/common/tools/configtxgen/metadata.CommitSHA=9dce735" github.com/hyperledger/fabric/common/tools/configtxgen
 Binary available as .build/bin/configtxgen
@@ -1363,13 +1450,31 @@ Removing intermediate container 2f70bb608ac2
  ---> e395ec9d27e8
 Successfully built e395ec9d27e8
 Successfully tagged hyperledger/fabric-tools:latest
+// gotools镜像打包完成，打上tag
 docker tag hyperledger/fabric-tools hyperledger/fabric-tools:amd64-1.4.2-snapshot-9dce735
 docker tag hyperledger/fabric-tools hyperledger/fabric-tools:amd64-latest
+
+// 以下等价于make checks
+// 许可证检查
 All files have SPDX-License-Identifier headers
+// 拼写检查
 Checking changed go files for spelling errors ...
 spell checker passed
+// trailing spaces检查
 Checking trailing spaces ...
+// dep检查
 DEP: Checking for dependency issues..
+dep:
+ version     : v0.5.1
+ build date  : 2019-07-16
+ git hash    :
+ go version  : go1.11.5
+ go compiler : gc
+ platform    : linux/amd64
+ features    : ImportDuringSolve=false
+# out of sync, but ignored, due to noverify in Gopkg.toml:
+github.com/grpc-ecosystem/go-grpc-middleware: hash of vendored tree not equal to digest in Gopkg.lock
+// 执行lint
 LINT: Running code checks..
 Checking with gofmt
 Checking with goimports
@@ -1446,9 +1551,9 @@ unit-test/run.sh
 // 省略后面的单元测试
 ```
 
-> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
-> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
-> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/07/16/fabric-makefile/](http://lessisbetter.site/2019/07/16/fabric-makefile/)
+
+> 1. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 1. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/07/16/fabric-makefile/](http://lessisbetter.site/2019/07/16/fabric-makefile/)
 
 
 <div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
