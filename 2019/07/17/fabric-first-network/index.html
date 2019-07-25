@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next pisces" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文是Building Your First Network的笔记和实践记录，基于Fabric 1.4，commit id：9dce73。 前提：  安装了Docker、Go等环境。 已经下载了fabric仓库，完成make all。  下载fabric-samples和事前工作有2种方式，方式1：一键下载和编译。 1curl -sSL http://bit.ly/2ysbOFE | bash -">
+<meta name="keywords" content="区块链,Fabric">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建Fabric First Network">
+<meta property="og:url" content="http://lessisbetter.site/2019/07/17/fabric-first-network/index.html">
+<meta property="og:site_name" content="大彬 LIB">
+<meta property="og:description" content="本文是Building Your First Network的笔记和实践记录，基于Fabric 1.4，commit id：9dce73。 前提：  安装了Docker、Go等环境。 已经下载了fabric仓库，完成make all。  下载fabric-samples和事前工作有2种方式，方式1：一键下载和编译。 1curl -sSL http://bit.ly/2ysbOFE | bash -">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-18T08:32:28.375Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="搭建Fabric First Network">
+<meta name="twitter:description" content="本文是Building Your First Network的笔记和实践记录，基于Fabric 1.4，commit id：9dce73。 前提：  安装了Docker、Go等环境。 已经下载了fabric仓库，完成make all。  下载fabric-samples和事前工作有2种方式，方式1：一键下载和编译。 1curl -sSL http://bit.ly/2ysbOFE | bash -">
+
+
+
+
+
+
+  <link rel="canonical" href="http://lessisbetter.site/2019/07/17/fabric-first-network/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>搭建Fabric First Network | 大彬 LIB</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大彬 LIB</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">大道至简 less is better</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-主页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />主页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签云">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-专题文章">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/subject/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br />专题文章</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-文章列表">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-内推">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/jobs/" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />内推</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <a href="https://github.com/Shitaibin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/07/17/fabric-first-network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="技术与人生 | 区块链架构师">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大彬 LIB">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">搭建Fabric First Network
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-17 11:37:57" itemprop="dateCreated datePublished" datetime="2019-07-17T11:37:57+08:00">2019-07-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-18 16:32:28" itemprop="dateModified" datetime="2019-07-18T16:32:28+08:00">2019-07-18</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是<a href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/build_network.html" target="_blank" rel="noopener">Building Your First Network</a>的笔记和实践记录，基于Fabric 1.4，commit id：9dce73。</p>
+<p>前提：</p>
+<ol>
+<li>安装了Docker、Go等环境。</li>
+<li>已经下载了fabric仓库，完成<code>make all</code>。</li>
+</ol>
+<h2 id="下载fabric-samples和事前工作"><a href="#下载fabric-samples和事前工作" class="headerlink" title="下载fabric-samples和事前工作"></a>下载fabric-samples和事前工作</h2><p>有2种方式，方式1：一键下载和编译。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sSL http://bit.ly/2ysbOFE | bash -s</span><br></pre></td></tr></table></figure>
+<p>方式2：手动clone，放到GOPATH下，然后执行脚本，构建和拉去一些镜像，为搭建网络做准备。方式2只不过是把方式1的工作，手动做掉了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/hyperledger/fabric-samples.git</span><br><span class="line">cd fabric-samples</span><br><span class="line">sh scripts/bootstrap.sh</span><br></pre></td></tr></table></figure>
+<p>参考资料：<a href="https://hyperledger-fabric.readthedocs.io/en/release-1.4/install.html。" target="_blank" rel="noopener">https://hyperledger-fabric.readthedocs.io/en/release-1.4/install.html。</a></p>
+<h2 id="快速启动你的第一个Fabric网络"><a href="#快速启动你的第一个Fabric网络" class="headerlink" title="快速启动你的第一个Fabric网络"></a>快速启动你的第一个Fabric网络</h2><p>这一节的目的是用几分钟的时间启动一个网络，并且启动一个网络需要做哪些工作。</p>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p><code>fabric-samples</code>下有多个示例，本次要使用的是<code>first-network</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric-samples git:(release-1.4) ll | grep ^d</span><br><span class="line">drwxr-xr-x 5 centos centos  193 7月  12 08:21 balance-transfer</span><br><span class="line">drwxr-xr-x 4 centos centos  273 7月  12 08:21 basic-network</span><br><span class="line">drwxrwxr-x 2 centos centos  175 1月   9 2019 bin</span><br><span class="line">drwxr-xr-x 8 centos centos  113 7月  12 08:21 chaincode</span><br><span class="line">drwxr-xr-x 3 centos centos  139 7月  12 08:21 chaincode-docker-devmode</span><br><span class="line">drwxr-xr-x 3 centos centos   44 7月  12 06:47 commercial-paper</span><br><span class="line">drwxrwxr-x 2 centos centos   64 1月   9 2019 config</span><br><span class="line">drwxr-xr-x 2 centos centos   59 7月  12 08:21 docs</span><br><span class="line">drwxr-xr-x 5 centos centos  110 7月  12 08:21 fabcar</span><br><span class="line">drwxr-xr-x 7 centos centos 4.0K 7月  17 03:14 first-network</span><br><span class="line">drwxr-xr-x 4 centos centos   55 7月  12 08:21 high-throughput</span><br><span class="line">drwxr-xr-x 4 centos centos   55 7月  12 08:21 interest_rate_swaps</span><br><span class="line">drwxr-xr-x 4 centos centos   67 7月  17 03:46 scripts</span><br></pre></td></tr></table></figure>
+<p>进入<code>first-network</code>然后执行<code>./byfn.sh up</code>，启动操作会持续两三分钟，<code>byfn</code>是Building Your First Network的缩写。</p>
+<p>启动过程实际做了这些事：</p>
+<p>第一阶段：生成配置文件</p>
+<ol>
+<li>使用加密工具<code>cryptogen</code>生成证书</li>
+<li>使用工具<code>configtxgen</code>生成orderer节点的创世块</li>
+<li>使用工具<code>configtxgen</code>生成配置channel的交易<code>channel.tx</code></li>
+<li>使用工具<code>configtxgen</code>生成Org1的MSP的anchor peer</li>
+<li>使用工具<code>configtxgen</code>生成Org2的MSP的anchor peer</li>
+</ol>
+<p>第二阶段：创建容器，启动服务，部署和实例化chaincode</p>
+<ol>
+<li>启动容器，包含客户端(cli)、peer、orderer等，每个org有2个peer，peer0和peer1</li>
+<li>创建channel</li>
+<li>peer加入channel</li>
+<li>在channel上更新Org1和Org2 MSP的anchor peer</li>
+<li>在ogr1好org2的peer0上安装chaincode</li>
+<li>在channel中，在peer0.org2上实例化chaincode，1个channel上只需示例化1次</li>
+<li>在channel中，Invoke刚实例化的chaincode</li>
+<li>在peer1.org2上安装chaincode，并查询</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br></pre></td><td class="code"><pre><span class="line">$ cd first-network</span><br><span class="line">➜  first-network git:(release-1.4) ./byfn.sh up</span><br><span class="line">Starting for channel &apos;mychannel&apos; with CLI timeout of &apos;10&apos; seconds and CLI delay of &apos;3&apos; seconds</span><br><span class="line">Continue? [Y/n] y</span><br><span class="line">proceeding ...</span><br><span class="line">LOCAL_VERSION=1.4.0</span><br><span class="line">DOCKER_IMAGE_VERSION=1.4.0</span><br><span class="line">/home/centos/go/src/github.com/hyperledger/fabric-samples/bin/cryptogen</span><br><span class="line"></span><br><span class="line">##########################################################</span><br><span class="line">##### Generate certificates using cryptogen tool #########</span><br><span class="line">##########################################################</span><br><span class="line">+ cryptogen generate --config=./crypto-config.yaml</span><br><span class="line">org1.example.com</span><br><span class="line">org2.example.com</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">/home/centos/go/src/github.com/hyperledger/fabric-samples/bin/configtxgen</span><br><span class="line">##########################################################</span><br><span class="line">#########  Generating Orderer Genesis block ##############</span><br><span class="line">##########################################################</span><br><span class="line">CONSENSUS_TYPE=solo</span><br><span class="line">+ &apos;[&apos; solo == solo &apos;]&apos;</span><br><span class="line">+ configtxgen -profile TwoOrgsOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block</span><br><span class="line">2019-07-17 06:34:26.973 UTC [common.tools.configtxgen] main -&gt; INFO 001 Loading configuration</span><br><span class="line">2019-07-17 06:34:27.088 UTC [common.tools.configtxgen.localconfig] completeInitialization -&gt; INFO 002 orderer type: solo</span><br><span class="line">2019-07-17 06:34:27.088 UTC [common.tools.configtxgen.localconfig] Load -&gt; INFO 003 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.186 UTC [common.tools.configtxgen.localconfig] completeInitialization -&gt; INFO 004 orderer type: solo</span><br><span class="line">2019-07-17 06:34:27.186 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -&gt; INFO 005 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.188 UTC [common.tools.configtxgen] doOutputBlock -&gt; INFO 006 Generating genesis block</span><br><span class="line">2019-07-17 06:34:27.189 UTC [common.tools.configtxgen] doOutputBlock -&gt; INFO 007 Writing genesis block</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">#################################################################</span><br><span class="line">### Generating channel configuration transaction &apos;channel.tx&apos; ###</span><br><span class="line">#################################################################</span><br><span class="line">+ configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel</span><br><span class="line">2019-07-17 06:34:27.228 UTC [common.tools.configtxgen] main -&gt; INFO 001 Loading configuration</span><br><span class="line">2019-07-17 06:34:27.315 UTC [common.tools.configtxgen.localconfig] Load -&gt; INFO 002 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.422 UTC [common.tools.configtxgen.localconfig] completeInitialization -&gt; INFO 003 orderer type: solo</span><br><span class="line">2019-07-17 06:34:27.422 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -&gt; INFO 004 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.422 UTC [common.tools.configtxgen] doOutputChannelCreateTx -&gt; INFO 005 Generating new channel configtx</span><br><span class="line">2019-07-17 06:34:27.425 UTC [common.tools.configtxgen] doOutputChannelCreateTx -&gt; INFO 006 Writing new channel tx</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">#################################################################</span><br><span class="line">#######    Generating anchor peer update for Org1MSP   ##########</span><br><span class="line">#################################################################</span><br><span class="line">+ configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP</span><br><span class="line">2019-07-17 06:34:27.477 UTC [common.tools.configtxgen] main -&gt; INFO 001 Loading configuration</span><br><span class="line">2019-07-17 06:34:27.559 UTC [common.tools.configtxgen.localconfig] Load -&gt; INFO 002 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.649 UTC [common.tools.configtxgen.localconfig] completeInitialization -&gt; INFO 003 orderer type: solo</span><br><span class="line">2019-07-17 06:34:27.649 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -&gt; INFO 004 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.649 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -&gt; INFO 005 Generating anchor peer update</span><br><span class="line">2019-07-17 06:34:27.649 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -&gt; INFO 006 Writing anchor peer update</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">#################################################################</span><br><span class="line">#######    Generating anchor peer update for Org2MSP   ##########</span><br><span class="line">#################################################################</span><br><span class="line">+ configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID mychannel -asOrg Org2MSP</span><br><span class="line">2019-07-17 06:34:27.689 UTC [common.tools.configtxgen] main -&gt; INFO 001 Loading configuration</span><br><span class="line">2019-07-17 06:34:27.773 UTC [common.tools.configtxgen.localconfig] Load -&gt; INFO 002 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.886 UTC [common.tools.configtxgen.localconfig] completeInitialization -&gt; INFO 003 orderer type: solo</span><br><span class="line">2019-07-17 06:34:27.886 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -&gt; INFO 004 Loaded configuration: /home/centos/go/src/github.com/hyperledger/fabric-samples/first-network/configtx.yaml</span><br><span class="line">2019-07-17 06:34:27.886 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -&gt; INFO 005 Generating anchor peer update</span><br><span class="line">2019-07-17 06:34:27.886 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -&gt; INFO 006 Writing anchor peer update</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">Creating network &quot;net_byfn&quot; with the default driver</span><br><span class="line">Creating volume &quot;net_orderer.example.com&quot; with default driver</span><br><span class="line">Creating volume &quot;net_peer0.org1.example.com&quot; with default driver</span><br><span class="line">Creating volume &quot;net_peer1.org1.example.com&quot; with default driver</span><br><span class="line">Creating volume &quot;net_peer0.org2.example.com&quot; with default driver</span><br><span class="line">Creating volume &quot;net_peer1.org2.example.com&quot; with default driver</span><br><span class="line">Creating orderer.example.com    ... done</span><br><span class="line">Creating peer0.org2.example.com ... done</span><br><span class="line">Creating peer1.org2.example.com ... done</span><br><span class="line">Creating peer0.org1.example.com ... done</span><br><span class="line">Creating peer1.org1.example.com ... done</span><br><span class="line">Creating cli                    ... done</span><br><span class="line">CONTAINER ID        IMAGE                                                                                                          COMMAND                  CREATED                  STATUS                      PORTS                      NAMES</span><br><span class="line">8c2ccb5ee443        hyperledger/fabric-tools:latest                                                                                &quot;/bin/bash&quot;              Less than a second ago   Up Less than a second                                  cli</span><br><span class="line">5af5a3fb3bb7        hyperledger/fabric-peer:latest                                                                                 &quot;peer node start&quot;        2 seconds ago            Up Less than a second       0.0.0.0:8051-&gt;8051/tcp     peer1.org1.example.com</span><br><span class="line">396b363bb6f5        hyperledger/fabric-peer:latest                                                                                 &quot;peer node start&quot;        2 seconds ago            Up Less than a second       0.0.0.0:7051-&gt;7051/tcp     peer0.org1.example.com</span><br><span class="line">94be2011d20f        hyperledger/fabric-orderer:latest                                                                              &quot;orderer&quot;                2 seconds ago            Up Less than a second       0.0.0.0:7050-&gt;7050/tcp     orderer.example.com</span><br><span class="line">da8c17df215d        hyperledger/fabric-peer:latest                                                                                 &quot;peer node start&quot;        2 seconds ago            Up Less than a second       0.0.0.0:9051-&gt;9051/tcp     peer0.org2.example.com</span><br><span class="line">fcd30620e876        hyperledger/fabric-peer:latest                                                                                 &quot;peer node start&quot;        2 seconds ago            Up Less than a second       0.0.0.0:10051-&gt;10051/tcp   peer1.org2.example.com</span><br><span class="line">10510312db61        dc535406-4013-4141-be9e-e472c1cf24a1-simple-5e32b897538246406863e63956e4c561246725b6fbf114a1fedff16775cf782d   &quot;tail -f /dev/null&quot;      22 hours ago             Exited (137) 22 hours ago                              dc535406-4013-4141-be9e-e472c1cf24a1-simple</span><br><span class="line">21a3b8dc137a        hyperledger/fabric-buildenv:amd64-latest                                                                       &quot;/bin/bash&quot;              22 hours ago             Exited (0) 22 hours ago                                musing_swartz</span><br><span class="line">48407948b7d7        hyperledger/fabric-buildenv                                                                                    &quot;/bin/bash&quot;              22 hours ago             Exited (130) 22 hours ago                              affectionate_curie</span><br><span class="line">358f0c0de3e1        92b20cd39f98                                                                                                   &quot;/bin/bash&quot;              23 hours ago             Exited (130) 22 hours ago                              festive_clarke</span><br><span class="line">de5938eccc11        92b20cd39f98                                                                                                   &quot;./scripts/check_dep…&quot;   23 hours ago             Exited (127) 23 hours ago                              quizzical_einstein</span><br><span class="line">324b27de3a34        92b20cd39f98                                                                                                   &quot;/bin/bash&quot;              23 hours ago             Exited (0) 23 hours ago                                amazing_booth</span><br><span class="line">26a53801f203        92b20cd39f98                                                                                                   &quot;./scripts/check_dep…&quot;   23 hours ago             Exited (127) 23 hours ago                              jolly_saha</span><br><span class="line">94a33ddda70a        92b20cd39f98                                                                                                   &quot;./scripts/golinter.…&quot;   23 hours ago             Exited (0) 23 hours ago                                peaceful_allen</span><br><span class="line">6a0c7fded448        92b20cd39f98                                                                                                   &quot;./scripts/golinter.…&quot;   23 hours ago             Created                                                recursing_beaver</span><br><span class="line">233496b4065c        92b20cd39f98                                                                                                   &quot;/bin/bash&quot;              23 hours ago             Exited (0) 23 hours ago                                wizardly_shockley</span><br><span class="line">f0a255a96610        92b20cd39f98                                                                                                   &quot;/bin/bash&quot;              23 hours ago             Exited (0) 23 hours ago                                jolly_ganguly</span><br><span class="line">664416bc4fee        965663acb7cf                                                                                                   &quot;/bin/sh -c &apos;apt-get…&quot;   24 hours ago             Exited (100) 24 hours ago                              nostalgic_chaplygin</span><br><span class="line">51cf784ef4e1        ba82c6de-50fb-4ffd-989d-0dcf54e14e3b-simple-9961bcae6dad48592af2e9f1c1df3c96b568f9394ec82b2f351e79fa51a4f786   &quot;tail -f /dev/null&quot;      47 hours ago             Exited (137) 47 hours ago                              ba82c6de-50fb-4ffd-989d-0dcf54e14e3b-simple</span><br><span class="line">b7642b085ac1        14669948-7a23-4b3b-aa14-8b0622986e03-simple-f8a7b2e1352d04d884580725c2be9b642dd29df7e3e095a4a9403ac789dde2ac   &quot;tail -f /dev/null&quot;      2 days ago               Exited (137) 2 days ago                                14669948-7a23-4b3b-aa14-8b0622986e03-simple</span><br><span class="line"></span><br><span class="line"> ____    _____      _      ____    _____</span><br><span class="line">/ ___|  |_   _|    / \    |  _ \  |_   _|</span><br><span class="line">\___ \    | |     / _ \   | |_) |   | |</span><br><span class="line"> ___) |   | |    / ___ \  |  _ &lt;    | |</span><br><span class="line">|____/    |_|   /_/   \_\ |_| \_\   |_|</span><br><span class="line"></span><br><span class="line">Build your first network (BYFN) end-to-end test</span><br><span class="line"></span><br><span class="line">Channel name : mychannel</span><br><span class="line">Creating channel...</span><br><span class="line">+ peer channel create -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/channel.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:32.113 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:32.190 UTC [cli.common] readBlock -&gt; INFO 002 Received block: 0</span><br><span class="line">===================== Channel &apos;mychannel&apos; created =====================</span><br><span class="line"></span><br><span class="line">Having all peers join the channel...</span><br><span class="line">+ peer channel join -b mychannel.block</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:32.272 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:32.338 UTC [channelCmd] executeJoin -&gt; INFO 002 Successfully submitted proposal to join channel</span><br><span class="line">===================== peer0.org1 joined channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">+ peer channel join -b mychannel.block</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:35.449 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:35.536 UTC [channelCmd] executeJoin -&gt; INFO 002 Successfully submitted proposal to join channel</span><br><span class="line">===================== peer1.org1 joined channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">+ peer channel join -b mychannel.block</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:38.617 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:38.673 UTC [channelCmd] executeJoin -&gt; INFO 002 Successfully submitted proposal to join channel</span><br><span class="line">===================== peer0.org2 joined channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">+ peer channel join -b mychannel.block</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:41.755 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:41.837 UTC [channelCmd] executeJoin -&gt; INFO 002 Successfully submitted proposal to join channel</span><br><span class="line">===================== peer1.org2 joined channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">Updating anchor peers for org1...</span><br><span class="line">+ peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:44.930 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:44.951 UTC [channelCmd] update -&gt; INFO 002 Successfully submitted channel update</span><br><span class="line">===================== Anchor peers updated for org &apos;Org1MSP&apos; on channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">Updating anchor peers for org2...</span><br><span class="line">+ peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org2MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:48.037 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-07-17 06:34:48.059 UTC [channelCmd] update -&gt; INFO 002 Successfully submitted channel update</span><br><span class="line">===================== Anchor peers updated for org &apos;Org2MSP&apos; on channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">Installing chaincode on peer0.org1...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:51.167 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-07-17 06:34:51.167 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-07-17 06:34:51.462 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer0.org1 =====================</span><br><span class="line"></span><br><span class="line">Install chaincode on peer0.org2...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:51.542 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-07-17 06:34:51.542 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-07-17 06:34:51.817 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer0.org2 =====================</span><br><span class="line"></span><br><span class="line">Instantiating chaincode on peer0.org2...</span><br><span class="line">+ peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc -l golang -v 1.0 -c &apos;&#123;&quot;Args&quot;:[&quot;init&quot;,&quot;a&quot;,&quot;100&quot;,&quot;b&quot;,&quot;200&quot;]&#125;&apos; -P &apos;AND (&apos;\&apos;&apos;Org1MSP.peer&apos;\&apos;&apos;,&apos;\&apos;&apos;Org2MSP.peer&apos;\&apos;&apos;)&apos;</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:34:51.910 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-07-17 06:34:51.910 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">===================== Chaincode is instantiated on peer0.org2 on channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">Querying chaincode on peer0.org1...</span><br><span class="line">===================== Querying on peer0.org1 on channel &apos;mychannel&apos;... =====================</span><br><span class="line">+ peer chaincode query -C mychannel -n mycc -c &apos;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&apos;</span><br><span class="line">Attempting to Query peer0.org1 ...3 secs</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">100</span><br><span class="line">===================== Query successful on peer0.org1 on channel &apos;mychannel&apos; =====================</span><br><span class="line">Sending invoke transaction on peer0.org1 peer0.org2...</span><br><span class="line">+ peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c &apos;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;a&quot;,&quot;b&quot;,&quot;10&quot;]&#125;&apos;</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:35:27.719 UTC [chaincodeCmd] chaincodeInvokeOrQuery -&gt; INFO 001 Chaincode invoke successful. result: status:200</span><br><span class="line">===================== Invoke transaction successful on peer0.org1 peer0.org2 on channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">Installing chaincode on peer1.org2...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-07-17 06:35:27.809 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-07-17 06:35:27.809 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-07-17 06:35:28.060 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer1.org2 =====================</span><br><span class="line"></span><br><span class="line">Querying chaincode on peer1.org2...</span><br><span class="line">===================== Querying on peer1.org2 on channel &apos;mychannel&apos;... =====================</span><br><span class="line">+ peer chaincode query -C mychannel -n mycc -c &apos;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&apos;</span><br><span class="line">Attempting to Query peer1.org2 ...3 secs</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line"></span><br><span class="line">90</span><br><span class="line">===================== Query successful on peer1.org2 on channel &apos;mychannel&apos; =====================</span><br><span class="line"></span><br><span class="line">========= All GOOD, BYFN execution completed ===========</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> _____   _   _   ____</span><br><span class="line">| ____| | \ | | |  _ \</span><br><span class="line">|  _|   |  \| | | | | |</span><br><span class="line">| |___  | |\  | | |_| |</span><br><span class="line">|_____| |_| \_| |____/</span><br></pre></td></tr></table></figure>
+<p>使用docker查看起来的服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) docker ps</span><br><span class="line">CONTAINER ID        IMAGE                                                                                                  COMMAND                  CREATED             STATUS              PORTS                      NAMES</span><br><span class="line">fe690a4f3e9f        dev-peer1.org2.example.com-mycc-1.0-26c2ef32838554aac4f7ad6f100aca865e87959c9a126e86d764c8d01f8346ab   &quot;chaincode -peer.add…&quot;   2 hours ago         Up 2 hours                                     dev-peer1.org2.example.com-mycc-1.0</span><br><span class="line">03a5f82384a0        dev-peer0.org1.example.com-mycc-1.0-384f11f484b9302df90b453200cfb25174305fce8f53f4e94d45ee3b6cab0ce9   &quot;chaincode -peer.add…&quot;   2 hours ago         Up 2 hours                                     dev-peer0.org1.example.com-mycc-1.0</span><br><span class="line">a737b47e9de6        dev-peer0.org2.example.com-mycc-1.0-15b571b3ce849066b7ec74497da3b27e54e0df1345daff3951b94245ce09c42b   &quot;chaincode -peer.add…&quot;   2 hours ago         Up 2 hours                                     dev-peer0.org2.example.com-mycc-1.0</span><br><span class="line">8c2ccb5ee443        hyperledger/fabric-tools:latest                                                                        &quot;/bin/bash&quot;              2 hours ago         Up 2 hours                                     cli</span><br><span class="line">5af5a3fb3bb7        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        2 hours ago         Up 2 hours          0.0.0.0:8051-&gt;8051/tcp     peer1.org1.example.com</span><br><span class="line">396b363bb6f5        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        2 hours ago         Up 2 hours          0.0.0.0:7051-&gt;7051/tcp     peer0.org1.example.com</span><br><span class="line">94be2011d20f        hyperledger/fabric-orderer:latest                                                                      &quot;orderer&quot;                2 hours ago         Up 2 hours          0.0.0.0:7050-&gt;7050/tcp     orderer.example.com</span><br><span class="line">da8c17df215d        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        2 hours ago         Up 2 hours          0.0.0.0:9051-&gt;9051/tcp     peer0.org2.example.com</span><br><span class="line">fcd30620e876        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        2 hours ago         Up 2 hours          0.0.0.0:10051-&gt;10051/tcp   peer1.org2.example.com</span><br></pre></td></tr></table></figure>
+<h3 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h3><p>关闭<code>first-network</code>：</p>
+<ol>
+<li>依次停止channel、客户端、orderer、peer</li>
+<li>删除cli、orderer、peer、netowrk</li>
+<li>删除docker镜像</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) ./byfn.sh down</span><br><span class="line">Stopping for channel &apos;mychannel&apos; with CLI timeout of &apos;10&apos; seconds and CLI delay of &apos;3&apos; seconds</span><br><span class="line">Continue? [Y/n] y</span><br><span class="line">proceeding ...</span><br><span class="line">WARNING: The BYFN_CA1_PRIVATE_KEY variable is not set. Defaulting to a blank string.</span><br><span class="line">WARNING: The BYFN_CA2_PRIVATE_KEY variable is not set. Defaulting to a blank string.</span><br><span class="line">Stopping cli                    ... done</span><br><span class="line">Stopping orderer.example.com    ... done</span><br><span class="line">Stopping peer1.org1.example.com ... done</span><br><span class="line">Stopping peer0.org1.example.com ... done</span><br><span class="line">Stopping peer0.org2.example.com ... done</span><br><span class="line">Stopping peer1.org2.example.com ... done</span><br><span class="line">Removing cli                    ... done</span><br><span class="line">Removing orderer.example.com    ... done</span><br><span class="line">Removing peer1.org1.example.com ... done</span><br><span class="line">Removing peer0.org1.example.com ... done</span><br><span class="line">Removing peer0.org2.example.com ... done</span><br><span class="line">Removing peer1.org2.example.com ... done</span><br><span class="line">Removing network net_byfn</span><br><span class="line">Removing volume net_orderer.example.com</span><br><span class="line">Removing volume net_peer0.org1.example.com</span><br><span class="line">Removing volume net_peer1.org1.example.com</span><br><span class="line">Removing volume net_peer0.org2.example.com</span><br><span class="line">Removing volume net_peer1.org2.example.com</span><br><span class="line">Removing volume net_orderer2.example.com</span><br><span class="line">WARNING: Volume net_orderer2.example.com not found.</span><br><span class="line">Removing volume net_orderer3.example.com</span><br><span class="line">WARNING: Volume net_orderer3.example.com not found.</span><br><span class="line">Removing volume net_orderer4.example.com</span><br><span class="line">WARNING: Volume net_orderer4.example.com not found.</span><br><span class="line">Removing volume net_orderer5.example.com</span><br><span class="line">WARNING: Volume net_orderer5.example.com not found.</span><br><span class="line">Removing volume net_peer0.org3.example.com</span><br><span class="line">WARNING: Volume net_peer0.org3.example.com not found.</span><br><span class="line">Removing volume net_peer1.org3.example.com</span><br><span class="line">WARNING: Volume net_peer1.org3.example.com not found.</span><br><span class="line">05c281ff186c</span><br><span class="line">f3ccbe5e2b80</span><br><span class="line">7f0144ca0eae</span><br><span class="line">Untagged: dev-peer1.org2.example.com-mycc-1.0-26c2ef32838554aac4f7ad6f100aca865e87959c9a126e86d764c8d01f8346ab:latest</span><br><span class="line">Deleted: sha256:9425c8298cafe082ed22c5968d431a6098d53ef2318fb5d286efb96b4bc44915</span><br><span class="line">Deleted: sha256:9005a0d9f52947d9256aa4766d4c26a9bab98f229aab7f2598da05789fc977ef</span><br><span class="line">Deleted: sha256:98602d24729b179952f685f8f83f1effaf3733e7f93354a9d31b15f711bc0fac</span><br><span class="line">Deleted: sha256:fe2b67155487d7e001c8a0b2ef100bb710b1b816897bc9d2a80029f4c7bd0b54</span><br><span class="line">Untagged: dev-peer0.org1.example.com-mycc-1.0-384f11f484b9302df90b453200cfb25174305fce8f53f4e94d45ee3b6cab0ce9:latest</span><br><span class="line">Deleted: sha256:0759f367d73c68e71b6077ebd46611d43a8d9c1c9ebc398b838010268b175d65</span><br><span class="line">Deleted: sha256:2d56a884d5514a4467471cf06b42c0cfa492a80a239d48f79fa48273982d81b7</span><br><span class="line">Deleted: sha256:614c6a2a164cc8afbb7f348fdf6d048834dc0cb2a94a22638b8d4dcd72eaeb14</span><br><span class="line">Deleted: sha256:9a39bc364e8d141bdab60a80946e4af10513cb070c34e4bda1b1cbbf88f9dca3</span><br><span class="line">Untagged: dev-peer0.org2.example.com-mycc-1.0-15b571b3ce849066b7ec74497da3b27e54e0df1345daff3951b94245ce09c42b:latest</span><br><span class="line">Deleted: sha256:63a4ecd2677f62197f547b1cef9041e3f3ad5c929b1dcd139610b106862a92b5</span><br><span class="line">Deleted: sha256:6a30b775f40f687d0ed98fe9d5fdd2da60ce22753b066db599e4308303f16c13</span><br><span class="line">Deleted: sha256:d94c0213bc68b7ee8dfa942c82c07cf8d8b3e7a4d68cf5ca79d372557e5f6567</span><br><span class="line">Deleted: sha256:c720d5e3b8c3b5690da0b10588517592ca11d94b3427cf75e88be0e000352ec9</span><br></pre></td></tr></table></figure>
+<h2 id="启动自定义网络"><a href="#启动自定义网络" class="headerlink" title="启动自定义网络"></a>启动自定义网络</h2><h3 id="利用byfn启动自定义网络"><a href="#利用byfn启动自定义网络" class="headerlink" title="利用byfn启动自定义网络"></a>利用byfn启动自定义网络</h3><p><code>./byfn.sh</code>不止<code>up</code>和<code>down</code>2个命令，还有其他命令，以及更多的参数，比如restart, generate和upgrade。</p>
+<p>在上一节，使用了完全默认的参数，启动了网络，这是完全傻瓜式的。基于对fabric的掌握，还可以设置更多的参数，比如使用参数可以指定channel名称，而不是使用默认的<code>mychannel</code>，可以设置超时时间，使用指定docker编排文件创建各容器，指定chaincode的语言是Go还是Java等，还有更多的参数自己探索吧，设置一些参数重新启动网络。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) ./byfn.sh help</span><br><span class="line">Usage:</span><br><span class="line">  byfn.sh &lt;mode&gt; [-c &lt;channel name&gt;] [-t &lt;timeout&gt;] [-d &lt;delay&gt;] [-f &lt;docker-compose-file&gt;] [-s &lt;dbtype&gt;] [-l &lt;language&gt;] [-o &lt;consensus-type&gt;] [-i &lt;imagetag&gt;] [-a] [-n] [-v]</span><br><span class="line">    &lt;mode&gt; - one of &apos;up&apos;, &apos;down&apos;, &apos;restart&apos;, &apos;generate&apos; or &apos;upgrade&apos;</span><br><span class="line">      - &apos;up&apos; - bring up the network with docker-compose up</span><br><span class="line">      - &apos;down&apos; - clear the network with docker-compose down</span><br><span class="line">      - &apos;restart&apos; - restart the network</span><br><span class="line">      - &apos;generate&apos; - generate required certificates and genesis block</span><br><span class="line">      - &apos;upgrade&apos;  - upgrade the network from version 1.3.x to 1.4.0</span><br><span class="line">    -c &lt;channel name&gt; - channel name to use (defaults to &quot;mychannel&quot;)</span><br><span class="line">    -t &lt;timeout&gt; - CLI timeout duration in seconds (defaults to 10)</span><br><span class="line">    -d &lt;delay&gt; - delay duration in seconds (defaults to 3)</span><br><span class="line">    -f &lt;docker-compose-file&gt; - specify which docker-compose file use (defaults to docker-compose-cli.yaml)</span><br><span class="line">    -s &lt;dbtype&gt; - the database backend to use: goleveldb (default) or couchdb</span><br><span class="line">    -l &lt;language&gt; - the chaincode language: golang (default) or node</span><br><span class="line">    -o &lt;consensus-type&gt; - the consensus-type of the ordering service: solo (default), kafka, or etcdraft</span><br><span class="line">    -i &lt;imagetag&gt; - the tag to be used to launch the network (defaults to &quot;latest&quot;)</span><br><span class="line">    -a - launch certificate authorities (no certificate authorities are launched by default)</span><br><span class="line">    -n - do not deploy chaincode (abstore chaincode is deployed by default)</span><br><span class="line">    -v - verbose mode</span><br><span class="line">  byfn.sh -h (print this message)</span><br><span class="line"></span><br><span class="line">Typically, one would first generate the required certificates and</span><br><span class="line">genesis block, then bring up the network. e.g.:</span><br><span class="line"></span><br><span class="line">	byfn.sh generate -c mychannel</span><br><span class="line">	byfn.sh up -c mychannel -s couchdb</span><br><span class="line">        byfn.sh up -c mychannel -s couchdb -i 1.4.0</span><br><span class="line">	byfn.sh up -l node</span><br><span class="line">	byfn.sh down -c mychannel</span><br><span class="line">        byfn.sh upgrade -c mychannel</span><br><span class="line"></span><br><span class="line">Taking all defaults:</span><br><span class="line">	byfn.sh generate</span><br><span class="line">	byfn.sh up</span><br><span class="line">	byfn.sh down</span><br></pre></td></tr></table></figure>
+<h3 id="利用容器编排自定义网络"><a href="#利用容器编排自定义网络" class="headerlink" title="利用容器编排自定义网络"></a>利用容器编排自定义网络</h3><p>byfn中启动的各容器，其实都docker compose编排而成，这一节我们探索一下这些容器的编排，从容器层面，自定义fabric网络。</p>
+<blockquote>
+<p>docker compose是定义和启动多个Docker容器应用的工具。如果你不了解docker compose，有必要先学习一下<a href="https://yeasy.gitbooks.io/docker_practice/compose/" target="_blank" rel="noopener">docker compose快速入门</a>。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+          
+            <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/16/fabric-makefile/" rel="next" title="通过Fabric 1.4 的Makefile，轻松掌握Fabric构建">
+                <i class="fa fa-chevron-left"></i> 通过Fabric 1.4 的Makefile，轻松掌握Fabric构建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/25/fabric-concepts-notes/" rel="prev" title="快速入门Fabric">
+                快速入门Fabric <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container">
+    </div>
+    
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大彬</p>
+              <p class="site-description motion-element" itemprop="description">技术与人生 | 区块链架构师</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">89</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" title="公众号 &rarr; http://img.lessisbetter.site/2019-01-article_qrcode.jpg" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/shitaibin" title="GitHub &rarr; https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault &rarr; https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 &rarr; https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow &rarr; https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hz_stb@163.com" title="E-Mail &rarr; mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://segmentfault.com/u/lessisbetter" title="https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank">SF</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载fabric-samples和事前工作"><span class="nav-number">1.</span> <span class="nav-text">下载fabric-samples和事前工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速启动你的第一个Fabric网络"><span class="nav-number">2.</span> <span class="nav-text">快速启动你的第一个Fabric网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动"><span class="nav-number">2.1.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭"><span class="nav-number">2.2.</span> <span class="nav-text">关闭</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动自定义网络"><span class="nav-number">3.</span> <span class="nav-text">启动自定义网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#利用byfn启动自定义网络"><span class="nav-number">3.1.</span> <span class="nav-text">利用byfn启动自定义网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用容器编排自定义网络"><span class="nav-number">3.2.</span> <span class="nav-text">利用容器编排自定义网络</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+
+  
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.css">
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+   <script>
+        var gitalk = new Gitalk({
+          clientID: '42138cdfb007b8368d81',
+          clientSecret: '317f1e9c0f7579358dcefb5402abe1bcc3e7388a',
+          repo: 'shitaibin.github.io',
+          owner: 'Shitaibin',
+          admin: ['Shitaibin'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+</body>
+</html>

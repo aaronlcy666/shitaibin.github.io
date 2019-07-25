@@ -376,6 +376,334 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/17/golang-detecting-date-racing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="技术与人生 | 区块链架构师">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大彬 LIB">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/11/17/golang-detecting-date-racing/" class="post-title-link" itemprop="url">轻松检测Golang并发的数据竞争</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-17 20:27:09" itemprop="dateCreated datePublished" datetime="2018-11-17T20:27:09+08:00">2018-11-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-16 07:21:56" itemprop="dateModified" datetime="2019-07-16T07:21:56+08:00">2019-07-16</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Golang中我们使用Channel或者sync.Mutex等锁保护数据，有没有一种机制可以检测代码中的数据竞争呢？</p>
+<blockquote>
+<p>背景知识</p>
+<p>数据竞争是并发情况下，存在多线程/协程读写相同数据的情况，必须存在至少一方写。另外，全是读的情况下是不存在数据竞争的。</p>
+</blockquote>
+<h1 id="使用race检测数据竞争"><a href="#使用race检测数据竞争" class="headerlink" title="使用race检测数据竞争"></a>使用race检测数据竞争</h1><p><code>go build</code>有个标记<code>race</code>可以帮助检测代码中的数据竞争。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  awesome git:(master) ✗ go <span class="built_in">help</span> build</span><br><span class="line">//.... omit</span><br><span class="line">-race</span><br><span class="line">		<span class="built_in">enable</span> data race detection.</span><br><span class="line">		Supported only on linux/amd64, freebsd/amd64, darwin/amd64 and windows/amd64.</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/17/golang-detecting-date-racing/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/17/An-introduction-to-Govendor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="技术与人生 | 区块链架构师">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大彬 LIB">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/11/17/An-introduction-to-Govendor/" class="post-title-link" itemprop="url">Go依赖包管理工具，3分钟掌握govendor</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-17 20:25:34" itemprop="dateCreated datePublished" datetime="2018-11-17T20:25:34+08:00">2018-11-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-12 08:39:16" itemprop="dateModified" datetime="2019-07-12T08:39:16+08:00">2019-07-12</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>网上写govendor的博文不少，但从安装到介绍，总看上去有些<strong>沉重</strong>，下面奉上一篇简单的教程，3分钟入门。</p>
+<h1 id="第1部分-简明教程"><a href="#第1部分-简明教程" class="headerlink" title="第1部分 简明教程"></a>第1部分 简明教程</h1><p>2步走，3分钟轻松搞定Go项目的依赖。</p>
+<h2 id="第1步-安装"><a href="#第1步-安装" class="headerlink" title="第1步 安装"></a>第1步 安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/kardianos/govendor</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/11/17/An-introduction-to-Govendor/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/16/golang-introduction-to-pipeline/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1695,344 +2023,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/09/26/Set-custom-domain-for-github-pags/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="技术与人生 | 区块链架构师">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/09/26/Set-custom-domain-for-github-pags/" class="post-title-link" itemprop="url">为Github博客配置自定义域名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-09-26 09:35:04" itemprop="dateCreated datePublished" datetime="2018-09-26T09:35:04+08:00">2018-09-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-09-27 10:29:34" itemprop="dateModified" datetime="2018-09-27T10:29:34+08:00">2018-09-27</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>七牛空间的测试域名现在只能使用一个月了，有天突然发现，博客的图片都无法访问了，因此要为七牛配置自定义的域名，顺便也把博客的自定义域名配上。</p>
-<p>看了Github Pages帮助文档，来回跳转导致配置成本增加，记录下简要配置过程，帮助打算配置自定义域名的朋友。</p>
-<h2 id="配置步骤"><a href="#配置步骤" class="headerlink" title="配置步骤"></a>配置步骤</h2><p>前提：</p>
-<ol>
-<li>已经购买了域名。</li>
-<li>Github上已经部署了博客。</li>
-</ol>
-<p>域名配置步骤，只需3个：</p>
-<ol>
-<li>获取托管你的博客的Github Pages服务器。<code>ping your_name.github.io</code>，必然是<a href="https://help.github.com/articles/troubleshooting-custom-domains/#dns-record-doesnt-point-to-githubs-server" target="_blank" rel="noopener">这里列出的某一个</a>。</li>
-<li>博客Github仓库页增加CNAME文件，CNAME的配置注意事项见<a href="https://help.github.com/articles/troubleshooting-custom-domains/#the-cname-file-isnt-properly-formatted" target="_blank" rel="noopener">这里</a>， 我的仓库示例在<a href="https://github.com/Shitaibin/shitaibin.github.io/blob/master/CNAME" target="_blank" rel="noopener">这里</a>。</li>
-<li>为你的域名配置解析，让你的DNS能指到Github Pages的服务器IP地址。如果你是阿里云的，参考<a href="https://jingyan.baidu.com/article/6fb756ec737930241858fba9.html" target="_blank" rel="noopener">这个</a>。其中填写的IP就是步骤1中获取的Github Pages的IP地址。</li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/09/26/Set-custom-domain-for-github-pags/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/09/07/rename-rm-in-MacOS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="技术与人生 | 区块链架构师">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/09/07/rename-rm-in-MacOS/" class="post-title-link" itemprop="url">重命名rm命令，防止误删</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-09-07 08:45:31" itemprop="dateCreated datePublished" datetime="2018-09-07T08:45:31+08:00">2018-09-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-09-14 09:31:29" itemprop="dateModified" datetime="2018-09-14T09:31:29+08:00">2018-09-14</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Oh Shit！误删数据了。</p>
-<p>既然看这篇文章，你必然也有<code>rm</code>命令误删数据的经历了，废话少说，解决办法：使用trash-cli覆盖原有的<code>rm</code>命令，把<code>rm</code>命令更改为<code>RM</code>。</p>
-<p>需要的软件:</p>
-<ul>
-<li><a href="https://github.com/andreafrancia/trash-cli" target="_blank" rel="noopener">trash-cli</a>：会把删除的数据，单独放到程序建立的垃圾桶，可以通过自带的命令查询和恢复。</li>
-</ul>
-<p>优点：再也不担心数据丢失了。<br>缺点：需要手动去清空垃圾桶，是否垃圾占用的空间，还好可以搞个定时任务解决。</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/09/07/rename-rm-in-MacOS/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2080,7 +2070,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">87</span>
+                    <span class="site-state-item-count">89</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
