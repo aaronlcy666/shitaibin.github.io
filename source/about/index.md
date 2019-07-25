@@ -1,12 +1,7 @@
 
-
-## LIB
-
-追求大道至简的哲学，申请了`lessisbetter.site`的域名，决定博客使用LIB作为名字。
-
 ## 博主
 
-大彬，区块链架构师，区块链和Golang技术传播者，现就职云象区块链团队，关注区块链技术和生态的发展，致力于可商业落地的区块链技术。曾在华为工作，对消息和事件框架有深入研究。
+大彬，区块链架构师，区块链和Go语言技术传播者，现就职云象区块链团队，关注区块链技术和生态的发展，致力于可商业落地的区块链技术。曾在华为工作，对消息和事件框架有深入研究。
 
 可以在以下社区联系到我，欢迎关注公众号：一起学Golang。
 
@@ -16,12 +11,14 @@
 - [GitHub](https://github.com/shitaibin)
 - [CSDN](https://me.csdn.net/m0_43499523)
 
-## 公众号
+## 个人公众号
 
-<!-- ![公众号](http://img.lessisbetter.site/image/jpg/qrcode_together_golang.jpg) -->
-<img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" align=center />
+[最近文章一键直达](http://mp.weixin.qq.com/profile?src=3&timestamp=1564043991&ver=1&signature=SsE*NH-Vyqie2DtuvnrM7WwOuIZsHcPR43iaSPgD*bcTMJdfKkMyAt5PN-qwYa9gRjyclodtk-4Lz-UCZ6G01A==)
 
-## 技术分享PPT
+<img src="http://img.lessisbetter.site/gzh-tail-big.png" align=center />
+
+
+## 技术分享
 
 | 日期    | 活动       | 分享PPT                                                     | 文章 |
 | ------ | ---------- | ---------------------------------------------------------- | --- |
