@@ -105,13 +105,13 @@
   <meta name="description" content="技术与人生 | 区块链架构师">
 <meta name="keywords" content="区块链 Golang 后端 技术 人生 编程">
 <meta property="og:type" content="website">
-<meta property="og:title" content="大彬 LIB">
+<meta property="og:title" content="Go语言充电站">
 <meta property="og:url" content="http://lessisbetter.site/index.html">
-<meta property="og:site_name" content="大彬 LIB">
+<meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="技术与人生 | 区块链架构师">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="大彬 LIB">
+<meta name="twitter:title" content="Go语言充电站">
 <meta name="twitter:description" content="技术与人生 | 区块链架构师">
 
 
@@ -129,7 +129,7 @@
   };
 </script>
 
-  <title>大彬 LIB – 大道至简 less is better</title>
+  <title>Go语言充电站 – 大彬 less is better</title>
   
 
 
@@ -189,13 +189,13 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">大彬 LIB</span>
+        <span class="site-title">Go语言充电站</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
     
       
-        <p class="site-subtitle">大道至简 less is better</p>
+        <p class="site-subtitle">大彬 less is better</p>
       
     
     
@@ -385,7 +385,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -421,7 +421,7 @@
                 
               
 
-              <time title="创建时间：2019-07-25 18:54:56 / 修改时间：15:29:30" itemprop="dateCreated datePublished" datetime="2019-07-25T18:54:56+08:00">2019-07-25</time>
+              <time title="创建时间：2019-07-25 18:54:56 / 修改时间：15:42:54" itemprop="dateCreated datePublished" datetime="2019-07-25T18:54:56+08:00">2019-07-25</time>
             
 
             
@@ -646,8 +646,7 @@
 <p><img src="http://img.lessisbetter.site/2019-07-chaincode_swimlane.png" alt=""></p>
 <h4 id="升级链码"><a href="#升级链码" class="headerlink" title="升级链码"></a>升级链码</h4><p>链码的升级通过改变其版本号（作为SignedCDS的一部分）。SignedCDS另外的部分，如所有者及实例化策略都是可选的。然而，<strong>链码的名称必须是一致的，否则会被当做另外一个新的链码</strong>。<br>在升级前，必须将新版本的链码安装到有需求的背书节点上。升级也是一种交易，会把新版本的链码绑定到通道中。<strong>升级只能在一个时间点对一个通道产生影响，其它通道仍然运行旧版本的链码</strong>。<br>由于可能存在多个版本的链码同时存在，<strong>升级过程不会自动删除老版本链码，用户必须手动操作删除过程</strong>。<br>升级与实例化transaction有一点不同的是：通过现有的chaincode实例化策略检查升级transaction，而不是用新的策略检查。这是为了确保只有当前实例化策略中指定的成员能够升级chaincode。<br>在升级期间，链码的Init函数也会被调用，执行有关升级的数据或者使用数据重新进行初始化，在升级链码的期间避免对状态进行重置。<br>安装新版本的链码<br><code>peer chaincode install -n sacc -v 1 -p path/to/my/chaincode/v1</code><br>upgrade升级链码<br><code>peer chaincode upgrade -n sacc -v 1 -c &#39;{&quot;Args&quot;:[&quot;d&quot;, &quot;e&quot;, &quot;f&quot;]}&#39; -C mychannel</code></p>
 <h4 id="都是交易"><a href="#都是交易" class="headerlink" title="都是交易"></a>都是交易</h4><p>安装、实例化、调用、升级链码，都是创建一笔交易，通过交易实现。</p>
-<h4 id="链码开发"><a href="#链码开发" class="headerlink" title="链码开发"></a>链码开发</h4><p>TODO：修改</p>
-<p><code>github.com/hyperledger/fabric/core/chaincode/shim</code>包是开发Go语言链码的API。shim 包提供了链码与账本交互的中间层。链码通过 shim.ChaincodeStub 提供的方法来读取和修改账本的状态。</p>
+<h4 id="链码开发"><a href="#链码开发" class="headerlink" title="链码开发"></a>链码开发</h4><p><code>github.com/hyperledger/fabric/core/chaincode/shim</code>包是开发Go语言链码的API。shim 包提供了链码与账本交互的中间层。链码通过 shim.ChaincodeStub 提供的方法来读取和修改账本的状态。</p>
 <p>链码启动必须通过调用 shim 包中的 Start 函数，而 Start 函数被调用时需要传递一个类型为 Chaincode 的参数，这个参数 Chaincode 是一个接口类型，该接口中有两个重要的函数 Init 与 Invoke 。</p>
 <p>Chaincode 接口定义如下：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Chaincode <span class="keyword">interface</span>&#123;</span><br><span class="line">    Init(stub ChaincodeStubInterface) peer.Response</span><br><span class="line">    Invoke(stub ChaincodeStubInterface) peer.Response</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -851,7 +850,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -1056,7 +1055,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -1289,7 +1288,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -1472,7 +1471,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -1633,7 +1632,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -1819,7 +1818,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -2203,7 +2202,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -2500,7 +2499,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
@@ -2688,7 +2687,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="大彬 LIB">
+      <meta itemprop="name" content="Go语言充电站">
     </span>
 
     
