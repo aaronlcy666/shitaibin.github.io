@@ -1908,7 +1908,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-25 16:36:49" itemprop="dateModified" datetime="2019-07-25T16:36:49+08:00">2019-07-25</time>
+                <time title="修改时间：2019-07-25 17:22:36" itemprop="dateModified" datetime="2019-07-25T17:22:36+08:00">2019-07-25</time>
               
             
           </span>
@@ -2080,13 +2080,23 @@
 </ol>
 <p>在介绍这几个大小之间的换算前，我们得先看下图这个表，这个表决定了映射关系。</p>
 <p>最上面2行是我手动加的，前3列分别是size class，object size和span size，根据这3列做size、size class和num of page之间的转换。</p>
-<p><em>另外，第4列num of objects代表是当前size class级别的Span可以保存多少对象数量，第5列tail waste是<code>span%obj</code>计算的结果，因为span的大小并不一定是对象大小的整数倍。最后一列max waste代表最大浪费的内存百分比，计算方法在<code>printComment</code>函数中，没搞清为何这样计算。</em></p>
 <p>仔细看一遍这个表，再向下看转换是如何实现的。</p>
 <p><img src="http://img.lessisbetter.site/2019-07-go-sizetable.png" alt="Go内存分配表"></p>
 <p>在Go内存大小转换那幅图中已经标记各大小之间的转换，分别是数组：<code>class_to_size</code>，<code>size_to_class*</code>和<code>class_to_allocnpages</code>，这3个数组内容，就是跟上表的映射关系匹配的。比如<code>class_to_size</code>，从上表看class 1对应的保存对象大小为8，所以<code>class_to_size[1]=8</code>，span大小为8192Byte，即8KB，为1页，所以<code>class_to_allocnpages[1]=1</code>。</p>
 <p><img src="http://img.lessisbetter.site/2019-07-size_tranform.png" alt="Size转换"></p>
 <p><strong>为何不使用函数计算各种转换，而是写成数组？</strong></p>
 <p>有1个很重要的原因：<strong>空间换时间</strong>。你如果仔细观察了，上表中的转换，并不能通过简单的公式进行转换，比如size和size class的关系，并不是正比的。这些数据是使用较复杂的公式计算出来的，公式在<code>makesizeclass.go</code>中，这其中存在指数运算与for循环，造成每次大小转换的时间复杂度为O(N*2^N)。另外，对一个程序而言，内存的申请和管理操作是很多的，如果不能快速完成，就是非常的低效。把以上大小转换写死到数组里，做到了把大小转换的时间复杂度直接降到O(1)。</p>
+<h4 id="其他转换表字段"><a href="#其他转换表字段" class="headerlink" title="其他转换表字段"></a>其他转换表字段</h4><p>第4列num of objects代表是当前size class级别的Span可以保存多少对象数量，第5列tail waste是<code>span%obj</code>计算的结果，因为span的大小并不一定是对象大小的整数倍。</p>
+<p>最后一列max waste代表最大浪费的内存百分比，计算方法在<code>printComment</code>函数中:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">printComment</span><span class="params">(w io.Writer, classes []class)</span></span> &#123;</span><br><span class="line">	fmt.Fprintf(w, <span class="string">"// %-5s  %-9s  %-10s  %-7s  %-10s  %-9s\n"</span>, <span class="string">"class"</span>, <span class="string">"bytes/obj"</span>, <span class="string">"bytes/span"</span>, <span class="string">"objects"</span>, <span class="string">"tail waste"</span>, <span class="string">"max waste"</span>)</span><br><span class="line">	prevSize := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i, c := <span class="keyword">range</span> classes &#123;</span><br><span class="line">		<span class="keyword">if</span> i == <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		spanSize := c.npages * pageSize</span><br><span class="line">		objects := spanSize / c.size</span><br><span class="line">		tailWaste := spanSize - c.size*(spanSize/c.size)</span><br><span class="line">		maxWaste := <span class="keyword">float64</span>((c.size-prevSize<span class="number">-1</span>)*objects+tailWaste) / <span class="keyword">float64</span>(spanSize)</span><br><span class="line">		prevSize = c.size</span><br><span class="line">		fmt.Fprintf(w, <span class="string">"// %5d  %9d  %10d  %7d  %10d  %8.2f%%\n"</span>, i, c.size, spanSize, objects, tailWaste, <span class="number">100</span>*maxWaste)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Fprintf(w, <span class="string">"\n"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Span最浪费内存的场景是：Span内的每一个对象空间保存的对象，实际占用内存是前一个class中对象的大小加1，这样无法占用低一级的Span。一个对象空间未被占用的内存就被浪费了，所以一个Span内对象空间所浪费的内存为：所有对象空间浪费的内存之和+tail waste。</p>
+<blockquote>
+<p>((c.size - (preSize+1)) * objects + tailWaste) / spanSize</p>
+</blockquote>
+<p><img src="http://img.lessisbetter.site/2019-07-span-objects.png" alt="Span内object分布情况"></p>
+<blockquote>
+<p>感谢<a href="https://github.com/foobar" target="_blank" rel="noopener">foobar</a>的提醒max waste的计算。</p>
+</blockquote>
 <h3 id="Go内存分配"><a href="#Go内存分配" class="headerlink" title="Go内存分配"></a>Go内存分配</h3><p>涉及的概念已经讲完了，我们看下Go内存分配原理。</p>
 <p>Go中的内存分类并不像TCMalloc那样分成小、中、大对象，但是它的小对象里又细分了一个Tiny对象，Tiny对象指大小在1Byte到16Byte之间并且不包含指针的对象。小对象和大对象只用大小划定，无其他区分。</p>
 <p><img src="http://img.lessisbetter.site/2019-07-go-memory-classify.png" alt="Go内存对象分类"></p>

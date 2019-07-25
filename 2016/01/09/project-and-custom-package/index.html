@@ -103,7 +103,7 @@
 
 
   <meta name="description" content="需求驱动学习。  前言这篇文章是包和单元测试的姊妹篇，内容是如何在自己的工程中导入自定义包，而不出现导入错误。 在文章：包和单元测试中，已经叙述了如何单元测试的导入问题，本质上讲，只要导入的模块在搜索路径中，python就可以发现该模块。也验证了python命令会将运行文件所在目录加到sys.path中，而python -m unittest命令，将运行命令所在目录加入到sys.path中。">
-<meta name="keywords" content="Python,单元测试,Package">
+<meta name="keywords" content="Python,Package,单元测试">
 <meta property="og:type" content="article">
 <meta property="og:title" content="对自定义包的引用">
 <meta property="og:url" content="http://lessisbetter.site/2016/01/09/project-and-custom-package/index.html">
@@ -576,9 +576,9 @@
           
             <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
           
-            <a href="/tags/单元测试/" rel="tag"><i class="fa fa-tag"></i> 单元测试</a>
-          
             <a href="/tags/Package/" rel="tag"><i class="fa fa-tag"></i> Package</a>
+          
+            <a href="/tags/单元测试/" rel="tag"><i class="fa fa-tag"></i> 单元测试</a>
           
         </div>
       
@@ -936,7 +936,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验"><span class="nav-number">2.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-同级目录引用自定义包"><span class="nav-number">2.1.</span> <span class="nav-text">1. 同级目录引用自定义包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-不同目录引用自定义包"><span class="nav-number">2.2.</span> <span class="nav-text">2. 不同目录引用自定义包</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验"><span class="nav-number">2.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-同级目录引用自定义包"><span class="nav-number">2.1.</span> <span class="nav-text">1. 同级目录引用自定义包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#目录结构"><span class="nav-number">2.1.0.1.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#各文件内容"><span class="nav-number">2.1.0.2.</span> <span class="nav-text">各文件内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行测试"><span class="nav-number">2.1.0.3.</span> <span class="nav-text">运行测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-不同目录引用自定义包"><span class="nav-number">2.2.</span> <span class="nav-text">2. 不同目录引用自定义包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#目录结构-1"><span class="nav-number">2.2.0.1.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行测试-1"><span class="nav-number">2.2.0.2.</span> <span class="nav-text">运行测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#问题来了"><span class="nav-number">2.2.0.3.</span> <span class="nav-text">问题来了</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方案1：安装我们自定义的包"><span class="nav-number">2.2.0.4.</span> <span class="nav-text">方案1：安装我们自定义的包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方案2：在每个文件中，修改sys-path"><span class="nav-number">2.2.0.5.</span> <span class="nav-text">方案2：在每个文件中，修改sys.path</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方案3：使用相对导入"><span class="nav-number">2.2.0.6.</span> <span class="nav-text">方案3：使用相对导入</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
