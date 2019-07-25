@@ -354,7 +354,7 @@ peer chaincode query -C mychannel -n sacc -c '{"Args":["query","user1"]}'
 2. 链码调用Invoke方法，通过发送获取数据（GetState）和写入数据（PutState）消息，向Peer节点获取账本状态信息和发送预提交状态。
 3. 链码发送模拟执行结果给Peer节点，Peer节点对交易提案和模拟执行结果进行背书签名。
 
-![](http://img.lessisbetter.site2019-07-fabric-invoke-chaincode.png)
+![](http://img.lessisbetter.site/2019-07-fabric-invoke-chaincode.png)
 
 ![](http://img.lessisbetter.site/2019-07-chaincode_swimlane.png)
 
