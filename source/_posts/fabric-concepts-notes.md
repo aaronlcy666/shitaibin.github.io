@@ -33,15 +33,15 @@ tags: ['Fabric']
 
 ### 架构
 
-![HyperLeger Fabric架构](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=.png)
+![HyperLeger Fabric架构](http://img.lessisbetter.site/2019-07-fabric-arch.png)
 
  Fabric网络是通过组织（organization）来划分的，每个组织内都包含承担不同功能的Peer 节点，每个Peer节点又可以担任多种角色。**所有的组织共用一个统一的Orderer排序服务集群**。基于Hyperledger Fabric区块链网络的设计时需要考虑组织之间的业务关系以及内部每个模块之间的联系，统一进行规划。
 
-![HyperLeger Fabricå¼åï¼ä¸ï¼ââHyperLeger Fabricæ¶æ](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719103936698.png)
+![](http://img.lessisbetter.site/2019-07-fabric-network.png)
 
 每个组织通常拥有自己的客户端、Peer节点和CA节点，并且可以根据需要创建一个或多个不同的类型节点。Orderer节点不属于某个组织的实体，属于组织共同维护的节点。
 
-![HyperLeger Fabricå¼åï¼ä¸ï¼ââHyperLeger Fabricæ¶æ](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719104039013.png)
+![](http://img.lessisbetter.site/2019-07-fabirc-org.png)
 
 
 ### 排序节点
@@ -165,7 +165,7 @@ Hyperledger Fabric系统链码实现了一系列系统功能，以便系统集�
 通过install安装链码，通过instantiate实例化链码，然后可以通过invoke、query调用链码和查询链码。
 如果需要升级链码，则需要先install安装新版本的链码，通过upgrade升级链码。在install安装链码前，可以通过package打包并签名生成打包文件，然后再通过install安装。
 
-![HyperLeger Fabricå¼åï¼å­ï¼ââHyperLeger Fabricæºè½åçº¦ï¼é¾ç ï¼](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719174606657.png)
+![](http://img.lessisbetter.site/2019-07-fabric-chaincode-lifecycle.png)
 
 #### 链码管理
 
@@ -354,7 +354,9 @@ peer chaincode query -C mychannel -n sacc -c '{"Args":["query","user1"]}'
 2. 链码调用Invoke方法，通过发送获取数据（GetState）和写入数据（PutState）消息，向Peer节点获取账本状态信息和发送预提交状态。
 3. 链码发送模拟执行结果给Peer节点，Peer节点对交易提案和模拟执行结果进行背书签名。
 
-![HyperLeger Fabricå¼åï¼å­ï¼ââHyperLeger Fabricæºè½åçº¦ï¼é¾ç ï¼](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719174118076-3781693.png)
+![](http://img.lessisbetter.site2019-07-fabric-invoke-chaincode.png)
+
+![](http://img.lessisbetter.site/2019-07-chaincode_swimlane.png)
 
 #### 升级链码
 
@@ -445,7 +447,7 @@ Fabric区块链的交易分两种，**部署交易和调用交易**。
 
 背书节点校验客户端的签名，然后执行智能合约代码模拟交易。交易处理完成后，对交易信息签名，返回给客户端。客户端收到签名后的交易信息后，发给排序服务节点排序。排序服务节点将交易信息排序打包成区块后，广播发给确认节点，写入区块链中。
 
-![img](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/flow-4.png)
+![](http://img.lessisbetter.site/2019-07-tx-flow.png)
 
 
 ##### 客户端提案
@@ -460,13 +462,13 @@ SDK将交易提案打包为可识别的格式（如gRPC上的protobuf），并�
 
 背书策略定义需要哪些节点背书交易才有效，例如需要5个成员的背书节点中至少3个同意；或者某个特殊身份的成员支持等。客户端只有在收集足够多的背书节点的交易提案签名，交易才能被视为有效。
 
-![](/Users/shitaibin/同步windows/Typo文档/Fabric概念入门笔记.assets/step1.png)
+![](http://img.lessisbetter.site/2019-07-txflow-step1.png)
 
 ##### 背书节点为提案背书
 
 背书节点（endorser）收到交易提案后，**验证签名**并确定提交者是否有权执行操作。背书节点将交易提案的参数作为输入，在当前状态KV数据库上执行交易，生成响应返回给客户端，响应包**含执行返回值、读写集的交易结果（此时不会更新账本），交易结果集、背书节点的签名和背书结果（YES/NO）作为提案的结果**，客户端SDK解析信息判断是否应用于后续的交易。
 
-![_images/step2.png](/Users/shitaibin/同步windows/Typo文档/Fabric概念入门笔记.assets/step2.png)
+![](http://img.lessisbetter.site/2019-07-txflow-step2.png)
 
 在所有合法性校验通过后，背书节点按照交易提案调用链码模拟执行交易。链码执行时，读取的数据（键值对）是背书节点中本地的状态数据库，链码读取过的数据回被归总到读集（Read Set）；链码对状态数据库的写操作并不会对账本做改变，所有的写操作将归总到一个写入集（Write Set）中记录下来。读集和写集将在确认节点中用于确定交易是否最终写入账本。
 
@@ -476,17 +478,17 @@ SDK将交易提案打包为可识别的格式（如gRPC上的protobuf），并�
 
 客户端验证背书节点签名，并比较各节点返回的提案结果，判断提案结果是否一致以及是否参照指定的背书策略执行。
 
-![_images/step3.png](/Users/shitaibin/同步windows/Typo文档/Fabric概念入门笔记.assets/step3.png)
+![](http://img.lessisbetter.site/2019-07-txflow-step3.png)
 
 当背书结果都通过验证，并且满足背书策略时，客户端生成一笔交易发送给排序节点。**交易包含交易签名、proposal、读写集、背书结果和通道ID。**
 
-![_images/step4.png](/Users/shitaibin/同步windows/Typo文档/Fabric概念入门笔记.assets/step4.png)
+![](http://img.lessisbetter.site/2019-07-txflow-step4.png)
 
 ##### orderer排序交易
 
 排序服务节点对接收到的交易进行共识排序，然后按照区块生成策略，将一批交易打包到一起，生成新的区块，调用deliver API投递消息，发送给确认节点。
 
-![_images/step5.png](/Users/shitaibin/同步windows/Typo文档/Fabric概念入门笔记.assets/step5.png)
+![](http://img.lessisbetter.site/2019-07-txflow-step5.png)
 
 **区块的广播有两种触发条件**，一种是当通道的交易数量达到某个预设的阈值，另一种是在交易数量没有超过阈值但距离上次广播的时间超过某个特定阈值，也可触发广播数据块。两种方式相结合，使得经过排序的交易及时生成区块并广播给通道的Leader节点（记账节点），Leader节点验证后，再发送给同channel同组织的其他记账节点。
 
@@ -503,13 +505,13 @@ peer需要对区块内的所有交易进行验证，验证交易是否按背书�
 
 交易流程中，采用**MVCC的乐观锁模型，提高了系统的并发能力。但MVCC也带来了一些局限性。例如，在同一个区块中若有两个交易先后对某个数据项做更新，顺序在后的交易将失败，因为后序交易的读集版本和当前数据项版本已经不一致。**
 
-![img](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/blocks-3.png)
+![](http://img.lessisbetter.site/2019-07-blocks-3.png)
 
 ##### 区块写入账本
 
 每个peer都把区块追加到对应channel的账本上，每个有效交易的write set会被提交到状态数据库。
 
-![_images/step6.png](/Users/shitaibin/同步windows/Typo文档/Fabric概念入门笔记.assets/step6.png)
+![](http://img.lessisbetter.site/2019-07-txflow-step6.png)
 
 ##### 客户端获取交易结果
 
@@ -517,7 +519,7 @@ peer需要对区块内的所有交易进行验证，验证交易是否按背书�
 
 #### 结构
 
-![HyperLeger Fabricå¼åï¼äºï¼ââHyperLeger Fabricè´¦æ¬å­å¨](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719164157493.png)
+![](http://img.lessisbetter.site/2019-07-fabric-storage.png)
 
 ### 账本
 
@@ -526,9 +528,10 @@ peer需要对区块内的所有交易进行验证，验证交易是否按背书�
 1. 区块链是一组不可更改的有序的区块（数据块），记录着全部交易的日志。
 2. 状态数据库记录了账本中所有键值对的当前值（世界状态），相当于对当前账本的交易日志做了索引。链码执行交易的时候需要读取账本的当前状态，从状态数据库可以迅速获取键值的最新状态。
 
-![HyperLeger Fabricå¼åï¼ä¸ï¼ââHyperLeger Fabricæ¶æ](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719140916699.png)
+![](http://img.lessisbetter.site/2019-07-fabric-storage.png)
 
-![HyperLeger Fabricå¼åï¼ä¸ï¼ââHyperLeger Fabricæ¶æ](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719141023962.png)
+
+![](http://img.lessisbetter.site/2019-07-fabric-storage-flow.png)
 
 
 #### 数据库
@@ -550,9 +553,7 @@ Fabric的Peer节点账本中有四种数据库，idStore（ledgerID数据库）�
 
 **ledgerID数据库**存储chainID，用于快速查询节点存在哪些账本。
 
-![HyperLeger Fabricå¼åï¼äºï¼ââHyperLeger Fabricè´¦æ¬å­å¨](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719162454463.png)
-
-
+![](http://img.lessisbetter.site/2019-07-fabric-storage-file.png)
 
 ledgersData是Peer节点账本的根目录，Peer节点的账本存储在Peer节点容器的`/var/hyperledger/production/ledgersData`目录下，通过命令行可以进入Peer节点容器进行查看，命令如下：
 
@@ -637,7 +638,7 @@ Hyperledger Fabric提供了多种区块索引的方式，以便能快速找到�
 
 **每个排序节点内部，针对每个通道都会建立与Kafka集群对应topic的生产者及消费者**。生产者将排序节点收到的交易发送到Kafka集群进行排序，在生产的同时，消费者也同步消费排序后的交易。
 
-![HyperLeger Fabricå¼åï¼åï¼ââHyperLeger Fabricå±è¯æºå¶](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-20190719153407335.png)
+![](http://img.lessisbetter.site/2019-07-fabric-kafka.png)
 
 
 
@@ -674,14 +675,14 @@ gossip是数据扩散协议，有3个功能：
 1. 接收到信息的节点处理它接收到的数据
 1. 接收到数据的节点再从第一步开始重复执行
 
-![Hyperledger Fabric å¼åï¼8.1ï¼ï¼è®¤è¯Gossip](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/40700af20ba2c21b14923b1a9ddb96f8.png)
+![](http://img.lessisbetter.site/2019-07-fabric-gossip-push.png)
 
 ##### 拉去数据
 
 1. 某个节点**周期性**地选择随机N个节点询问有没有最新的信息
 1. 收到请求的节点回复请求节点其最近未收到的信息
 
-![Hyperledger Fabric å¼åï¼8.1ï¼ï¼è®¤è¯Gossip](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/e2ec81a85a619460f3d328c7a959420a.png)
+![](http://img.lessisbetter.site/2019-07-fabric-gossip-pull.png)
 
 #### 数据同步
 
@@ -690,9 +691,9 @@ gossip是数据扩散协议，有3个功能：
 1. 主动广播，比如广播新打包的区块，排序节点把区块发送给主节点，它基于Gossip的推送数据
 2. 主动请求，比如新加入的节点，向已存在的其他组织锚节点请求数据，锚节点给他响应，它基于Gossip的拉去数据
 
-![Hyperledger Fabric å¼åï¼8.2ï¼ï¼æ°æ®åæ­¥çå®ç°](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/0bd7fedaad288bc90542ed746321550c.png)
+![](http://img.lessisbetter.site/2019-07-fabric-deliver-data.png)
 
-![Hyperledger Fabric å¼åï¼8.2ï¼ï¼æ°æ®åæ­¥çå®ç°](/Users/shitaibin/同步windows/Typo文档/Fabric学习.assets/3b00a6185fd562590f9598e6bfeed6d3.png)
+![](http://img.lessisbetter.site/2019-07-fabric-request-data.png)
 
 ### 应用开发
 
