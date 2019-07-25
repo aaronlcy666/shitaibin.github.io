@@ -376,7 +376,6 @@ upgrade升级链码
 
 #### 链码开发
 
-TODO：修改
 
 `github.com/hyperledger/fabric/core/chaincode/shim`包是开发Go语言链码的API。shim 包提供了链码与账本交互的中间层。链码通过 shim.ChaincodeStub 提供的方法来读取和修改账本的状态。
 
