@@ -1,7 +1,7 @@
 ---
 title: 搭建Fabric First Network
 date: 2019-07-17 11:37:57
-tags: ['区块链', 'Fabric']
+tags: ['区块链', 'Fabric', 'TODO']
 ---
 
 
@@ -457,3 +457,6 @@ byfn中启动的各容器，其实都docker compose编排而成，这一节我�
 
 > docker compose是定义和启动多个Docker容器应用的工具。如果你不了解docker compose，有必要先学习一下[docker compose快速入门](https://yeasy.gitbooks.io/docker_practice/compose/)。
 
+### TODO
+
+解析compose配置
