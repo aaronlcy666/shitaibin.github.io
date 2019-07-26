@@ -1,7 +1,7 @@
 ---
-title: 快速入门Fabric
+title: 快速入门Fabric核心概念和框架
 date: 2019-07-25 18:54:56
-tags: ['Fabric']
+tags: ['Fabric', '区块链']
 ---
 
 ## 声明
