@@ -12,9 +12,11 @@ tags: ['区块链', 'Fabric']
 1. 安装了Docker、Go等环境。
 1. 已经下载了fabric仓库，完成`make all`。
 
-## 下载fabric-samples和事前工作
+## 下载fabric-samples和准备工作
 
-有2种方式，方式1：一键下载和编译。
+有2种方式。
+
+方式1：一键下载和编译。
 
 ```
 curl -sSL http://bit.ly/2ysbOFE | bash -s
@@ -32,7 +34,7 @@ sh scripts/bootstrap.sh
 
 ## 快速启动你的第一个Fabric网络
 
-这一节的目的是用几分钟的时间启动一个网络，并且启动一个网络需要做哪些工作。
+这一节的目的是用几分钟的时间启动一个网络，并且了解启动一个网络的过程。
 
 ### 启动网络
 
@@ -69,16 +71,16 @@ drwxr-xr-x 4 centos centos   67 7月  17 03:46 scripts
 
 第二阶段：启动网络
 
-1. 启动容器，包含客户端(cli)、peer、orderer等，每个org有2个peer，peer0和peer1
+这个阶段是启动容器，包含客户端(cli)、peer，每个org有2个peer，peer0和peer1，默认是solo共识算法，还会启动1个orderer。
 
 第三阶段：创建和加入通道，部署和测试链码
 
-1. 创建channel
-1. peer加入channel
-1. 在channel上更新Org1和Org2 MSP的anchor peer
+1. 创建应用通道mychannel
+1. peer加入mychannel
+1. 在mychannel上更新Org1和Org2 MSP的anchor peer
 1. 在ogr1好org2的peer0上安装chaincode
-1. 在channel中，在peer0.org2上实例化chaincode，1个channel上只需示例化1次
-1. 在channel中，Invoke刚实例化的chaincode
+1. 在mychannel中，在peer0.org2上实例化chaincode，1个通道上只需示例化1次chaincode
+1. 在mychannel中，Invoke刚实例化的chaincode
 1. 在peer1.org2上安装chaincode，并查询
 
 `byfn.sh`中的`networkUp()`函数是`./byfn.sh up`的主要执行函数，它的主要功能就是组织上面3个阶段。
@@ -129,7 +131,7 @@ function networkUp() {
     sleep 14
   fi
 
-  # 指定端到端脚本：创建并加入应用通道，然后测试
+  # 执行端到端脚本：创建并加入应用通道，然后测试
   # now run the end to end script
   docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE $NO_CHAINCODE
   if [ $? -ne 0 ]; then
@@ -139,7 +141,7 @@ function networkUp() {
 }
 ```
 
-启动日志：
+启动日志，日志中标记了各阶段，建议详读一下：
 
 ```
 $ cd first-network
@@ -151,7 +153,7 @@ LOCAL_VERSION=1.4.0
 DOCKER_IMAGE_VERSION=1.4.0
 /home/centos/go/src/github.com/hyperledger/fabric-samples/bin/cryptogen
 
-/**** 生成配置阶段 ****/
+/**** 第1阶段：生成配置文件 ****/
 
 ##########################################################
 ##### Generate certificates using cryptogen tool #########
@@ -220,7 +222,7 @@ CONSENSUS_TYPE=solo
 
 
 
-/**** 创建、启动容器阶段 ****/
+/**** 第2阶段：启动容器网络 ****/
 
 
 Creating network "net_byfn" with the default driver
@@ -409,6 +411,8 @@ da8c17df215d        hyperledger/fabric-peer:latest                              
 fcd30620e876        hyperledger/fabric-peer:latest                                                                         "peer node start"        2 hours ago         Up 2 hours          0.0.0.0:10051->10051/tcp   peer1.org2.example.com
 ```
 
+上面有3个`dev-peer*.org*.example.com-mycc-1.0`容器，它们是链码容器，**每一个安装过链码的peer都会创建一个属于自己的链码容器**，在调用链码的时候，peer会通过gRPC和自己的链码容器通信。
+
 ### 关闭网络
 
 使用`./byfn.sh down`命令，关闭`first-network`：
@@ -418,7 +422,7 @@ fcd30620e876        hyperledger/fabric-peer:latest                              
 3. 删除docker镜像
 
 
-> 当`./byfn.sh up`失败时，也需要使用此命令清理数据，以免后面启动网络时出问题。
+**当`./byfn.sh up`失败时，也需要使用此命令清理数据，以免后面启动网络时出问题。**
 
 ```
 ➜  first-network git:(release-1.4) ./byfn.sh down
@@ -487,7 +491,7 @@ Deleted: sha256:c720d5e3b8c3b5690da0b10588517592ca11d94b3427cf75e88be0e000352ec9
 
 ### 生成证书
 
-从`byfn.sh`中能找到生成证书的命令，手动执行命令可以生成的证书，生成的证书在crypto-config目录下。
+从`byfn.sh`中能找到生成证书的命令，手动执行命令可以生成证书，生成的证书在crypto-config目录下。
 
 `crypto-config.yaml`是证书的配置文件。`ordererOrganizations`是系统通道组织，`peerOrganizations`是应用通道组织，包含2个组织：`org1.example.com`和`org2.example.com`。
 
@@ -525,7 +529,7 @@ crypto-config
 
 ### 生成创世块
 
-系统通道的保存的链是系统链，链上的区块都是配置信息，它的第一个区块，被称为创世块`genesis.block`，用来初始化系统链。
+系统通道保存的链是系统链，链上的区块都是配置信息，它的第一个区块，被称为创世块`genesis.block`，用来初始化系统链。
 
 生成创世块的工具是`configtxgen`，会自动在执行目录下寻找`configtx.yaml`文件，该文件包含了网络的初始配置，使用`-profile`指定系统链的配置`TwoOrgsOrdererGenesis`，该变量定义在`configtx.yaml`中。
 
@@ -544,7 +548,7 @@ crypto-config
 genesis.block
 ```
 
-以上命令是共识采用的是Solo，如果使用**Raft**需要使用`-profile SampleMultiNodeEtcdRaft`选项：
+以上命令是采用Solo共识算法创世块，如果使用**Raft**需要使用`-profile SampleMultiNodeEtcdRaft`选项：
 
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile SampleMultiNodeEtcdRaft -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
@@ -560,7 +564,7 @@ genesis.block
 
 ### 生成创建应用通道的交易
 
-网络启动后，只有1个系统通道，应用通道需要通过交易生成，这个交易需要使用`configtxgen`工具生成，具体命令如下，`-outputCreateChannelTx`说明了是要生成创建应用通道的交易。
+网络启动后，只有1个系统通道，应用通道需要通过交易生成，这个交易（channel.tx）需要使用`configtxgen`工具创建，具体命令如下，`-outputCreateChannelTx`说明了是要生成创建应用通道的交易。
 
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel
@@ -577,7 +581,7 @@ channel.tx  genesis.block
 
 ### 生成更新组织1的锚节点交易
 
-组织节点加入到通道后，需要更新系统配置，把组织1的锚节点写入到配置块，这个也需要通过1笔交易完成。工具依然是`configtxgen`，`-outputAnchorPeersUpdate`表明了这是生成更新组织锚节点配置交易的操作。
+组织节点加入到应用通道后，需要更新系统配置，把组织1的锚节点写入到配置块，这个也需要通过1笔交易完成。工具依然是`configtxgen`，`-outputAnchorPeersUpdate`表明了这是生成更新组织锚节点配置交易的操作。
 
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP
@@ -610,11 +614,9 @@ channel.tx  genesis.block  Org1MSPanchors.tx  Org2MSPanchors.tx
 
 ### 启动网络
 
-启动网络涉及到docker容器的创建与启动，这部分不挨个手动执行，使用`byfn.sh`完成，这部分会完成系统通道的启动。
+启动网络涉及到docker容器的创建与启动，这部分不挨个手动执行，使用`byfn.sh`完成，这样可以完成fabric网络的启动，系统通道的启动也在这个阶段完成。
 
-`scripts/script.sh`完成的是从创建应用通道到调研合约、查询合约的过程，这部分继续手动执行。
-
-为了按上面这样走，需要注释掉`byfn.sh`中的下面这行：
+`byfn.sh`利用`scripts/script.sh`完成的从创建应用通道到调研合约、查询合约的过程，这部分继续手动执行，需要注释掉`byfn.sh`中的下面这行：
 
 ```
 docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE $NO_CHAINCODE
@@ -632,7 +634,7 @@ docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOU
 ./byfn.sh up -o etcdraft
 ```
 
-查看容器是否都起来，如果是raft应当是下面这样：
+如果是solo，启动起来的容器与[快速启动你的第一个Fabric网络](#快速启动你的第一个Fabric网络)中的类似，只不过缺少3个链码容器。如果是raft应当是下面这样：
 
 - 5个orderer节点，
 - 4个peer节点
@@ -754,7 +756,7 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chann
 Error: proposal failed (err: bad proposal response 500: cannot create ledger from genesis block: LedgerID already exists)
 ```
 
-修改环境变量的规则见`fabric-samples/first-network/scripts/utils.sh`中的`setGloabls`函数。为peer1.org0加入mychanel:
+修改环境变量的规则见`fabric-samples/first-network/scripts/utils.sh`中的`setGloabls`函数。以下是peer1.org0加入mychanel:
 
 ```
 CORE_PEER_LOCALMSPID="Org1MSP"
@@ -971,7 +973,8 @@ Query Response:{"Name":"a","Amount":"100"}
 peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt  -c '{"Args":["invoke","a","b","10"]}'
 ```
 
-> `-c '{"Args":["invoke","a","b","10"]}'`指调用链码的invoke函数，参数为a, b和10，含义是对把a和b的值分别修改为a-10，b+10，具体操作可以见源码：fabric-samples/chaincode/chaincode_example02/go/chaincode_example02.go。
+> `-c '{"Args":["invoke","a","b","10"]}'`指调用链码的invoke函数，参数为a, b和10，含义是对把a和b的值分别修改为a-10，b+10，具体操作可以见源码：
+> fabric-samples/chaincode/chaincode_example02/go/chaincode_example02.go。
 
 链码容器日志如下，可以看到触发了Invoke，值进行了变更。
 
@@ -1006,6 +1009,7 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# CORE_PEER_
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# CORE_PEER_ADDRESS=peer1.org2.example.com:10051
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer#
+
 # 加入mychannel
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel join -b mychannel.block
 2019-07-30 03:45:39.637 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
@@ -1016,11 +1020,13 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chann
 Channels peers has joined:
 mychannel
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer#
+
 # 设置org2的锚节点
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org2MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 2019-07-30 03:47:27.412 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
 2019-07-30 03:47:27.447 UTC [channelCmd] update -> INFO 002 Successfully submitted channel update
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer#
+
 # 安装链码
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/
 2019-07-30 03:48:18.903 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 001 Using default escc
