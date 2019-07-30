@@ -1,6 +1,6 @@
 ---
 title: 通过Fabric 1.4 的Makefile，轻松掌握Fabric构建
-date: 2019-07-16 07:18:48
+date: 2019-07-10 07:18:48
 tags: ['Fabric', 'Makefile', '区块链']
 ---
 
