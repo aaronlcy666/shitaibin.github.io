@@ -1034,13 +1034,15 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chain
 2019-07-30 03:48:19.180 UTC [chaincodeCmd] install -> INFO 003 Installed remotely response:<status:200 payload:"OK" >
 ```
 
-之前已经实例化过1链码，所以无需再次实例化
-接下来重新执行调用链码，并且制定2个背书节点，分别是peer1.org1和peer1.org2。
+之前已经实例化过1链码，所以无需再次实例化。
+
+接下来重新执行调用链码，并且制定2个背书节点，分别是peer1.org1和peer1.org2。背书启用了TLS，需要在`--peerAddresses`后面，使用`--tlsRootCertFiles`指定对应peer的证书文件，使用`--cafile`指定orderer的证书文件。
 
 ```
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt --peerAddresses peer1.org2.example.com:10051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt -c '{"Args":["invoke","a","b","10"]}'
 2019-07-30 03:52:53.880 UTC [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 001 Chaincode invoke successful. result: status:200
 ```
+
 
 可以通过命令查询到，链码中的数据已经更新到最新，说明调用链码成功。
 
