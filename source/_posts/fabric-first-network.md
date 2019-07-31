@@ -535,6 +535,14 @@ crypto-config
 
 使用`-outputBlock`指定输出的创世块文件。
 
+命令：
+
+```
+configtxgen -profile TwoOrgsOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+```
+
+记录：
+
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile TwoOrgsOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
 2019-07-29 07:17:02.140 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
@@ -549,6 +557,14 @@ genesis.block
 ```
 
 以上命令是采用Solo共识算法创世块，如果使用**Raft**需要使用`-profile SampleMultiNodeEtcdRaft`选项：
+
+命令：
+
+```
+configtxgen -profile SampleMultiNodeEtcdRaft -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+```
+
+记录：
 
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile SampleMultiNodeEtcdRaft -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
@@ -565,6 +581,14 @@ genesis.block
 ### 生成创建应用通道的交易
 
 网络启动后，只有1个系统通道，应用通道需要通过交易生成，这个交易（channel.tx）需要使用`configtxgen`工具创建，具体命令如下，`-outputCreateChannelTx`说明了是要生成创建应用通道的交易。
+
+命令：
+
+```
+configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel
+```
+
+记录：
 
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel
@@ -583,6 +607,14 @@ channel.tx  genesis.block
 
 组织节点加入到应用通道后，需要更新系统配置，把组织1的锚节点写入到配置块，这个也需要通过1笔交易完成。工具依然是`configtxgen`，`-outputAnchorPeersUpdate`表明了这是生成更新组织锚节点配置交易的操作。
 
+命令：
+
+```
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP
+```
+
+记录：
+
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP
 2019-07-29 07:30:26.456 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
@@ -599,6 +631,14 @@ channel.tx  genesis.block  Org1MSPanchors.tx
 ### 生成更新组织2的锚节点交易
 
 与上面类似，这是生成组织2锚节点配置的交易。
+
+命令：
+
+```
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID mychannel -asOrg Org2MSP
+```
+
+记录：
 
 ```
 ➜  first-network git:(release-1.4) configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID mychannel -asOrg Org2MSP
@@ -659,6 +699,14 @@ aaeab5fdb418        hyperledger/fabric-orderer:latest   "orderer"           30 s
 
 连接cli发送创建mychannel的交易。
 
+命令：
+
+```
+peer channel create -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/channel.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+```
+
+记录：
+
 ```
 ➜  first-network git:(r1.4-raft) ✗ docker exec -it cli  /bin/bash
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# ls
@@ -686,6 +734,14 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer#
 #### 确认应用通道创建成功
 
 连接orderer查看mychannel是否创建，可以看到已经存在mychannel目录，证明mychannel已创建。
+
+命令：
+
+```
+ls /var/hyperledger/production/orderer/chains/mychannel/
+```
+
+记录：
 
 ```
 ➜  ~ docker exec -it orderer.example.com bash
@@ -719,9 +775,16 @@ CORE_PEER_ADDRESS=peer0.org1.example.com:7051
 - CORE_PEER_MSPCONFIGPATH
 - CORE_PEER_ADDRESS，最易分辨当前是在为哪个peer操作，比如默认是peer0.org1
 
-以下为加入mychannel和列出当前peer(peer0.org1)所加入的通道。
+以下为加入mychannel和列出当前peer(peer0.org1)所加入的通道：
 
-> 没有命令能够查看某个通道所有的peer。
+命令：
+
+```
+peer channel join -b mychannel.block
+peer channel list
+```
+
+记录：
 
 ```
 ➜  first-network git:(r1.4-raft) ✗ docker exec -it cli  /bin/bash
@@ -747,6 +810,9 @@ root@e16a90f3f3fc:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chann
 Channels peers has joined:
 mychannel
 ```
+
+
+> 没有命令能够查看某个通道所有的peer。
 
 peer0.org1重复加入会发起proposal失败：
 
@@ -789,6 +855,14 @@ root@4c7776287dc7:/opt/gopath/src/github.com/hyperledger/fabric/peer# ls /var/hy
 
 > 因为上一步操作环境变量已经修改成peer1.org1的，所以，就直接让peer1.org1做锚节点好了。
 
+命令：
+
+```
+peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+```
+
+记录：
+
 ```
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 2019-07-29 12:05:12.585 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
@@ -808,6 +882,14 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chann
 
 更多选项见`peer chaincode install -h`。
 
+命令：
+
+```
+peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/
+```
+
+记录：
+
 ```
 # 查看链码源码
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# ls ../../../../github.com/chaincode/chaincode_example02/go/
@@ -825,6 +907,14 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chain
 
 1、在cli上执行查询：
 
+命令：
+
+```
+peer chaincode list --installed
+```
+
+记录：
+
 ```
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode list --installed
 Get installed chaincodes on peer:
@@ -832,6 +922,14 @@ Name: mycc, Version: 1.0, Path: github.com/chaincode/chaincode_example02/go/, Id
 ```
 
 2、登录到peer1.org1上查询链码文件：
+
+命令：
+
+```
+ls /var/hyperledger/production/chaincodes
+```
+
+记录：
 
 ```
 root@4c7776287dc7:/opt/gopath/src/github.com/hyperledger/fabric/peer# ls /var/hyperledger/production/chaincodes/mycc.1.0
@@ -873,6 +971,14 @@ root@4c7776287dc7:/opt/gopath/src/github.com/hyperledger/fabric/peer# ls /var/hy
 - `-v 1.0`：链码版本
 - `-c '{"Args":["init","a","100","b","200"]}'`：链码的构建过程消息，JSON格式，调用`init`函数，设置a和b的值
 - `-P 'AND ('\''Org1MSP.peer'\'','\''Org2MSP.peer'\'')'`：指定背书策略，必须由org1和org2同时背书
+
+
+命令：
+
+```
+peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc -l golang -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P 'AND ('\''Org1MSP.peer'\'','\''Org2MSP.peer'\'')'
+```
+
 
 部署和快速查询如下：
 
@@ -937,6 +1043,14 @@ Aval = 100, Bval = 200
 
 如果key存在可以查询到正确的值，如果key不存在，查询结果提示Error。
 
+命令：
+
+```
+peer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
+```
+
+记录：
+
 ```
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
 100
@@ -968,6 +1082,8 @@ Query Response:{"Name":"a","Amount":"100"}
 #### 不满足背书策略的调用交易
 
 以下为无效的调用交易，因为只指定了peer1.org1进行背书，而mycc的背书策略要求org1和org2的2个peer同时背书才行。
+
+命令：
 
 ```
 peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt  -c '{"Args":["invoke","a","b","10"]}'
@@ -1037,6 +1153,8 @@ root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chain
 之前已经实例化过1链码，所以无需再次实例化。
 
 接下来重新执行调用链码，并且制定2个背书节点，分别是peer1.org1和peer1.org2。背书启用了TLS，需要在`--peerAddresses`后面，使用`--tlsRootCertFiles`指定对应peer的证书文件，使用`--cafile`指定orderer的证书文件。
+
+命令：
 
 ```
 root@fc0891e02afd:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt --peerAddresses peer1.org2.example.com:10051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt -c '{"Args":["invoke","a","b","10"]}'
