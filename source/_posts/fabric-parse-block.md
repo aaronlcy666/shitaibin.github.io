@@ -159,6 +159,7 @@ configtxlator proto_decode  --type common.Block --input mychannel.block > mychan
 																},
 																"version": 0
 ......
+
 ```                                                                
 
 ## 常见区块样例
