@@ -115,52 +115,7 @@ peer channel fetch config $CHANNEL_NAME.block -o orderer.example.com:7050 -c $CH
 configtxlator proto_decode  --type common.Block --input mychannel.block > mychannel.block.json
 ```
 
-结果：
-
-```json
-{
-	"data": {
-		"data": [
-			{
-				"payload": {
-					"data": {
-						"config": {
-							"channel_group": {
-								"groups": {
-									"Application": {
-										"groups": {
-											"Org1MSP": {
-												"groups": {},
-												"mod_policy": "Admins",
-												"policies": {
-													"Admins": {
-														"mod_policy": "Admins",
-														"policy": {
-															"type": 1,
-															"value": {
-																"identities": [
-																	{
-																		"principal": {
-																			"msp_identifier": "Org1MSP",
-																			"role": "ADMIN"
-																		},
-																		"principal_classification": "ROLE"
-																	}
-																],
-																"rule": {
-																	"n_out_of": {
-																		"n": 1,
-																		"rules": [
-																			{
-																				"signed_by": 0
-																			}
-																		]
-																	}
-																},
-																"version": 0
-......
-
-```                                                                
+结果见[样例](常见区块样例)。
 
 ## 常见区块样例
 
