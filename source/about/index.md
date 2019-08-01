@@ -13,12 +13,11 @@
 
 ## 个人公众号
 
-[最近文章一键直达](http://mp.weixin.qq.com/profile?src=3&timestamp=1564043991&ver=1&signature=SsE*NH-Vyqie2DtuvnrM7WwOuIZsHcPR43iaSPgD*bcTMJdfKkMyAt5PN-qwYa9gRjyclodtk-4Lz-UCZ6G01A==)
 
 <img src="http://img.lessisbetter.site/gzh-tail-big.png" align=center />
 
 
-## 技术分享
+## 线下分享
 
 | 日期    | 活动       | 分享PPT                                                     | 文章 |
 | ------ | ---------- | ---------------------------------------------------------- | --- |
