@@ -1,5 +1,5 @@
 ---
-title: 利用工具解析Fabric区块
+title: 利用工具解析Fabric区块与工具详解
 date: 2019-08-01 19:41:28
 tags: ['区块链', 'Fabric']
 ---
@@ -107,7 +107,170 @@ peer channel fetch config $CHANNEL_NAME.block -o orderer.example.com:7050 -c $CH
 
 以上命令执行结果的最后一行，会显示当前配置所在的区块高度。
 
-## 解析区块
+## 解析工具
+
+`configtxlator`是一个fabric中protbuf和JSON格式之间的转换工具，fabric中任何的使用Protobuf定义的类型，都可使用该工具进行转换。
+
+#### 解析示例
+
+比如创建通道交易：`channel.tx`也是protobuf格式的，可以利用此工具解析：
+
+```
+configtxlator proto_decode  --type common.Envelope --input channel.tx
+```
+
+- `--type xxx`：阅读源码，找出该proto格式数据对应的数据类型
+- `--input xxx`：proto格式数据文件
+
+结果：
+
+```json
+{
+	"payload": {
+		"data": {
+			"config_update": {
+				"channel_id": "mychannel",
+				"isolated_data": {},
+				"read_set": {
+					"groups": {
+						"Application": {
+							"groups": {
+								"Org1MSP": {
+									"groups": {},
+									"mod_policy": "",
+									"policies": {},
+									"values": {},
+									"version": "0"
+								},
+								"Org2MSP": {
+									"groups": {},
+									"mod_policy": "",
+									"policies": {},
+									"values": {},
+									"version": "0"
+								}
+							},
+							"mod_policy": "",
+							"policies": {},
+							"values": {},
+							"version": "0"
+						}
+					},
+					"mod_policy": "",
+					"policies": {},
+					"values": {
+						"Consortium": {
+							"mod_policy": "",
+							"value": null,
+							"version": "0"
+						}
+					},
+					"version": "0"
+				},
+				"write_set": {
+					"groups": {
+						"Application": {
+							"groups": {
+								"Org1MSP": {
+									"groups": {},
+									"mod_policy": "",
+									"policies": {},
+									"values": {},
+									"version": "0"
+								},
+								"Org2MSP": {
+									"groups": {},
+									"mod_policy": "",
+									"policies": {},
+									"values": {},
+									"version": "0"
+								}
+							},
+							"mod_policy": "Admins",
+							"policies": {
+								"Admins": {
+									"mod_policy": "Admins",
+									"policy": {
+										"type": 3,
+										"value": {
+											"rule": "MAJORITY",
+											"sub_policy": "Admins"
+										}
+									},
+									"version": "0"
+								},
+								"Readers": {
+									"mod_policy": "Admins",
+									"policy": {
+										"type": 3,
+										"value": {
+											"rule": "ANY",
+											"sub_policy": "Readers"
+										}
+									},
+									"version": "0"
+								},
+								"Writers": {
+									"mod_policy": "Admins",
+									"policy": {
+										"type": 3,
+										"value": {
+											"rule": "ANY",
+											"sub_policy": "Writers"
+										}
+									},
+									"version": "0"
+								}
+							},
+							"values": {
+								"Capabilities": {
+									"mod_policy": "Admins",
+									"value": {
+										"capabilities": {
+											"V1_3": {}
+										}
+									},
+									"version": "0"
+								}
+							},
+							"version": "1"
+						}
+					},
+					"mod_policy": "",
+					"policies": {},
+					"values": {
+						"Consortium": {
+							"mod_policy": "",
+							"value": {
+								"name": "SampleConsortium"
+							},
+							"version": "0"
+						}
+					},
+					"version": "0"
+				}
+			},
+			"signatures": []
+		},
+		"header": {
+			"channel_header": {
+				"channel_id": "mychannel",
+				"epoch": "0",
+				"extension": null,
+				"timestamp": "2019-08-01T06:30:01Z",
+				"tls_cert_hash": null,
+				"tx_id": "",
+				"type": 2,
+				"version": 0
+			},
+			"signature_header": null
+		}
+	},
+	"signature": null
+}
+```
+
+### 解析区块
 
 使用`configtxlator`可以把区块从protobuf解析成JSON格式，
 
@@ -116,6 +279,19 @@ configtxlator proto_decode  --type common.Block --input mychannel.block > mychan
 ```
 
 结果见[样例](常见区块样例)。
+
+### 拓展查询
+
+Fabric提供了使用`peer channel fetch`获取区块的功能，但没有提供查询交易、db等信息的接口，那如何办？
+
+获取交易，有方法：`GetTransactionByID`。
+
+获取DB，有方法：`GetStateLevelDBData`。
+
+如果结果是非结构体格式的`[]byte`或者`string`，可以直接组装成JSON格式，比如`GetStateLevelDBData`。`GetTransactionByID`是返回protobuf定义的结构体，可以直接使用`configtxlator`调用的接口`DeepMarshalJSON`把结构体转换为JSON字符串。
+
+`DeepMarshalJSON`是tools `protolator`提供的一个接口，`protolator`这个工具是完成protobuf数据和JSON数据之间转换的实际工具。利用这些工具和简单的Web框架，可以搭建出查询通道、区块、交易、数据(KV)的简易网站。
+
 
 ## 常见区块样例
 
