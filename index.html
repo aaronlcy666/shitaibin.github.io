@@ -2349,7 +2349,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-30 15:36:09" itemprop="dateModified" datetime="2019-07-30T15:36:09+08:00">2019-07-30</time>
+                <time title="修改时间：2019-08-06 10:57:18" itemprop="dateModified" datetime="2019-08-06T10:57:18+08:00">2019-08-06</time>
               
             
           </span>
@@ -2424,6 +2424,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Step 3/5 : ADD payload/goshim.tar.bz2 $GOPATH/src/</span><br><span class="line">failed to copy files: Error processing tar file(bzip2 data invalid: bad magic value in continuation file):</span><br><span class="line">make: [build/image/ccenv/.dummy-x86_64-1.0.7-snapshot-ac3fabd] Error 1</span><br></pre></td></tr></table></figure>
 <p>需要安装gnu-tar，用gnu-tar替换mac默认的bsdtar，可以用brew list gnu-tar找到gnu-tar的位置:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ brew install gnu-tar --with-default-names</span><br><span class="line">$ export PATH=&quot;/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH&quot;</span><br><span class="line">$ which tar</span><br><span class="line">/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin//tar</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>export PATH=&quot;/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH&quot;</code>加入到<code>.zshrc</code>，不必每次构建都设置PATH，但这样会让Mac默认使用GNU tar。</p>
+</blockquote>
 <h2 id="Git升级到2-22以上版本"><a href="#Git升级到2-22以上版本" class="headerlink" title="Git升级到2.22以上版本"></a>Git升级到2.22以上版本</h2><p>如果未升级可能遇到上文提到的dep不存在的问题。</p>
 <h1 id="通过Makefile定位编译问题"><a href="#通过Makefile定位编译问题" class="headerlink" title="通过Makefile定位编译问题"></a>通过Makefile定位编译问题</h1><p>这类问题是类似的，要找到报错的位置，是做哪项构建时报的错，以及报错位置的前提条件是什么。</p>
 <p>通过：dep不存在的问题，进行举例介绍。</p>
