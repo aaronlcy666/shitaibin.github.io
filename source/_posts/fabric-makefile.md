@@ -910,6 +910,8 @@ $ which tar
 /usr/local/Cellar/gnu-tar/1.30/libexec/gnubin//tar
 ```
 
+> `export PATH="/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH"`加入到`.zshrc`，不必每次构建都设置PATH，但这样会让Mac默认使用GNU tar。
+
 ## Git升级到2.22以上版本
 
 如果未升级可能遇到上文提到的dep不存在的问题。
