@@ -43,7 +43,7 @@ tags: ['Go']
 
 既然你已经能回答以上问题，说明你对Go调度器的设计已经有了一定的掌握，关于Go调度器源码的优秀资料已经有很多，我这里推荐2个：
 
-1. **雨痕的Go源码剖析**六章并发调度，不止是源码，是以源码为基础进行了详细的Go调度器介绍：ttps://github.com/qyuhen/book
+1. **雨痕的Go源码剖析**六章并发调度，不止是源码，是以源码为基础进行了详细的Go调度器介绍：https://github.com/qyuhen/book
 2. **Go夜读**第12期，golang中goroutine的调度，M、P、G各自的一生状态，以及转换关系：https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/
 
 
