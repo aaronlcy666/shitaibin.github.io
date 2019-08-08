@@ -112,7 +112,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2018-12-fan-in-fan-out.png">
 <meta property="og:image" content="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
-<meta property="og:updated_time" content="2019-07-25T08:36:49.902Z">
+<meta property="og:updated_time" content="2019-08-08T03:33:21.639Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Golang并发模型：轻松入门流水线FAN模式">
 <meta name="twitter:description" content="前一篇文章《Golang并发模型：轻松入门流水线模型》，介绍了流水线模型的概念，这篇文章是流水线模型进阶，介绍FAN-IN和FAN-OUT，FAN模式可以让我们的流水线模型更好的利用Golang并发，提高软件性能。但FAN模式不一定是万能，不见得能提高程序的性能，甚至还不如普通的流水线。我们先介绍下FAN模式，再看看它怎么提升性能的，它是不是万能的。 FAN-IN和FAN-OUT模式Golang的">
@@ -439,7 +439,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-25 16:36:49" itemprop="dateModified" datetime="2019-07-25T16:36:49+08:00">2019-07-25</time>
+                <time title="修改时间：2019-08-08 11:33:21" itemprop="dateModified" datetime="2019-08-08T11:33:21+08:00">2019-08-08</time>
               
             
           </span>
@@ -509,7 +509,7 @@
 <p>多次测试，每次结果近似，结果如下：</p>
 <ul>
 <li>FAN模式利用了7%的CPU，而普通流水线CPU只使用了3%，<strong>FAN模式能够更好的利用CPU，提供更好的并发，提高Golang程序的并发性能。</strong></li>
-<li>FAN模式耗时10s，普通流水线耗时4s。<strong>在协程比较费时时，FAN模式可以减少程序运行时间，同样的时间，可以处理更多的数据。</strong></li>
+<li>FAN模式耗时4s，普通流水线耗时10s。<strong>在协程比较费时时，FAN模式可以减少程序运行时间，同样的时间，可以处理更多的数据。</strong></li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  awesome git:(master) ✗ time go run hi_simple.go</span><br><span class="line">go run hi_simple.go  0.17s user 0.18s system 3% cpu 10.389 total</span><br><span class="line">➜  awesome git:(master) ✗ </span><br><span class="line">➜  awesome git:(master) ✗ time go run hi_fan.go</span><br><span class="line">go run hi_fan.go  0.17s user 0.16s system 7% cpu 4.288 total</span><br></pre></td></tr></table></figure>
 <p><strong>也可以使用Benchmark进行测试，看2个类型的执行时间，结论相同</strong>。为了节约篇幅，这里不再介绍，<a href="https://gist.github.com/Shitaibin/9593a18989b6c81bb3aae5ccdf9b6470" target="_blank" rel="noopener">方法和结果贴在Gist</a>了，想看的朋友瞄一眼，或自己动手搞搞。</p>
