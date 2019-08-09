@@ -904,13 +904,25 @@ make: [build/image/ccenv/.dummy-x86_64-1.0.7-snapshot-ac3fabd] Error 1
 需要安装gnu-tar，用gnu-tar替换mac默认的bsdtar，可以用brew list gnu-tar找到gnu-tar的位置:
 
 ```
-$ brew install gnu-tar --with-default-names
-$ export PATH="/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH"
+$ brew install gnu-tar
+➜  fabric git:(yx-release-1.4) ✗ brew install gnu-tar
+==> Reinstalling gnu-tar
+==> Downloading https://mirrors.cloud.tencent.com/homebrew-bottles/bottles/gnu-tar-1.32.mojave.bottle.tar.gz
+######################################################################## 100.0%
+==> Pouring gnu-tar-1.32.mojave.bottle.tar.gz
+==> Caveats
+GNU "tar" has been installed as "gtar".
+If you need to use it as "tar", you can add a "gnubin" directory
+to your PATH from your bashrc like:
+
+    PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"
+==> Summary
+🍺  /usr/local/Cellar/gnu-tar/1.32: 15 files, 1.7MB
 $ which tar
-/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin//tar
+/usr/local/opt/gnu-tar/libexec/gnubin/tar
 ```
 
-> `export PATH="/usr/local/Cellar/gnu-tar/1.30/libexec/gnubin/:$PATH"`加入到`.zshrc`，不必每次构建都设置PATH，但这样会让Mac默认使用GNU tar。
+按提示设置PATH才可以使用gnu tar。`export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"`加入到`.zshrc`，不必每次构建都设置PATH，但这样会让Mac默认使用GNU tar。
 
 ## Git升级到2.22以上版本
 
