@@ -102,13 +102,13 @@
 
 
 
-  <meta name="description" content="前言本文在https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。 Raft的3大核心是强领导者、领导者选举和成员关系变更（增">
+  <meta name="description" content="前言本文在 https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合英文原文一起阅读。 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。 Raft的3大核心是强领导者、领导者选举和成员关系变更（增加和减少Raf">
 <meta name="keywords" content="一致性,共识">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Raft中文翻译与笔记">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/13/raft-zh/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="前言本文在https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。 Raft的3大核心是强领导者、领导者选举和成员关系变更（增">
+<meta property="og:description" content="前言本文在 https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合英文原文一起阅读。 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。 Raft的3大核心是强领导者、领导者选举和成员关系变更（增加和减少Raf">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://static001.geekbang.org/resource/image/0c/ec/0c99e3c238ae1ad680a7c78ecd7312ec.jpg">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-图1.png">
@@ -127,10 +127,10 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-图14.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-图15.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-图16.png">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.443Z">
+<meta property="og:updated_time" content="2019-08-13T11:41:32.206Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft中文翻译与笔记">
-<meta name="twitter:description" content="前言本文在https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。 Raft的3大核心是强领导者、领导者选举和成员关系变更（增">
+<meta name="twitter:description" content="前言本文在 https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合英文原文一起阅读。 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。 Raft的3大核心是强领导者、领导者选举和成员关系变更（增加和减少Raf">
 <meta name="twitter:image" content="https://static001.geekbang.org/resource/image/0c/ec/0c99e3c238ae1ad680a7c78ecd7312ec.jpg">
 
 
@@ -437,7 +437,7 @@
                 
               
 
-              <time title="创建时间：2019-08-13 20:49:05 / 修改时间：16:18:50" itemprop="dateCreated datePublished" datetime="2019-08-13T20:49:05+08:00">2019-08-13</time>
+              <time title="创建时间：2019-08-13 20:49:05 / 修改时间：19:41:32" itemprop="dateCreated datePublished" datetime="2019-08-13T20:49:05+08:00">2019-08-13</time>
             
 
             
@@ -483,7 +483,7 @@
       
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文在<a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。" target="_blank" rel="noopener">https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。</a></p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文在 <a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="noopener">https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md</a> 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合<a href="https://raft.github.io/raft.pdf" title="Raft英文论文" target="_blank" rel="noopener">英文原文</a>一起阅读。</p>
 <p>Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。</p>
 <p>Raft的3大核心是强领导者、领导者选举和成员关系变更（增加和减少Raft节点），论文就是围绕着3个核心进行介绍，以及论证安全性（正确性、一致性）和可用性。但成员关系变更的细节，依然还有一些疑问，做了一些注释在文中，需要去看源码和讨论弄清楚。</p>
 <p>除了3大核心，论文还提到了一些优化策略：</p>
