@@ -924,6 +924,8 @@ $ which tar
 
 按提示设置PATH才可以使用gnu tar。`export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"`加入到`.zshrc`，不必每次构建都设置PATH，但这样会让Mac默认使用GNU tar。
 
+需要`make clean`然后重新`make`，不然依然会遇到bad magic的问题。
+
 ## Git升级到2.22以上版本
 
 如果未升级可能遇到上文提到的dep不存在的问题。
