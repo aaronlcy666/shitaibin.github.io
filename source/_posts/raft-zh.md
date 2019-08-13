@@ -6,7 +6,7 @@ tags: ['一致性', '共识']
 
 # 前言
 
-本文在https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。
+本文在 https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。
 
 Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。
 
