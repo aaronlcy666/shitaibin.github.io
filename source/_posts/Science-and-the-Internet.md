@@ -40,6 +40,22 @@ tags: ['Mac']
 
 经过以上配置，浏览器可以直接科学上网了，如果让终端和其他服务器上网，可设置Shadowsocks的http代理和socks5代理。
 
+## 自定义过滤规则
+
+从网上更新来的PAC，有些网址并没有走代理，这样访问速度依然很慢，比如我经常访问Fabric的网站，每个网页都也2s以上才能刷新出来，刷新完成就要更久了。
+
+SSR提供了用户自定义PAC的方法，只要把自定义规则黏贴在里面就可以了：
+
+![](http://img.lessisbetter.site/2019-08-ssr-user-pac.png)
+
+
+自定义PAC编写规则，下面的`.hyperledger.org`，所有`hyperledger.org`网站的连接都会走`remote proxy`，注意前面的`.`不要少了，这个正则规则可以匹配`*.hyperledger.org`以及`hyperledger.org`本身。
+
+```
+.hyperledger.org remoteproxy
+```
+
+
 ## 开启HTTP代理
 
 点击状态栏shadowsocks图标，【HTTP代理设置...】是配置Http代理。【高级设置...】是socks5代理设置。
