@@ -23,6 +23,10 @@ tags:
 1. [分布式系统中的网络模型和故障模型](https://danielw.cn/network-failure-models)
 1. [分布式系统一致性的发展历史 (一)](https://danielw.cn/history-of-distributed-systems-1)
 1. [分布式系统一致性的发展历史 (二)](https://danielw.cn/history-of-distributed-systems-2)
+1. [etcd Raft库解析](https://www.codedump.info/post/20180922-etcd-raft/)
+1. [etcd raft 设计与实现《一》](https://zhuanlan.zhihu.com/p/51063866)
+1. [etcd raft 设计与实现《二》](https://zhuanlan.zhihu.com/p/51065416)
+1. [Raft在etcd中的实现](https://blog.betacat.io/post/raft-implementation-in-etcd/)
 
 ## 网络
 
