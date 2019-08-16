@@ -10,9 +10,12 @@ tags: ['Mac', 'Chrome']
 ### 编程
 
 - Dash：开发必备，秒差各语言API
+- VSCode：必备。
 - Kaleidoscope：diff工具，颜值高、简单，但功能不够强大，比BC差太多，不能只进行行的合并，其他Mac下的对比合并工具没这个好。
 - iTerm2：The Best Terminal，用好快捷键
-- Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000
+- Ominigraff：架构图、流程图画起来爽飞，如果不使用快捷键，效率/1000。发现没有Sketch好用。
+- Dash：快速查文档。
+- Goland：必备。
 
 <!--more-->
 
@@ -40,13 +43,13 @@ tags: ['Mac', 'Chrome']
     ```
 
 ### 办公
-- Copy Clip2：保存复制文本，对于程序员和文字重度工作者很重要
 - Clipy：同上，但免费
-- 疯狂番茄：番茄工作法，只用来当定时器用，配合Things
+- Just Focus：番茄工作法，只用来当定时器用，配合Things
 - Things：安排好工作（More Than TODO）
-- iThoughtx：思维导图
-- Paralles Desktop：还是习惯Windows办公全家桶
+- iThoughtx, Xmind：思维导图
 - Entropy：windows解压无压力的软件，压缩为7z文件更小，zip实际不压缩只是打包。符正确使用姿势：**右键->服务->Archive as 7z**，Keka必须打开软件才能压缩，简直弱爆了。
+- Sketch：效率x2作图工具，[高能提升你的Sketch效率 ：基础快捷键篇](https://zhuanlan.zhihu.com/p/24678076)。
+
 ￼
 
 ### Mac截图
@@ -66,9 +69,6 @@ Command + Shift + 4 选取部分屏幕区域，保存图片在桌面
 
 > 安装应用记得翻墙，或者国内保存插件的网站。
 
-- 方片收集：把网页收藏起来，想看的时候🔍一下。
-- Diigo Web Collector：最好用的是给网页加标注，就像用PDF一样，可以从库中查看所有标记。
 - EasyReader：让浏览网页更清晰，对付杂乱的网站很有用。
-- Proxy SwitchyOmega：用Google查资料必备。
 - Sourcegraph：在线浏览代码神器，简直在线版的VS Code
 - 印象笔记插件
