@@ -29,13 +29,13 @@ func combine(inCh1, inCh2 <-chan int) <-chan int {
 			case x, open := <-inCh1:
 				if !open {
 					inCh1 = nil
-					continue
+					break
 				}
 				out<-x
 			case x, open := <-inCh2:
 				if !open {
 					inCh2 = nil
-					continue
+					break
 				}
 				out<-x
 			}
