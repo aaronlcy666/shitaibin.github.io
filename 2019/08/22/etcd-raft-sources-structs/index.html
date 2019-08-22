@@ -111,8 +111,8 @@
 <meta property="og:description" content="序言etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。  Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-%E5%9B%BE1.png">
-<meta property="og:image" content="http://lessisbetter.site/Users/shitaibin/etcd%20raft基础结构.assets/raftLog.png">
-<meta property="og:updated_time" content="2019-08-22T09:00:32.706Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-08-raftLog.png">
+<meta property="og:updated_time" content="2019-08-22T09:24:28.616Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Etcd Raft架构设计和源码剖析2：重要结构体定义">
 <meta name="twitter:description" content="序言etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。  Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并">
@@ -422,7 +422,7 @@
                 
               
 
-              <time title="创建时间：2019-08-22 21:59:35 / 修改时间：17:00:32" itemprop="dateCreated datePublished" datetime="2019-08-22T21:59:35+08:00">2019-08-22</time>
+              <time title="创建时间：2019-08-22 21:59:35 / 修改时间：17:24:28" itemprop="dateCreated datePublished" datetime="2019-08-22T21:59:35+08:00">2019-08-22</time>
             
 
             
@@ -544,7 +544,7 @@
 <p>committed指最后一个在raft集群多数节点之间达成一致的Entry Index。</p>
 <p>applied指当前节点被应用层应用到状态机的最后一个Entry Index。applied和committed之间的Entry就是等待被应用层应用到状态机的Entry。</p>
 <p>前面提到Storage接口可以获取第一个索引firstIdx，最后一个索引lastIdx，在生成snapshot之后签名的Entry就可以删除了，所以firstidx是storage中snapshot后的第一个Entry的Index，lastIndex是storage中保存的最后一个Entry的Index，这个Entry可能还没有在raft集群多数节点之间达成一致，所以在committed之后，这些Entry是等待commit的Entry，leader发现某个Entry Index已经在多数节点之间达成一致，就会把committed移动到该Entry Index。</p>
-<p><img src="/Users/shitaibin/etcd raft基础结构.assets/raftLog.png" alt="raftLog"></p>
+<p><img src="http://img.lessisbetter.site/2019-08-raftLog.png" alt="raftLog"></p>
 <h2 id="SoftState"><a href="#SoftState" class="headerlink" title="SoftState"></a>SoftState</h2><p>SoftState指易变的状态数据，记录了<strong>当前</strong>的Leader的Node ID，以及当前节点的角色。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SoftState provides state that is useful for logging and debugging.</span></span><br><span class="line"><span class="comment">// The state is volatile and does not need to be persisted to the WAL.</span></span><br><span class="line"><span class="keyword">type</span> SoftState <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// leader的Node ID</span></span><br><span class="line">	Lead <span class="keyword">uint64</span> <span class="comment">// must use atomic operations to access; keep 64-bit aligned.</span></span><br><span class="line">	<span class="comment">// 节点是什么角色：leader、follower...</span></span><br><span class="line">	RaftState StateType</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// StateType represents the role of a node in a cluster.</span></span><br><span class="line"><span class="keyword">type</span> StateType <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> stmap = [...]<span class="keyword">string</span>&#123;</span><br><span class="line">	<span class="string">"StateFollower"</span>,</span><br><span class="line">	<span class="string">"StateCandidate"</span>,</span><br><span class="line">	<span class="string">"StateLeader"</span>,</span><br><span class="line">	<span class="string">"StatePreCandidate"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="HardState"><a href="#HardState" class="headerlink" title="HardState"></a>HardState</h2><p>HardState是写入到WAL（存储Entry的文件）的状态，可以在节点重启时恢复raft的状态，它了记录：</p>
