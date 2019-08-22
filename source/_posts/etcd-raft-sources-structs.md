@@ -225,7 +225,7 @@ applied指当前节点被应用层应用到状态机的最后一个Entry Index�
 
 前面提到Storage接口可以获取第一个索引firstIdx，最后一个索引lastIdx，在生成snapshot之后签名的Entry就可以删除了，所以firstidx是storage中snapshot后的第一个Entry的Index，lastIndex是storage中保存的最后一个Entry的Index，这个Entry可能还没有在raft集群多数节点之间达成一致，所以在committed之后，这些Entry是等待commit的Entry，leader发现某个Entry Index已经在多数节点之间达成一致，就会把committed移动到该Entry Index。
 
-![raftLog](/Users/shitaibin/etcd raft基础结构.assets/raftLog.png)
+![raftLog](http://img.lessisbetter.site/2019-08-raftLog.png)
 
 ## SoftState
 
