@@ -932,9 +932,10 @@ $ which tar
 
 # 通过Makefile定位编译问题
 
-这类问题是类似的，要找到报错的位置，是做哪项构建时报的错，以及报错位置的前提条件是什么。
+这类问题是类似的，要找到报错的位置，是做哪项构建时报的错，以及报错位置的前提条件是什么，这里列举2个。
 
-通过：dep不存在的问题，进行举例介绍。
+## dep不存在的问题
+
 
 在执行`make all`的时候，遇到了`dep`不存在的问题：
 
@@ -1027,6 +1028,40 @@ dep:
 # out of sync, but ignored, due to noverify in Gopkg.toml:
 github.com/grpc-ecosystem/go-grpc-middleware: hash of vendored tree not equal to digest in Gopkg.lock
 ```
+
+## protoc-gen-go 不存在的问题
+
+```bash
+$ make all
+mkdir -p .build/image/ccenv/payload
+cp .build/docker/gotools/bin/protoc-gen-go .build/bin/chaintool .build/goshim.tar.bz2 .build/image/ccenv/payload
+cp: .build/docker/gotools/bin/protoc-gen-go: No such file or directory
+make: *** [.build/image/ccenv/payload] Error 1
+```
+
+查看构建日志是否有以下日志：
+
+```
+Building dockerized gotools
+```
+
+应当是不存在的，所以才没有构建出docker要使用的gotools。
+
+解决办法是：
+
+```bash
+$ make clean
+$ make .build/docker/gotools # 直接编译docker的gotools
+```
+
+如果报网络连接导致的错误，参考[终端科学上网](http://lessisbetter.site/2018/09/06/Science-and-the-Internet/)，然后重新执行，或者下面这种办法：
+
+```bash
+$ make gotools # 本地安装gotools
+$ cp `which protoc-gen-go` .build/docker/gotools/bin/ # 拷贝到docker gotools目录
+```
+
+然后重新`make all`或`make docker`。
 
 # 构建日志
 
