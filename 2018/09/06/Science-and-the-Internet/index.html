@@ -115,7 +115,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss_http.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-http-set.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-socks5.png">
-<meta property="og:updated_time" content="2019-08-13T09:57:22.810Z">
+<meta property="og:updated_time" content="2019-08-28T02:27:55.338Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="让终端科学上网">
 <meta name="twitter:description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
@@ -442,7 +442,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-13 17:57:22" itemprop="dateModified" datetime="2019-08-13T17:57:22+08:00">2019-08-13</time>
+                <time title="修改时间：2019-08-28 10:27:55" itemprop="dateModified" datetime="2019-08-28T10:27:55+08:00">2019-08-28</time>
               
             
           </span>
@@ -541,7 +541,7 @@
 <p>这样会新启动一个zsh会话，当前会话的所有连接都转换为socks5代理。</p>
 <h2 id="设置环境变量"><a href="#设置环境变量" class="headerlink" title="设置环境变量"></a>设置环境变量</h2><p>如果不想安装proxychain，另外一种简便的方式是，设置全局的http和https代理，建议不要加到<code>.bash_profile</code>等，不然始终都走代理了，建议在使用的时候，设置代理即可，可以把羡慕代码直接黏贴到终端，但先换成自己的SS http代理服务的IP和端口。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> http_proxy=<span class="string">"http://192.168.102.143:1087"</span></span><br><span class="line"><span class="built_in">export</span> https_proxy=<span class="string">"http://192.168.102.143:1087"</span></span><br></pre></td></tr></table></figure>
-<p>使用<code>export http_proxy=127.0.0.1:1087</code>，大多数情况也没毛病，但由此在Docker里更新系统时，IP和端口识别不正确的情况，建议使用带协议头的方式。</p>
+<p>使用<code>export http_proxy=127.0.0.1:1087</code>，大多数情况也没毛病，但由此在Docker里更新系统时，IP和端口识别不正确的情况，建议使用带协议头的方式，还有就是使用主机实际的IP，不要使用127或者localhost，因为在docker里的命令走代理的时候，可能会连接到docker本身的端口，导致连接被拒绝。</p>
 <p>另外，<code>https_proxy=&quot;http://192.168.102.143:1087</code>，这让https_proxy实际走的是http代理，如果不这样设置，访问goolge某些网站的时候，可能会遇到超时、握手失败的情况。</p>
 
       
