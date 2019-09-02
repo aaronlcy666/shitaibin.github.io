@@ -1045,7 +1045,7 @@ make: *** [.build/image/ccenv/payload] Error 1
 Building dockerized gotools
 ```
 
-应当是不存在的，所以才没有构建出docker要使用的gotools。
+应当是不存在，不过构建存在错误，所以才没有构建出docker要使用的gotools。
 
 解决办法是：
 
