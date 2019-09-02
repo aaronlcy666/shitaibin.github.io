@@ -252,6 +252,6 @@ log.Printf("result: %v", string(resp.Payload))
 
 ## 示例项目
 
-本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目README文档。
+本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目[README文档](https://github.com/Shitaibin/fabric-sdk-go-sample)，项目地址：https://github.com/Shitaibin/fabric-sdk-go-sample ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。
 
-项目地址：https://github.com/Shitaibin/fabric-sdk-go-sample 。
+[byfn-sdk](https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/images/byfn-sdk.png)
