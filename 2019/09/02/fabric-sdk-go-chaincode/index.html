@@ -102,22 +102,22 @@
 
 
 
-  <meta name="description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以跟指定的peer和orderer进行通信。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结构如下：  有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的">
+  <meta name="description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结">
 <meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用fabric-sdk-go操作链码">
 <meta property="og:url" content="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以跟指定的peer和orderer进行通信。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结构如下：  有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的">
+<meta property="og:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sd-go.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-byfn-sdk.png">
-<meta property="og:updated_time" content="2019-09-02T11:17:18.490Z">
+<meta property="og:updated_time" content="2019-09-02T11:23:06.374Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用fabric-sdk-go操作链码">
-<meta name="twitter:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以跟指定的peer和orderer进行通信。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结构如下：  有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的">
+<meta name="twitter:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
 
 
@@ -424,7 +424,7 @@
                 
               
 
-              <time title="创建时间：2019-09-02 14:55:16 / 修改时间：19:17:18" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
+              <time title="创建时间：2019-09-02 14:55:16 / 修改时间：19:23:06" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
             
 
             
@@ -470,7 +470,7 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以跟指定的peer和orderer进行通信。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk.png" alt="fabric sdk"></p>
 <h2 id="fabric-sdk-go项目简介"><a href="#fabric-sdk-go项目简介" class="headerlink" title="fabric-sdk-go项目简介"></a>fabric-sdk-go项目简介</h2><p><a href="https://github.com/hyperledger/fabric-sdk-go" target="_blank" rel="noopener">fabric-sdk-go</a>是Fabric官方的Go语言SDK，它的目录结构如下：</p>
 <p><img src="http://img.lessisbetter.site/2019-09-fabric-sd-go.png" alt="fabric sdk go"></p>
