@@ -7,7 +7,7 @@ tags: ['区块链','Fabric']
 
 ## 前言
 
-本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以跟指定的peer和orderer进行通信。
+本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。
 
 ![fabric sdk](http://img.lessisbetter.site/2019-09-fabric-sdk.png)
 
@@ -254,4 +254,4 @@ log.Printf("result: %v", string(resp.Payload))
 
 本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目[README文档](https://github.com/Shitaibin/fabric-sdk-go-sample)，项目地址：https://github.com/Shitaibin/fabric-sdk-go-sample ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。
 
-![byfn-sdk](https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/images/byfn-sdk.png)
+![byfn-sdk](http://img.lessisbetter.site/2019-09-byfn-sdk.png)
