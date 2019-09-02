@@ -1,7 +1,7 @@
 ---
 title: 使用fabric-sdk-go操作链码
 date: 2019-09-02 14:55:16
-tags: ['Fabric']
+tags: ['区块链','Fabric']
 ---
 
 
