@@ -113,7 +113,8 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sd-go.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png">
-<meta property="og:updated_time" content="2019-09-02T11:16:06.448Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-byfn-sdk.png">
+<meta property="og:updated_time" content="2019-09-02T11:17:18.490Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用fabric-sdk-go操作链码">
 <meta name="twitter:description" content="前言本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以跟指定的peer和orderer进行通信。  fabric-sdk-go项目简介fabric-sdk-go是Fabric官方的Go语言SDK，它的目录结构如下：  有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的">
@@ -423,7 +424,7 @@
                 
               
 
-              <time title="创建时间：2019-09-02 14:55:16 / 修改时间：19:16:06" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
+              <time title="创建时间：2019-09-02 14:55:16 / 修改时间：19:17:18" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
             
 
             
@@ -527,7 +528,7 @@
 <h3 id="查询链码"><a href="#查询链码" class="headerlink" title="查询链码"></a>查询链码</h3><p>查询和调用链码是非常相似的，使用相同的<code>channel.Request</code>，指明了Invoke链码中的<code>query</code>函数，然后调用<code>cc.Query</code>进行查询操作，这样节点不会对请求进行背书。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new channel request for query</span></span><br><span class="line">req := channel.Request&#123;</span><br><span class="line">  ChaincodeID: c.CCID,</span><br><span class="line">  Fcn:         <span class="string">"query"</span>,</span><br><span class="line">  Args:        packArgs([]<span class="keyword">string</span>&#123;keys&#125;),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := channel.WithTargetEndpoints(peer)</span><br><span class="line">resp, err := cc.Query(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"query chaincode error"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log.Printf(<span class="string">"query chaincode tx: %s"</span>, resp.TransactionID)</span><br><span class="line">log.Printf(<span class="string">"result: %v"</span>, <span class="keyword">string</span>(resp.Payload))</span><br></pre></td></tr></table></figure>
 <h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目<a href="https://github.com/Shitaibin/fabric-sdk-go-sample" target="_blank" rel="noopener">README文档</a>，项目地址：<a href="https://github.com/Shitaibin/fabric-sdk-go-sample" target="_blank" rel="noopener">https://github.com/Shitaibin/fabric-sdk-go-sample</a> ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。</p>
-<p><a href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/images/byfn-sdk.png" target="_blank" rel="noopener">byfn-sdk</a></p>
+<p><img src="http://img.lessisbetter.site/2019-09-byfn-sdk.png" alt="byfn-sdk"></p>
 
       
     </div>
