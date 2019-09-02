@@ -103,7 +103,7 @@
 
 
   <meta name="description" content="序言etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。  Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并">
-<meta name="keywords" content="一致性,共识">
+<meta name="keywords" content="一致性,共识,Raft">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Etcd Raft架构设计和源码剖析2：重要结构体定义">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/22/etcd-raft-sources-structs/index.html">
@@ -112,7 +112,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-%E5%9B%BE1.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raftLog.png">
-<meta property="og:updated_time" content="2019-08-22T09:24:28.616Z">
+<meta property="og:updated_time" content="2019-09-02T07:10:00.271Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Etcd Raft架构设计和源码剖析2：重要结构体定义">
 <meta name="twitter:description" content="序言etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。  Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并">
@@ -422,12 +422,24 @@
                 
               
 
-              <time title="创建时间：2019-08-22 21:59:35 / 修改时间：17:24:28" itemprop="dateCreated datePublished" datetime="2019-08-22T21:59:35+08:00">2019-08-22</time>
+              <time title="创建时间：2019-08-22 21:59:35" itemprop="dateCreated datePublished" datetime="2019-08-22T21:59:35+08:00">2019-08-22</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-02 15:10:00" itemprop="dateModified" datetime="2019-09-02T15:10:00+08:00">2019-09-02</time>
               
             
           </span>
@@ -590,6 +602,8 @@
             <a href="/tags/一致性/" rel="tag"><i class="fa fa-tag"></i> 一致性</a>
           
             <a href="/tags/共识/" rel="tag"><i class="fa fa-tag"></i> 共识</a>
+          
+            <a href="/tags/Raft/" rel="tag"><i class="fa fa-tag"></i> Raft</a>
           
         </div>
       
@@ -827,7 +841,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">60</span>
+                      
+                    
+                    <span class="site-state-item-count">61</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

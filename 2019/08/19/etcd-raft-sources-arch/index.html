@@ -103,7 +103,7 @@
 
 
   <meta name="description" content="序言Etcd提供了一个样例contrib/raftexample，用来展示如何使用etcd raft。这篇文章通过raftexample介绍如何使用etcd raft。 raft服务raftexample是一个分布式KV数据库，客户端可以向集群的节点发送写数据和读数据，以及修改集群配置的请求，它使用etcd raft保持各集群之间数据的一致性。  etcd raftetcd raft实现了raft">
-<meta name="keywords" content="一致性,共识">
+<meta name="keywords" content="一致性,共识,Raft">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Etcd Raft架构设计和源码剖析1：宏观架构">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/19/etcd-raft-sources-arch/index.html">
@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-etcd-raft.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-app-arch.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-arch.png">
-<meta property="og:updated_time" content="2019-08-22T09:22:38.559Z">
+<meta property="og:updated_time" content="2019-09-02T07:09:52.058Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Etcd Raft架构设计和源码剖析1：宏观架构">
 <meta name="twitter:description" content="序言Etcd提供了一个样例contrib/raftexample，用来展示如何使用etcd raft。这篇文章通过raftexample介绍如何使用etcd raft。 raft服务raftexample是一个分布式KV数据库，客户端可以向集群的节点发送写数据和读数据，以及修改集群配置的请求，它使用etcd raft保持各集群之间数据的一致性。  etcd raftetcd raft实现了raft">
@@ -441,7 +441,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-22 17:22:38" itemprop="dateModified" datetime="2019-08-22T17:22:38+08:00">2019-08-22</time>
+                <time title="修改时间：2019-09-02 15:09:52" itemprop="dateModified" datetime="2019-09-02T15:09:52+08:00">2019-09-02</time>
               
             
           </span>
@@ -588,6 +588,8 @@
             <a href="/tags/一致性/" rel="tag"><i class="fa fa-tag"></i> 一致性</a>
           
             <a href="/tags/共识/" rel="tag"><i class="fa fa-tag"></i> 共识</a>
+          
+            <a href="/tags/Raft/" rel="tag"><i class="fa fa-tag"></i> Raft</a>
           
         </div>
       
@@ -825,7 +827,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">60</span>
+                      
+                    
+                    <span class="site-state-item-count">61</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
