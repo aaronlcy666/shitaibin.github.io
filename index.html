@@ -1028,7 +1028,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-02 15:09:52" itemprop="dateModified" datetime="2019-09-02T15:09:52+08:00">2019-09-02</time>
+                <time title="修改时间：2019-09-03 08:36:04" itemprop="dateModified" datetime="2019-09-03T08:36:04+08:00">2019-09-03</time>
               
             
           </span>
@@ -1122,11 +1122,11 @@
 <li>leader节点的raft.node把写请求转化为log entry，并交给raft.raft，raft.raft生成发送给每一个follower的Append消息</li>
 <li>leader节点的raft.node取出raft.raft中的Append消息以及其他数据，封装成Ready传递给raft.Node</li>
 <li>leader节点的raft.Node把Ready中的entry保存到storage，然后把Ready中的消息，发送给相应的节点</li>
-<li>follower节点的raft.Node收到消息，把消息传递给raft.node，raft.node退给raft.raft</li>
+<li>follower节点的raft.Node收到消息，把消息传递给raft.node，raft.node推给raft.raft</li>
 <li>follower的raft.raft处理Append消息，进行匹配和校验后，生成Append Response消息和保存log entry</li>
 <li>follower的raft.node从raft.raft获取数据，然后生成Ready传递给raft.Node</li>
 <li>follower节点的raft.Node把Ready中的entry保存到storage，然后把Ready中的消息，发送给相应的节点</li>
-<li>leader节点的raft.Node收到消息，把消息传递给raft.node，raft.node退给raft.raft</li>
+<li>leader节点的raft.Node收到消息，把消息传递给raft.node，raft.node推给raft.raft</li>
 <li>leader节点的raft.raft处理Append Response消息，然后检查已经达成半数以上同意的log entry，更新已经被commit的log entry的index</li>
 <li>leader节点的raft.raft在创建Append等消息的时候，填写了已被commited的log index，所以下次在生成消息，并发送给follower后，follower就根据committed log index提交本地的log entry</li>
 <li>无论是leader，还是follower在生成Ready的时候，会包含已经被committed的log entry，这些entry是等待应用到kv store的，raftNode拿到Ready后，会把这些entry取出来，传递给kv store，kv store会修改key-value的最新值。</li>
