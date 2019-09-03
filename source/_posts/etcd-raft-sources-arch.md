@@ -121,11 +121,11 @@ log entry在集群节点之间达成共识之后，log entry会写入WAL文件�
 3. leader节点的raft.node把写请求转化为log entry，并交给raft.raft，raft.raft生成发送给每一个follower的Append消息
 4. leader节点的raft.node取出raft.raft中的Append消息以及其他数据，封装成Ready传递给raft.Node
 5. leader节点的raft.Node把Ready中的entry保存到storage，然后把Ready中的消息，发送给相应的节点
-6. follower节点的raft.Node收到消息，把消息传递给raft.node，raft.node退给raft.raft
+6. follower节点的raft.Node收到消息，把消息传递给raft.node，raft.node推给raft.raft
 7. follower的raft.raft处理Append消息，进行匹配和校验后，生成Append Response消息和保存log entry
 8. follower的raft.node从raft.raft获取数据，然后生成Ready传递给raft.Node
 9. follower节点的raft.Node把Ready中的entry保存到storage，然后把Ready中的消息，发送给相应的节点
-10. leader节点的raft.Node收到消息，把消息传递给raft.node，raft.node退给raft.raft
+10. leader节点的raft.Node收到消息，把消息传递给raft.node，raft.node推给raft.raft
 11. leader节点的raft.raft处理Append Response消息，然后检查已经达成半数以上同意的log entry，更新已经被commit的log entry的index
 12. leader节点的raft.raft在创建Append等消息的时候，填写了已被commited的log index，所以下次在生成消息，并发送给follower后，follower就根据committed log index提交本地的log entry
 13. 无论是leader，还是follower在生成Ready的时候，会包含已经被committed的log entry，这些entry是等待应用到kv store的，raftNode拿到Ready后，会把这些entry取出来，传递给kv store，kv store会修改key-value的最新值。
