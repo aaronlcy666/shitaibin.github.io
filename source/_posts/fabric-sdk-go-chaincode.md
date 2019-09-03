@@ -149,7 +149,7 @@ if err != nil {
 ```go
 // endorser policy
 org1OrOrg2 := "OR('Org1MSP.member','Org2MSP.member')"
-ccPolicy, err := cauthdsl.FromString(p)(org1OrOrg2)
+ccPolicy, err := cauthdsl.FromString(org1OrOrg2)
 if err != nil {
   return errors.WithMessage(err, "gen policy from string error")
 }
