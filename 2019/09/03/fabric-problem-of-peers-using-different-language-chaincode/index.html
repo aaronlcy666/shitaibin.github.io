@@ -102,28 +102,27 @@
 
 
 
-  <meta name="description" content="从宏观看，交易在区块链网络中的传播，像广度搜索算法，也像湖面上的水纹，一圈圈向外扩散。但实际场景由于网络通信环境，可能效果上并非一圈一圈向外的，但总体上是向外扩散。  从微观上讲，两个节点间交易的传播如下图。从钱包到节点，节点把可打包的交易发送给相连的节点。主要流程如下：  钱包（浏览器、APP）发送交易到节点。 节点把收到的交易插入txpool。 可打包（nonce值连续）的交易加入txpool">
-<meta name="keywords" content="区块链,以太坊">
+  <meta name="description" content="前言社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。  大家的问题是：  一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？  经过实证，这是不可行的。 分2种情况，2种都有问题：  不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码 部分pee">
+<meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
-<meta property="og:title" content="以太坊交易广播：从宏观到微观">
-<meta property="og:url" content="http://lessisbetter.site/2019/03/15/ethereum-broadcast-transaction/index.html">
+<meta property="og:title" content="不同peer使用不同语言链码的问题">
+<meta property="og:url" content="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="从宏观看，交易在区块链网络中的传播，像广度搜索算法，也像湖面上的水纹，一圈圈向外扩散。但实际场景由于网络通信环境，可能效果上并非一圈一圈向外的，但总体上是向外扩散。  从微观上讲，两个节点间交易的传播如下图。从钱包到节点，节点把可打包的交易发送给相连的节点。主要流程如下：  钱包（浏览器、APP）发送交易到节点。 节点把收到的交易插入txpool。 可打包（nonce值连续）的交易加入txpool">
+<meta property="og:description" content="前言社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。  大家的问题是：  一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？  经过实证，这是不可行的。 分2种情况，2种都有问题：  不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码 部分pee">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-03-tx-macro.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-03-tx-micro.png">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.418Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png">
+<meta property="og:updated_time" content="2019-09-03T03:58:57.896Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="以太坊交易广播：从宏观到微观">
-<meta name="twitter:description" content="从宏观看，交易在区块链网络中的传播，像广度搜索算法，也像湖面上的水纹，一圈圈向外扩散。但实际场景由于网络通信环境，可能效果上并非一圈一圈向外的，但总体上是向外扩散。  从微观上讲，两个节点间交易的传播如下图。从钱包到节点，节点把可打包的交易发送给相连的节点。主要流程如下：  钱包（浏览器、APP）发送交易到节点。 节点把收到的交易插入txpool。 可打包（nonce值连续）的交易加入txpool">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-tx-macro.png">
+<meta name="twitter:title" content="不同peer使用不同语言链码的问题">
+<meta name="twitter:description" content="前言社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。  大家的问题是：  一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？  经过实证，这是不可行的。 分2种情况，2种都有问题：  不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码 部分pee">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2019/03/15/ethereum-broadcast-transaction/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/"/>
 
 
 
@@ -133,7 +132,7 @@
   };
 </script>
 
-  <title>以太坊交易广播：从宏观到微观 | Go语言充电站</title>
+  <title>不同peer使用不同语言链码的问题 | Go语言充电站</title>
   
 
 
@@ -379,7 +378,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/15/ethereum-broadcast-transaction/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -396,7 +395,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">以太坊交易广播：从宏观到微观
+          <h1 class="post-title" itemprop="name headline">不同peer使用不同语言链码的问题
 
               
             
@@ -422,24 +421,12 @@
                 
               
 
-              <time title="创建时间：2019-03-15 21:01:43" itemprop="dateCreated datePublished" datetime="2019-03-15T21:01:43+08:00">2019-03-15</time>
+              <time title="创建时间：2019-09-03 11:50:31 / 修改时间：11:58:57" itemprop="dateCreated datePublished" datetime="2019-09-03T11:50:31+08:00">2019-09-03</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
               
             
           </span>
@@ -480,20 +467,36 @@
       
 
       
-        <p>从宏观看，交易在区块链网络中的传播，像广度搜索算法，也像湖面上的水纹，一圈圈向外扩散。但实际场景由于网络通信环境，可能效果上并非一圈一圈向外的，但总体上是向外扩散。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-tx-macro.png" alt=""></p>
-<p>从微观上讲，两个节点间交易的传播如下图。从钱包到节点，节点把可打包的交易发送给相连的节点。主要流程如下：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png" alt="fabric chaincode error"></p>
+<p>大家的问题是：</p>
+<blockquote>
+<p>一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？</p>
+</blockquote>
+<p>经过实证，这是不可行的。</p>
+<p>分2种情况，2种都有问题：</p>
 <ol>
-<li>钱包（浏览器、APP）发送交易到节点。</li>
-<li>节点把收到的交易插入<code>txpool</code>。</li>
-<li>可打包（<code>nonce</code>值连续）的交易加入<code>txpool.pending</code>，不可打包的交易(<code>nonce</code>值存在断开)插入到<code>txpool.queued</code>。</li>
-<li>交易进入<code>txpool.pending</code>后，<code>txpool</code>发布<code>NewTxsEvent</code>。</li>
-<li><code>Protocol Manager</code>收到事件后，<code>txBroadcastLoop</code>将交易加入到连接的peer的交易队列（得缓冲一下，不一定能很快发，毕竟连接上有很多类型的数据需要传送）。</li>
-<li>各peer协程从各自的交易队列取交易合成消息，发送给peer。</li>
-<li>peer收到交易消息后，加入<code>txpool</code>，回到步骤2。</li>
+<li>不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码</li>
+<li>部分peer先实例化，另外peer再安装不同语言链码：调用链码时报指纹不匹配错误</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-03-tx-micro.png" alt=""></p>
-
+<h2 id="不同peer安装不同语言链码，然后同时实例化"><a href="#不同peer安装不同语言链码，然后同时实例化" class="headerlink" title="不同peer安装不同语言链码，然后同时实例化"></a>不同peer安装不同语言链码，然后同时实例化</h2><p>1、修改BFYN，只在peer0.org1和peer0.org2上安装Go语言链码，不进行后续操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Installing chaincode on peer0.org1...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.108 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer0.org1 =====================</span><br><span class="line"></span><br><span class="line">Install chaincode on peer0.org2...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.529 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer0.org2 =====================</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">========= All GOOD, BYFN execution completed ===========</span><br></pre></td></tr></table></figure>
+<p>2、在peer1.org1上安装Java语言链码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -l java -p /opt/gopath/src/github.com/chaincode/chaincode_example02/java/</span><br><span class="line">2019-09-03 03:19:44.710 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:19:44.711 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 03:19:44.754 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br></pre></td></tr></table></figure>
+<p>3、在peer1.org1上发起实例化链码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc -l golang -v 1.0 -c &apos;&#123;&quot;Args&quot;:[&quot;init&quot;,&quot;a&quot;,&quot;100&quot;,&quot;b&quot;,&quot;200&quot;]&#125;&apos; -P &apos;OR (&apos;\&apos;&apos;Org1MSP.peer&apos;\&apos;&apos;,&apos;\&apos;&apos;Org2MSP.peer&apos;\&apos;&apos;)&apos;</span><br><span class="line">2019-09-03 03:22:12.430 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:22:12.431 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br></pre></td></tr></table></figure>
+<p>4、查看链码容器，只有peer1.org1的链码容器，peer0.org1和peer0.org2的链码容器都没有起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric-sdk-go-sample git:(master) ✗ docker ps</span><br><span class="line">CONTAINER ID        IMAGE                                                                                                  COMMAND                  CREATED             STATUS              PORTS                      NAMES</span><br><span class="line">f8f6aa8b5da6        dev-peer1.org1.example.com-mycc-1.0-cd123150154e6bf2df7ce682e0b1bcbea40499416f37a6da3aae14c4eb51b08d   &quot;/root/chaincode-jav…&quot;   37 seconds ago      Up 36 seconds                                  dev-peer1.org1.example.com-mycc-1.0</span><br><span class="line">6cec20eb7502        hyperledger/fabric-tools:latest                                                                        &quot;/bin/bash&quot;              About an hour ago   Up About an hour                               cli</span><br><span class="line">7e134fe7e8e9        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:8051-&gt;8051/tcp     peer1.org1.example.com</span><br><span class="line">ed6f5511d938        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:10051-&gt;10051/tcp   peer1.org2.example.com</span><br><span class="line">025a71178777        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:7051-&gt;7051/tcp     peer0.org1.example.com</span><br><span class="line">8687dfd14e7b        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:9051-&gt;9051/tcp     peer0.org2.example.com</span><br><span class="line">e9cc8b410d7f        hyperledger/fabric-orderer:latest                                                                      &quot;orderer&quot;                About an hour ago   Up About an hour    0.0.0.0:7050-&gt;7050/tcp     orderer.example.com</span><br></pre></td></tr></table></figure>
+<h2 id="部分peer先实例化，另外peer再安装不同语言链码"><a href="#部分peer先实例化，另外peer再安装不同语言链码" class="headerlink" title="部分peer先实例化，另外peer再安装不同语言链码"></a>部分peer先实例化，另外peer再安装不同语言链码</h2><p>不改造BYFN，原生启动。peer0.org1，peer0.org2，peer1.org2都已经实例化了Go语言链码。</p>
+<p>然后在peer1.org1上安装Java语言的链码，在执行Invoke或者查询，报指纹不匹配-数据不匹配的错误。</p>
+<p>原因分析：操作链码时，会调用LSCC的<code>LifeCycleSysCC.getCCCode</code>获取链码，一份链码是从数据库取的，即当前链码容器的，一份链码是本地存储的，会对2份进行匹配，如果不匹配就会报指纹不匹配错误。</p>
+<p>匹配函数为<code>CDSPackage.ValidateCC</code>，匹配项为：</p>
+<ol>
+<li>名称、版本</li>
+<li>CodeHash、元数据Hash</li>
+</ol>
+<p>调用链码时报的指纹不匹配错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -l java -p /opt/gopath/src/github.com/chaincode/chaincode_example02/java/</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 01:52:15.755 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode query -C mychannel -n mycc -c &apos;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&apos;</span><br><span class="line">Error: endorsement failure during query. response: status:500 message:&quot;failed to execute transaction b8b740aab0e6dd10cfe62416240ef94bfb90a55358904233c4d60dd5a39e6fe3: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt  -c &apos;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;a&quot;,&quot;b&quot;,&quot;50&quot;]&#125;&apos;</span><br><span class="line">Error: endorsement failure during invoke. response: status:500 message:&quot;failed to execute transaction aec5a0ccbcf86032774dc80220b90419d2816cc3f050a104c1cfcde55a2247cb: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -522,7 +525,7 @@
           
             <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
           
-            <a href="/tags/以太坊/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+            <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
           
         </div>
       
@@ -535,8 +538,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/12/distribute-system-network-model/" rel="next" title="分布式系统基础：网络模型">
-                <i class="fa fa-chevron-left"></i> 分布式系统基础：网络模型
+              <a href="/2019/09/02/hyperledger-projects/" rel="next" title="Hyperledger项目介绍">
+                <i class="fa fa-chevron-left"></i> Hyperledger项目介绍
               </a>
             
           </div>
@@ -544,10 +547,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/26/golang-scheduler-2-macro-view/" rel="prev" title="Go调度器系列（2）宏观看调度器">
-                Go调度器系列（2）宏观看调度器 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -596,8 +595,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -878,6 +886,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同peer安装不同语言链码，然后同时实例化"><span class="nav-number">2.</span> <span class="nav-text">不同peer安装不同语言链码，然后同时实例化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部分peer先实例化，另外peer再安装不同语言链码"><span class="nav-number">3.</span> <span class="nav-text">部分peer先实例化，另外peer再安装不同语言链码</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
