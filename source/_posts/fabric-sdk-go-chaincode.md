@@ -40,8 +40,8 @@ pkg目录是sdk的主要实现，[doc 文档](https://godoc.org/github.com/hyper
 
 1. 为client编写配置文件config.yaml
 2. 为client创建fabric sdk实例fabsdk
-3. 为client创建resource manage client，简称rc，rc用来进行管理操作的client，比如通道的创建，链码的安装、实例化和升级等
-4. 为client创建channel client，简称cc，cc用来链码的调用、查询以及链码事件的注册和取消注册
+3. 为client创建resource manage client，**简称RC**，RC用来进行管理操作的client，比如通道的创建，链码的安装、实例化和升级等
+4. 为client创建channel client，**简称CC**，CC用来链码的调用、查询以及链码事件的注册和取消注册
 
 ## SDK配置文件config.yaml
 
