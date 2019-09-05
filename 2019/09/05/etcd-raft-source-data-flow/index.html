@@ -102,29 +102,31 @@
 
 
 
-  <meta name="description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
-<meta name="keywords" content="区块链,以太坊">
+  <meta name="description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数">
+<meta name="keywords" content="一致性,共识,Raft">
 <meta property="og:type" content="article">
-<meta property="og:title" content="以太坊源码分析：交易缓冲池txpool">
-<meta property="og:url" content="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/index.html">
+<meta property="og:title" content="Etcd Raft架构设计和源码剖析2：数据流">
+<meta property="og:url" content="http://lessisbetter.site/2019/09/05/etcd-raft-source-data-flow/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
+<meta property="og:description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-txpool-position.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2018-txpool-module-interactive.png">
-<meta property="og:image" content="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.422Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-req.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-send.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-recv.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png">
+<meta property="og:updated_time" content="2019-09-05T12:25:21.007Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="以太坊源码分析：交易缓冲池txpool">
-<meta name="twitter:description" content="区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：  txpool的在交易中的位置和作用。 txpool的功能，核心组成部分queued和pending。 txpool如何实现它的功能。 txpool源码的重要关注点。">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2018-txpool-position.png">
+<meta name="twitter:title" content="Etcd Raft架构设计和源码剖析2：数据流">
+<meta name="twitter:description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/09/05/etcd-raft-source-data-flow/"/>
 
 
 
@@ -134,7 +136,7 @@
   };
 </script>
 
-  <title>以太坊源码分析：交易缓冲池txpool | Go语言充电站</title>
+  <title>Etcd Raft架构设计和源码剖析2：数据流 | Go语言充电站</title>
   
 
 
@@ -380,7 +382,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/05/etcd-raft-source-data-flow/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -397,7 +399,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">以太坊源码分析：交易缓冲池txpool
+          <h1 class="post-title" itemprop="name headline">Etcd Raft架构设计和源码剖析2：数据流
 
               
             
@@ -423,24 +425,12 @@
                 
               
 
-              <time title="创建时间：2018-12-11 10:51:00" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
+              <time title="创建时间：2019-09-05 20:24:08 / 修改时间：20:25:21" itemprop="dateCreated datePublished" datetime="2019-09-05T20:24:08+08:00">2019-09-05</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
               
             
           </span>
@@ -481,80 +471,55 @@
       
 
       
-        <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。</p>
+<p>下图从左到右依次分为4个部分：</p>
 <ol>
-<li>txpool的在交易中的位置和作用。</li>
-<li>txpool的功能，核心组成部分queued和pending。</li>
-<li>txpool如何实现它的功能。</li>
-<li>txpool源码的重要关注点。</li>
+<li>raft：raft主体功能部分</li>
+<li>Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据</li>
+<li>raftNode：上层应用逻辑</li>
+<li>其他：Client、Network、State</li>
 </ol>
-<a id="more"></a>
-<p>以太坊内部有个重要的内部功能是txpool，从字面意思就能看出来，交易池就是存放交易的池子。它在以太坊中的位置如下图，只要有新交易，无论是本节点创建的，还是其他peer节点广播来的，都会先加入到交易池里，在打包区块的时候，就从这个池子里提取，区块产生之后，共识区块，交易上链。</p>
-<p><img src="http://img.lessisbetter.site/2018-txpool-position.png" alt="txpool主图"></p>
-<p>txpool有4个功能：</p>
+<p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow.png" alt="etcd raft workflow"></p>
+<p>图中的箭头为数据的流向，这幅图包含了多个流程，接下来会分成4个流程介绍：</p>
 <ol>
-<li>作为存放交易的缓冲区，大量交易到来时，先存起来</li>
-<li>为打包区块服务，合适交易会被打包到区块</li>
-<li>清理交易</li>
-<li>当交易的数量多于缓冲区大小时，过滤/惩罚发送大量交易的账户（攻击者）</li>
+<li>客户端请求</li>
+<li>发送消息给其他节点</li>
+<li>接收其他节点消息及处理</li>
+<li>应用达成一致的日志</li>
 </ol>
-<p>我们来一张稍微详细点的模块交互图，看txpool怎么实现上面4个功能的。</p>
-<p><img src="http://img.lessisbetter.site/2018-txpool-module-interactive.png" alt="txpool模块交互"></p>
-<h3 id="缓存功能的设计"><a href="#缓存功能的设计" class="headerlink" title="缓存功能的设计"></a>缓存功能的设计</h3><p>txpool中的交易分为queued和pending 2种，其中<strong>queued存放未来的、当前无法执行的交易</strong>。以太坊使用nonce值决定某个账户的交易顺序，多条交易值nonce值必须连续，如果和过去的交易不连续，则无法执行，我们不妨使用nonce值，标记交易的号码，nonce为10的交易，称为第10号交易。举个例子，当前账户的nonce是10，txpool中有该账户的第100号交易，但txpool中没有第11~99号交易，这些交易的缺失，造成第100号交易无法执行，所以第100号交易就是未来的交易、不可执行的交易，存放在queue中。</p>
-<p><strong>pending存放可执行的交易</strong>。比如我们把上面的11~99号交易补全了，那么11~100号交易都可以进入到pending，因为这些交易都是连续的，都可以打包进区块。</p>
-<p>当节点收到交易（本地节点发起的或peer广播来的）时，会先存放到queued，txpool在某些情况下，把queued中可执行的交易，转移到pending中。</p>
-<h3 id="为区块打包服务"><a href="#为区块打包服务" class="headerlink" title="为区块打包服务"></a>为区块打包服务</h3><p><strong>这是txpool最核心的功能</strong>，worker在打包区块的时候，会获取<strong>所有的pending交易</strong>，但这些交易还存在txpool中，worker只是读取出来，至于txpool何时删除交易，稍后从txpool清理交易的角度单独在看。</p>
-<h3 id="清理交易"><a href="#清理交易" class="headerlink" title="清理交易"></a>清理交易</h3><p>txpool清理交易有以下<strong>几种条件</strong>，符合任意以下1条的，都是<strong>无效交易，会被从pending或者queued中移除</strong>：</p>
+<h2 id="客户端请求"><a href="#客户端请求" class="headerlink" title="客户端请求"></a>客户端请求</h2><p>客户端请求的流程，在下图已经使用红色箭头标出，流程如下：</p>
 <ol>
-<li>交易的nonce值已经低于账户在当前高度上的nonce值，代表交易已过期，交易已经上链就属于这种情况</li>
-<li>交易的GasLimit大于区块的GasLimit，区块容不下交易</li>
-<li>账户的余额已不足以支持该交易要消耗的费用</li>
-<li>交易的数量超过了queued和pending的缓冲区大小，需要进行清理</li>
+<li>客户端将请求发送给应用层raftNode</li>
+<li>raftNode使用Propose方法，请求写入到propc通道</li>
+<li>raft.Step接收到通道数据，会通过append等函数加入到raftLog</li>
+<li>raftLog用来暂时存储和查询日志，请求会先加入到unstable</li>
 </ol>
-<p>交易清理主要有<strong>3个场景</strong>：</p>
+<p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-req.png" alt="etcd raft request flow"></p>
+<h2 id="发送消息"><a href="#发送消息" class="headerlink" title="发送消息"></a>发送消息</h2><p>发送消息的数据流，已经用红色箭头标出，流程如下：</p>
 <ol>
-<li><p>txpool订阅了<code>ChainHeadEvent</code>事件，该事件代表主链上有新区块产生，txpool会根据最新的区块，检查每个账号的交易，有些无效的会被删除，有些由于区块回滚会从pending移动到queued，然后把queued中可执行的交易移动到pending，为下一轮区块打包组号准备。</p>
-</li>
-<li><p>queued交易移动到pending被称为“提升”（promote），这个过程中，同样会检查交易，当交易不符合以上条件时，就会被直接从queued中删除。</p>
-</li>
-<li>删除停留在queued中超过3小时的交易，3小时这个超时时间是可以通过<code>geth</code>的启动参数调整的。txpool记录了某个账户交易进入pending的时间，如果这个时间超过了3小时，代表该账号的交易迟迟不能被主链打包，既然无法被主链接受，就删除掉在queued中本来就无法执行的交易。</li>
+<li>raft发现有数据发送给其他节点，数据可以是leader要发送给follower的日志、snapshot，或者其他类型的消息，比如follower给leader的响应消息</li>
+<li>利用NewReady创建结构体Ready，并写入到readyc通道</li>
+<li>raftNode从通道读到Ready，取出其中的消息，交给Network发送给其他节点</li>
 </ol>
-<h3 id="惩罚恶意账号"><a href="#惩罚恶意账号" class="headerlink" title="惩罚恶意账号"></a>惩罚恶意账号</h3><p>这也是txpool很重要的一个属性，可以防止恶意账户以发起大量垃圾交易。防止恶意用户造成：</p>
+<p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-send.png" alt="etcd raft send message flow"></p>
+<h2 id="接收消息"><a href="#接收消息" class="headerlink" title="接收消息"></a>接收消息</h2><p>接收消息的数据流，已经在下图用红色箭头标出，流程如下：</p>
 <ol>
-<li>占用txpool空间</li>
-<li>浪费节点大量内存和CPU</li>
-<li>降低打包性能</li>
+<li>从Network收到消息，可以是leader给follower的消息，也可以是follower发给leader的响应消息，Network的handler函数将数据回传给raftNode</li>
+<li>raftNode调用Step函数，将数据发给raft，数据被写入recvc通道</li>
+<li>raft的Step从recvc收到消息，并修改raftLog中的日志</li>
 </ol>
-<p><strong>只有当交易的总数量超过缓冲区大小时，txpool才会认为有恶意账户发起大量交易。</strong>pending和queued缓冲区大小不同，但处理策略类似：</p>
+<p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-recv.png" alt="etcd raft receive msg flow"></p>
+<h2 id="应用日志"><a href="#应用日志" class="headerlink" title="应用日志"></a>应用日志</h2><p>raft会将达成一致的log通知给raftNode，让它应用到上层的数据库，数据流已经在下图用红色箭头标出，流程如下：</p>
 <ol>
-<li>pending的缓冲区容量是4096，当pending的交易数量多于此时，就会运行检查，每个账号的交易数量是否多于16，把这些账号搜集出来，进行循环依次清理，什么意思呢？就是每轮只删除（移动到queued）这些账号的每个账号1条交易，然后看数量是否降下来了，不满足再进行下一轮，直到满足。</li>
-<li>queued的缓冲区容量是1024，超过之后清理策略和pending差不多，但这里可是真删除了。</li>
+<li>raft发现有日志需要交给raftNode，调用NewReady创建Ready，从raftLog读取日志，并存到Ready结构体</li>
+<li>Ready结构体写入到readyc通道</li>
+<li>raftNode读到Ready结构体，发现Ready结构体中包含日志</li>
+<li>raftNode会把日志写入到storage和WAL，把需要应用的日志，提交给状态机或数据库，去修改数据</li>
+<li>raftNode处理完Ready后，调用Advance函数，通过advancec发送一个信号给raft，告知raft传出来的Ready已经处理完毕</li>
 </ol>
-<p>该部分功能未抽象成单独的函数，而是在<code>promoteExecutables()</code>中，就是在每次把queued交易转移到pending后执行的。</p>
-<p><strong>本地交易的特权</strong>，txpool虽然对交易有诸多限制，但如果交易是本节点的账号发起的，以上数量限制等都对他无效。所以，如果你用本节点账号不停的发送交易，并不会被认为是攻击者，你用<code>txpool.status</code>命令，可以查看到交易的数量，肯定可以大于4096，我曾达到过60000+。</p>
-<h3 id="重点关注的源码"><a href="#重点关注的源码" class="headerlink" title="重点关注的源码"></a>重点关注的源码</h3><p>txpool的主要设计上面就讲完了，如果你想把txpool的代码阅读一番，我建议你重点关注一下这些函数和变量，按图索骥能就完全掌握txpool的实现。</p>
-<ul>
-<li><code>TxPoolConfig</code>：txpool的配置参数</li>
-<li><code>chainHeadCh</code>：txpool订阅了新区块事件</li>
-<li><code>pending</code>：pending的交易，每个账号都有一个交易列表</li>
-<li><code>queue</code>：queued的交易，每个账号都有一个交易列表</li>
-<li><code>loop</code>：txpool的事件处理函数</li>
-<li><code>addTx</code>：添加1条交易的源头，你能找到类似的函数</li>
-<li><code>promoteExecutables</code>：queued交易移动到pending</li>
-<li><code>reset</code>：根据当前区块的最新高度，重置txpool中的交易</li>
-</ul>
-<p>仔细阅读一遍，你会发现txpool会涉及多个锁（TxPool.mu, TxPool.all, TxPool.priced.all），所以当txpool中的交易很多时，它的性能是很低的，这也会影响到区块的打包。</p>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
-<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/</a></li>
-</ol>
-</blockquote>
-<div style="text-align:center">关注公众号，获取最新Golang文章。</div>
+<p>可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png" alt="etcd raft apply logs flow"></p>
 
-<p><img src="http://img.lessisbetter.site/image/png/gzh/gzh-%E5%B8%A6%E5%AD%97%E4%BA%8C%E7%BB%B4%E7%A0%81.png" style="border:0" width="256" hegiht="30" align="center"></p>
-<div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>
 
@@ -581,9 +546,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+            <a href="/tags/一致性/" rel="tag"><i class="fa fa-tag"></i> 一致性</a>
           
-            <a href="/tags/以太坊/" rel="tag"><i class="fa fa-tag"></i> 以太坊</a>
+            <a href="/tags/共识/" rel="tag"><i class="fa fa-tag"></i> 共识</a>
+          
+            <a href="/tags/Raft/" rel="tag"><i class="fa fa-tag"></i> Raft</a>
           
         </div>
       
@@ -596,8 +563,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/" rel="next" title="Golang并发模型：并发协程的优雅退出">
-                <i class="fa fa-chevron-left"></i> Golang并发模型：并发协程的优雅退出
+              <a href="/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/" rel="next" title="不同peer使用不同语言链码的问题">
+                <i class="fa fa-chevron-left"></i> 不同peer使用不同语言链码的问题
               </a>
             
           </div>
@@ -605,10 +572,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/12/11/gongzhonghao-articles/" rel="prev" title="公众号文章列表">
-                公众号文章列表 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -959,7 +922,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存功能的设计"><span class="nav-number">1.</span> <span class="nav-text">缓存功能的设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为区块打包服务"><span class="nav-number">2.</span> <span class="nav-text">为区块打包服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理交易"><span class="nav-number">3.</span> <span class="nav-text">清理交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#惩罚恶意账号"><span class="nav-number">4.</span> <span class="nav-text">惩罚恶意账号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重点关注的源码"><span class="nav-number">5.</span> <span class="nav-text">重点关注的源码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端请求"><span class="nav-number">2.</span> <span class="nav-text">客户端请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送消息"><span class="nav-number">3.</span> <span class="nav-text">发送消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接收消息"><span class="nav-number">4.</span> <span class="nav-text">接收消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用日志"><span class="nav-number">5.</span> <span class="nav-text">应用日志</span></a></li></ol></div>
             
 
           </div>
