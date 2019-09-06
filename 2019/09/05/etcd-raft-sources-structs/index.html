@@ -106,13 +106,13 @@
 <meta name="keywords" content="一致性,共识,Raft">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Etcd Raft架构设计和源码剖析3：重要结构体定义">
-<meta property="og:url" content="http://lessisbetter.site/2019/08/22/etcd-raft-sources-structs/index.html">
+<meta property="og:url" content="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="序言etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。  Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raft-%E5%9B%BE1.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-raftLog.png">
-<meta property="og:updated_time" content="2019-09-05T12:25:27.914Z">
+<meta property="og:updated_time" content="2019-09-06T00:17:36.219Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Etcd Raft架构设计和源码剖析3：重要结构体定义">
 <meta name="twitter:description" content="序言etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。 在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。  Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并">
@@ -123,7 +123,7 @@
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2019/08/22/etcd-raft-sources-structs/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/"/>
 
 
 
@@ -379,7 +379,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/22/etcd-raft-sources-structs/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -422,7 +422,7 @@
                 
               
 
-              <time title="创建时间：2019-08-22 21:59:35" itemprop="dateCreated datePublished" datetime="2019-08-22T21:59:35+08:00">2019-08-22</time>
+              <time title="创建时间：2019-09-05 21:59:35" itemprop="dateCreated datePublished" datetime="2019-09-05T21:59:35+08:00">2019-09-05</time>
             
 
             
@@ -439,7 +439,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-05 20:25:27" itemprop="dateModified" datetime="2019-09-05T20:25:27+08:00">2019-09-05</time>
+                <time title="修改时间：2019-09-06 08:17:36" itemprop="dateModified" datetime="2019-09-06T08:17:36+08:00">2019-09-06</time>
               
             
           </span>
@@ -616,8 +616,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/19/etcd-raft-sources-arch/" rel="next" title="Etcd Raft架构设计和源码剖析1：宏观架构">
-                <i class="fa fa-chevron-left"></i> Etcd Raft架构设计和源码剖析1：宏观架构
+              <a href="/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/" rel="next" title="不同peer使用不同语言链码的问题">
+                <i class="fa fa-chevron-left"></i> 不同peer使用不同语言链码的问题
               </a>
             
           </div>
@@ -625,10 +625,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/02/fabric-sdk-go-chaincode/" rel="prev" title="使用fabric-sdk-go操作链码">
-                使用fabric-sdk-go操作链码 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -706,7 +702,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">98</span>
+                    <span class="site-state-item-count">99</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -843,7 +839,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">61</span>
+                      
+                    
+                    <span class="site-state-item-count">62</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
