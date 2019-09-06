@@ -105,16 +105,16 @@
   <meta name="description" content="背书策略是Fabric中的一个重要一环，想梳理一下背书策略的上链和使用流程。 背书策略是部署和升级链码时使用的，需要发送配置交易，所以尝试了从背书节点收到交易，然后处理交易的流程入手，找到背书策略的入口，结果毫无头绪。 换一种思路，从使用入手，向上追溯，这种就非常顺利了。 从背书策略的使用入手VSCC会利用背书策略，并且背书策略不满足时会返回一个：背书策略不满足的错误，每一个上链的交易详细中都有">
 <meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Fabric源码解读：背书策略是怎么使用的">
+<meta property="og:title" content="Fabric源码解读 1：背书策略是怎么使用的">
 <meta property="og:url" content="http://lessisbetter.site/2019/09/06/fabric-source-endorser-policy-flow/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="背书策略是Fabric中的一个重要一环，想梳理一下背书策略的上链和使用流程。 背书策略是部署和升级链码时使用的，需要发送配置交易，所以尝试了从背书节点收到交易，然后处理交易的流程入手，找到背书策略的入口，结果毫无头绪。 换一种思路，从使用入手，向上追溯，这种就非常顺利了。 从背书策略的使用入手VSCC会利用背书策略，并且背书策略不满足时会返回一个：背书策略不满足的错误，每一个上链的交易详细中都有">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-endorser-policy.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-endorser-policy.png">
-<meta property="og:updated_time" content="2019-09-06T08:41:20.010Z">
+<meta property="og:updated_time" content="2019-09-06T08:45:58.794Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Fabric源码解读：背书策略是怎么使用的">
+<meta name="twitter:title" content="Fabric源码解读 1：背书策略是怎么使用的">
 <meta name="twitter:description" content="背书策略是Fabric中的一个重要一环，想梳理一下背书策略的上链和使用流程。 背书策略是部署和升级链码时使用的，需要发送配置交易，所以尝试了从背书节点收到交易，然后处理交易的流程入手，找到背书策略的入口，结果毫无头绪。 换一种思路，从使用入手，向上追溯，这种就非常顺利了。 从背书策略的使用入手VSCC会利用背书策略，并且背书策略不满足时会返回一个：背书策略不满足的错误，每一个上链的交易详细中都有">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-endorser-policy.png">
 
@@ -133,7 +133,7 @@
   };
 </script>
 
-  <title>Fabric源码解读：背书策略是怎么使用的 | Go语言充电站</title>
+  <title>Fabric源码解读 1：背书策略是怎么使用的 | Go语言充电站</title>
   
 
 
@@ -396,7 +396,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Fabric源码解读：背书策略是怎么使用的
+          <h1 class="post-title" itemprop="name headline">Fabric源码解读 1：背书策略是怎么使用的
 
               
             
@@ -422,7 +422,7 @@
                 
               
 
-              <time title="创建时间：2019-09-06 16:39:45 / 修改时间：16:41:20" itemprop="dateCreated datePublished" datetime="2019-09-06T16:39:45+08:00">2019-09-06</time>
+              <time title="创建时间：2019-09-06 16:39:45 / 修改时间：16:45:58" itemprop="dateCreated datePublished" datetime="2019-09-06T16:39:45+08:00">2019-09-06</time>
             
 
             
