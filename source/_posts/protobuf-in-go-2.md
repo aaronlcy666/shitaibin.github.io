@@ -20,9 +20,9 @@ tags: ['Go', 'RPC']
 
 ## 编解码原理
 
-编解码包都会列出支持的编解码类型，我们暂且把这些类型成为底层类型，编解码的本质是：
+编解码包都有支持的编解码类型，我们暂且把这些类型称为底层类型，编解码的本质是：
 
-1. 为每一个底层类型编写编解码函数
+1. 为每一个底层类型配备一个或多个编解码函数
 1. 把一个结构体的字段，递归的拆解成底层类型，然后选择合适的函数进行编码或解码操作
 
 ![](http://img.lessisbetter.site/2019-09-protobuf-marshal.png)
@@ -56,13 +56,13 @@ func main() {
 }
 ```
 
-编码调用的是`proto.Marshal`函数，它可以完成对proto文件中定义的Message数据进行序列化，返回序列化结果或错误。
+编码调用的是`proto.Marshal`函数，它可以完成的是Go语言数据序列化成protobuf数据，返回序列化结果或错误。
 
-它有3种序列化方式：
+proto编译成的Go结构体都是符合`Message`接口的，从`Marshal`可知Go结构体有3种序列化方式：
 
-1. pb满足`newMarshaler`接口，则调用`XXX_Marshal()`进行序列化。
-1. pb满足`Marshaler`接口，则调用`Marshal()`进行序列化，这种方式适合某类型自定义序列化规则的情况。
-1. 否则，使用默认的序列化方式，创建一个Warpper，利用wrapper对pb进行序列化。后面会介绍方式1实际就是使用方式3。
+1. `pb Message`满足`newMarshaler`接口，则调用`XXX_Marshal()`进行序列化。
+1. `pb`满足`Marshaler`接口，则调用`Marshal()`进行序列化，这种方式适合某类型自定义序列化规则的情况。
+1. 否则，使用默认的序列化方式，创建一个Warpper，利用wrapper对`pb`进行序列化，后面会介绍方式1实际就是使用方式3。
 
 ```go
 // Marshal takes a protocol buffer message
@@ -90,7 +90,7 @@ func Marshal(pb Message) ([]byte, error) {
 }
 ```
 
-`newMarshaler`和`Marshaler`如下，对比示例中的`Request`定义可以发现，`Request`实现了newMarshaler接口，没有实现`Marshaler`接口。
+`newMarshaler`和`Marshaler`如下：
 
 ```go
 // newMarshaler is the interface representing objects that can marshal themselves.
@@ -110,7 +110,7 @@ type Marshaler interface {
 }
 ```
 
-`Request`的`XXX_Marshal`实现如下，它实际是调用了`xxx_messageInfo_Request.Marshal`，`xxx_messageInfo_Request`是定义在`request.pb.go`中的一个全局变量，类型就是`InternalMessageInfo`，实际就是前文提到的wrapper。
+`Request`实现了`newMarshaler`接口，`XXX_Marshal`实现如下，它实际是调用了`xxx_messageInfo_Request.Marshal`，`xxx_messageInfo_Request`是定义在`request.pb.go`中的一个全局变量，类型就是`InternalMessageInfo`，实际就是前文提到的wrapper。
 
 ```go
 // request.pb.go
@@ -123,23 +123,23 @@ func (m *Request) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 var xxx_messageInfo_Request proto.InternalMessageInfo
 ```
 
-本质上，以上都是在wrap，后面才是真正序列化的主体函数。
+本质上，`XXX_Marshal`也是wrapper，后面才是真正序列化的主体函数在proto包中。
 
-`InternalMessageInfo`主要是用来缓存序列化和反序列化用到的信息。
+`InternalMessageInfo`主要是用来缓存序列化和反序列化需要用到的信息。
 
 ```go
 // InternalMessageInfo is a type used internally by generated .pb.go files.
 // This type is not intended to be used by non-generated code.
 // This type is not subject to any compatibility guarantee.
 type InternalMessageInfo struct {
-	marshal   *marshalInfo // marshal信息
-	unmarshal *unmarshalInfo
+	marshal   *marshalInfo   // marshal信息
+	unmarshal *unmarshalInfo // unmarshal信息
 	merge     *mergeInfo
 	discard   *discardInfo
 }
 ```
 
-`InternalMessageInfo.Marshal`首先是获取待序列化类型的序列化信息u，然后利用序列化信息u进行序列化。
+`InternalMessageInfo.Marshal`首先是获取待序列化类型的序列化信息`u marshalInfo`，然后利用`u.marshal`进行序列化。
 
 ```go
 // Marshal is the entry point from generated code,
@@ -163,7 +163,7 @@ func (a *InternalMessageInfo) Marshal(b []byte, msg Message, deterministic bool)
 }
 ```
 
-由于每种类型的序列化信息是一致的，所以`getMessageMarshalInfo`对序列化信息进行了缓存，缓存在`a.marshal`，如果a中不存在marshal信息，才去生成，但不进行初始化，然后保存到a中。
+由于每种类型的序列化信息是一致的，所以`getMessageMarshalInfo`对序列化信息进行了缓存，缓存在`a.marshal`中，如果a中不存在marshal信息，则去生成，但不进行初始化，然后保存到a中。
 
 ```go
 func getMessageMarshalInfo(msg interface{}, a *InternalMessageInfo) *marshalInfo {
@@ -460,7 +460,7 @@ type Request struct{
 }
 ```
 
-`computeMarshalFieldInfo`首先要获取字段ID和要转换的类型，填充到marshalFieldInfo，然后调用`setMarshaler`利用字段f和tags获取该字段类型的序列化函数。
+`computeMarshalFieldInfo`首先要获取字段ID和要转换的类型，填充到`marshalFieldInfo`，然后调用`setMarshaler`利用字段f和tags获取该字段类型的序列化函数。
 
 ```go
 // computeMarshalFieldInfo fills up the information to marshal a field.
@@ -574,7 +574,19 @@ func appendStringValue(b []byte, ptr pointer, wiretag uint64, _ bool) ([]byte, e
 | wiretag | data | wiretag | data | ... | data |
 ```
 
+OK，以上就是编码的主要流程，简单回顾一下：
+
+1. `proto.Marshal`会调用`*.pb.go`中自动生成的Wrapper函数，Wrapper函数会调用`InternalMessageInfo`进行序列化，然后才步入序列化的正题
+1. 首先获取要序列化类型的marshal信息u，如果u没有初始化，则进行初始化，即设置好结构体每个字段的序列化函数，以及其他信息
+1. 遍历结构体的每个字段，使用u中的信息为每个字段进行编码，并把加过追加到`[]byte`，所以字段编码完成，则返回序列化的结果`[]byte`或者错误。
+
 ### 解码
+
+**解码的流程其实与编码很类似**，会是上面回顾的3大步骤，主要的区别在步骤2：它要获取的是序列化类型的unmarshal信息u，如果u没有初始化，会进行初始化，设置的是结构体每个字段的反序列化函数，以及其他信息。
+
+所以解码的函数解析会简要的过一遍，不再有编码那么详细的解释。
+
+下面是proto包中反序列化的接口和函数定义：
 
 ```go
 // Unmarshaler is the interface representing objects that can
@@ -621,11 +633,20 @@ func Unmarshal(buf []byte, pb Message) error {
 	// 使用默认的Unmarshal
 	return NewBuffer(buf).Unmarshal(pb)
 }
+```
 
+`Request`实现了`Unmarshaler`接口：
+
+```go
+// request.pb.go
 func (m *Request) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Request.Unmarshal(m, b)
 }
+```
 
+反序列化也是使用`InternalMessageInfo`进行。
+
+```go
 // Unmarshal is the entry point from the generated .pb.go files.
 // This function is not intended to be used by non-generated code.
 // This function is not subject to any compatibility guarantee.
@@ -650,7 +671,7 @@ func (a *InternalMessageInfo) Unmarshal(msg Message, b []byte) error {
 
 ```
 
-
+以下是反序列化的主题函数，u未初始化时会调用`computeUnmarshalInfo`设置反序列化需要的信息。
 
 ```go
 // unmarshal does the main work of unmarshaling a message.
@@ -798,9 +819,71 @@ func (u *unmarshalInfo) unmarshal(m pointer, b []byte) error {
 }
 ```
 
+设置字段反序列化函数的过程不看了，看一下怎么选函数的，`typeUnmarshaler`是为字段类型，选择反序列化函数，这些函数选择与序列化函数是一一对应的。
 
+```go
+// typeUnmarshaler returns an unmarshaler for the given field type / field tag pair.
+func typeUnmarshaler(t reflect.Type, tags string) unmarshaler {
+    ...
+    // Figure out packaging (pointer, slice, or both)
+	slice := false
+	pointer := false
+	if t.Kind() == reflect.Slice && t.Elem().Kind() != reflect.Uint8 {
+		slice = true
+		t = t.Elem()
+	}
+	if t.Kind() == reflect.Ptr {
+		pointer = true
+		t = t.Elem()
+    }
+    ...
+	switch t.Kind() {
+	case reflect.Bool:
+		if pointer {
+			return unmarshalBoolPtr
+		}
+		if slice {
+			return unmarshalBoolSlice
+		}
+        return unmarshalBoolValue
+    }
+}
+```
+
+`unmarshalBoolValue`是默认的Bool类型反序列化函数，会把protobuf数据b解码，然后转换为bool类型v，最后赋值给字段f。
+
+```go
+func unmarshalBoolValue(b []byte, f pointer, w int) ([]byte, error) {
+	if w != WireVarint {
+		return b, errInternalBadWireType
+	}
+	// Note: any length varint is allowed, even though any sane
+	// encoder will use one byte.
+	// See https://github.com/golang/protobuf/issues/76
+	x, n := decodeVarint(b)
+	if n == 0 {
+		return nil, io.ErrUnexpectedEOF
+	}
+    // TODO: check if x>1? Tests seem to indicate no.
+    // toBool是返回bool类型的指针
+	// 完成对字段f的赋值
+	v := x != 0
+	*f.toBool() = v
+	return b[n:], nil
+}
+```
+
+## 总结
+
+本文分析了Go语言protobuf数据的序列化和反序列过程，可以简要概括为：
+
+1. `proto.Marshal`和`proto.Unmarshal`会调用`*.pb.go`中自动生成的Wrapper函数，Wrapper函数会调用`InternalMessageInfo`进行(反)序列化，然后才步入(反)序列化的正题
+1. 首先获取要目标类型的(um)marshal信息u，如果u没有初始化，则进行初始化，即设置好结构体每个字段的(反)序列化函数，以及其他信息
+1. 遍历结构体的每个字段，使用u中的信息为每个字段进行编码，生成序列化的结果，或进行解码，给结构体成员进行赋值
 
 ## 参考文章
+
+以下参考文章都值得阅读：
 
 - https://tech.meituan.com/2015/02/26/serialization-vs-deserialization.html
   《序列化和反序列化》出自美团技术团队，值得一读。
