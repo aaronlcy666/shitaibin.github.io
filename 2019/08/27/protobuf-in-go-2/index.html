@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next pisces" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：  Go是如何实现protobuf的编解码的：（1）原理 Go是如何实现protobuf的编解码的：（2）源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，本编就">
+<meta name="keywords" content="Go,RPC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go是如何实现protobuf的编解码的：（2）源码">
+<meta property="og:url" content="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：  Go是如何实现protobuf的编解码的：（1）原理 Go是如何实现protobuf的编解码的：（2）源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，本编就">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-09-protobuf-marshal.png">
+<meta property="og:updated_time" content="2019-09-07T02:33:26.462Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go是如何实现protobuf的编解码的：（2）源码">
+<meta name="twitter:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：  Go是如何实现protobuf的编解码的：（1）原理 Go是如何实现protobuf的编解码的：（2）源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，本编就">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Go是如何实现protobuf的编解码的：（2）源码 | Go语言充电站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Go语言充电站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">大彬 less is better</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-主页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />主页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签云">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-专题文章">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/subject/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br />专题文章</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-文章列表">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-大牛博客">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blogs/" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />大牛博客</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <a href="https://github.com/Shitaibin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go是如何实现protobuf的编解码的：（2）源码
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-27 20:27:13" itemprop="dateCreated datePublished" datetime="2019-08-27T20:27:13+08:00">2019-08-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-07 10:33:26" itemprop="dateModified" datetime="2019-09-07T10:33:26+08:00">2019-09-07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：</p>
+<ol>
+<li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的：（1）原理</a></li>
+<li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的：（2）源码</a></li>
+</ol>
+<p>本编是第二篇。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇文章<a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的（1）：原理</a><br>中已经指出了Go语言数据和Protobuf数据的编解码是由包<code>github.com/golang/protobuf/proto</code>完成的，本编就来分析一下proto包是如何实现编解码的。</p>
+<p><img src="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png" alt=""></p>
+<h2 id="编解码原理"><a href="#编解码原理" class="headerlink" title="编解码原理"></a>编解码原理</h2><p>编解码包都会列出支持的编解码类型，我们暂且把这些类型成为底层类型，编解码的本质是：</p>
+<ol>
+<li>为每一个底层类型编写编解码函数</li>
+<li>把一个结构体的字段，递归的拆解成底层类型，然后选择合适的函数进行编码或解码操作</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-09-protobuf-marshal.png" alt=""></p>
+<p><strong>Go语言proto消息的编解码是由<code>&quot;github.com/golang/protobuf/proto</code>包（后面简称proto包）完成的</strong>，接下来先看编码，再看解码。</p>
+<h3 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h3><blockquote>
+<p>约定：以下所有的代码片，如果是request.pb.go或main.go中的代码，会在第一行标记文件名，否则都是proto包的源码。</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"./types"</span></span><br><span class="line">	<span class="string">"github.com/golang/protobuf/proto"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	req := &amp;types.Request&#123;Data: <span class="string">"Hello Dabin"</span>&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Marshal</span></span><br><span class="line">	encoded, err := proto.Marshal(req)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Encode to protobuf data error: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编码调用的是<code>proto.Marshal</code>函数，它可以完成对proto文件中定义的Message数据进行序列化，返回序列化结果或错误。</p>
+<p>它有3种序列化方式：</p>
+<ol>
+<li>pb满足<code>newMarshaler</code>接口，则调用<code>XXX_Marshal()</code>进行序列化。</li>
+<li>pb满足<code>Marshaler</code>接口，则调用<code>Marshal()</code>进行序列化，这种方式适合某类型自定义序列化规则的情况。</li>
+<li>否则，使用默认的序列化方式，创建一个Warpper，利用wrapper对pb进行序列化。后面会介绍方式1实际就是使用方式3。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Marshal takes a protocol buffer message</span></span><br><span class="line"><span class="comment">// and encodes it into the wire format, returning the data.</span></span><br><span class="line"><span class="comment">// This is the main entry point.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Marshal</span><span class="params">(pb Message)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> m, ok := pb.(newMarshaler); ok &#123;</span><br><span class="line">		siz := m.XXX_Size()</span><br><span class="line">		b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">0</span>, siz)</span><br><span class="line">		<span class="keyword">return</span> m.XXX_Marshal(b, <span class="literal">false</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> m, ok := pb.(Marshaler); ok &#123;</span><br><span class="line">		<span class="comment">// If the message can marshal itself, let it do it, for compatibility.</span></span><br><span class="line">		<span class="comment">// <span class="doctag">NOTE:</span> This is not efficient.</span></span><br><span class="line">		<span class="keyword">return</span> m.Marshal()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// in case somehow we didn't generate the wrapper</span></span><br><span class="line">	<span class="keyword">if</span> pb == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, ErrNil</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> info InternalMessageInfo</span><br><span class="line">	siz := info.Size(pb)</span><br><span class="line">	b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">0</span>, siz)</span><br><span class="line">	<span class="keyword">return</span> info.Marshal(b, pb, <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>newMarshaler</code>和<code>Marshaler</code>如下，对比示例中的<code>Request</code>定义可以发现，<code>Request</code>实现了newMarshaler接口，没有实现<code>Marshaler</code>接口。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// newMarshaler is the interface representing objects that can marshal themselves.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This exists to support protoc-gen-go generated messages.</span></span><br><span class="line"><span class="comment">// The proto package will stop type-asserting to this interface in the future.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// DO NOT DEPEND ON THIS.</span></span><br><span class="line"><span class="keyword">type</span> newMarshaler <span class="keyword">interface</span> &#123;</span><br><span class="line">	XXX_Size() <span class="keyword">int</span></span><br><span class="line">	XXX_Marshal(b []<span class="keyword">byte</span>, deterministic <span class="keyword">bool</span>) ([]<span class="keyword">byte</span>, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Marshaler is the interface representing objects that can marshal themselves.</span></span><br><span class="line"><span class="keyword">type</span> Marshaler <span class="keyword">interface</span> &#123;</span><br><span class="line">	Marshal() ([]<span class="keyword">byte</span>, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Request</code>的<code>XXX_Marshal</code>实现如下，它实际是调用了<code>xxx_messageInfo_Request.Marshal</code>，<code>xxx_messageInfo_Request</code>是定义在<code>request.pb.go</code>中的一个全局变量，类型就是<code>InternalMessageInfo</code>，实际就是前文提到的wrapper。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// request.pb.go</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_Marshal</span><span class="params">(b []<span class="keyword">byte</span>, deterministic <span class="keyword">bool</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">"Called xxx marshal\n"</span>)</span><br><span class="line">	<span class="built_in">panic</span>(<span class="string">"I want see stack trace"</span>)</span><br><span class="line">	<span class="keyword">return</span> xxx_messageInfo_Request.Marshal(b, m, deterministic)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> xxx_messageInfo_Request proto.InternalMessageInfo</span><br></pre></td></tr></table></figure>
+<p>本质上，以上都是在wrap，后面才是真正序列化的主体函数。</p>
+<p><code>InternalMessageInfo</code>主要是用来缓存序列化和反序列化用到的信息。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// InternalMessageInfo is a type used internally by generated .pb.go files.</span></span><br><span class="line"><span class="comment">// This type is not intended to be used by non-generated code.</span></span><br><span class="line"><span class="comment">// This type is not subject to any compatibility guarantee.</span></span><br><span class="line"><span class="keyword">type</span> InternalMessageInfo <span class="keyword">struct</span> &#123;</span><br><span class="line">	marshal   *marshalInfo <span class="comment">// marshal信息</span></span><br><span class="line">	unmarshal *unmarshalInfo</span><br><span class="line">	merge     *mergeInfo</span><br><span class="line">	discard   *discardInfo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>InternalMessageInfo.Marshal</code>首先是获取待序列化类型的序列化信息u，然后利用序列化信息u进行序列化。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Marshal is the entry point from generated code,</span></span><br><span class="line"><span class="comment">// and should be ONLY called by generated code.</span></span><br><span class="line"><span class="comment">// It marshals msg to the end of b.</span></span><br><span class="line"><span class="comment">// a is a pointer to a place to store cached marshal info.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *InternalMessageInfo)</span> <span class="title">Marshal</span><span class="params">(b []<span class="keyword">byte</span>, msg Message, deterministic <span class="keyword">bool</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取该message类型的MarshalInfo，这些信息都缓存起来了</span></span><br><span class="line">	<span class="comment">// 大量并发时无需重复创建</span></span><br><span class="line">	u := getMessageMarshalInfo(msg, a)</span><br><span class="line">	<span class="comment">// 入参校验</span></span><br><span class="line">	ptr := toPointer(&amp;msg)</span><br><span class="line">	<span class="keyword">if</span> ptr.isNil() &#123;</span><br><span class="line">		<span class="comment">// We get here if msg is a typed nil ((*SomeMessage)(nil)),</span></span><br><span class="line">		<span class="comment">// so it satisfies the interface, and msg == nil wouldn't</span></span><br><span class="line">		<span class="comment">// catch it. We don't want crash in this case.</span></span><br><span class="line">		<span class="keyword">return</span> b, ErrNil</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 根据MarshalInfo对数据进行marshal</span></span><br><span class="line">	<span class="keyword">return</span> u.marshal(b, ptr, deterministic)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于每种类型的序列化信息是一致的，所以<code>getMessageMarshalInfo</code>对序列化信息进行了缓存，缓存在<code>a.marshal</code>，如果a中不存在marshal信息，才去生成，但不进行初始化，然后保存到a中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getMessageMarshalInfo</span><span class="params">(msg <span class="keyword">interface</span>&#123;&#125;, a *InternalMessageInfo)</span> *<span class="title">marshalInfo</span></span> &#123;</span><br><span class="line">	<span class="comment">// u := a.marshal, but atomically.</span></span><br><span class="line">	<span class="comment">// We use an atomic here to ensure memory consistency.</span></span><br><span class="line">	<span class="comment">// 从InternalMessageInfo中读取</span></span><br><span class="line">	u := atomicLoadMarshalInfo(&amp;a.marshal)</span><br><span class="line">	<span class="comment">// 读取不到代表未保存过</span></span><br><span class="line">	<span class="keyword">if</span> u == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Get marshal information from type of message.</span></span><br><span class="line">		t := reflect.ValueOf(msg).Type()</span><br><span class="line">		<span class="keyword">if</span> t.Kind() != reflect.Ptr &#123;</span><br><span class="line">			<span class="built_in">panic</span>(fmt.Sprintf(<span class="string">"cannot handle non-pointer message type %v"</span>, t))</span><br><span class="line">		&#125;</span><br><span class="line">		u = getMarshalInfo(t.Elem())</span><br><span class="line">		<span class="comment">// Store it in the cache for later users.</span></span><br><span class="line">		<span class="comment">// a.marshal = u, but atomically.</span></span><br><span class="line">		atomicStoreMarshalInfo(&amp;a.marshal, u)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> u</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>getMarshalInfo</code>只是创建了一个<code>marshalInfo</code>对象，填充了字段<code>typ</code>，剩余的字段未填充。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// getMarshalInfo returns the information to marshal a given type of message.</span><br><span class="line">// The info it returns may not necessarily initialized.</span><br><span class="line">// t is the type of the message (NOT the pointer to it).</span><br><span class="line">// 获取MarshalInfo结构体，如果不存在则使用message类型t创建1个</span><br><span class="line">func getMarshalInfo(t reflect.Type) *marshalInfo &#123;</span><br><span class="line">	marshalInfoLock.Lock()</span><br><span class="line">	u, ok := marshalInfoMap[t]</span><br><span class="line">	if !ok &#123;</span><br><span class="line">		u = &amp;marshalInfo&#123;typ: t&#125;</span><br><span class="line">		marshalInfoMap[t] = u</span><br><span class="line">	&#125;</span><br><span class="line">	marshalInfoLock.Unlock()</span><br><span class="line">	return u</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// marshalInfo is the information used for marshaling a message.</span><br><span class="line">type marshalInfo struct &#123;</span><br><span class="line">	typ          reflect.Type</span><br><span class="line">	fields       []*marshalFieldInfo</span><br><span class="line">	unrecognized field                      // offset of XXX_unrecognized</span><br><span class="line">	extensions   field                      // offset of XXX_InternalExtensions</span><br><span class="line">	v1extensions field                      // offset of XXX_extensions</span><br><span class="line">	sizecache    field                      // offset of XXX_sizecache</span><br><span class="line">	initialized  int32                      // 0 -- only typ is set, 1 -- fully initialized</span><br><span class="line">	messageset   bool                       // uses message set wire format</span><br><span class="line">	hasmarshaler bool                       // has custom marshaler</span><br><span class="line">	sync.RWMutex                            // protect extElems map, also for initialization</span><br><span class="line">	extElems     map[int32]*marshalElemInfo // info of extension elements</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>marshalInfo.marshal</code>是Marshal真实主体，会判断u是否已经初始化，如果未初始化调用<code>computeMarshalInfo</code>计算Marshal需要的信息，实际就是填充<code>marshalInfo</code>中的各种字段。</p>
+<p><code>u.hasmarshaler</code>代表当前类型是否实现了<code>Marshaler</code>接口，直接调用Marshal函数进行序列化。可以确定Marshal函数的序列化方式2，即实现<code>Marshaler</code>接口的方法，最后肯定也会调用<code>marshalInfo.marshal</code>。</p>
+<p>该函数的主体是一个for循环，依次遍历该类型的每一个字段，对required属性进行校验，然后按字段类型，调用<code>f.marshaler</code>对该字段类型进行序列化。这个<code>f.marshaler</code>哪来的呢？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// marshal is the main function to marshal a message. It takes a byte slice and appends</span></span><br><span class="line"><span class="comment">// the encoded data to the end of the slice, returns the slice and error (if any).</span></span><br><span class="line"><span class="comment">// ptr is the pointer to the message.</span></span><br><span class="line"><span class="comment">// If deterministic is true, map is marshaled in deterministic order.</span></span><br><span class="line"><span class="comment">// 该函数是Marshal的主体函数，把消息编码为数据后，追加到b之后，最后返回b。</span></span><br><span class="line"><span class="comment">// deterministic为true代表map会以确定的顺序进行编码。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *marshalInfo)</span> <span class="title">marshal</span><span class="params">(b []<span class="keyword">byte</span>, ptr pointer, deterministic <span class="keyword">bool</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 初始化marshalInfo的基础信息</span></span><br><span class="line">	<span class="comment">// 主要是根据已有信息填充该结构体的一些字段</span></span><br><span class="line">	<span class="keyword">if</span> atomic.LoadInt32(&amp;u.initialized) == <span class="number">0</span> &#123;</span><br><span class="line">		u.computeMarshalInfo()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// If the message can marshal itself, let it do it, for compatibility.</span></span><br><span class="line">	<span class="comment">// <span class="doctag">NOTE:</span> This is not efficient.</span></span><br><span class="line">	<span class="comment">// 如果该类型实现了Marshaler接口，即能够对自己Marshal，则自行Marshal</span></span><br><span class="line">	<span class="comment">// 结果追加到b</span></span><br><span class="line">	<span class="keyword">if</span> u.hasmarshaler &#123;</span><br><span class="line">		m := ptr.asPointerTo(u.typ).Interface().(Marshaler)</span><br><span class="line">		b1, err := m.Marshal()</span><br><span class="line">		b = <span class="built_in">append</span>(b, b1...)</span><br><span class="line">		<span class="keyword">return</span> b, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> err, errLater error</span><br><span class="line">	<span class="comment">// The old marshaler encodes extensions at beginning.</span></span><br><span class="line">	<span class="comment">// 检查扩展字段，把message的扩展字段追加到b</span></span><br><span class="line">	<span class="keyword">if</span> u.extensions.IsValid() &#123;</span><br><span class="line">		<span class="comment">// offset函数用来根据指针偏移量获取message的指定字段</span></span><br><span class="line">		e := ptr.offset(u.extensions).toExtensions()</span><br><span class="line">		<span class="keyword">if</span> u.messageset &#123;</span><br><span class="line">			b, err = u.appendMessageSet(b, e, deterministic)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			b, err = u.appendExtensions(b, e, deterministic)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> b, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> u.v1extensions.IsValid() &#123;</span><br><span class="line">		m := *ptr.offset(u.v1extensions).toOldExtensions()</span><br><span class="line">		b, err = u.appendV1Extensions(b, m, deterministic)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> b, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 遍历message的每一个字段，检查并做编码，然后追加到b</span></span><br><span class="line">	<span class="keyword">for</span> _, f := <span class="keyword">range</span> u.fields &#123;</span><br><span class="line">		<span class="keyword">if</span> f.required &#123;</span><br><span class="line">			<span class="comment">// 如果required的字段未设置，则记录错误，所有的marshal工作完成后再处理</span></span><br><span class="line">			<span class="keyword">if</span> ptr.offset(f.field).getPointer().isNil() &#123;</span><br><span class="line">				<span class="comment">// Required field is not set.</span></span><br><span class="line">				<span class="comment">// We record the error but keep going, to give a complete marshaling.</span></span><br><span class="line">				<span class="keyword">if</span> errLater == <span class="literal">nil</span> &#123;</span><br><span class="line">					errLater = &amp;RequiredNotSetError&#123;f.name&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 字段为指针类型，并且为nil，代表未设置，该字段无需编码</span></span><br><span class="line">		<span class="keyword">if</span> f.isPointer &amp;&amp; ptr.offset(f.field).getPointer().isNil() &#123;</span><br><span class="line">			<span class="comment">// nil pointer always marshals to nothing</span></span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 利用这个字段的marshaler进行编码</span></span><br><span class="line">		b, err = f.marshaler(b, ptr.offset(f.field), f.wiretag, deterministic)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> err1, ok := err.(*RequiredNotSetError); ok &#123;</span><br><span class="line">				<span class="comment">// required字段但未设置错误</span></span><br><span class="line">				<span class="comment">// Required field in submessage is not set.</span></span><br><span class="line">				<span class="comment">// We record the error but keep going, to give a complete marshaling.</span></span><br><span class="line">				<span class="keyword">if</span> errLater == <span class="literal">nil</span> &#123;</span><br><span class="line">					errLater = &amp;RequiredNotSetError&#123;f.name + <span class="string">"."</span> + err1.field&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// “动态数组”中包含nil元素</span></span><br><span class="line">			<span class="keyword">if</span> err == errRepeatedHasNil &#123;</span><br><span class="line">				err = errors.New(<span class="string">"proto: repeated field "</span> + f.name + <span class="string">" has nil element"</span>)</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> err == errInvalidUTF8 &#123;</span><br><span class="line">				<span class="keyword">if</span> errLater == <span class="literal">nil</span> &#123;</span><br><span class="line">					fullName := revProtoTypes[reflect.PtrTo(u.typ)] + <span class="string">"."</span> + f.name</span><br><span class="line">					errLater = &amp;invalidUTF8Error&#123;fullName&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> b, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 为识别的类型字段，直接转为bytes，追加到b</span></span><br><span class="line">	<span class="comment">// computeMarshalInfo中已经收集这些字段</span></span><br><span class="line">	<span class="keyword">if</span> u.unrecognized.IsValid() &#123;</span><br><span class="line">		s := *ptr.offset(u.unrecognized).toBytes()</span><br><span class="line">		b = <span class="built_in">append</span>(b, s...)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b, errLater</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>computeMarshalInfo</code>实际上就是对要序列化的类型，进行一次全面检查，设置好序列化要使用的数据，这其中就包含了各字段的序列化函数<code>f.marshaler</code>。我们就重点关注下这部分，struct的每一个字段都会分配一个<code>marshalFieldInfo</code>，代表这个字段序列化需要的信息，会调用<code>computeMarshalFieldInfo</code>会填充这个对象。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// computeMarshalInfo initializes the marshal info.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *marshalInfo)</span> <span class="title">computeMarshalInfo</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 加锁，代表了不能同时计算marshal信息</span></span><br><span class="line">	u.Lock()</span><br><span class="line">	<span class="keyword">defer</span> u.Unlock()</span><br><span class="line">	<span class="comment">// 计算1次即可</span></span><br><span class="line">	<span class="keyword">if</span> u.initialized != <span class="number">0</span> &#123; <span class="comment">// non-atomic read is ok as it is protected by the lock</span></span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取要marshal的message类型</span></span><br><span class="line">	t := u.typ</span><br><span class="line">	u.unrecognized = invalidField</span><br><span class="line">	u.extensions = invalidField</span><br><span class="line">	u.v1extensions = invalidField</span><br><span class="line">	u.sizecache = invalidField</span><br><span class="line"></span><br><span class="line">	<span class="comment">// If the message can marshal itself, let it do it, for compatibility.</span></span><br><span class="line">	<span class="comment">// 判断当前类型是否实现了Marshal接口，如果实现标记为类型自有marshaler</span></span><br><span class="line">	<span class="comment">// 没用类型断言是因为t是Type类型，不是保存在某个接口的变量</span></span><br><span class="line">	<span class="comment">// <span class="doctag">NOTE:</span> This is not efficient.</span></span><br><span class="line">	<span class="keyword">if</span> reflect.PtrTo(t).Implements(marshalerType) &#123;</span><br><span class="line">		u.hasmarshaler = <span class="literal">true</span></span><br><span class="line">		atomic.StoreInt32(&amp;u.initialized, <span class="number">1</span>)</span><br><span class="line">		<span class="comment">// 可以直接返回了，后面使用自有的marshaler编码</span></span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// get oneof implementers</span></span><br><span class="line">	<span class="comment">// 看*t实现了以下哪个接口，oneof特性</span></span><br><span class="line">	<span class="keyword">var</span> oneofImplementers []<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">switch</span> m := reflect.Zero(reflect.PtrTo(t)).Interface().(<span class="keyword">type</span>) &#123;</span><br><span class="line">	<span class="keyword">case</span> oneofFuncsIface:</span><br><span class="line">		_, _, _, oneofImplementers = m.XXX_OneofFuncs()</span><br><span class="line">	<span class="keyword">case</span> oneofWrappersIface:</span><br><span class="line">		oneofImplementers = m.XXX_OneofWrappers()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	n := t.NumField()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// deal with XXX fields first</span></span><br><span class="line">	<span class="comment">// 遍历t的每一个XXX字段</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; t.NumField(); i++ &#123;</span><br><span class="line">		f := t.Field(i)</span><br><span class="line">		<span class="comment">// 跳过非XXX开头的字段</span></span><br><span class="line">		<span class="keyword">if</span> !strings.HasPrefix(f.Name, <span class="string">"XXX_"</span>) &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 处理以下几个protobuf自带的字段</span></span><br><span class="line">		<span class="keyword">switch</span> f.Name &#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">"XXX_sizecache"</span>:</span><br><span class="line">			u.sizecache = toField(&amp;f)</span><br><span class="line">		<span class="keyword">case</span> <span class="string">"XXX_unrecognized"</span>:</span><br><span class="line">			u.unrecognized = toField(&amp;f)</span><br><span class="line">		<span class="keyword">case</span> <span class="string">"XXX_InternalExtensions"</span>:</span><br><span class="line">			u.extensions = toField(&amp;f)</span><br><span class="line">			u.messageset = f.Tag.Get(<span class="string">"protobuf_messageset"</span>) == <span class="string">"1"</span></span><br><span class="line">		<span class="keyword">case</span> <span class="string">"XXX_extensions"</span>:</span><br><span class="line">			u.v1extensions = toField(&amp;f)</span><br><span class="line">		<span class="keyword">case</span> <span class="string">"XXX_NoUnkeyedLiteral"</span>:</span><br><span class="line">			<span class="comment">// nothing to do</span></span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			<span class="built_in">panic</span>(<span class="string">"unknown XXX field: "</span> + f.Name)</span><br><span class="line">		&#125;</span><br><span class="line">		n--</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// normal fields</span></span><br><span class="line">	<span class="comment">// 处理message的普通字段</span></span><br><span class="line">	fields := <span class="built_in">make</span>([]marshalFieldInfo, n) <span class="comment">// batch allocation</span></span><br><span class="line">	u.fields = <span class="built_in">make</span>([]*marshalFieldInfo, <span class="number">0</span>, n)</span><br><span class="line">	<span class="keyword">for</span> i, j := <span class="number">0</span>, <span class="number">0</span>; i &lt; t.NumField(); i++ &#123;</span><br><span class="line">		f := t.Field(i)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 跳过XXX字段</span></span><br><span class="line">		<span class="keyword">if</span> strings.HasPrefix(f.Name, <span class="string">"XXX_"</span>) &#123;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 取fields的下一个有效字段，指针类型</span></span><br><span class="line">		<span class="comment">// j代表了fields有效字段数量，n是包含了XXX字段的总字段数量</span></span><br><span class="line">		field := &amp;fields[j]</span><br><span class="line">		j++</span><br><span class="line">		field.name = f.Name</span><br><span class="line">		<span class="comment">// 填充到u.fields</span></span><br><span class="line">		u.fields = <span class="built_in">append</span>(u.fields, field)</span><br><span class="line">		<span class="comment">// 字段的tag里包含“protobuf_oneof”特殊处理</span></span><br><span class="line">		<span class="keyword">if</span> f.Tag.Get(<span class="string">"protobuf_oneof"</span>) != <span class="string">""</span> &#123;</span><br><span class="line">			field.computeOneofFieldInfo(&amp;f, oneofImplementers)</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 字段里不包含“protobuf”，代表不是protoc自动生成的字段</span></span><br><span class="line">		<span class="keyword">if</span> f.Tag.Get(<span class="string">"protobuf"</span>) == <span class="string">""</span> &#123;</span><br><span class="line">			<span class="comment">// field has no tag (not in generated message), ignore it</span></span><br><span class="line">			<span class="comment">// 删除刚刚保存的字段信息</span></span><br><span class="line">			u.fields = u.fields[:<span class="built_in">len</span>(u.fields)<span class="number">-1</span>]</span><br><span class="line">			j--</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 填充字段的marshal信息</span></span><br><span class="line">		field.computeMarshalFieldInfo(&amp;f)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// fields are marshaled in tag order on the wire.</span></span><br><span class="line">	<span class="comment">// 字段排序</span></span><br><span class="line">	sort.Sort(byTag(u.fields))</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 初始化完成</span></span><br><span class="line">	atomic.StoreInt32(&amp;u.initialized, <span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>回顾一下<code>Request</code>的定义，它包含1个字段Data，后面<code>protobuf:...</code>描述了protobuf要使用的信息，<code>&quot;bytes,...&quot;</code>这段被称为tags，用逗号进行分割后，其中：</p>
+<ul>
+<li>tags[0]: bytes，代表Data类型的数据要被转换为bytes</li>
+<li>tags[1]: 1，代表了字段的ID</li>
+<li>tags[2]: opt，代表可行，非必须</li>
+<li>tags[3]: name=data，proto文件中的名称</li>
+<li>tags[4]: proto3，代表使用的protobuf版本</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// request.pb.go</span></span><br><span class="line"><span class="keyword">type</span> Request <span class="keyword">struct</span>&#123;</span><br><span class="line">	Data                 <span class="keyword">string</span>   <span class="string">`protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>computeMarshalFieldInfo</code>首先要获取字段ID和要转换的类型，填充到marshalFieldInfo，然后调用<code>setMarshaler</code>利用字段f和tags获取该字段类型的序列化函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// computeMarshalFieldInfo fills up the information to marshal a field.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(fi *marshalFieldInfo)</span> <span class="title">computeMarshalFieldInfo</span><span class="params">(f *reflect.StructField)</span></span> &#123;</span><br><span class="line">	<span class="comment">// parse protobuf tag of the field.</span></span><br><span class="line">	<span class="comment">// tag has format of "bytes,49,opt,name=foo,def=hello!"</span></span><br><span class="line">	<span class="comment">// 获取"protobuf"的完整tag，然后使用，分割，得到上面的格式</span></span><br><span class="line">	tags := strings.Split(f.Tag.Get(<span class="string">"protobuf"</span>), <span class="string">","</span>)</span><br><span class="line">	<span class="keyword">if</span> tags[<span class="number">0</span>] == <span class="string">""</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// tag的编号，即message中设置的string name = x，则x就是这个字段的tag id</span></span><br><span class="line">	tag, err := strconv.Atoi(tags[<span class="number">1</span>])</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">"tag is not an integer"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 要转换成的类型，bytes，varint等等</span></span><br><span class="line">	wt := wiretype(tags[<span class="number">0</span>])</span><br><span class="line">	<span class="comment">// 设置字段是required还是opt</span></span><br><span class="line">	<span class="keyword">if</span> tags[<span class="number">2</span>] == <span class="string">"req"</span> &#123;</span><br><span class="line">		fi.required = <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 设置field和tag信息到marshalFieldInfo</span></span><br><span class="line">	fi.setTag(f, tag, wt)</span><br><span class="line">	<span class="comment">// 根据当前的tag信息（类型等），选择marshaler函数</span></span><br><span class="line">	fi.setMarshaler(f, tags)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>setMarshaler</code>的重点是<code>typeMarshaler</code>，<code>typeMarshaler</code>这个函数非常长，其实就是根据类型设置返回对于的序列化函数，比如Bool、Int32、Uint32…，如果是结构体、切片等复合类型，就可以形成递归了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// setMarshaler fills up the sizer and marshaler in the info of a field.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(fi *marshalFieldInfo)</span> <span class="title">setMarshaler</span><span class="params">(f *reflect.StructField, tags []<span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// map类型字段特殊处理</span></span><br><span class="line">	<span class="keyword">switch</span> f.Type.Kind() &#123;</span><br><span class="line">	<span class="keyword">case</span> reflect.Map:</span><br><span class="line">		<span class="comment">// map field</span></span><br><span class="line">		fi.isPointer = <span class="literal">true</span></span><br><span class="line">		fi.sizer, fi.marshaler = makeMapMarshaler(f)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	<span class="keyword">case</span> reflect.Ptr, reflect.Slice:</span><br><span class="line">		<span class="comment">// 指针字段和切片字段标记指针类型</span></span><br><span class="line">		fi.isPointer = <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 根据字段类型和tag选择marshaler</span></span><br><span class="line">	fi.sizer, fi.marshaler = typeMarshaler(f.Type, tags, <span class="literal">true</span>, <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// typeMarshaler returns the sizer and marshaler of a given field.</span></span><br><span class="line"><span class="comment">// t is the type of the field.</span></span><br><span class="line"><span class="comment">// tags is the generated "protobuf" tag of the field.</span></span><br><span class="line"><span class="comment">// If nozero is true, zero value is not marshaled to the wire.</span></span><br><span class="line"><span class="comment">// If oneof is true, it is a oneof field.</span></span><br><span class="line"><span class="comment">// 函数非常长，省略内容</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">typeMarshaler</span><span class="params">(t reflect.Type, tags []<span class="keyword">string</span>, nozero, oneof <span class="keyword">bool</span>)</span> <span class="params">(sizer, marshaler)</span></span> &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">switch</span> t.Kind() &#123;</span><br><span class="line">	<span class="keyword">case</span> reflect.Bool:</span><br><span class="line">		<span class="keyword">if</span> pointer &#123;</span><br><span class="line">			<span class="keyword">return</span> sizeBoolPtr, appendBoolPtr</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> slice &#123;</span><br><span class="line">			<span class="keyword">if</span> packed &#123;</span><br><span class="line">				<span class="keyword">return</span> sizeBoolPackedSlice, appendBoolPackedSlice</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> sizeBoolSlice, appendBoolSlice</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> nozero &#123;</span><br><span class="line">			<span class="keyword">return</span> sizeBoolValueNoZero, appendBoolValueNoZero</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> sizeBoolValue, appendBoolValue</span><br><span class="line">	<span class="keyword">case</span> reflect.Uint32:</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">case</span> reflect.Int32:</span><br><span class="line">	....</span><br><span class="line">	<span class="keyword">case</span> reflect.Struct:</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下是Bool和String类型的2个序列化函数示例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">appendBoolValue</span><span class="params">(b []<span class="keyword">byte</span>, ptr pointer, wiretag <span class="keyword">uint64</span>, _ <span class="keyword">bool</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	v := *ptr.toBool()</span><br><span class="line">	b = appendVarint(b, wiretag)</span><br><span class="line">	<span class="keyword">if</span> v &#123;</span><br><span class="line">		b = <span class="built_in">append</span>(b, <span class="number">1</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		b = <span class="built_in">append</span>(b, <span class="number">0</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">appendStringValue</span><span class="params">(b []<span class="keyword">byte</span>, ptr pointer, wiretag <span class="keyword">uint64</span>, _ <span class="keyword">bool</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	v := *ptr.toString()</span><br><span class="line">	b = appendVarint(b, wiretag)</span><br><span class="line">	b = appendVarint(b, <span class="keyword">uint64</span>(<span class="built_in">len</span>(v)))</span><br><span class="line">	b = <span class="built_in">append</span>(b, v...)</span><br><span class="line">	<span class="keyword">return</span> b, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以序列化后的<code>[]byte</code>，应当是符合这种模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">| wiretag | data | wiretag | data | ... | data |</span><br></pre></td></tr></table></figure>
+<h3 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Unmarshaler is the interface representing objects that can</span></span><br><span class="line"><span class="comment">// unmarshal themselves.  The argument points to data that may be</span></span><br><span class="line"><span class="comment">// overwritten, so implementations should not keep references to the</span></span><br><span class="line"><span class="comment">// buffer.</span></span><br><span class="line"><span class="comment">// Unmarshal implementations should not clear the receiver.</span></span><br><span class="line"><span class="comment">// Any unmarshaled data should be merged into the receiver.</span></span><br><span class="line"><span class="comment">// Callers of Unmarshal that do not want to retain existing data</span></span><br><span class="line"><span class="comment">// should Reset the receiver before calling Unmarshal.</span></span><br><span class="line"><span class="keyword">type</span> Unmarshaler <span class="keyword">interface</span> &#123;</span><br><span class="line">	Unmarshal([]<span class="keyword">byte</span>) error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// newUnmarshaler is the interface representing objects that can</span></span><br><span class="line"><span class="comment">// unmarshal themselves. The semantics are identical to Unmarshaler.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This exists to support protoc-gen-go generated messages.</span></span><br><span class="line"><span class="comment">// The proto package will stop type-asserting to this interface in the future.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// DO NOT DEPEND ON THIS.</span></span><br><span class="line"><span class="keyword">type</span> newUnmarshaler <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// 实现了XXX_Unmarshal</span></span><br><span class="line">	XXX_Unmarshal([]<span class="keyword">byte</span>) error</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Unmarshal parses the protocol buffer representation in buf and places the</span></span><br><span class="line"><span class="comment">// decoded result in pb.  If the struct underlying pb does not match</span></span><br><span class="line"><span class="comment">// the data in buf, the results can be unpredictable.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Unmarshal resets pb before starting to unmarshal, so any</span></span><br><span class="line"><span class="comment">// existing data in pb is always removed. Use UnmarshalMerge</span></span><br><span class="line"><span class="comment">// to preserve and append to existing data.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Unmarshal</span><span class="params">(buf []<span class="keyword">byte</span>, pb Message)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	pb.Reset()</span><br><span class="line">	<span class="comment">// pb自己有unmarshal函数，实现了newUnmarshaler接口</span></span><br><span class="line">	<span class="keyword">if</span> u, ok := pb.(newUnmarshaler); ok &#123;</span><br><span class="line">		<span class="keyword">return</span> u.XXX_Unmarshal(buf)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// pb自己有unmarshal函数，实现了Unmarshaler接口</span></span><br><span class="line">	<span class="keyword">if</span> u, ok := pb.(Unmarshaler); ok &#123;</span><br><span class="line">		<span class="keyword">return</span> u.Unmarshal(buf)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 使用默认的Unmarshal</span></span><br><span class="line">	<span class="keyword">return</span> NewBuffer(buf).Unmarshal(pb)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Request)</span> <span class="title">XXX_Unmarshal</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> xxx_messageInfo_Request.Unmarshal(m, b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Unmarshal is the entry point from the generated .pb.go files.</span></span><br><span class="line"><span class="comment">// This function is not intended to be used by non-generated code.</span></span><br><span class="line"><span class="comment">// This function is not subject to any compatibility guarantee.</span></span><br><span class="line"><span class="comment">// msg contains a pointer to a protocol buffer struct.</span></span><br><span class="line"><span class="comment">// b is the data to be unmarshaled into the protocol buffer.</span></span><br><span class="line"><span class="comment">// a is a pointer to a place to store cached unmarshal information.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *InternalMessageInfo)</span> <span class="title">Unmarshal</span><span class="params">(msg Message, b []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="comment">// Load the unmarshal information for this message type.</span></span><br><span class="line">	<span class="comment">// The atomic load ensures memory consistency.</span></span><br><span class="line">	<span class="comment">// 获取保存在a中的unmarshal信息</span></span><br><span class="line">	u := atomicLoadUnmarshalInfo(&amp;a.unmarshal)</span><br><span class="line">	<span class="keyword">if</span> u == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Slow path: find unmarshal info for msg, update a with it.</span></span><br><span class="line">		u = getUnmarshalInfo(reflect.TypeOf(msg).Elem())</span><br><span class="line">		atomicStoreUnmarshalInfo(&amp;a.unmarshal, u)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Then do the unmarshaling.</span></span><br><span class="line">	<span class="comment">// 执行unmarshal</span></span><br><span class="line">	err := u.unmarshal(toPointer(&amp;msg), b)</span><br><span class="line">	<span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// unmarshal does the main work of unmarshaling a message.</span></span><br><span class="line"><span class="comment">// u provides type information used to unmarshal the message.</span></span><br><span class="line"><span class="comment">// m is a pointer to a protocol buffer message.</span></span><br><span class="line"><span class="comment">// b is a byte stream to unmarshal into m.</span></span><br><span class="line"><span class="comment">// This is top routine used when recursively unmarshaling submessages.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *unmarshalInfo)</span> <span class="title">unmarshal</span><span class="params">(m pointer, b []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> atomic.LoadInt32(&amp;u.initialized) == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="comment">// 为u填充unmarshal信息，以及设置每个字段类型的unmarshaler函数</span></span><br><span class="line">		u.computeUnmarshalInfo()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> u.isMessageSet &#123;</span><br><span class="line">		<span class="keyword">return</span> unmarshalMessageSet(b, m.offset(u.extensions).toExtensions())</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> reqMask <span class="keyword">uint64</span> <span class="comment">// bitmask of required fields we've seen.</span></span><br><span class="line">	<span class="keyword">var</span> errLater error</span><br><span class="line">	<span class="keyword">for</span> <span class="built_in">len</span>(b) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="comment">// Read tag and wire type.</span></span><br><span class="line">		<span class="comment">// Special case 1 and 2 byte varints.</span></span><br><span class="line">		<span class="keyword">var</span> x <span class="keyword">uint64</span></span><br><span class="line">		<span class="keyword">if</span> b[<span class="number">0</span>] &lt; <span class="number">128</span> &#123;</span><br><span class="line">			x = <span class="keyword">uint64</span>(b[<span class="number">0</span>])</span><br><span class="line">			b = b[<span class="number">1</span>:]</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="built_in">len</span>(b) &gt;= <span class="number">2</span> &amp;&amp; b[<span class="number">1</span>] &lt; <span class="number">128</span> &#123;</span><br><span class="line">			x = <span class="keyword">uint64</span>(b[<span class="number">0</span>]&amp;<span class="number">0x7f</span>) + <span class="keyword">uint64</span>(b[<span class="number">1</span>])&lt;&lt;<span class="number">7</span></span><br><span class="line">			b = b[<span class="number">2</span>:]</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">var</span> n <span class="keyword">int</span></span><br><span class="line">			x, n = decodeVarint(b)</span><br><span class="line">			<span class="keyword">if</span> n == <span class="number">0</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> io.ErrUnexpectedEOF</span><br><span class="line">			&#125;</span><br><span class="line">			b = b[n:]</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 获取tag和wire标记</span></span><br><span class="line">		tag := x &gt;&gt; <span class="number">3</span></span><br><span class="line">		wire := <span class="keyword">int</span>(x) &amp; <span class="number">7</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">// Dispatch on the tag to one of the unmarshal* functions below.</span></span><br><span class="line">		<span class="comment">// 根据tag选择该类型的unmarshalFieldInfo：f</span></span><br><span class="line">		<span class="keyword">var</span> f unmarshalFieldInfo</span><br><span class="line">		<span class="keyword">if</span> tag &lt; <span class="keyword">uint64</span>(<span class="built_in">len</span>(u.dense)) &#123;</span><br><span class="line">			f = u.dense[tag]</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			f = u.sparse[tag]</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 如果该类型有unmarshaler函数，则执行解码和错误处理</span></span><br><span class="line">		<span class="keyword">if</span> fn := f.unmarshal; fn != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">var</span> err error</span><br><span class="line">			<span class="comment">// 从b解析，然后填充到f的对应字段</span></span><br><span class="line">			b, err = fn(b, m.offset(f.field), wire)</span><br><span class="line">			<span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">				reqMask |= f.reqMask</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> r, ok := err.(*RequiredNotSetError); ok &#123;</span><br><span class="line">				<span class="comment">// Remember this error, but keep parsing. We need to produce</span></span><br><span class="line">				<span class="comment">// a full parse even if a required field is missing.</span></span><br><span class="line">				<span class="keyword">if</span> errLater == <span class="literal">nil</span> &#123;</span><br><span class="line">					errLater = r</span><br><span class="line">				&#125;</span><br><span class="line">				reqMask |= f.reqMask</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> err != errInternalBadWireType &#123;</span><br><span class="line">				<span class="keyword">if</span> err == errInvalidUTF8 &#123;</span><br><span class="line">					<span class="keyword">if</span> errLater == <span class="literal">nil</span> &#123;</span><br><span class="line">						fullName := revProtoTypes[reflect.PtrTo(u.typ)] + <span class="string">"."</span> + f.name</span><br><span class="line">						errLater = &amp;invalidUTF8Error&#123;fullName&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">continue</span></span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">return</span> err</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// Fragments with bad wire type are treated as unknown fields.</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Unknown tag.</span></span><br><span class="line">		<span class="comment">// 跳过未知tag，可能是proto中的message定义升级了，增加了一些字段，使用老版本的，就不识别新的字段</span></span><br><span class="line">		<span class="keyword">if</span> !u.unrecognized.IsValid() &#123;</span><br><span class="line">			<span class="comment">// Don't keep unrecognized data; just skip it.</span></span><br><span class="line">			<span class="keyword">var</span> err error</span><br><span class="line">			b, err = skipField(b, wire)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> err</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 检查未识别字段是不是extension</span></span><br><span class="line">		<span class="comment">// Keep unrecognized data around.</span></span><br><span class="line">		<span class="comment">// maybe in extensions, maybe in the unrecognized field.</span></span><br><span class="line">		z := m.offset(u.unrecognized).toBytes()</span><br><span class="line">		<span class="keyword">var</span> emap <span class="keyword">map</span>[<span class="keyword">int32</span>]Extension</span><br><span class="line">		<span class="keyword">var</span> e Extension</span><br><span class="line">		<span class="keyword">for</span> _, r := <span class="keyword">range</span> u.extensionRanges &#123;</span><br><span class="line">			<span class="keyword">if</span> <span class="keyword">uint64</span>(r.Start) &lt;= tag &amp;&amp; tag &lt;= <span class="keyword">uint64</span>(r.End) &#123;</span><br><span class="line">				<span class="keyword">if</span> u.extensions.IsValid() &#123;</span><br><span class="line">					mp := m.offset(u.extensions).toExtensions()</span><br><span class="line">					emap = mp.extensionsWrite()</span><br><span class="line">					e = emap[<span class="keyword">int32</span>(tag)]</span><br><span class="line">					z = &amp;e.enc</span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> u.oldExtensions.IsValid() &#123;</span><br><span class="line">					p := m.offset(u.oldExtensions).toOldExtensions()</span><br><span class="line">					emap = *p</span><br><span class="line">					<span class="keyword">if</span> emap == <span class="literal">nil</span> &#123;</span><br><span class="line">						emap = <span class="keyword">map</span>[<span class="keyword">int32</span>]Extension&#123;&#125;</span><br><span class="line">						*p = emap</span><br><span class="line">					&#125;</span><br><span class="line">					e = emap[<span class="keyword">int32</span>(tag)]</span><br><span class="line">					z = &amp;e.enc</span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				<span class="built_in">panic</span>(<span class="string">"no extensions field available"</span>)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Use wire type to skip data.</span></span><br><span class="line">		<span class="keyword">var</span> err error</span><br><span class="line">		b0 := b</span><br><span class="line">		b, err = skipField(b, wire)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">		*z = encodeVarint(*z, tag&lt;&lt;<span class="number">3</span>|<span class="keyword">uint64</span>(wire))</span><br><span class="line">		*z = <span class="built_in">append</span>(*z, b0[:<span class="built_in">len</span>(b0)-<span class="built_in">len</span>(b)]...)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> emap != <span class="literal">nil</span> &#123;</span><br><span class="line">			emap[<span class="keyword">int32</span>(tag)] = e</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 校验解析到的required字段的数量，如果与u中记录的不匹配，则报错</span></span><br><span class="line">	<span class="keyword">if</span> reqMask != u.reqMask &amp;&amp; errLater == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// A required field of this message is missing.</span></span><br><span class="line">		<span class="keyword">for</span> _, n := <span class="keyword">range</span> u.reqFields &#123;</span><br><span class="line">			<span class="keyword">if</span> reqMask&amp;<span class="number">1</span> == <span class="number">0</span> &#123;</span><br><span class="line">				errLater = &amp;RequiredNotSetError&#123;n&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			reqMask &gt;&gt;= <span class="number">1</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> errLater</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a href="https://tech.meituan.com/2015/02/26/serialization-vs-deserialization.html" target="_blank" rel="noopener">https://tech.meituan.com/2015/02/26/serialization-vs-deserialization.html</a><br>《序列化和反序列化》出自美团技术团队，值得一读。</li>
+<li><a href="https://github.com/golang/protobuf" target="_blank" rel="noopener">https://github.com/golang/protobuf</a><br>Go支持protocol buffer的仓库，Readme，值得详读。</li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/gotutorial" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/gotutorial</a><br>Google Protocol Buffers的Go语言tutorial，值得详细阅读和实操。</li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/overview</a><br>Google Protocol Buffers的Overview，介绍了什么是Protocol Buffers，它的原理、历史（起源），以及和XML的对比，必读。</li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/proto3" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/proto3</a><br>《Language Guide (proto3)》这篇文章介绍了proto3的定义，也可以理解为<code>.proto</code>文件的语法，就如同Go语言的语法，不懂语法怎么编写<code>.proto</code>文件？读这篇文章会了解很多原理，以及可以少踩坑，必读。</li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/reference/go-generated" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/reference/go-generated</a><br>《Go Generated Code》这篇文章详细介绍了protoc是怎么用<code>.protoc</code>生成<code>.pb.go</code>的，可选。</li>
+<li><a href="https://developers.google.com/protocol-buffers/docs/encoding#" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/encoding#</a><br>《Protocol Buffers Encoding》这篇介绍编码原理，可选。</li>
+<li><a href="https://godoc.org/github.com/golang/protobuf/proto" target="_blank" rel="noopener">https://godoc.org/github.com/golang/protobuf/proto</a><br>《package proto文档》可以把proto包当做Go语言操作protobuf数据的SDK，它实现了结构体和protobuf数据的转换，它和<code>.pb.go</code>文件配合使用。</li>
+</ul>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
+          
+            <a href="/tags/RPC/" rel="tag"><i class="fa fa-tag"></i> RPC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/26/protobuf-in-go/" rel="next" title="Go是如何实现protobuf的编解码的，从原理到源码">
+                <i class="fa fa-chevron-left"></i> Go是如何实现protobuf的编解码的，从原理到源码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/02/fabric-sdk-go-chaincode/" rel="prev" title="使用fabric-sdk-go操作链码">
+                使用fabric-sdk-go操作链码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container">
+    </div>
+    
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png"
+                alt="大彬" />
+            
+              <p class="site-author-name" itemprop="name">大彬</p>
+              <p class="site-description motion-element" itemprop="description">区块链、Go语言</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 &rarr; http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/shitaibin" title="GitHub &rarr; https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault &rarr; https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 &rarr; https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow &rarr; https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hz_stb@163.com" title="E-Mail &rarr; mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编解码原理"><span class="nav-number">2.</span> <span class="nav-text">编解码原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编码"><span class="nav-number">2.1.</span> <span class="nav-text">编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解码"><span class="nav-number">2.2.</span> <span class="nav-text">解码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+
+  
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.css">
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+   <script>
+        var gitalk = new Gitalk({
+          clientID: '42138cdfb007b8368d81',
+          clientSecret: '317f1e9c0f7579358dcefb5402abe1bcc3e7388a',
+          repo: 'shitaibin.github.io',
+          owner: 'Shitaibin',
+          admin: ['Shitaibin'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+</body>
+</html>
