@@ -1,20 +1,20 @@
 ---
-title: Go是如何实现protobuf的编解码的：（2）源码
+title: Go是如何实现protobuf的编解码的(2)：源码
 date: 2019-08-27 20:27:13
 tags: ['Go', 'RPC']
 ---
 
-这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：
+这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：
 
-1. [Go是如何实现protobuf的编解码的：（1）原理](http://lessisbetter.site/2019/08/26/protobuf-in-go/)
-1. [Go是如何实现protobuf的编解码的：（2）源码](http://lessisbetter.site/2019/08/27/protobuf-in-go-2/)
+1. [Go是如何实现protobuf的编解码的(1): 原理](http://lessisbetter.site/2019/08/26/protobuf-in-go/)
+1. [Go是如何实现protobuf的编解码的(2): 源码](http://lessisbetter.site/2019/08/27/protobuf-in-go-2/)
 
 本编是第二篇。
 
 ## 前言
 
 上一篇文章[Go是如何实现protobuf的编解码的（1）：原理](http://lessisbetter.site/2019/08/26/protobuf-in-go/)
-中已经指出了Go语言数据和Protobuf数据的编解码是由包`github.com/golang/protobuf/proto`完成的，本编就来分析一下proto包是如何实现编解码的。
+中已经指出了**Go语言数据和Protobuf数据的编解码是由包`github.com/golang/protobuf/proto`完成的**，本编就来分析一下proto包是如何实现编解码的。
 
 ![](http://img.lessisbetter.site/2019-09-marshal-unmarshal.png)
 
@@ -27,7 +27,7 @@ tags: ['Go', 'RPC']
 
 ![](http://img.lessisbetter.site/2019-09-protobuf-marshal.png)
 
-**Go语言proto消息的编解码是由`"github.com/golang/protobuf/proto`包（后面简称proto包）完成的**，接下来先看编码，再看解码。
+接下来先看编码，再看解码。
 
 ### 编码
 
