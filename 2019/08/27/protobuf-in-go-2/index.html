@@ -102,20 +102,20 @@
 
 
 
-  <meta name="description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：  Go是如何实现protobuf的编解码的：（1）原理 Go是如何实现protobuf的编解码的：（2）源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，本编就">
+  <meta name="description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，">
 <meta name="keywords" content="Go,RPC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Go是如何实现protobuf的编解码的：（2）源码">
+<meta property="og:title" content="Go是如何实现protobuf的编解码的(2)：源码">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：  Go是如何实现protobuf的编解码的：（1）原理 Go是如何实现protobuf的编解码的：（2）源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，本编就">
+<meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-protobuf-marshal.png">
-<meta property="og:updated_time" content="2019-09-07T03:14:50.302Z">
+<meta property="og:updated_time" content="2019-09-07T03:19:50.097Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Go是如何实现protobuf的编解码的：（2）源码">
-<meta name="twitter:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：  Go是如何实现protobuf的编解码的：（1）原理 Go是如何实现protobuf的编解码的：（2）源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，本编就">
+<meta name="twitter:title" content="Go是如何实现protobuf的编解码的(2)：源码">
+<meta name="twitter:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
 
 
@@ -133,7 +133,7 @@
   };
 </script>
 
-  <title>Go是如何实现protobuf的编解码的：（2）源码 | Go语言充电站</title>
+  <title>Go是如何实现protobuf的编解码的(2)：源码 | Go语言充电站</title>
   
 
 
@@ -396,7 +396,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Go是如何实现protobuf的编解码的：（2）源码
+          <h1 class="post-title" itemprop="name headline">Go是如何实现protobuf的编解码的(2)：源码
 
               
             
@@ -439,7 +439,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-07 11:14:50" itemprop="dateModified" datetime="2019-09-07T11:14:50+08:00">2019-09-07</time>
+                <time title="修改时间：2019-09-07 11:19:50" itemprop="dateModified" datetime="2019-09-07T11:19:50+08:00">2019-09-07</time>
               
             
           </span>
@@ -480,13 +480,13 @@
       
 
       
-        <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码：</p>
+        <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：</p>
 <ol>
-<li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的：（1）原理</a></li>
-<li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的：（2）源码</a></li>
+<li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的(1): 原理</a></li>
+<li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的(2): 源码</a></li>
 </ol>
 <p>本编是第二篇。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇文章<a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的（1）：原理</a><br>中已经指出了Go语言数据和Protobuf数据的编解码是由包<code>github.com/golang/protobuf/proto</code>完成的，本编就来分析一下proto包是如何实现编解码的。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇文章<a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的（1）：原理</a><br>中已经指出了<strong>Go语言数据和Protobuf数据的编解码是由包<code>github.com/golang/protobuf/proto</code>完成的</strong>，本编就来分析一下proto包是如何实现编解码的。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png" alt=""></p>
 <h2 id="编解码原理"><a href="#编解码原理" class="headerlink" title="编解码原理"></a>编解码原理</h2><p>编解码包都有支持的编解码类型，我们暂且把这些类型称为底层类型，编解码的本质是：</p>
 <ol>
@@ -494,7 +494,7 @@
 <li>把一个结构体的字段，递归的拆解成底层类型，然后选择合适的函数进行编码或解码操作</li>
 </ol>
 <p><img src="http://img.lessisbetter.site/2019-09-protobuf-marshal.png" alt=""></p>
-<p><strong>Go语言proto消息的编解码是由<code>&quot;github.com/golang/protobuf/proto</code>包（后面简称proto包）完成的</strong>，接下来先看编码，再看解码。</p>
+<p>接下来先看编码，再看解码。</p>
 <h3 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h3><blockquote>
 <p>约定：以下所有的代码片，如果是request.pb.go或main.go中的代码，会在第一行标记文件名，否则都是proto包的源码。</p>
 </blockquote>
@@ -623,8 +623,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/26/protobuf-in-go/" rel="next" title="Go是如何实现protobuf的编解码的，从原理到源码">
-                <i class="fa fa-chevron-left"></i> Go是如何实现protobuf的编解码的，从原理到源码
+              <a href="/2019/08/26/protobuf-in-go/" rel="next" title="Go是如何实现protobuf的编解码的(1)：原理">
+                <i class="fa fa-chevron-left"></i> Go是如何实现protobuf的编解码的(1)：原理
               </a>
             
           </div>
