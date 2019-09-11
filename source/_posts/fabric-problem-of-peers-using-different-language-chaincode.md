@@ -1,5 +1,5 @@
 ---
-title: 不同peer使用不同语言链码的问题
+title: Fabric不同peer使用不同语言链码的问题
 date: 2019-09-03 11:50:31
 tags: ['区块链','Fabric']
 ---
@@ -107,3 +107,7 @@ root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#
 root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt  -c '{"Args":["invoke","a","b","50"]}'
 Error: endorsement failure during invoke. response: status:500 message:"failed to execute transaction aec5a0ccbcf86032774dc80220b90419d2816cc3f050a104c1cfcde55a2247cb: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch"
 ```
+
+## 文章
+
+另外，社区里的hucg编写了一篇源码文章：https://blog.csdn.net/love_feng_forever/article/details/100532324
