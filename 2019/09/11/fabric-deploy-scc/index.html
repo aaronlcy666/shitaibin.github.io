@@ -105,7 +105,7 @@
   <meta name="description" content="前言一份Peer节点启动的INFO级别日志如下，可以发现：  先注册了scc目录下的lscc, cscc, qscc，未注册chaincode目录下的lifecycle 然后又依次部署了上述scc。  本文的目的就是梳理出，系统链码的部署流程，这是peer节点提供背书、链码管理、配置、查询等功能的基础。 12345678910111213142019-09-09 07:52:09.409 UTC">
 <meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
-<meta property="og:title" content="详解Fabric部署系统链码SCC">
+<meta property="og:title" content="Fabric 1.4源码解读 2：系统链码SCC是如何部署的">
 <meta property="og:url" content="http://lessisbetter.site/2019/09/11/fabric-deploy-scc/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="前言一份Peer节点启动的INFO级别日志如下，可以发现：  先注册了scc目录下的lscc, cscc, qscc，未注册chaincode目录下的lifecycle 然后又依次部署了上述scc。  本文的目的就是梳理出，系统链码的部署流程，这是peer节点提供背书、链码管理、配置、查询等功能的基础。 12345678910111213142019-09-09 07:52:09.409 UTC">
@@ -113,9 +113,9 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-deploy-scc-flow.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-peer-cc-communication.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-deploycc-msg.png">
-<meta property="og:updated_time" content="2019-09-11T03:44:50.303Z">
+<meta property="og:updated_time" content="2019-09-11T06:28:37.317Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="详解Fabric部署系统链码SCC">
+<meta name="twitter:title" content="Fabric 1.4源码解读 2：系统链码SCC是如何部署的">
 <meta name="twitter:description" content="前言一份Peer节点启动的INFO级别日志如下，可以发现：  先注册了scc目录下的lscc, cscc, qscc，未注册chaincode目录下的lifecycle 然后又依次部署了上述scc。  本文的目的就是梳理出，系统链码的部署流程，这是peer节点提供背书、链码管理、配置、查询等功能的基础。 12345678910111213142019-09-09 07:52:09.409 UTC">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-deploy-scc-flow.png">
 
@@ -134,7 +134,7 @@
   };
 </script>
 
-  <title>详解Fabric部署系统链码SCC | Go语言充电站</title>
+  <title>Fabric 1.4源码解读 2：系统链码SCC是如何部署的 | Go语言充电站</title>
   
 
 
@@ -397,7 +397,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">详解Fabric部署系统链码SCC
+          <h1 class="post-title" itemprop="name headline">Fabric 1.4源码解读 2：系统链码SCC是如何部署的
 
               
             
@@ -423,7 +423,7 @@
                 
               
 
-              <time title="创建时间：2019-09-11 11:37:27 / 修改时间：11:44:50" itemprop="dateCreated datePublished" datetime="2019-09-11T11:37:27+08:00">2019-09-11</time>
+              <time title="创建时间：2019-09-11 11:37:27 / 修改时间：14:28:37" itemprop="dateCreated datePublished" datetime="2019-09-11T11:37:27+08:00">2019-09-11</time>
             
 
             
@@ -630,8 +630,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/06/fabric-source-endorser-policy-flow/" rel="next" title="Fabric源码解读 1：背书策略是怎么使用的">
-                <i class="fa fa-chevron-left"></i> Fabric源码解读 1：背书策略是怎么使用的
+              <a href="/2019/09/06/fabric-source-endorser-policy-flow/" rel="next" title="Fabric 1.4源码解读 1：背书策略是怎么使用的">
+                <i class="fa fa-chevron-left"></i> Fabric 1.4源码解读 1：背书策略是怎么使用的
               </a>
             
           </div>
