@@ -1,5 +1,5 @@
 ---
-title: Fabric不同peer使用不同语言链码的问题
+title: Fabric 1.4不同peer使用不同语言链码的问题
 date: 2019-09-03 11:50:31
 tags: ['区块链','Fabric']
 ---
