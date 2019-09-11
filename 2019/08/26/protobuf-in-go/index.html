@@ -102,20 +102,20 @@
 
 
 
-  <meta name="description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https://github.com">
+  <meta name="description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第一篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https://github.com">
 <meta name="keywords" content="Go,RPC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go是如何实现protobuf的编解码的(1)：原理">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/26/protobuf-in-go/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https://github.com">
+<meta property="og:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第一篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https://github.com">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-protoc.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
-<meta property="og:updated_time" content="2019-09-07T03:27:11.704Z">
+<meta property="og:updated_time" content="2019-09-07T03:30:58.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go是如何实现protobuf的编解码的(1)：原理">
-<meta name="twitter:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https://github.com">
+<meta name="twitter:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第一篇。 Protocol Buffers介绍Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：https://github.com">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-protoc.png">
 
 
@@ -439,7 +439,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-07 11:27:11" itemprop="dateModified" datetime="2019-09-07T11:27:11+08:00">2019-09-07</time>
+                <time title="修改时间：2019-09-07 11:30:58" itemprop="dateModified" datetime="2019-09-07T11:30:58+08:00">2019-09-07</time>
               
             
           </span>
@@ -485,7 +485,7 @@
 <li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的(1): 原理</a></li>
 <li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的(2): 源码</a></li>
 </ol>
-<p>本编是第二篇。</p>
+<p>本编是第一篇。</p>
 <h2 id="Protocol-Buffers介绍"><a href="#Protocol-Buffers介绍" class="headerlink" title="Protocol Buffers介绍"></a>Protocol Buffers介绍</h2><p>Protocol buffers缩写为protobuf，是由Google创造的一种用于序列化的标记语言，项目Github仓库：<a href="https://github.com/protocolbuffers/protobuf。" target="_blank" rel="noopener">https://github.com/protocolbuffers/protobuf。</a></p>
 <p>Protobuf主要用于不同的编程语言的协作RPC场景下，定义需要序列化的数据格式。Protobuf本质上仅仅是<strong>一种用于交互的结构式定义</strong>，从功能上<strong>和XML、JSON</strong>等各种其他的交互形式都<strong>并无本质不同，只负责定义不负责数据编解码</strong>。</p>
 <p>其官方介绍如下：</p>
@@ -685,7 +685,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-count">102</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
