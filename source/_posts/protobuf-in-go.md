@@ -9,7 +9,7 @@ tags: ['Go', 'RPC']
 1. [Go是如何实现protobuf的编解码的(1): 原理](http://lessisbetter.site/2019/08/26/protobuf-in-go/)
 1. [Go是如何实现protobuf的编解码的(2): 源码](http://lessisbetter.site/2019/08/27/protobuf-in-go-2/)
 
-本编是第二篇。
+本编是第一篇。
 
 ## Protocol Buffers介绍
 
