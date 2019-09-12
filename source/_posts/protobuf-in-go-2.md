@@ -878,7 +878,7 @@ func unmarshalBoolValue(b []byte, f pointer, w int) ([]byte, error) {
 本文分析了Go语言protobuf数据的序列化和反序列过程，可以简要概括为：
 
 1. `proto.Marshal`和`proto.Unmarshal`会调用`*.pb.go`中自动生成的Wrapper函数，Wrapper函数会调用`InternalMessageInfo`进行(反)序列化，然后才步入(反)序列化的正题
-1. 首先获取要目标类型的(um)marshal信息u，如果u没有初始化，则进行初始化，即设置好结构体每个字段的(反)序列化函数，以及其他信息
+1. 首先获取要目标类型的(un)marshal信息u，如果u没有初始化，则进行初始化，即设置好结构体每个字段的(反)序列化函数，以及其他信息
 1. 遍历结构体的每个字段，使用u中的信息为每个字段进行编码，生成序列化的结果，或进行解码，给结构体成员进行赋值
 
 ## 参考文章
