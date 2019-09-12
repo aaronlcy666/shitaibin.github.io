@@ -112,7 +112,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-marshal-unmarshal.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-protobuf-marshal.png">
-<meta property="og:updated_time" content="2019-09-07T03:19:50.097Z">
+<meta property="og:updated_time" content="2019-09-12T09:46:55.859Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go是如何实现protobuf的编解码的(2)：源码">
 <meta name="twitter:description" content="这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：  Go是如何实现protobuf的编解码的(1): 原理 Go是如何实现protobuf的编解码的(2): 源码  本编是第二篇。 前言上一篇文章Go是如何实现protobuf的编解码的（1）：原理中已经指出了Go语言数据和Protobuf数据的编解码是由包github.com/golang/protobuf/proto完成的，">
@@ -439,7 +439,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-07 11:19:50" itemprop="dateModified" datetime="2019-09-07T11:19:50+08:00">2019-09-07</time>
+                <time title="修改时间：2019-09-12 17:46:55" itemprop="dateModified" datetime="2019-09-12T17:46:55+08:00">2019-09-12</time>
               
             
           </span>
@@ -567,7 +567,7 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文分析了Go语言protobuf数据的序列化和反序列过程，可以简要概括为：</p>
 <ol>
 <li><code>proto.Marshal</code>和<code>proto.Unmarshal</code>会调用<code>*.pb.go</code>中自动生成的Wrapper函数，Wrapper函数会调用<code>InternalMessageInfo</code>进行(反)序列化，然后才步入(反)序列化的正题</li>
-<li>首先获取要目标类型的(um)marshal信息u，如果u没有初始化，则进行初始化，即设置好结构体每个字段的(反)序列化函数，以及其他信息</li>
+<li>首先获取要目标类型的(un)marshal信息u，如果u没有初始化，则进行初始化，即设置好结构体每个字段的(反)序列化函数，以及其他信息</li>
 <li>遍历结构体的每个字段，使用u中的信息为每个字段进行编码，生成序列化的结果，或进行解码，给结构体成员进行赋值</li>
 </ol>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p>以下参考文章都值得阅读：</p>
