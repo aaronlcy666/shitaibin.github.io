@@ -3392,7 +3392,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+                <time title="修改时间：2019-09-17 17:59:41" itemprop="dateModified" datetime="2019-09-17T17:59:41+08:00">2019-09-17</time>
               
             
           </span>
@@ -3619,7 +3619,7 @@
 <p>这2个东西名称一直有点绕，建议直接把empty理解为没有对象空间就好了。</p>
 <p><img src="http://img.lessisbetter.site/2019-07-go-mcentral.png" alt="mcentral"></p>
 <p><em>实际代码中每1个span class对应1个mcentral，图里把所有mcentral抽象成1个整体了。</em></p>
-<p>mcache向mcentral要span时，mcentral会先从<code>nonempty</code>搜索满足条件的span，如果每找到再从<code>emtpy</code>搜索满足条件的span，然后把找到的span交给mcache。</p>
+<p>mcache向mcentral要span时，mcentral会先从<code>nonempty</code>搜索满足条件的span，如果没有找到再从<code>emtpy</code>搜索满足条件的span，然后把找到的span交给mcache。</p>
 <h5 id="mheap的span管理"><a href="#mheap的span管理" class="headerlink" title="mheap的span管理"></a>mheap的span管理</h5><p>mheap里保存了2棵<strong>二叉排序树</strong>，按span的page数量进行排序：</p>
 <ol>
 <li><code>free</code>：free中保存的span是空闲并且非垃圾回收的span。</li>
