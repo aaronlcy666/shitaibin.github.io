@@ -383,7 +383,7 @@ mcentral和mcache一样，都是0~133这134个span class级别，但每个级别
 
 *实际代码中每1个span class对应1个mcentral，图里把所有mcentral抽象成1个整体了。*
 
-mcache向mcentral要span时，mcentral会先从`nonempty`搜索满足条件的span，如果每找到再从`emtpy`搜索满足条件的span，然后把找到的span交给mcache。
+mcache向mcentral要span时，mcentral会先从`nonempty`搜索满足条件的span，如果没有找到再从`emtpy`搜索满足条件的span，然后把找到的span交给mcache。
 
 ##### mheap的span管理
 
