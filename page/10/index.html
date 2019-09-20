@@ -376,6 +376,172 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/12/27/things-about-github/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2015/12/27/things-about-github/" class="post-title-link" itemprop="url">Github二三事</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2015-12-27 14:40:01" itemprop="dateCreated datePublished" datetime="2015-12-27T14:40:01+08:00">2015-12-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>总会有些疑问，也总有原因，也必然有解决方案。</p>
+</blockquote>
+<h2 id="提交者显示unknown"><a href="#提交者显示unknown" class="headerlink" title="提交者显示unknown"></a>提交者显示unknown</h2><p>明明都是我提交的，怎么显示unkonw commit呢？</p>
+<p><img src="http://img.lessisbetter.site/github-unkonw-commit.png" alt="unknown commit"></p>
+<p>原因：本地Git配置的邮箱与Github上面配置的邮箱不一致，具体原因是大小写导致的，本地中有大写字母，而Github上面全为小写。</p>
+<h2 id="无法commit或add已经modified的文件-夹"><a href="#无法commit或add已经modified的文件-夹" class="headerlink" title="无法commit或add已经modified的文件(夹)"></a>无法commit或add已经modified的文件(夹)</h2><p>明明显示修改了，但就是提交不上去，原因是那个目录是子模块，有自己的git信息。</p>
+<p>参考资料：<a href="http://stackoverflow.com/questions/5186371/problem-with-modified-files-showing-up-in-git-but-not-updating" target="_blank" rel="noopener">时光机1号</a>，<a href="http://stackoverflow.com/questions/7726131/git-add-a-is-not-adding-all-modified-files-in-directories" target="_blank" rel="noopener">时光机2号</a>。</p>
+<h2 id="http代理带来的问题"><a href="#http代理带来的问题" class="headerlink" title="http代理带来的问题"></a>http代理带来的问题</h2><p>在push操作的时候出现了这个问题：<code>error: RPC failed; result=56, HTTP code = 0</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git push ...</span><br><span class="line">error: RPC failed; result=56, HTTP code = 200</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">Everything up-to-date</span><br></pre></td></tr></table></figure>
+<p>原因：git设置的http的缓冲区太小了。</p>
+<p>调大即可解决：<code>git config http.postBuffer 524288000</code>。</p>
+<p><a href="https://flyingtomoon.com/2013/10/02/using-bitbucket-as-assignment-submission-system-for-the-courses/" target="_blank" rel="noopener">参考资料</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/12/22/python-unittest-in-action/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1837,176 +2003,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2015/05/02/Hexo-reference/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2015/05/02/Hexo-reference/" class="post-title-link" itemprop="url">Hexo 搭建博客参考资料列表</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2015-05-02 21:41:34" itemprop="dateCreated datePublished" datetime="2015-05-02T21:41:34+08:00">2015-05-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>事总得一步一步来，记录一些参考资料。</p>
-</blockquote>
-<h1 id="参考资料列表"><a href="#参考资料列表" class="headerlink" title="参考资料列表"></a>参考资料列表</h1><ol>
-<li><a href="http://zespia.tw/blog/2012/10/11/hexo-debut/" target="_blank" rel="noopener">Hexo 主人Tommy吐槽</a></li>
-<li><a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="noopener">安装 Hexo</a></li>
-<li>评论系统: <a href="http://zipperary.com/2013/05/30/hexo-guide-4/" target="_blank" rel="noopener">参考资料1</a>，<a href="http://zhidao.baidu.com/link?url=zE0f91IjLHKzR5FEr_-aMwL6SrHSSfltLyKaTErrZ_DTcqan-xQu2IBGMo52ntBLz-vvsjO4zkPckiXBBVptbb6WR3dGu7nq_a5AFy3GKBW" target="_blank" rel="noopener">参考资料2</a></li>
-<li><a href="http://vkki.me/2014/02/04/beautify-your-hexo/" target="_blank" rel="noopener">修改字体</a></li>
-<li><a href="http://ju.outofmemory.cn/entry/79930" target="_blank" rel="noopener">网页加载慢</a></li>
-<li><a href="http://www.twiceyuan.com/2015/01/12/%E4%B8%BAHexo%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95/" target="_blank" rel="noopener">文章目录</a></li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2015/05/02/Hexo-reference/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2058,7 +2054,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">102</span>
+                    <span class="site-state-item-count">103</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
