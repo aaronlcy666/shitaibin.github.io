@@ -102,7 +102,7 @@ type Plugin interface {
 
 当前验证插件有2种实现，`TxValidatorV1_2`和`V1_3Validation`,`Validate`还从context取出了序列化的背书策略，vscc会调用PolicyEvalutor交易的背书是否满足背书策略。
 
-```
+```go
 func (v *DefaultValidation) Validate(block *common.Block, namespace string, txPosition int, actionPosition int, contextData ...validation.ContextDatum) error {
 	if len(contextData) == 0 {
 		logger.Panicf("Expected to receive policy bytes in context data")
