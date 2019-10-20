@@ -421,7 +421,7 @@
                 
               
 
-              <time title="创建时间：2019-10-20 11:13:11 / 修改时间：11:38:06" itemprop="dateCreated datePublished" datetime="2019-10-20T11:13:11+08:00">2019-10-20</time>
+              <time title="创建时间：2019-10-20 11:13:11 / 修改时间：11:53:58" itemprop="dateCreated datePublished" datetime="2019-10-20T11:13:11+08:00">2019-10-20</time>
             
 
             
@@ -471,7 +471,7 @@
 <p>虽然划分成了3部分，但每个子话题依然很大，依然难写，依然大而不全，每一篇文章都会有宏观与细节，这样的大而不全对于不了解GC的朋友是好事，即可以有宏观上的认识，又可以有重要细节的感知。</p>
 <p>这篇文章就是第一个话题：Go垃圾回收历史和原理，希望各位有所收获。</p>
 <h2 id="Go语言垃圾回收简介"><a href="#Go语言垃圾回收简介" class="headerlink" title="Go语言垃圾回收简介"></a>Go语言垃圾回收简介</h2><p><strong>垃圾</strong>指内存中不再使用的内存区域，自动发现与释放这种内存区域的过程就是垃圾回收。</p>
-<p>内存资源是有限的，而垃圾回收可以让内存重复使用，并且减轻开发者对内存管理的复旦，减少程序中的内存问题。</p>
+<p>内存资源是有限的，而垃圾回收可以让内存重复使用，并且减轻开发者对内存管理的负担，减少程序中的内存问题。</p>
 <p>以下是从网上对垃圾回收的2个定义：</p>
 <blockquote>
 <ol>
@@ -544,7 +544,7 @@
 <p><img src="http://img.lessisbetter.site/2019-10-obj-traced.png" alt="Tracing GC"></p>
 <h3 id="增量式垃圾回收思想"><a href="#增量式垃圾回收思想" class="headerlink" title="增量式垃圾回收思想"></a>增量式垃圾回收思想</h3><p>垃圾回收离不开STW，STW是Stop The World，指会暂停所有正在执行的用户线程/协程，进行垃圾回收的操作，STW为垃圾对象的扫描和标记提供了必要的条件。</p>
 <p><strong>非增量式垃圾</strong>回收需要STW，在STW期间完成<strong>所有</strong>垃圾对象的标记，STW结束后慢慢的执行垃圾对象的清理。</p>
-<p><strong>增量式垃圾回收</strong>也需要STW，在STW期间完成<strong>部分</strong>垃圾对象的标记，然后结束STW继续执行用户线程，一段时间后再次执行STW再标记<strong>部分</strong>垃圾对象，这个过程会多吃重复执行，直到<strong>所有</strong>垃圾对象标记完成。</p>
+<p><strong>增量式垃圾回收</strong>也需要STW，在STW期间完成<strong>部分</strong>垃圾对象的标记，然后结束STW继续执行用户线程，一段时间后再次执行STW再标记<strong>部分</strong>垃圾对象，这个过程会多次重复执行，直到<strong>所有</strong>垃圾对象标记完成。</p>
 <p><img src="http://img.lessisbetter.site/2019-10-increment-gc.png" alt="Increment GC"></p>
 <p>GC算法有3大性能指标：吞吐量、最大暂停时间（最大的STW占时）、内存占用率。<strong>增量式垃圾回收不能提高吞吐量，但和非增量式垃圾回收相比，每次STW的时间更短，能够降低最大暂停时间</strong>，就是Go每个版本Release Note中提到的GC延迟、GC暂停时间。</p>
 <p>下图是非增量式GC和增量式GC的对比：</p>
