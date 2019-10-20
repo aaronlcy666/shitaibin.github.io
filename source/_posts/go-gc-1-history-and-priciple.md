@@ -8,10 +8,10 @@ tags: ['Go']
 
 新老朋友好久不见，我是大彬。今天为大家带来的分享是Go语言垃圾回收，这篇文章筹划的了很久，因为GC也是很强大的一个话题，关于GC已经有很多篇论文还有书籍，想通过一篇文章来介绍Go语言的垃圾回收是困难的，所以决定分几篇文章来完成Go语言垃圾回收的相关话题：
 
-1. Go垃圾回收 (1): 历史和原理
-1. Go垃圾回收 (2): GC主要流程
-1. Go垃圾回收 (3): 源码分析
-1. Go垃圾回收 (4): GC对性能的影响与优化
+1. Go垃圾回收 1: 历史和原理
+1. Go垃圾回收 2: GC主要流程
+1. Go垃圾回收 3: 源码分析
+1. Go垃圾回收 4: GC对性能的影响与优化
 
 虽然划分成了3部分，但每个子话题依然很大，依然难写，依然大而不全，每一篇文章都会有宏观与细节，这样的大而不全对于不了解GC的朋友是好事，即可以有宏观上的认识，又可以有重要细节的感知。
 
@@ -332,11 +332,13 @@ Go没有使用compaction来解决碎片问题，而是使用了TCMalloc来减缓
 
   消除Go垃圾回收中第二次STW的re-scanning的提案。
 
-### 个人博客：
-
-> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
-> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
-> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[here](here)
 
 [gotalk]: https://talks.golang.org/2015/go-gc.pdf "Go talk: go1.5"
 [go-memory-alloc]: https://mp.weixin.qq.com/s/3gGbJaeuvx4klqcv34hmmw "Go内存分配那些事，就这么简单!"
+
+> 1. 如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。
+> 2. 本文作者：[大彬](http://lessisbetter.site/about/)
+> 3. 如果喜欢本文，随意转载，但请保留此原文链接：[http://lessisbetter.site/2019/10/20/go-gc-1-history-and-priciple/](http://lessisbetter.site/2019/10/20/go-gc-1-history-and-priciple/)
+
+<div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div>
+<img src="http://img.lessisbetter.site/blog-gzh.png" style="border:0"  align=center />
