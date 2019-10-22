@@ -288,9 +288,9 @@ Go垃圾回收不像Java垃圾回收那样，有很多参数可供调节，Go为
 
 * [Go gc](https://engineering.linecorp.com/en/blog/go-gc/)
 
-这篇文章做了Go和Java GC的简单对比表。看起来Go Gc比JVM GC少很多东西，但这其中解释了一些理由。
+  这篇文章做了Go和Java GC的简单对比表。看起来Go Gc比JVM GC少很多东西，但这其中解释了一些理由。
 
-Go没有使用compaction来解决碎片问题，而是使用了TCMalloc来减缓碎片和优化分配。
+  Go没有使用compaction来解决碎片问题，而是使用了TCMalloc来减缓碎片和优化分配。
 
 |                   | JAVA (JAVA8 HOTSPOT VM)                                 | GO                  |
 | ----------------- | ------------------------------------------------------- | ------------------- |
@@ -316,7 +316,7 @@ Go没有使用compaction来解决碎片问题，而是使用了TCMalloc来减缓
 
   这篇文章对GC的历史、原理、goroutine栈，Go GC历史，基础原理，触发时间都有介绍，是一篇大而全的文章，但每个部分确实也都不详细，值得再参考。
 
-[Golang 垃圾回收剖析](http://legendtkl.com/2017/04/28/golang-gc/)
+* [Golang 垃圾回收剖析](http://legendtkl.com/2017/04/28/golang-gc/)
 
 
 * [Golang源码探索(三) GC的实现原理](https://www.cnblogs.com/zkweb/p/7880099.html)
