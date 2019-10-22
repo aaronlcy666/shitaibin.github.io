@@ -121,7 +121,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-10-normal-vs-incremnt.png">
 <meta property="og:image" content="https://dt-cdn.net/images/the-different-gc-algorithms-510-ed7afde0fb.png">
 <meta property="og:image" content="http://img.lessisbetter.site/blog-gzh.png">
-<meta property="og:updated_time" content="2019-10-20T03:53:58.765Z">
+<meta property="og:updated_time" content="2019-10-22T00:48:45.333Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go垃圾回收 1：历史和原理">
 <meta name="twitter:description" content="新老朋友好久不见，我是大彬。今天为大家带来的分享是Go语言垃圾回收，这篇文章筹划的了很久，因为GC也是很强大的一个话题，关于GC已经有很多篇论文还有书籍，想通过一篇文章来介绍Go语言的垃圾回收是困难的，所以决定分几篇文章来完成Go语言垃圾回收的相关话题：  Go垃圾回收 1: 历史和原理 Go垃圾回收 2: GC主要流程 Go垃圾回收 3: 源码分析 Go垃圾回收 4: GC对性能的影响与优化">
@@ -431,12 +431,24 @@
                 
               
 
-              <time title="创建时间：2019-10-20 11:13:11 / 修改时间：11:53:58" itemprop="dateCreated datePublished" datetime="2019-10-20T11:13:11+08:00">2019-10-20</time>
+              <time title="创建时间：2019-10-20 11:13:11" itemprop="dateCreated datePublished" datetime="2019-10-20T11:13:11+08:00">2019-10-20</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 08:48:45" itemprop="dateModified" datetime="2019-10-22T08:48:45+08:00">2019-10-22</time>
               
             
           </span>
@@ -648,10 +660,10 @@
 <p>这个系列文章介绍了垃圾回收的概念、策略，以及三色标记等增量回收，以及分代收集。</p>
 </li>
 <li><p><a href="https://engineering.linecorp.com/en/blog/go-gc/" target="_blank" rel="noopener">Go gc</a></p>
-</li>
-</ul>
 <p>这篇文章做了Go和Java GC的简单对比表。看起来Go Gc比JVM GC少很多东西，但这其中解释了一些理由。</p>
 <p>Go没有使用compaction来解决碎片问题，而是使用了TCMalloc来减缓碎片和优化分配。</p>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -696,8 +708,9 @@
 <li><p><a href="https://blog.wangriyu.wang/2019/04-Golang-GC.html" target="_blank" rel="noopener">学习 Golang GC</a></p>
 <p>这篇文章对GC的历史、原理、goroutine栈，Go GC历史，基础原理，触发时间都有介绍，是一篇大而全的文章，但每个部分确实也都不详细，值得再参考。</p>
 </li>
+<li><p><a href="http://legendtkl.com/2017/04/28/golang-gc/" target="_blank" rel="noopener">Golang 垃圾回收剖析</a></p>
+</li>
 </ul>
-<p><a href="http://legendtkl.com/2017/04/28/golang-gc/" target="_blank" rel="noopener">Golang 垃圾回收剖析</a></p>
 <ul>
 <li><p><a href="https://www.cnblogs.com/zkweb/p/7880099.html" target="_blank" rel="noopener">Golang源码探索(三) GC的实现原理</a></p>
 <p>Go垃圾回收的绝佳源码文章，图文并茂，从内存分配，讲到垃圾回收。</p>
