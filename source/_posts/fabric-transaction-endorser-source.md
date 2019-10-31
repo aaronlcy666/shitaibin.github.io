@@ -23,7 +23,7 @@ tags: ['Fabric', '区块链']
 上图，展示了客户端、Peer，以及链码容器 3大主体在交易流程中的背书过程，请关注一下Peer中的 Handler，它负责和链码容器交互。
 
 
-### 交易背书流程
+### 提案背书流程
 
 ![](http://img.lessisbetter.site/2019-07-chaincode_swimlane.png)
 
@@ -31,6 +31,7 @@ tags: ['Fabric', '区块链']
 
 如果了解过Chaincode，你会知道 Shim 是链码容器和 Peer 交互所依赖的模块。
 
+最后推荐一份保华大佬整理的 [Peer 提案背书过程](https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/peer_endorse.md)，是读源码前，必读的资料。虽然精简，但把重要的核心流程都串联起来了。
 
 ## 源码分析
 
