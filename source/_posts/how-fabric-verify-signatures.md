@@ -4,8 +4,6 @@ date: 2019-11-10 21:23:36
 tags: ['Fabric', '区块链']
 ---
 
-
-
 ## 理论知识
 
 如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的[数字签名是什么？](https://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html)。
@@ -56,7 +54,7 @@ tls目录，为TLS通信相关的证书：
 - Proposal：提案
 - Transaction：交易
 
-所以 Proposal 和 Transaction 都需要使用数字签名进行保护。
+所以 Proposal 和 Transaction 都需要使用数字签名进行保护，它们相关的消息中，都包含了发送方的身份信息：mspid、证书（证书中实际包含了公钥）。
 
 提案的实际消息是 SignedProposal，其中包含了：
 - 数字签名：Signature
@@ -73,6 +71,9 @@ tls目录，为TLS通信相关的证书：
 ![Signed transaction](http://img.lessisbetter.site/2019-11-tx_envelop.jpeg)
 > 图来自《区块链原理、设计与应用》，为升级链码的交易Envelope结构。
 
+在验证消息的签名时，会从中提取出数字签名Signature，身份信息（证书、公钥）和被签名消息体，完成以下验证：
+- 使用证书验证发送方的身份，发送方是否属于它所在的组织，以及发送方的公钥没有修改和替换
+- 使用公钥验证消息是否为发送方签名，并且消息没有被修改
 
 ## 验证签名的函数
 
@@ -421,6 +422,105 @@ func (id *identity) Verify(msg []byte, sig []byte) error {
 	}
 
 	return nil
+}
+```
+
+## 解密SignatureHeader
+
+Fabric 使用 `SignatureHeader` 保存发送方的身份信息，Creator即为序列化后的信息。
+
+`SignatureHeaderMaker` 接口定义了创建一个 `SignatureHeader` 的方法，搜索起来实现该接口的结构体很多，本质上只有2个：`mspSigner` 和 `SignatureHeaderCreator`。
+
+```go
+// SignatureHeaderMaker creates a new SignatureHeader
+type SignatureHeaderMaker interface {
+	// NewSignatureHeader creates a SignatureHeader with the correct signing identity and a valid nonce
+	NewSignatureHeader() (*cb.SignatureHeader, error)
+}
+
+// localmsp
+func (s *mspSigner) NewSignatureHeader() (*cb.SignatureHeader, error) {}
+
+// crypto
+func (bs *SignatureHeaderCreator) NewSignatureHeader() (*cb.SignatureHeader, error){}
+```
+
+两个实现本质上是一样的，以 `mspSigner` 为例进行介绍。首先获取实现SigningIdentity接口的实例，然后调用`Serialize`得到序列化后的身份信息，再随机生成一个Nonce，创建出`SignatureHeader`。
+
+```go
+// NewSignatureHeader creates a SignatureHeader with the correct signing identity and a valid nonce
+func (s *mspSigner) NewSignatureHeader() (*cb.SignatureHeader, error) {
+	// 获得SigningIdentity接口实例
+	signer, err := mspmgmt.GetLocalMSP().GetDefaultSigningIdentity()
+	if err != nil {
+		return nil, fmt.Errorf("Failed getting MSP-based signer [%s]", err)
+	}
+
+	// 序列化得到creator
+	creatorIdentityRaw, err := signer.Serialize()
+	if err != nil {
+		return nil, fmt.Errorf("Failed serializing creator public identity [%s]", err)
+	}
+
+	// 获取一个随机nonce
+	nonce, err := crypto.GetRandomNonce()
+	if err != nil {
+		return nil, fmt.Errorf("Failed creating nonce [%s]", err)
+	}
+
+	sh := &cb.SignatureHeader{}
+	sh.Creator = creatorIdentityRaw
+	sh.Nonce = nonce
+
+	return sh, nil
+}
+```
+
+`SigningIdentity`接口包含了`Identity`接口，Identity声明了跟证书相关的方法，SigningIdentity则增加了对消息签名的函数`Sign`。
+
+```go
+type SigningIdentity interface {
+
+	// Extends Identity
+	Identity
+
+	// Sign the message
+	Sign(msg []byte) ([]byte, error)
+
+	// GetPublicVersion returns the public parts of this identity
+	GetPublicVersion() Identity
+}
+
+type Identity interface {
+    ...
+	// Serialize converts an identity to bytes
+	Serialize() ([]byte, error)
+	...
+}
+```
+
+`Serialize`的实现，实际只包含了证书和MSPID，说明了**消息中携带的只包含MSPID和证书作为身份信息**，而不是`signingidentity`的所有字段（signingidentity实现了SigningIdentity接口）。
+
+```go
+// Serialize returns a byte array representation of this identity
+func (id *identity) Serialize() ([]byte, error) {
+	// mspIdentityLogger.Infof("Serializing identity %s", id.id)
+
+	// Raw格式证书
+	pb := &pem.Block{Bytes: id.cert.Raw, Type: "CERTIFICATE"}
+	pemBytes := pem.EncodeToMemory(pb)
+	if pemBytes == nil {
+		return nil, errors.New("encoding of identity failed")
+	}
+
+	// 使用MSPID和序列化后的证书，再次序列化得到身份信息 
+	sId := &msp.SerializedIdentity{Mspid: id.id.Mspid, IdBytes: pemBytes}
+	idBytes, err := proto.Marshal(sId)
+	if err != nil {
+		return nil, errors.Wrapf(err, "could not marshal a SerializedIdentity structure for identity %s", id.id)
+	}
+
+	return idBytes, nil
 }
 ```
 
