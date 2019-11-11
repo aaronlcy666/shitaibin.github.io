@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next pisces" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
+<meta name="keywords" content="区块链,Fabric">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
+<meta property="og:url" content="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-signed_proposal.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-tx_envelop.jpeg">
+<meta property="og:updated_time" content="2019-11-11T03:26:30.408Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
+<meta name="twitter:description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-11-signed_proposal.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Fabric 1.4源码解读 5：Fabric是如何验证签名的？ | Go语言充电站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Go语言充电站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">大彬 less is better</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-主页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />主页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签云">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-专题文章">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/subject/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br />专题文章</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-文章列表">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-大牛博客">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blogs/" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />大牛博客</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <a href="https://github.com/Shitaibin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Fabric 1.4源码解读 5：Fabric是如何验证签名的？
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-10 21:23:36" itemprop="dateCreated datePublished" datetime="2019-11-10T21:23:36+08:00">2019-11-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-11 11:26:30" itemprop="dateModified" datetime="2019-11-11T11:26:30+08:00">2019-11-11</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="理论知识"><a href="#理论知识" class="headerlink" title="理论知识"></a>理论知识</h2><p>如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的<a href="https://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html" target="_blank" rel="noopener">数字签名是什么？</a>。</p>
+<h2 id="Fabric证书和密钥文件"><a href="#Fabric证书和密钥文件" class="headerlink" title="Fabric证书和密钥文件"></a>Fabric证书和密钥文件</h2><p>使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) ✗ tree crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com</span><br><span class="line">crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com</span><br><span class="line">├── msp</span><br><span class="line">│   ├── admincerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   ├── cacerts</span><br><span class="line">│   │   └── ca.org1.example.com-cert.pem</span><br><span class="line">│   ├── keystore</span><br><span class="line">│   │   └── f9f3dddb7fcc40086de6d5ae77f1481abbb99bff7a74839b950720d3dca0d8ee_sk</span><br><span class="line">│   ├── signcerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   └── tlscacerts</span><br><span class="line">│       └── tlsca.org1.example.com-cert.pem</span><br><span class="line">└── tls</span><br><span class="line">    ├── ca.crt</span><br><span class="line">    ├── client.crt</span><br><span class="line">    └── client.key</span><br></pre></td></tr></table></figure>
+<p>msp目录，为Admin的身份信息：</p>
+<ul>
+<li>admincerts：组织管理员的身份验证证书。</li>
+<li>cacerts：组织的根证书。</li>
+<li>keystore：该用户的私钥，用来对消息签名。</li>
+<li>signcerts：该用户的身份验证证书，被组织根证书签名。</li>
+<li>tlscacerts：TLS通信用的身份证书，为组织的TLS证书。</li>
+</ul>
+<p>tls目录，为TLS通信相关的证书：</p>
+<ul>
+<li>ca.crt：组织根证书</li>
+<li>client.crt：验证当前用户身份的证书，当前为验证管理员的证书</li>
+<li>client.key：当前用户的身份私钥，用来签名</li>
+</ul>
+<h2 id="整体逻辑"><a href="#整体逻辑" class="headerlink" title="整体逻辑"></a>整体逻辑</h2><p>交易是区块链的核心，一切状态的转移都是一条交易，交易的真伪需要使用数字签名进行保证。</p>
+<p>在Fabric中，交易涉及两个概念：</p>
+<ul>
+<li>Proposal：提案</li>
+<li>Transaction：交易</li>
+</ul>
+<p>所以 Proposal 和 Transaction 都需要使用数字签名进行保护。</p>
+<p>提案的实际消息是 SignedProposal，其中包含了：</p>
+<ul>
+<li>数字签名：Signature</li>
+<li>证书、公钥等签名者身份信息：ProposalBytes.Proposal.Header.SignatureHeader.Creator</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-signed_proposal.png" alt="signed_proposal"></p>
+<blockquote>
+<p>图来自杨保华的<a href="https://github.com/yeasy/hyperledger_code_fabric" target="_blank" rel="noopener">hyperledger_code_fabric</a> 。</p>
+</blockquote>
+<p>交易中最重要的是Envelope结构体，SDK向Orderer提交交易时，会发送Envelope消息，它包含了：</p>
+<ul>
+<li>数字签名：Signature</li>
+<li>交易发送方的身份信息：Payload.Header.SignatureHeader.Creator</li>
+<li>可选背书节点的身份信息，不同的交易类型，Data包含了不同的信息，如果是需要背书的，可以包含背书的信息、签名和身份信息：Payload.Data.SignedChainccodeDeploymentSpec.OwnerEndorsements.signingidentity</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-tx_envelop.jpeg" alt="Signed transaction"></p>
+<blockquote>
+<p>图来自《区块链原理、设计与应用》，为升级链码的交易Envelope结构。</p>
+</blockquote>
+<h2 id="验证签名的函数"><a href="#验证签名的函数" class="headerlink" title="验证签名的函数"></a>验证签名的函数</h2><p><code>core/common/validation/msgvalidation.go</code> 提供了2验证消息签名的函数，用来验证Proposal和Transaction，它们会调用相同的函数<code>checkSignatureFromCreator</code>进行数字签名的验证。</p>
+<h3 id="验证Porposal签名"><a href="#验证Porposal签名" class="headerlink" title="验证Porposal签名"></a>验证Porposal签名</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValidateProposalMessage</span><span class="params">(signedProp *pb.SignedProposal)</span> <span class="params">(*pb.Proposal, *common.Header, *pb.ChaincodeHeaderExtension, error)</span></span> &#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 从SignatureHeader交易客户端的签名</span></span><br><span class="line">	<span class="comment">// validate the signature</span></span><br><span class="line">	err = checkSignatureFromCreator(shdr.Creator, signedProp.Signature, signedProp.ProposalBytes, chdr.ChannelId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// log the exact message on the peer but return a generic error message to</span></span><br><span class="line">		<span class="comment">// avoid malicious users scanning for channels</span></span><br><span class="line">		putilsLogger.Warningf(<span class="string">"channel [%s]: %s"</span>, chdr.ChannelId, err)</span><br><span class="line">		sId := &amp;msp.SerializedIdentity&#123;&#125;</span><br><span class="line">		err := proto.Unmarshal(shdr.Creator, sId)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="comment">// log the error here as well but still only return the generic error</span></span><br><span class="line">			err = errors.Wrap(err, <span class="string">"could not deserialize a SerializedIdentity"</span>)</span><br><span class="line">			putilsLogger.Warningf(<span class="string">"channel [%s]: %s"</span>, chdr.ChannelId, err)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">nil</span>, <span class="literal">nil</span>, errors.Errorf(<span class="string">"access denied: channel [%s] creator org [%s]"</span>, chdr.ChannelId, sId.Mspid)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="验证Transaction签名"><a href="#验证Transaction签名" class="headerlink" title="验证Transaction签名"></a>验证Transaction签名</h3><p>Commit阶段会对交易进行验证，会调用此函数，该函数完成了对Transaction的验证，包含发送方数字签名的验证。</p>
+<p>交易是包含背书结果和背书签名的，背书相关的验证并不包含在此，而是专门的背书验证，具体请看<a href="http://lessisbetter.site/2019/09/06/fabric-source-endorser-policy-flow/">Fabric 1.4源码解读 1：背书策略是怎么使用的</a>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ValidateTransaction checks that the transaction envelope is properly formed</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValidateTransaction</span><span class="params">(e *common.Envelope, c channelconfig.ApplicationCapabilities)</span> <span class="params">(*common.Payload, pb.TxValidationCode)</span></span> &#123;</span><br><span class="line">	putilsLogger.Debugf(<span class="string">"ValidateTransactionEnvelope starts for envelope %p"</span>, e)</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// validate the header</span></span><br><span class="line">	chdr, shdr, err := validateCommonHeader(payload.Header)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		putilsLogger.Errorf(<span class="string">"validateCommonHeader returns err %s"</span>, err)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, pb.TxValidationCode_BAD_COMMON_HEADER</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// validate the signature in the envelope</span></span><br><span class="line">	err = checkSignatureFromCreator(shdr.Creator, e.Signature, e.Payload, chdr.ChannelId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		putilsLogger.Errorf(<span class="string">"checkSignatureFromCreator returns err %s"</span>, err)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, pb.TxValidationCode_BAD_CREATOR_SIGNATURE</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// continue the validation in a way that depends on the type specified in the header</span></span><br><span class="line">	<span class="keyword">switch</span> common.HeaderType(chdr.Type) &#123;</span><br><span class="line">	<span class="keyword">case</span> common.HeaderType_ENDORSER_TRANSACTION:</span><br><span class="line">		<span class="comment">// Verify that the transaction ID has been computed properly.</span></span><br><span class="line">		<span class="comment">// This check is needed to ensure that the lookup into the ledger</span></span><br><span class="line">		<span class="comment">// for the same TxID catches duplicates.</span></span><br><span class="line">		err = utils.CheckTxID(</span><br><span class="line">			chdr.TxId,</span><br><span class="line">			shdr.Nonce,</span><br><span class="line">			shdr.Creator)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			putilsLogger.Errorf(<span class="string">"CheckTxID returns err %s"</span>, err)</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, pb.TxValidationCode_BAD_PROPOSAL_TXID</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 如果是背书交易，背书的签名不在此验证，由背书策略模块进行验证</span></span><br><span class="line">		err = validateEndorserTransaction(payload.Data, payload.Header)</span><br><span class="line">		putilsLogger.Debugf(<span class="string">"ValidateTransactionEnvelope returns err %s"</span>, err)</span><br></pre></td></tr></table></figure>
+<h2 id="验证签名"><a href="#验证签名" class="headerlink" title="验证签名"></a>验证签名</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// given a creator, a message and a signature,</span></span><br><span class="line"><span class="comment">// this function returns nil if the creator</span></span><br><span class="line"><span class="comment">// is a valid cert and the signature is valid</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkSignatureFromCreator</span><span class="params">(creatorBytes []<span class="keyword">byte</span>, sig []<span class="keyword">byte</span>, msg []<span class="keyword">byte</span>, ChainID <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	putilsLogger.Debugf(<span class="string">"begin"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// check for nil argument</span></span><br><span class="line">	<span class="keyword">if</span> creatorBytes == <span class="literal">nil</span> || sig == <span class="literal">nil</span> || msg == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"nil arguments"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 每个链有各自的msp</span></span><br><span class="line">	mspObj := mspmgmt.GetIdentityDeserializer(ChainID)</span><br><span class="line">	<span class="keyword">if</span> mspObj == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.Errorf(<span class="string">"could not get msp for channel [%s]"</span>, ChainID)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取proposal创建者/发送方的Identity</span></span><br><span class="line">	<span class="comment">// creatorBytes 中是序列化后的mspid、证书、公钥等信息</span></span><br><span class="line">	creator, err := mspObj.DeserializeIdentity(creatorBytes)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"MSP error"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	putilsLogger.Debugf(<span class="string">"creator is %s"</span>, creator.GetIdentifier())</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 验证证书是否有效</span></span><br><span class="line">	<span class="comment">// ensure that creator is a valid certificate</span></span><br><span class="line">	err = creator.Validate()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"creator certificate is not valid"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	putilsLogger.Debugf(<span class="string">"creator is valid"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// validate the signature</span></span><br><span class="line">	<span class="comment">// 验证签名</span></span><br><span class="line">	err = creator.Verify(msg, sig)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"creator's signature over the proposal is not valid"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	putilsLogger.Debugf(<span class="string">"exits successfully"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取Identity"><a href="#获取Identity" class="headerlink" title="获取Identity"></a>获取Identity</h3><p>获取当前通道的MSP manager：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// GetIdentityDeserializer returns the IdentityDeserializer for the given chain</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetIdentityDeserializer</span><span class="params">(chainID <span class="keyword">string</span>)</span> <span class="title">msp</span>.<span class="title">IdentityDeserializer</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> chainID == <span class="string">""</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> GetLocalMSP()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> GetManagerForChain(chainID)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// GetManagerForChain returns the msp manager for the supplied</span></span><br><span class="line"><span class="comment">// chain; if no such manager exists, one is created</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetManagerForChain</span><span class="params">(chainID <span class="keyword">string</span>)</span> <span class="title">msp</span>.<span class="title">MSPManager</span></span> &#123;</span><br><span class="line">	m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> m.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 先从缓存查找</span></span><br><span class="line">	mspMgr, ok := mspMap[chainID]</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="comment">// 找不到则新建立当前通道Msp manager</span></span><br><span class="line">		mspLogger.Debugf(<span class="string">"Created new msp manager for channel `%s`"</span>, chainID)</span><br><span class="line">		mspMgmtMgr := &amp;mspMgmtMgr&#123;msp.NewMSPManager(), <span class="literal">false</span>&#125;</span><br><span class="line">		mspMap[chainID] = mspMgmtMgr</span><br><span class="line">		mspMgr = mspMgmtMgr</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// check for internal mspManagerImpl and mspMgmtMgr types. if a different</span></span><br><span class="line">		<span class="comment">// type is found, it's because a developer has added a new type that</span></span><br><span class="line">		<span class="comment">// implements the MSPManager interface and should add a case to the logic</span></span><br><span class="line">		<span class="comment">// above to handle it.</span></span><br><span class="line">		<span class="keyword">if</span> !(reflect.TypeOf(mspMgr).Elem().Name() == <span class="string">"mspManagerImpl"</span> || reflect.TypeOf(mspMgr).Elem().Name() == <span class="string">"mspMgmtMgr"</span>) &#123;</span><br><span class="line">			<span class="built_in">panic</span>(<span class="string">"Found unexpected MSPManager type."</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		mspLogger.Debugf(<span class="string">"Returning existing manager for channel '%s'"</span>, chainID)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> mspMgr</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MSPManager has been setup for a channel, which indicates whether the channel</span></span><br><span class="line"><span class="comment">// exists or not</span></span><br><span class="line"><span class="keyword">type</span> mspMgmtMgr <span class="keyword">struct</span> &#123;</span><br><span class="line">	msp.MSPManager</span><br><span class="line">	<span class="comment">// track whether this MSPManager has been setup successfully</span></span><br><span class="line">	up <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>msp.MSPManager</code>是一个接口，从上面代码可以得知，它是利用<code>NewMSPManager</code>创建的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建等待Setup的MSPManager</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewMSPManager</span><span class="params">()</span> <span class="title">MSPManager</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;mspManagerImpl&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>疑问是，啥时候Setup的，当前调用路径上没发现这个路径，可能从系统整体流程上，已经保证了，当前调用时，已经创建好了。</p>
+<p>获取Identity，是一个剥洋葱的过程：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mgr *mspMgmtMgr)</span> <span class="title">DeserializeIdentity</span><span class="params">(serializedIdentity []<span class="keyword">byte</span>)</span> <span class="params">(msp.Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> !mgr.up &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"channel doesn't exist"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> mgr.MSPManager.DeserializeIdentity(serializedIdentity)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际调用<code>mspManagerImpl</code>的<code>DeserializeIdentity</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DeserializeIdentity returns an identity given its serialized version supplied as argument</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mgr *mspManagerImpl)</span> <span class="title">DeserializeIdentity</span><span class="params">(serializedID []<span class="keyword">byte</span>)</span> <span class="params">(Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// We first deserialize to a SerializedIdentity to get the MSP ID</span></span><br><span class="line">	sId := &amp;msp.SerializedIdentity&#123;&#125;</span><br><span class="line">	err := proto.Unmarshal(serializedID, sId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Wrap(err, <span class="string">"could not deserialize a SerializedIdentity"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取发送方的msp实例</span></span><br><span class="line">	<span class="comment">// we can now attempt to obtain the MSP</span></span><br><span class="line">	msp := mgr.mspsMap[sId.Mspid]</span><br><span class="line">	<span class="keyword">if</span> msp == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Errorf(<span class="string">"MSP %s is unknown"</span>, sId.Mspid)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> t := msp.(<span class="keyword">type</span>) &#123;</span><br><span class="line">	<span class="keyword">case</span> *bccspmsp:</span><br><span class="line">		<span class="keyword">return</span> t.deserializeIdentityInternal(sId.IdBytes)</span><br><span class="line">	<span class="keyword">case</span> *idemixmsp:</span><br><span class="line">		<span class="keyword">return</span> t.deserializeIdentityInternal(sId.IdBytes)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> t.DeserializeIdentity(serializedID)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>转到bccspmsp的实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 反序列化二进制，得到证书，然后用证书获取公钥，使用证书、公钥和msp，创建Identity</span></span><br><span class="line"><span class="comment">// deserializeIdentityInternal returns an identity given its byte-level representation</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(msp *bccspmsp)</span> <span class="title">deserializeIdentityInternal</span><span class="params">(serializedIdentity []<span class="keyword">byte</span>)</span> <span class="params">(Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// This MSP will always deserialize certs this way</span></span><br><span class="line">	bl, _ := pem.Decode(serializedIdentity)</span><br><span class="line">	<span class="keyword">if</span> bl == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"could not decode the PEM structure"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	cert, err := x509.ParseCertificate(bl.Bytes)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Wrap(err, <span class="string">"parseCertificate failed"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Now we have the certificate; make sure that its fields</span></span><br><span class="line">	<span class="comment">// (e.g. the Issuer.OU or the Subject.OU) match with the</span></span><br><span class="line">	<span class="comment">// MSP id that this MSP has; otherwise it might be an attack</span></span><br><span class="line">	<span class="comment">// TODO!</span></span><br><span class="line">	<span class="comment">// We can't do it yet because there is no standardized way</span></span><br><span class="line">	<span class="comment">// (yet) to encode the MSP ID into the x.509 body of a cert</span></span><br><span class="line"></span><br><span class="line">	pub, err := msp.bccsp.KeyImport(cert, &amp;bccsp.X509PublicKeyImportOpts&#123;Temporary: <span class="literal">true</span>&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.WithMessage(err, <span class="string">"failed to import certificate's public key"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> newIdentity(cert, pub, msp)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Identity包含了Identity标示符，证书、公钥和所在的msp，创建Identity就是计算以上几项信息的过程：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> identity <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// id contains the identifier (MSPID and identity identifier) for this instance</span></span><br><span class="line">	id *IdentityIdentifier</span><br><span class="line"></span><br><span class="line">	<span class="comment">// cert contains the x.509 certificate that signs the public key of this instance</span></span><br><span class="line">	cert *x509.Certificate</span><br><span class="line"></span><br><span class="line">	<span class="comment">// this is the public key of this instance</span></span><br><span class="line">	pk bccsp.Key</span><br><span class="line"></span><br><span class="line">	<span class="comment">// reference to the MSP that "owns" this identity</span></span><br><span class="line">	msp *bccspmsp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newIdentity</span><span class="params">(cert *x509.Certificate, pk bccsp.Key, msp *bccspmsp)</span> <span class="params">(Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> mspIdentityLogger.IsEnabledFor(zapcore.DebugLevel) &#123;</span><br><span class="line">		mspIdentityLogger.Debugf(<span class="string">"Creating identity instance for cert %s"</span>, certToPEM(cert))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 检查证书</span></span><br><span class="line">	<span class="comment">// Sanitize first the certificate</span></span><br><span class="line">	cert, err := msp.sanitizeCert(cert)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Compute identity identifier</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Use the hash of the identity's certificate as id in the IdentityIdentifier</span></span><br><span class="line">	hashOpt, err := bccsp.GetHashOpt(msp.cryptoConfig.IdentityIdentifierHashFunction)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.WithMessage(err, <span class="string">"failed getting hash function options"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	digest, err := msp.bccsp.Hash(cert.Raw, hashOpt)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.WithMessage(err, <span class="string">"failed hashing raw certificate to compute the id of the IdentityIdentifier"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	id := &amp;IdentityIdentifier&#123;</span><br><span class="line">		Mspid: msp.name,</span><br><span class="line">		Id:    hex.EncodeToString(digest)&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;identity&#123;id: id, cert: cert, pk: pk, msp: msp&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="验证数字签名"><a href="#验证数字签名" class="headerlink" title="验证数字签名"></a>验证数字签名</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Verify checks against a signature and a message</span></span><br><span class="line"><span class="comment">// to determine whether this identity produced the</span></span><br><span class="line"><span class="comment">// signature; it returns nil if so or an error otherwise</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(id *identity)</span> <span class="title">Verify</span><span class="params">(msg []<span class="keyword">byte</span>, sig []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="comment">// mspIdentityLogger.Infof("Verifying signature")</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Compute Hash</span></span><br><span class="line">	hashOpt, err := id.getHashOpt(id.msp.cryptoConfig.SignatureHashFamily)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"failed getting hash function options"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	digest, err := id.msp.bccsp.Hash(msg, hashOpt)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"failed computing digest"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> mspIdentityLogger.IsEnabledFor(zapcore.DebugLevel) &#123;</span><br><span class="line">		mspIdentityLogger.Debugf(<span class="string">"Verify: digest = %s"</span>, hex.Dump(digest))</span><br><span class="line">		mspIdentityLogger.Debugf(<span class="string">"Verify: sig = %s"</span>, hex.Dump(sig))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 最终会调用bccsp的接口验证签名，SW或者国密</span></span><br><span class="line">	valid, err := id.msp.bccsp.Verify(id.pk, sig, digest, <span class="literal">nil</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"could not determine the validity of the signature"</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> !valid &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"The signature is invalid"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://github.com/yeasy/hyperledger_code_fabric" target="_blank" rel="noopener">https://github.com/yeasy/hyperledger_code_fabric</a></li>
+<li>《区块链原理、设计与应用》第9章、第10章</li>
+</ol>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+          
+            <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/31/go-modules-notes/" rel="next" title="Go Modules 方法、问题汇总贴">
+                <i class="fa fa-chevron-left"></i> Go Modules 方法、问题汇总贴
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container">
+    </div>
+    
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png"
+                alt="大彬" />
+            
+              <p class="site-author-name" itemprop="name">大彬</p>
+              <p class="site-description motion-element" itemprop="description">区块链、Go语言</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">108</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 &rarr; http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/shitaibin" title="GitHub &rarr; https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault &rarr; https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 &rarr; https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow &rarr; https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hz_stb@163.com" title="E-Mail &rarr; mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#理论知识"><span class="nav-number">1.</span> <span class="nav-text">理论知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fabric证书和密钥文件"><span class="nav-number">2.</span> <span class="nav-text">Fabric证书和密钥文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整体逻辑"><span class="nav-number">3.</span> <span class="nav-text">整体逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证签名的函数"><span class="nav-number">4.</span> <span class="nav-text">验证签名的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#验证Porposal签名"><span class="nav-number">4.1.</span> <span class="nav-text">验证Porposal签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证Transaction签名"><span class="nav-number">4.2.</span> <span class="nav-text">验证Transaction签名</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证签名"><span class="nav-number">5.</span> <span class="nav-text">验证签名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取Identity"><span class="nav-number">5.1.</span> <span class="nav-text">获取Identity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证数字签名"><span class="nav-number">5.2.</span> <span class="nav-text">验证数字签名</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+
+  
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.css">
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+   <script>
+        var gitalk = new Gitalk({
+          clientID: '42138cdfb007b8368d81',
+          clientSecret: '317f1e9c0f7579358dcefb5402abe1bcc3e7388a',
+          repo: 'shitaibin.github.io',
+          owner: 'Shitaibin',
+          admin: ['Shitaibin'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+</body>
+</html>
