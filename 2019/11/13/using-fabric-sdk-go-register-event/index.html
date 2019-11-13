@@ -102,25 +102,25 @@
 
 
 
-  <meta name="description" content="sync.WaitGroup是并发环境中，一个相当常用的数据结构，用来等待所有协程的结束，在写代码的时候都是按着例子的样子写的，也没用深究过它的使用。前几日想着能不能在协程中执行Add()函数，答案是不能，这里介绍下。 陷阱在WaitGroup的3个函数的调用顺序上。先回顾下3个函数的功能：  Add(delta int)：给计数器增加delta，比如启动1个协程就增加1。 Done()：协程退出">
-<meta name="keywords" content="Go">
+  <meta name="description" content="使用fabric-sdk-go操作链码，介绍了使用官方Go SDK，安装、实例化和升级链码，调用和查询链码，本文介绍使用fabric-sdk-go订阅事件。 事件介绍本质上就3种事件：  BlockEvent：获取区块信息 TransactionEvent：获取交易信息 ChainCodeEvnet：链码中自定义的链码事件  但每种事件都有2 种类型：  Filtered：事件订阅时默认的类型，获">
+<meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Golang的sync.WaitGroup陷阱">
-<meta property="og:url" content="http://lessisbetter.site/2018/10/29/Golang-trap-of-waitgroup/index.html">
+<meta property="og:title" content="使用fabric-sdk-go订阅Fabric事件">
+<meta property="og:url" content="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="sync.WaitGroup是并发环境中，一个相当常用的数据结构，用来等待所有协程的结束，在写代码的时候都是按着例子的样子写的，也没用深究过它的使用。前几日想着能不能在协程中执行Add()函数，答案是不能，这里介绍下。 陷阱在WaitGroup的3个函数的调用顺序上。先回顾下3个函数的功能：  Add(delta int)：给计数器增加delta，比如启动1个协程就增加1。 Done()：协程退出">
+<meta property="og:description" content="使用fabric-sdk-go操作链码，介绍了使用官方Go SDK，安装、实例化和升级链码，调用和查询链码，本文介绍使用fabric-sdk-go订阅事件。 事件介绍本质上就3种事件：  BlockEvent：获取区块信息 TransactionEvent：获取交易信息 ChainCodeEvnet：链码中自定义的链码事件  但每种事件都有2 种类型：  Filtered：事件订阅时默认的类型，获">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.410Z">
+<meta property="og:updated_time" content="2019-11-13T08:43:47.825Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Golang的sync.WaitGroup陷阱">
-<meta name="twitter:description" content="sync.WaitGroup是并发环境中，一个相当常用的数据结构，用来等待所有协程的结束，在写代码的时候都是按着例子的样子写的，也没用深究过它的使用。前几日想着能不能在协程中执行Add()函数，答案是不能，这里介绍下。 陷阱在WaitGroup的3个函数的调用顺序上。先回顾下3个函数的功能：  Add(delta int)：给计数器增加delta，比如启动1个协程就增加1。 Done()：协程退出">
+<meta name="twitter:title" content="使用fabric-sdk-go订阅Fabric事件">
+<meta name="twitter:description" content="使用fabric-sdk-go操作链码，介绍了使用官方Go SDK，安装、实例化和升级链码，调用和查询链码，本文介绍使用fabric-sdk-go订阅事件。 事件介绍本质上就3种事件：  BlockEvent：获取区块信息 TransactionEvent：获取交易信息 ChainCodeEvnet：链码中自定义的链码事件  但每种事件都有2 种类型：  Filtered：事件订阅时默认的类型，获">
 
 
 
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2018/10/29/Golang-trap-of-waitgroup/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/"/>
 
 
 
@@ -130,7 +130,7 @@
   };
 </script>
 
-  <title>Golang的sync.WaitGroup陷阱 | Go语言充电站</title>
+  <title>使用fabric-sdk-go订阅Fabric事件 | Go语言充电站</title>
   
 
 
@@ -376,7 +376,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/10/29/Golang-trap-of-waitgroup/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -393,7 +393,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Golang的sync.WaitGroup陷阱
+          <h1 class="post-title" itemprop="name headline">使用fabric-sdk-go订阅Fabric事件
 
               
             
@@ -419,24 +419,12 @@
                 
               
 
-              <time title="创建时间：2018-10-29 14:27:06" itemprop="dateCreated datePublished" datetime="2018-10-29T14:27:06+08:00">2018-10-29</time>
+              <time title="创建时间：2019-11-13 20:43:13 / 修改时间：16:43:47" itemprop="dateCreated datePublished" datetime="2019-11-13T20:43:13+08:00">2019-11-13</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
               
             
           </span>
@@ -477,31 +465,80 @@
       
 
       
-        <p><code>sync.WaitGroup</code>是并发环境中，一个相当常用的数据结构，用来等待所有协程的结束，在写代码的时候都是按着例子的样子写的，也没用深究过它的使用。前几日想着能不能在协程中执行<code>Add()</code>函数，答案是不能，这里介绍下。</p>
-<p>陷阱在WaitGroup的3个函数的调用顺序上。先回顾下3个函数的功能：</p>
-<ol>
-<li><code>Add(delta int)</code>：给计数器增加delta，比如启动1个协程就增加1。</li>
-<li><code>Done()</code>：协程退出前执行，把计数器减1。</li>
-<li><code>Wait()</code>：阻塞等待计数器为0。</li>
-</ol>
-<a id="more"></a>
-<h1 id="考一考"><a href="#考一考" class="headerlink" title="考一考"></a>考一考</h1><p>下面的程序是创建了协程father，然后father协程创建了10个子协程，main函数等待所有协程结束后退出，看看下面代码有没有什么问题？</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">father</span><span class="params">(wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">"father\n"</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> child(wg, i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">child</span><span class="params">(wg *sync.WaitGroup, id <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">"child [%d]\n"</span>, id)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	<span class="keyword">go</span> father(&amp;wg)</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">	log.Printf(<span class="string">"main: father and all chindren exit"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>发现问题了吗？如果没有看下面的运行结果：main函数在子协程结束前就开始结束了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">father</span><br><span class="line">main: father and all chindren <span class="built_in">exit</span></span><br><span class="line">child [9]</span><br><span class="line">child [0]</span><br><span class="line">child [4]</span><br><span class="line">child [7]</span><br><span class="line">child [8]</span><br></pre></td></tr></table></figure>
-<h1 id="陷阱分析"><a href="#陷阱分析" class="headerlink" title="陷阱分析"></a>陷阱分析</h1><p>产生以上问题的原因在于，创建协程后在协程内才执行<code>Add()</code>函数，而此时<code>Wait()</code>函数<strong>可能</strong>已经在执行，甚至<code>Wait()</code>函数在所有<code>Add()</code>执行前就执行了，<code>Wait()</code>执行时立马就满足了WaitGroup的计数器为0，Wait结束，主程序退出，导致所有子协程还没完全退出，main函数就结束了。</p>
-<h1 id="正确的做法"><a href="#正确的做法" class="headerlink" title="正确的做法"></a>正确的做法</h1><p><strong>Add函数一定要在Wait函数执行前执行</strong>，这在Add函数的<a href="https://golang.org/src/sync/waitgroup.go?s=2022:2057#L43" target="_blank" rel="noopener">文档</a>中就提示了: <em>Note that calls with a positive delta that occur when the counter is zero must happen before a Wait.</em>。</p>
-<p>如何确保Add函数一定在Wait函数前执行呢？在协程情况下，我们不能预知协程中代码执行的时间是否早于Wait函数的执行时间，但是，我们可以在分配协程前就执行Add函数，然后再执行Wait函数，以此确保。</p>
-<p>下面是修改后的程序，以及输出结果。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">father</span><span class="params">(wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">	<span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">"father\n"</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">go</span> child(wg, i)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">child</span><span class="params">(wg *sync.WaitGroup, id <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">defer</span> wg.Done()</span><br><span class="line">	fmt.Printf(<span class="string">"child [%d]\n"</span>, id)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> father(&amp;wg)</span><br><span class="line"></span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">"main: father and all chindren exit"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">father</span><br><span class="line">child [9]</span><br><span class="line">child [7]</span><br><span class="line">child [8]</span><br><span class="line">child [1]</span><br><span class="line">child [4]</span><br><span class="line">child [5]</span><br><span class="line">child [2]</span><br><span class="line">child [6]</span><br><span class="line">child [0]</span><br><span class="line">child [3]</span><br><span class="line">main: father and all chindren <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
-<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2018/10/29/Golang-trap-of-waitgroup/">http://lessisbetter.site/2018/10/29/Golang-trap-of-waitgroup/</a></li>
-</ol>
-</blockquote>
+        <p><a href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">使用fabric-sdk-go操作链码</a>，介绍了使用官方Go SDK，安装、实例化和升级链码，调用和查询链码，本文介绍使用fabric-sdk-go订阅事件。</p>
+<h2 id="事件介绍"><a href="#事件介绍" class="headerlink" title="事件介绍"></a>事件介绍</h2><p>本质上就3种事件：</p>
+<ul>
+<li>BlockEvent：获取区块信息</li>
+<li>TransactionEvent：获取交易信息</li>
+<li>ChainCodeEvnet：链码中<strong>自定义的</strong>链码事件</li>
+</ul>
+<p>但每种事件都有2 种类型：</p>
+<ul>
+<li><strong>Filtered</strong>：事件订阅时默认的类型，获取的<strong>信息“不全”</strong>，不同的事件缺失的数据不同，比如链码事件，如果是Filtered的，其响应字段中的Payload是空的，也就是不知道链码事件携带的数据。这种方式能够降低fabric网络和SDK之间的流量，当Filtered后的字段信息就足够时，这种方式非常适合。关于Filtered的更多信息，这篇文章 <a href="http://lessisbetter.site/2019/09/20/fabric-event-source/">Fabric 1.4源码解读 3：Event原理解读</a> 非常有帮助。</li>
+<li><strong>非Filtered</strong> ：可以获取<strong>完整的</strong>区块、交易、链码事件<strong>信息</strong>，这种方式在SDK想获取更多信息时，是非常必要的。</li>
+</ul>
+<p>4 个注册事件的接口1个取消注册的接口如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">接口名称</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">参数值</th>
+<th style="text-align:center">返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">RegisterBlockEvent</td>
+<td style="text-align:center">注册块事件</td>
+<td style="text-align:center">filter …fab.BlockFilter</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.BlockEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterFilteredBlockEvent</td>
+<td style="text-align:center">注册过滤块事件</td>
+<td style="text-align:center">无</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.FilteredBlockEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterTxStatusEvent</td>
+<td style="text-align:center">注册交易状态事件</td>
+<td style="text-align:center">txID string</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.TxStatusEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterChaincodeEvent</td>
+<td style="text-align:center">注册链码事件</td>
+<td style="text-align:center">ccID, eventFilter string</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.CCEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">Unregister</td>
+<td style="text-align:center">取消事件订阅</td>
+<td style="text-align:center">fab.Registration</td>
+<td style="text-align:center">无</td>
+</tr>
+</tbody>
+</table>
+<p>注册会得到管理可以管理订阅的Registration、接收事件的通道，以及可能注册时发生的错误，关于每个接口的具体介绍、使用，可以参考官方的<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/event" target="_blank" rel="noopener">Event文档</a>，其中包含了样例代码，如果想看真实的样例代码，可以参考<a href="#示例项目">示例项目</a>。</p>
+<h2 id="Option介绍"><a href="#Option介绍" class="headerlink" title="Option介绍"></a>Option介绍</h2><p>注册事件需要使用<code>EventClient</code>，创建EventClient时可以指定一些选项，这些选项其实就是事件订阅的选项。</p>
+<p>有3个Option:</p>
+<ul>
+<li><p>func WithBlockEvents() ClientOption</p>
+<p>  指定了此选项，事件就是<strong>非“filtered”</strong>，fabric会向调用SDK客户端发送完整的区块，可以获得订阅事件完整的信息。</p>
+</li>
+<li><p>func WithSeekType(seek seek.Type) ClientOption</p>
+<p>  使用此选项可以<strong>指定从哪个区块高度获取事件</strong>。<code>seek.Type</code>有<code>Oldest</code>、<code>Newest</code>和<code>FromBlock</code> 3种取值，分别代表从第1个区块、最后一个区块和指定区块号开始获取事件，<code>FromBlock</code>需要结合<code>WithBlockNum</code>使用。So，可以通过这个选项<strong>获取历史事件</strong>。</p>
+</li>
+<li><p>func WithBlockNum(from uint64) ClientOption</p>
+<p>  指定区块高度，只有<code>WithSeekType(FromBlock)</code>时才生效。</p>
+</li>
+</ul>
+<h2 id="链码事件多说几句"><a href="#链码事件多说几句" class="headerlink" title="链码事件多说几句"></a>链码事件多说几句</h2><h3 id="链码如何发链码事件"><a href="#链码如何发链码事件" class="headerlink" title="链码如何发链码事件"></a>链码如何发链码事件</h3><p><code>ChaincodeStubInterface</code>有<code>SetEvent</code>的方法，入参分别为事件名称和事件锁携带的信息payload。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ChaincodeStubInterface is used by deployable chaincode apps to access and</span></span><br><span class="line"><span class="comment">// modify their ledgers</span></span><br><span class="line"><span class="keyword">type</span> ChaincodeStubInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// SetEvent allows the chaincode to set an event on the response to the</span></span><br><span class="line">    <span class="comment">// proposal to be included as part of a transaction. The event will be</span></span><br><span class="line">    <span class="comment">// available within the transaction in the committed block regardless of the</span></span><br><span class="line">    <span class="comment">// validity of the transaction.</span></span><br><span class="line">    SetEvent(name <span class="keyword">string</span>, payload []<span class="keyword">byte</span>) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="通过ChannelClient订阅链码事件介绍"><a href="#通过ChannelClient订阅链码事件介绍" class="headerlink" title="通过ChannelClient订阅链码事件介绍"></a>通过ChannelClient订阅链码事件介绍</h3><p>SDK的channel client也有订阅链码事件的接口：<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/channel#Client.RegisterChaincodeEvent" target="_blank" rel="noopener">channel.Client.RegisterChaincodeEvent()</a>，它的定义和event client提供的接口完全一样，但功能上有所差别。</p>
+<p>channel client没有指定 <code>WithBlockEvents</code>，所以这是<strong>Filtered的事件链码</strong>，获取的事件链码中，其Payload为空。</p>
+<h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>示例项目<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/tree/master/samples/event" target="_blank" rel="noopener">fabric-sdk-go-sample</a>是结合Fabric的BYFN展示如何使用fabric-sdk-go的项目，它的Event样例部分，介绍了如何使用以上接口订阅Fabric事件，具体请参加该部分<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/samples/event/README.md" target="_blank" rel="noopener">README</a>。</p>
 
       
     </div>
@@ -529,7 +566,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
+            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+          
+            <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
           
         </div>
       
@@ -542,8 +581,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/24/go-handle-error/" rel="next" title="如何优雅的处理Golang错误">
-                <i class="fa fa-chevron-left"></i> 如何优雅的处理Golang错误
+              <a href="/2019/11/10/how-fabric-verify-signatures/" rel="next" title="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
+                <i class="fa fa-chevron-left"></i> Fabric 1.4源码解读 5：Fabric是如何验证签名的？
               </a>
             
           </div>
@@ -551,10 +590,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/03/Golang-channel-read-and-write-without-blocking/" rel="prev" title="一招教你无阻塞读写Golang channel">
-                一招教你无阻塞读写Golang channel <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -907,7 +942,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#考一考"><span class="nav-number">1.</span> <span class="nav-text">考一考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#陷阱分析"><span class="nav-number">2.</span> <span class="nav-text">陷阱分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正确的做法"><span class="nav-number">3.</span> <span class="nav-text">正确的做法</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#事件介绍"><span class="nav-number">1.</span> <span class="nav-text">事件介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Option介绍"><span class="nav-number">2.</span> <span class="nav-text">Option介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链码事件多说几句"><span class="nav-number">3.</span> <span class="nav-text">链码事件多说几句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#链码如何发链码事件"><span class="nav-number">3.1.</span> <span class="nav-text">链码如何发链码事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过ChannelClient订阅链码事件介绍"><span class="nav-number">3.2.</span> <span class="nav-text">通过ChannelClient订阅链码事件介绍</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例项目"><span class="nav-number">4.</span> <span class="nav-text">示例项目</span></a></li></ol></div>
             
 
           </div>
