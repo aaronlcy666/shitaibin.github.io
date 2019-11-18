@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next pisces" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。 Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：  网络：gRPC接收交易，向Peer发送区块 切块：把交易打包成区块 共识：所有Orderer节点达成一致  这些功能是由Orderer">
+<meta name="keywords" content="区块链,Fabric">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fabric 1.4源码解读 6：Orderer核心数据结构">
+<meta property="og:url" content="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="前言许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。 Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：  网络：gRPC接收交易，向Peer发送区块 切块：把交易打包成区块 共识：所有Orderer节点达成一致  这些功能是由Orderer">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-orderer-registrar.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-orderer-chainsupport.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-orderer-chain.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-orderer-consenter.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-orderer-consentersupport.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-core-struct-of-orderer.png">
+<meta property="og:updated_time" content="2019-11-18T03:46:55.513Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fabric 1.4源码解读 6：Orderer核心数据结构">
+<meta name="twitter:description" content="前言许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。 Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：  网络：gRPC接收交易，向Peer发送区块 切块：把交易打包成区块 共识：所有Orderer节点达成一致  这些功能是由Orderer">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-11-orderer-registrar.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Fabric 1.4源码解读 6：Orderer核心数据结构 | Go语言充电站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Go语言充电站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">大彬 less is better</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-主页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />主页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签云">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-专题文章">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/subject/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br />专题文章</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-文章列表">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-大牛博客">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blogs/" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />大牛博客</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <a href="https://github.com/Shitaibin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Fabric 1.4源码解读 6：Orderer核心数据结构
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-18 20:45:23 / 修改时间：11:46:55" itemprop="dateCreated datePublished" datetime="2019-11-18T20:45:23+08:00">2019-11-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。</p>
+<p>Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：</p>
+<ul>
+<li>网络：gRPC接收交易，向Peer发送区块</li>
+<li>切块：把交易打包成区块</li>
+<li>共识：所有Orderer节点达成一致</li>
+</ul>
+<p>这些功能是由Orderer核心数据结构组织起来。</p>
+<blockquote>
+<p>在Fabric中，通道和链在概念上都是一条区块链，所以本文中也会可能会混用链和通道。</p>
+</blockquote>
+<h2 id="核心数据结构"><a href="#核心数据结构" class="headerlink" title="核心数据结构"></a>核心数据结构</h2><h3 id="Registrar"><a href="#Registrar" class="headerlink" title="Registrar"></a>Registrar</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-registrar.png" alt="Registrar"></p>
+<p>代码中，这样描述Registrar：</p>
+<blockquote>
+<p>Registrar serves as a point of access and control for the individual channel resources.</p>
+</blockquote>
+<p>可见它负责了每个channel资源的访问和控制点，也就说，要对某个通道怎么样，得从这入手。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Registrar <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock sync.RWMutex</span><br><span class="line">	<span class="comment">// 保存了多条链</span></span><br><span class="line">	chains <span class="keyword">map</span>[<span class="keyword">string</span>]*ChainSupport</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 共识插件</span></span><br><span class="line">	consenters         <span class="keyword">map</span>[<span class="keyword">string</span>]consensus.Consenter</span><br><span class="line">	ledgerFactory      blockledger.Factory</span><br><span class="line">	signer             crypto.LocalSigner</span><br><span class="line">    </span><br><span class="line">	systemChannelID    <span class="keyword">string</span></span><br><span class="line">	systemChannel      *ChainSupport</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>chains</code>保存了每一条链，每一条链在Orderer中都以<a href="#ChainSupport">ChainSupport</a>代表。</li>
+<li><code>consenters</code>保存了所有的共识插件，每个共识插件都是一个<a href="#Consenter">Consenter</a>，Fabric 1.4中共识插件有Solo、Kafka、EtcdRaft。</li>
+<li><code>ledgerFactory</code>用来读取和创建链的账本。</li>
+<li><code>signer</code>用来对Orderer中的数据进行签名，以及创建<a href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/#解密SignatureHeader">SignatureHeader</a>。</li>
+<li><code>systemChannelID</code>和<code>systemChannel</code>分别是系统链ID、系统链实例。</li>
+</ul>
+<h3 id="ChainSupport"><a href="#ChainSupport" class="headerlink" title="ChainSupport"></a>ChainSupport</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-chainsupport.png" alt="chainsupport"></p>
+<p>ChainSupport汇集了一条通道所需要的所有资源，所以说一个ChainSupport代表了一条链。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ChainSupport <span class="keyword">struct</span> &#123;</span><br><span class="line">	*ledgerResources</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line">	*BlockWriter</span><br><span class="line">	consensus.Chain</span><br><span class="line">	cutter blockcutter.Receiver</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ChainSupport 是一堆接口的集合，这些接口构成一条链所有的操作，接口可以分为4类：</p>
+<ul>
+<li>账本：<code>ledgerResources</code>、<code>BlockWriter</code>分别是账本读写和把区块写入到账本。</li>
+<li>消息：<code>msgprocessor.Processor</code>、<code>cutter</code>分别是处理交易和把交易切块。</li>
+<li>共识：<code>consensus.Chain</code>是Orderer的共识实例，比如每条链都有自己的Raft共识实例，它们互不干扰。</li>
+<li>签名：<code>crypto.LocalSigner</code>，同Registrar中的介绍。</li>
+</ul>
+<h3 id="Chain"><a href="#Chain" class="headerlink" title="Chain"></a>Chain</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-chain.png" alt="Chain"></p>
+<p>Chain是接口，它的实现并不一条链，而是一条链的共识实例，可以是Solo、Kafka和EtcdRaft，它运行在单独的协程，使用Channel和ChainSupport通信，它调用其它接口完成切块，以及让所有的Orderer节点对交易达成一致。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chain defines a way to inject messages for ordering.</span></span><br><span class="line"><span class="comment">// Note, that in order to allow flexibility in the implementation, it is the responsibility of the implementer</span></span><br><span class="line"><span class="comment">// to take the ordered messages, send them through the blockcutter.Receiver supplied via HandleChain to cut blocks,</span></span><br><span class="line"><span class="comment">// and ultimately write the ledger also supplied via HandleChain.  This design allows for two primary flows</span></span><br><span class="line"><span class="comment">// 1. Messages are ordered into a stream, the stream is cut into blocks, the blocks are committed (solo, kafka)</span></span><br><span class="line"><span class="comment">// 2. Messages are cut into blocks, the blocks are ordered, then the blocks are committed (sbft)</span></span><br><span class="line"><span class="keyword">type</span> Chain <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// 普通消息/交易排序</span></span><br><span class="line">	<span class="comment">// Order accepts a message which has been processed at a given configSeq.</span></span><br><span class="line">	<span class="comment">// If the configSeq advances, it is the responsibility of the consenter</span></span><br><span class="line">	<span class="comment">// to revalidate and potentially discard the message</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Order(env *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置消息/交易排序</span></span><br><span class="line">	<span class="comment">// Configure accepts a message which reconfigures the channel and will</span></span><br><span class="line">	<span class="comment">// trigger an update to the configSeq if committed.  The configuration must have</span></span><br><span class="line">	<span class="comment">// been triggered by a ConfigUpdate message. If the config sequence advances,</span></span><br><span class="line">	<span class="comment">// it is the responsibility of the consenter to recompute the resulting config,</span></span><br><span class="line">	<span class="comment">// discarding the message if the reconfiguration is no longer valid.</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Configure(config *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 等待排序集群可用</span></span><br><span class="line">	<span class="comment">// WaitReady blocks waiting for consenter to be ready for accepting new messages.</span></span><br><span class="line">	<span class="comment">// This is useful when consenter needs to temporarily block ingress messages so</span></span><br><span class="line">	<span class="comment">// that in-flight messages can be consumed. It could return error if consenter is</span></span><br><span class="line">	<span class="comment">// in erroneous states. If this blocking behavior is not desired, consenter could</span></span><br><span class="line">	<span class="comment">// simply return nil.</span></span><br><span class="line">	WaitReady() error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当排序集群发送错误时，会关闭返回的通道</span></span><br><span class="line">	<span class="comment">// Errored returns a channel which will close when an error has occurred.</span></span><br><span class="line">	<span class="comment">// This is especially useful for the Deliver client, who must terminate waiting</span></span><br><span class="line">	<span class="comment">// clients when the consenter is not up to date.</span></span><br><span class="line">	Errored() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动当前链</span></span><br><span class="line">	<span class="comment">// Start should allocate whatever resources are needed for staying up to date with the chain.</span></span><br><span class="line">	<span class="comment">// Typically, this involves creating a thread which reads from the ordering source, passes those</span></span><br><span class="line">	<span class="comment">// messages to a block cutter, and writes the resulting blocks to the ledger.</span></span><br><span class="line">	Start()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 停止当前链，并释放资源</span></span><br><span class="line">	<span class="comment">// Halt frees the resources which were allocated for this Chain.</span></span><br><span class="line">	Halt()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Consenter"><a href="#Consenter" class="headerlink" title="Consenter"></a>Consenter</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-consenter.png" alt="Consenter"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Consenter <span class="keyword">interface</span> &#123;</span><br><span class="line">	HandleChain(support ConsenterSupport, metadata *cb.Metadata) (Chain, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Consenter也是接口，它只有1个功能用来创建<code>Chain</code>。每种共识插件，都有自己单独的<strong>consenter实现</strong>，分别用来创建solo实例、kafka实例或etcdraft实例。</p>
+<h3 id="ConsenterSupport"><a href="#ConsenterSupport" class="headerlink" title="ConsenterSupport"></a>ConsenterSupport</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-consentersupport.png" alt="ConsenterSupport"></p>
+<p>ConsenterSupport为<strong>consenter实现</strong>提供所需的资源，其实就是共识用来访问外部数据的接口。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ConsenterSupport provides the resources available to a Consenter implementation.</span></span><br><span class="line"><span class="keyword">type</span> ConsenterSupport <span class="keyword">interface</span> &#123;</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line"></span><br><span class="line">	<span class="comment">// VerifyBlockSignature verifies a signature of a block with a given optional</span></span><br><span class="line">	<span class="comment">// configuration (can be nil).</span></span><br><span class="line">	VerifyBlockSignature([]*cb.SignedData, *cb.ConfigEnvelope) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 提供把消息切成块的接口</span></span><br><span class="line">	<span class="comment">// BlockCutter returns the block cutting helper for this channel.</span></span><br><span class="line">	BlockCutter() blockcutter.Receiver</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的orderer配置</span></span><br><span class="line">	<span class="comment">// SharedConfig provides the shared config from the channel's current config block.</span></span><br><span class="line">	SharedConfig() channelconfig.Orderer</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的通道配置</span></span><br><span class="line">	<span class="comment">// ChannelConfig provides the channel config from the channel's current config block.</span></span><br><span class="line">	ChannelConfig() channelconfig.Channel</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 生成区块</span></span><br><span class="line">	<span class="comment">// CreateNextBlock takes a list of messages and creates the next block based on the block with highest block number committed to the ledger</span></span><br><span class="line">	<span class="comment">// Note that either WriteBlock or WriteConfigBlock must be called before invoking this method a second time.</span></span><br><span class="line">	CreateNextBlock(messages []*cb.Envelope) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读区块</span></span><br><span class="line">	<span class="comment">// Block returns a block with the given number,</span></span><br><span class="line">	<span class="comment">// or nil if such a block doesn't exist.</span></span><br><span class="line">	Block(number <span class="keyword">uint64</span>) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写区块</span></span><br><span class="line">	<span class="comment">// WriteBlock commits a block to the ledger.</span></span><br><span class="line">	WriteBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写配置区块并更新配置</span></span><br><span class="line">	<span class="comment">// WriteConfigBlock commits a block to the ledger, and applies the config update inside.</span></span><br><span class="line">	WriteConfigBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sequence returns the current config squence.</span></span><br><span class="line">	Sequence() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ChainID returns the channel ID this support is associated with.</span></span><br><span class="line">	ChainID() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Height returns the number of blocks in the chain this channel is associated with.</span></span><br><span class="line">	Height() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 以原始数据的格式追加区块，不像WriteBlock那样会修改元数据</span></span><br><span class="line">	<span class="comment">// Append appends a new block to the ledger in its raw form,</span></span><br><span class="line">	<span class="comment">// unlike WriteBlock that also mutates its metadata.</span></span><br><span class="line">	Append(block *cb.Block) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>把上面介绍的各项，融合在一幅图中：</p>
+<ul>
+<li>Registrar 包容万象，主要是ChainSupport和Consenter，Consenter是可插拔的</li>
+<li>ChainSupport 代表了一条链，能够指向属于本条链的共识实例，该共识实例由对应共识类型的Consenter创建</li>
+<li>共识实例使用ConsenterSupport访问共识外部资源</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-core-struct-of-orderer.png" alt=""></p>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+          
+            <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/13/using-fabric-sdk-go-register-event/" rel="next" title="使用fabric-sdk-go订阅Fabric事件">
+                <i class="fa fa-chevron-left"></i> 使用fabric-sdk-go订阅Fabric事件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container">
+    </div>
+    
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png"
+                alt="大彬" />
+            
+              <p class="site-author-name" itemprop="name">大彬</p>
+              <p class="site-description motion-element" itemprop="description">区块链、Go语言</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">110</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 &rarr; http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/shitaibin" title="GitHub &rarr; https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault &rarr; https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 &rarr; https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow &rarr; https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hz_stb@163.com" title="E-Mail &rarr; mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心数据结构"><span class="nav-number">2.</span> <span class="nav-text">核心数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Registrar"><span class="nav-number">2.1.</span> <span class="nav-text">Registrar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChainSupport"><span class="nav-number">2.2.</span> <span class="nav-text">ChainSupport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chain"><span class="nav-number">2.3.</span> <span class="nav-text">Chain</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consenter"><span class="nav-number">2.4.</span> <span class="nav-text">Consenter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConsenterSupport"><span class="nav-number">2.5.</span> <span class="nav-text">ConsenterSupport</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏观视角"><span class="nav-number">3.</span> <span class="nav-text">宏观视角</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+
+  
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.css">
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+   <script>
+        var gitalk = new Gitalk({
+          clientID: '42138cdfb007b8368d81',
+          clientSecret: '317f1e9c0f7579358dcefb5402abe1bcc3e7388a',
+          repo: 'shitaibin.github.io',
+          owner: 'Shitaibin',
+          admin: ['Shitaibin'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+</body>
+</html>
