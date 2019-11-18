@@ -75,9 +75,14 @@ tls目录，为TLS通信相关的证书：
 - 使用证书验证发送方的身份，发送方是否属于它所在的组织，以及发送方的公钥没有修改和替换
 - 使用公钥验证消息是否为发送方签名，并且消息没有被修改
 
+验证的整体流程如下：
+
+![Verify signature](http://img.lessisbetter.site/2019-11-verify-signature.png)
+
 ## 验证签名的函数
 
 `core/common/validation/msgvalidation.go` 提供了2验证消息签名的函数，用来验证Proposal和Transaction，它们会调用相同的函数`checkSignatureFromCreator`进行数字签名的验证。
+
 
 ### 验证Porposal签名
 
