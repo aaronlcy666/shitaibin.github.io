@@ -112,7 +112,8 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-signed_proposal.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-tx_envelop.jpeg">
-<meta property="og:updated_time" content="2019-11-11T07:16:35.189Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-verify-signature.png">
+<meta property="og:updated_time" content="2019-11-18T07:30:42.775Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
 <meta name="twitter:description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
@@ -439,7 +440,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-11 15:16:35" itemprop="dateModified" datetime="2019-11-11T15:16:35+08:00">2019-11-11</time>
+                <time title="修改时间：2019-11-18 15:30:42" itemprop="dateModified" datetime="2019-11-18T15:30:42+08:00">2019-11-18</time>
               
             
           </span>
@@ -528,6 +529,8 @@
 <li>使用证书验证发送方的身份，发送方是否属于它所在的组织，以及发送方的公钥没有修改和替换</li>
 <li>使用公钥验证消息是否为发送方签名，并且消息没有被修改</li>
 </ul>
+<p>验证的整体流程如下：</p>
+<p><img src="http://img.lessisbetter.site/2019-11-verify-signature.png" alt="Verify signature"></p>
 <h2 id="验证签名的函数"><a href="#验证签名的函数" class="headerlink" title="验证签名的函数"></a>验证签名的函数</h2><p><code>core/common/validation/msgvalidation.go</code> 提供了2验证消息签名的函数，用来验证Proposal和Transaction，它们会调用相同的函数<code>checkSignatureFromCreator</code>进行数字签名的验证。</p>
 <h3 id="验证Porposal签名"><a href="#验证Porposal签名" class="headerlink" title="验证Porposal签名"></a>验证Porposal签名</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValidateProposalMessage</span><span class="params">(signedProp *pb.SignedProposal)</span> <span class="params">(*pb.Proposal, *common.Header, *pb.ChaincodeHeaderExtension, error)</span></span> &#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 从SignatureHeader交易客户端的签名</span></span><br><span class="line">	<span class="comment">// validate the signature</span></span><br><span class="line">	err = checkSignatureFromCreator(shdr.Creator, signedProp.Signature, signedProp.ProposalBytes, chdr.ChannelId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// log the exact message on the peer but return a generic error message to</span></span><br><span class="line">		<span class="comment">// avoid malicious users scanning for channels</span></span><br><span class="line">		putilsLogger.Warningf(<span class="string">"channel [%s]: %s"</span>, chdr.ChannelId, err)</span><br><span class="line">		sId := &amp;msp.SerializedIdentity&#123;&#125;</span><br><span class="line">		err := proto.Unmarshal(shdr.Creator, sId)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="comment">// log the error here as well but still only return the generic error</span></span><br><span class="line">			err = errors.Wrap(err, <span class="string">"could not deserialize a SerializedIdentity"</span>)</span><br><span class="line">			putilsLogger.Warningf(<span class="string">"channel [%s]: %s"</span>, chdr.ChannelId, err)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">nil</span>, <span class="literal">nil</span>, errors.Errorf(<span class="string">"access denied: channel [%s] creator org [%s]"</span>, chdr.ChannelId, sId.Mspid)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="验证Transaction签名"><a href="#验证Transaction签名" class="headerlink" title="验证Transaction签名"></a>验证Transaction签名</h3><p>Commit阶段会对交易进行验证，会调用此函数，该函数完成了对Transaction的验证，包含发送方数字签名的验证。</p>
