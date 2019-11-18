@@ -102,23 +102,23 @@
 
 
 
-  <meta name="description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数">
+  <meta name="description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，再介绍一下。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数据的">
 <meta name="keywords" content="一致性,共识,Raft">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Etcd Raft架构设计和源码剖析2：数据流">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数">
+<meta property="og:description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，再介绍一下。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数据的">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-req.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-send.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-recv.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png">
-<meta property="og:updated_time" content="2019-09-06T00:17:47.855Z">
+<meta property="og:updated_time" content="2019-11-18T02:53:34.091Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Etcd Raft架构设计和源码剖析2：数据流">
-<meta name="twitter:description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数">
+<meta name="twitter:description" content="前言之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，再介绍一下。 下图从左到右依次分为4个部分：  raft：raft主体功能部分 Node：raft提供的接口，raft跟上层的通信接口，会运行一个run函数，持续循环处理通道上的数据 raftNode：上层应用逻辑 其他：Client、Network、State   图中的箭头为数据的">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow.png">
 
 
@@ -442,7 +442,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-06 08:17:47" itemprop="dateModified" datetime="2019-09-06T08:17:47+08:00">2019-09-06</time>
+                <time title="修改时间：2019-11-18 10:53:34" itemprop="dateModified" datetime="2019-11-18T10:53:34+08:00">2019-11-18</time>
               
             
           </span>
@@ -483,7 +483,7 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，加深自己的理解。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，再介绍一下。</p>
 <p>下图从左到右依次分为4个部分：</p>
 <ol>
 <li>raft：raft主体功能部分</li>
@@ -529,7 +529,7 @@
 <li>raftNode会把日志写入到storage和WAL，把需要应用的日志，提交给状态机或数据库，去修改数据</li>
 <li>raftNode处理完Ready后，调用Advance函数，通过advancec发送一个信号给raft，告知raft传出来的Ready已经处理完毕</li>
 </ol>
-<p>可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的。</p>
+<p>可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的。Storage接口更多信息请看<a href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage">Storage接口介绍</a>。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png" alt="etcd raft apply logs flow"></p>
 
       
