@@ -170,7 +170,7 @@ type Storage interface {
 
 ## unstable
 
-unstable因为Entry的存储是由应用层负责的raft负责的，所以raft需要暂时存储还未存到Storage中的Entry或者Snapshot，在创建Ready时，Entry和Snapshot会被封装到Ready，由应用层写入到storage。
+因为Entry的存储是由应用层负责的，所以raft需要暂时存储还未存到Storage中的Entry或者Snapshot，在创建Ready时，Entry和Snapshot会被封装到Ready，由应用层写入到storage。
 
 ```go
 // unstable.entries[i] has raft log position i+unstable.offset.
@@ -323,7 +323,7 @@ SoftState、HardState、Entry、Snapshot、Message都已经介绍过，不再单
 
 Entries和CommittedEntries的区别是，Entries保存的是从unstable读取的Entry，它们即将被应用层写入storage，CommittedEntries是已经被Committed，还没有applied，应用层会把他们应用到状态机。
 
-ReadStateraft用来处理读请求，MustSync用来指明应用层是否采用异步的方式写数据。
+ReadStates用来处理读请求，MustSync用来指明应用层是否采用异步的方式写数据。
 
 应用层在接收到Ready后，应当处理Ready中的每一个有效字段，处理完毕后，调用`Advance()`通知raft Ready已处理完毕。
 
