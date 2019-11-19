@@ -1,5 +1,5 @@
 ---
-title: Fabric 1.4源码解读 3：Event原理解读
+title: Fabric 1.4源码解读 3：事件(Event)原理解读
 date: 2019-09-20 19:46:41
 tags: ['Fabric', '区块链']
 ---
