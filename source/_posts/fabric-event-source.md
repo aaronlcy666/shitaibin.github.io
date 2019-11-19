@@ -86,7 +86,7 @@ service Deliver {
 配合下图，我们做一番讲解。
 
 
-![fabric sdk go event](http://img.lessisbetter.site/2019-09-fabric-events.png)
+![fabric sdk go event](http://img.lessisbetter.site/2019-11-fabric-events.png)
 
 对于Peer而言，只有2中类型的订阅：
 1. BlockEvent，即完整的区块
