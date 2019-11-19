@@ -94,6 +94,8 @@ service Deliver {
 
 图中深蓝色和绿色的线分别代表BlockEvent和FilteredBlockEvent相关的数据流，BlockEvent使用的是Deliver函数，FilteredBlockEvent使用的是DeliverFiltered函数。
 
+每一个事件订阅，都是一个gRPC连接，Peer会不断的从账本读区块，然后根据区块生成事件，发送给客户端。
+
 Go SDK中实现了一个Dispatcher，就是提供这么一个中转的功能，对上层应用提供4中类型的事件，把4种事件注册请求转换为2种，调用DeliverClient把事件订阅请求发送给Peer，又把Peer发来的2种事件，转换为应用订阅的事件响应。
 
 Peer启动时，启动gRPC服务后，会注册好DeliverServer接收事件订阅，然后调用deliverBlocks进入循环，在新区块产生后，会生成订阅的BlockEvent或FilteredBlockEvent，利用ResponseSender把事件发送给SDK。
@@ -299,7 +301,7 @@ func (h *Handler) deliverBlocks(ctx context.Context, srv *Server, envelope *cb.E
 
 		iterCh := make(chan struct{})
 		go func() {
-			// 获取下一个区块
+			// 获取下一个区块，当账本Append Block时，就可以拿到要写入到账本的区块
 			block, status = cursor.Next()
 			close(iterCh)
 		}()
@@ -318,6 +320,77 @@ func (h *Handler) deliverBlocks(ctx context.Context, srv *Server, envelope *cb.E
 		}
     }
     ...
+}
+```
+
+`Iterator`接口用来获取区块.
+
+```go
+// Iterator is useful for a chain Reader to stream blocks as they are created
+type Iterator interface {
+	// Next blocks until there is a new block available, or returns an error if
+	// the next block is no longer retrievable
+	Next() (*cb.Block, cb.Status)
+	// Close releases resources acquired by the Iterator
+	Close()
+}
+```
+
+Fabric有3种类型的账本：ram、json和file，它们都实现了这个接口，这里主要是为了辅助解释事件机制，我们看一个最简单的：ram的实现。
+
+`Next()`拿到的区块是从`simpleList.SetNext()`存进去的。
+
+```go
+// Next blocks until there is a new block available, or returns an error if the
+// next block is no longer retrievable
+func (cu *cursor) Next() (*cb.Block, cb.Status) {
+	// This only loops once, as signal reading indicates non-nil next
+	// 实际只执行1次
+	for {
+		// 拿到区块
+		next := cu.list.getNext()
+		if next != nil {
+			cu.list = next
+			return cu.list.block, cb.Status_SUCCESS
+		}
+		<-cu.list.signal
+	}
+}
+
+func (s *simpleList) getNext() *simpleList {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+	return s.next
+}
+
+// 设置
+func (s *simpleList) setNext(n *simpleList) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.next = n
+}
+```
+
+`Append()`是账本对外提供的接口，当要把区块追加到账本时，会调用此函数，该函数会调用`setNext()`设置待追加的区块。
+
+```go
+// Append appends a new block to the ledger
+func (rl *ramLedger) Append(block *cb.Block) error {
+	rl.lock.Lock()
+	defer rl.lock.Unlock()
+	// ...
+	rl.appendBlock(block)
+	return nil
+}
+
+func (rl *ramLedger) appendBlock(block *cb.Block) {
+	next := &simpleList{
+		signal: make(chan struct{}),
+		block:  block,
+	}
+	// 设置最新的区块
+	rl.newest.setNext(next)
+	// ...
 }
 ```
 
