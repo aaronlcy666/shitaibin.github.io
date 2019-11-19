@@ -105,16 +105,16 @@
   <meta name="description" content="前言Event是应用和Fabric网络交互的一种方式，应用可以通过SDK向Peer订阅某种类型的事件，当Peer发现事件发生时，可以把Event发送给应用，应用获取到通知信息。 Event功能介绍Event从来源上可以分为2类：  链码容器发出的Event Peer上账本变更发出的Event   图源自Tutorial Chaincode Event Listener on Hyperledger">
 <meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Fabric 1.4源码解读 3：Event原理解读">
+<meta property="og:title" content="Fabric 1.4源码解读 3：事件(Event)原理解读">
 <meta property="og:url" content="http://lessisbetter.site/2019/09/20/fabric-event-source/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="前言Event是应用和Fabric网络交互的一种方式，应用可以通过SDK向Peer订阅某种类型的事件，当Peer发现事件发生时，可以把Event发送给应用，应用获取到通知信息。 Event功能介绍Event从来源上可以分为2类：  链码容器发出的Event Peer上账本变更发出的Event   图源自Tutorial Chaincode Event Listener on Hyperledger">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-sdk-event.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-events.png">
-<meta property="og:updated_time" content="2019-09-20T11:49:37.368Z">
+<meta property="og:updated_time" content="2019-11-19T11:55:05.934Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Fabric 1.4源码解读 3：Event原理解读">
+<meta name="twitter:title" content="Fabric 1.4源码解读 3：事件(Event)原理解读">
 <meta name="twitter:description" content="前言Event是应用和Fabric网络交互的一种方式，应用可以通过SDK向Peer订阅某种类型的事件，当Peer发现事件发生时，可以把Event发送给应用，应用获取到通知信息。 Event功能介绍Event从来源上可以分为2类：  链码容器发出的Event Peer上账本变更发出的Event   图源自Tutorial Chaincode Event Listener on Hyperledger">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-sdk-event.png">
 
@@ -133,7 +133,7 @@
   };
 </script>
 
-  <title>Fabric 1.4源码解读 3：Event原理解读 | Go语言充电站</title>
+  <title>Fabric 1.4源码解读 3：事件(Event)原理解读 | Go语言充电站</title>
   
 
 
@@ -396,7 +396,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Fabric 1.4源码解读 3：Event原理解读
+          <h1 class="post-title" itemprop="name headline">Fabric 1.4源码解读 3：事件(Event)原理解读
 
               
             
@@ -422,12 +422,24 @@
                 
               
 
-              <time title="创建时间：2019-09-20 19:46:41 / 修改时间：19:49:37" itemprop="dateCreated datePublished" datetime="2019-09-20T19:46:41+08:00">2019-09-20</time>
+              <time title="创建时间：2019-09-20 19:46:41" itemprop="dateCreated datePublished" datetime="2019-09-20T19:46:41+08:00">2019-09-20</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-19 19:55:05" itemprop="dateModified" datetime="2019-11-19T19:55:05+08:00">2019-11-19</time>
               
             
           </span>
