@@ -102,15 +102,22 @@
 
 
 
-  <meta name="keywords" content="区块链,Fabric">
+  <meta name="description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
+<meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fabric 1.4源码解读 7：Orderer架构解读">
 <meta property="og:url" content="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/index.html">
 <meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-21T08:08:32.251Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-arch-of-orderer.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png">
+<meta property="og:updated_time" content="2019-11-24T11:06:28.602Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 1.4源码解读 7：Orderer架构解读">
+<meta name="twitter:description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
 
 
 
@@ -416,12 +423,24 @@
                 
               
 
-              <time title="创建时间：2019-11-21 16:07:54 / 修改时间：16:08:32" itemprop="dateCreated datePublished" datetime="2019-11-21T16:07:54+08:00">2019-11-21</time>
+              <time title="创建时间：2019-11-21 20:07:54" itemprop="dateCreated datePublished" datetime="2019-11-21T20:07:54+08:00">2019-11-21</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-24 19:06:28" itemprop="dateModified" datetime="2019-11-24T19:06:28+08:00">2019-11-24</time>
               
             
           </span>
@@ -462,7 +481,128 @@
       
 
       
-        <hr>
+        <h2 id="Orderer介绍"><a href="#Orderer介绍" class="headerlink" title="Orderer介绍"></a>Orderer介绍</h2><p>排序服务由一组<strong>排序节点</strong>组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的<strong>一致性</strong>服务。</p>
+<p><img src="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png" alt=""></p>
+<blockquote>
+<p>图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft</p>
+</blockquote>
+<p>排序服务所提供的一致性，依赖<strong>确定性的共识算法</strong>，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有Solo、Kafka、EtcdRaft。</p>
+<p>客户端<strong>通过Broadcast接口向Orderer提交背书过的交易</strong>，客户端（此处广义指用户客户端和<strong>Peer节点</strong>）<strong>通过Deliver接口订阅区块事件，从Orderer获取区块</strong>。</p>
+<p>更多的排序服务介绍请参考这篇官方文档<a href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/orderer/ordering_service.html" target="_blank" rel="noopener">排序服务</a>。</p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://img.lessisbetter.site/2019-11-arch-of-orderer.png" alt="Architecture of Orderer"></p>
+<blockquote>
+<p>本图依赖 Fabric 1.4 源码分析而得</p>
+</blockquote>
+<p>Orderer由：多通道、共识插件、消息处理器、本地配置、区块元数据、gRPC服务端、账本等组成，其中gRPC中的Deliver、Ledger是通用的（Peer也有），其余都是Orderer独有的。</p>
+<h3 id="多通道"><a href="#多通道" class="headerlink" title="多通道"></a>多通道</h3><p>Fabric 支持多通道特性，而Orderer是多通道的核心组成部分。多通道由Registrar、ChainSupport、BlockWriter等一些重要部件组成。</p>
+<p>Registrar是所有通道资源的汇总，访问每一条通道，都要经由Registrar，更多信息请看<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/#Registrar">Registrar</a>。</p>
+<p>ChainSupport代表了每一条通道，它融合了一条通道所有的资源，更多信息请看<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/#ChainSupport">ChainSupport</a>。</p>
+<p>BlockWriter 是区块达成共识后，Orderer写入区块到账本需要使用的接口。</p>
+<h3 id="共识插件"><a href="#共识插件" class="headerlink" title="共识插件"></a>共识插件</h3><p>Fabric的共识是插件化的，抽象出了Orderer所使用的共识接口，任何一种共识插件，只要满足给定的接口，就可以配合Fabric Orderer使用。</p>
+<p>当前共识有3种插件：Solo、Kafka、EtcdRaft。Solo用于实验环境，Kafka和EtcdRaft用于生产环境，Kafka和EtcdRaft都是CFT算法，但EtcdRaft比Kafka更易配置。</p>
+<p>EtcdRaft实在Fabric 1.4开始引入的，如果之前的生产环境使用Kafka作为共识，可以遵循Fabric给的指导，把Kafka共识，迁移到Raft共识。</p>
+<h3 id="gRPC通信"><a href="#gRPC通信" class="headerlink" title="gRPC通信"></a>gRPC通信</h3><p>Orderer只有2个gRPC接口：</p>
+<ul>
+<li>Broadcast：用来接收客户端提交的待排序交易</li>
+<li>Deliver：客户端（包括Peer节点）用来从Orderer节点获取已经达成一致的区块</li>
+</ul>
+<p>其中，Broadcast是Orderer独有的，而Devliver是通用的，因为客户端也可以利用Deliver接口从Peer节点获取区块、交易等。</p>
+<p>关于Broadcast和Orderer更多介绍可以参考杨保华的2篇笔记：</p>
+<ul>
+<li><a href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_broadcast.md" target="_blank" rel="noopener">Orderer 节点 Broadcast 请求的处理</a></li>
+<li><a href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_deliver.md" target="_blank" rel="noopener">Orderer 节点 Deliver 请求的处理</a>。<h3 id="Local-Config"><a href="#Local-Config" class="headerlink" title="Local Config"></a>Local Config</h3></li>
+</ul>
+<p>用来解析orderer节点的配置文件: <code>orderer.yaml</code>，并保存入内存。</p>
+<p>该配置文件中的配置，是节点本地的配置，不需要Orderer节点间统一的配置，因此不需要上链，相关配置有：</p>
+<ul>
+<li>网络相关配置</li>
+<li>账本类型、位置</li>
+<li>raft文件位置</li>
+<li>…</li>
+</ul>
+<p>而上链的配置，被称为通道配置，需要使用配置交易进行更新，这部分配置，写在<code>configtx.yaml</code>中，和Orderer相关的有：</p>
+<ul>
+<li>共识类型</li>
+<li>区块大小</li>
+<li>切区块的时间</li>
+<li>区块内交易数</li>
+<li>各种共识的相关配置</li>
+<li>…</li>
+</ul>
+<h3 id="Metadata"><a href="#Metadata" class="headerlink" title="Metadata"></a>Metadata</h3><p>区块中有4个元数据：</p>
+<ul>
+<li>orderer相关元数据，不同的共识类型，该元数据不同</li>
+<li>最新配置块高度，方便获取当前通道最新配置</li>
+<li>区块签名，存放orderer对区块的SignatureHeader</li>
+<li>交易过滤，由验证交易的peer节点填写</li>
+</ul>
+<p>区块Header中记录了Data.Hash()，Data是所有交易后序列化的结果，但不包含区块元数据，所以区块元数据是可以在产生区块后修改的。即，即使元数据上链了，但这数据是可以修改的，只不过修改也没有什么意义。</p>
+<h3 id="Msg-Processor"><a href="#Msg-Processor" class="headerlink" title="Msg Processor"></a>Msg Processor</h3><p>orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的Msg Processor，也就可以进行不同的检查。</p>
+<p>当前Processor分2个：</p>
+<ul>
+<li>应用通道的叫StandardChannel</li>
+<li>系统通道的叫SystemChannel</li>
+</ul>
+<p>StandardChannel会对交易进行以下检查：</p>
+<ul>
+<li>Payload不能为空</li>
+<li>Payload大小超过最大值</li>
+<li>交易交易签名不符合签名策略</li>
+<li>签名者证书是否过期</li>
+</ul>
+<p>SystemChannel只比StandardChannel多一项：系统配置检查，用来检查以下交易中包含的配置，配置项是否有缺失，或者此项配置是否允许更新等。</p>
+<h3 id="Ledger"><a href="#Ledger" class="headerlink" title="Ledger"></a>Ledger</h3><p>Orderer和Peer使用的Ledger并没有什么不同，Ledger的实现是通用的。</p>
+<p>Orderer基于Ledger的接口实现了BlockWriter，以实现Orderer写普通区块和配置区块要做的事情。</p>
+<h2 id="Orderer节点启动"><a href="#Orderer节点启动" class="headerlink" title="Orderer节点启动"></a>Orderer节点启动</h2><p>根据Fabric 1.4源码梳理Orderer启动步骤：</p>
+<ul>
+<li>加载配置文件</li>
+<li>设置Logger</li>
+<li>设置本地MSP</li>
+<li>核心启动部分：<ul>
+<li>加载创世块</li>
+<li>创建账本工厂</li>
+<li>创建本机gRPCServer</li>
+<li>如果共识需要集群(raft)，创建集群gRPCServer</li>
+<li>创建Registrar：设置好共识插件，启动各通道，如果共识是raft，还会设置集群的gRPC接口处理函数Step</li>
+<li>创建本机server：它是原子广播的处理服务，融合了Broadcast处理函数、deliver处理函数和registrar</li>
+<li>开启profile</li>
+<li>启动集群gRPC服务</li>
+<li>启动本机gRPC服务</li>
+</ul>
+</li>
+</ul>
+<p>启动流程图可请参考杨宝华的笔记<a href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_start.md" target="_blank" rel="noopener">Orderer 节点启动过程</a>，笔记可能是老版本的Fabric，但依然有参考价值。</p>
+<h2 id="Orderer处理交易的流程"><a href="#Orderer处理交易的流程" class="headerlink" title="Orderer处理交易的流程"></a>Orderer处理交易的流程</h2><h3 id="普通交易在Orderer中的流程"><a href="#普通交易在Orderer中的流程" class="headerlink" title="普通交易在Orderer中的流程"></a>普通交易在Orderer中的流程</h3><p>交易是区块链的核心，交易在Orderer中的流程分3阶段：</p>
+<ol>
+<li>Orderer 的 Broadcast 接口收到来自客户端提交的交易，会获取交易所在的链的资源，并进行首次检查，然后提交给该链的共识，对交易进行排序，最后向客户端发送响应，为下图蓝色部分。</li>
+<li>共识实例是单独运行的，也就是说Orderer把交易交给共识后，共识可能还在处理交易，然而Orderer已经开始向客户端发送提交交易的响应。共识如果发现排序服务的配置如果进行了更新，会再次检查交易，然后利用把Pending的交易分割成一组，然后打包成区块，然后共识机制确保各Orderer节点对区块达成一致，最后将区块写入账本。为下图绿色部分。</li>
+<li>Peer会向Orderer订阅区块事件，每当新区块被Orderer写入账本时，Orderer会把新区块以区块事件的方式，发送给Peer。为下图换色部分。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png" alt=""></p>
+<p>上面提到Orderer和共识实例分别会对交易进行2次检查，这些检查是相同的，为何要进行两次检查呢？</p>
+<p>代码如下：ProcessMessage 会调用<code>ProcessNormalMsg</code>，对交易进行第一次检查，如果有错误，会向客户端返回错误响应。 SomeConsensurFunc 是一个假的函数名称，但3种共识插件实现，都包含相同的代码片，当消息中 configSeq &lt; seq 时，再次对交易进行检查，如果错误，则丢次此条交易。configSeq是Order函数传入的，即第一次检查交易时的配置号，seq为共识当前运行时的配置号。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bh *Handler)</span> <span class="title">ProcessMessage</span><span class="params">(msg *cb.Envelope, addr <span class="keyword">string</span>)</span> <span class="params">(resp *ab.BroadcastResponse)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    configSeq, err := processor.ProcessNormalMsg(msg)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        logger.Warningf(<span class="string">"[channel: %s] Rejecting broadcast of normal message from %s because of error: %s"</span>, chdr.ChannelId, addr, err)</span><br><span class="line">        <span class="keyword">return</span> &amp;ab.BroadcastResponse&#123;Status: ClassifyError(err), Info: err.Error()&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    err = processor.Order(msg, configSeq)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SomeConsensurFunc</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> msg.configSeq &lt; seq &#123;</span><br><span class="line">        _, err = ch.support.ProcessNormalMsg(msg.normalMsg)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            logger.Warningf(<span class="string">"Discarding bad normal message: %s"</span>, err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我认为如此设计的原因，考量如下：<br>共识插件应当尽量高效，orderer尽量把能做的做掉，把不能做的交给共识插件，而交易检查就是orderer能做的。共识插件只有在排序服务配置更新后，才需要重新交易交易，以判断是否依然满足规则。排序服务的配置通常是比较稳定的，更新频率很低，所以进行2次校验的频率也是非常低。这种方式，比只在共识插件校验，会拥有更高的整体性能。</p>
+<h3 id="配置交易在Orderer中的流程"><a href="#配置交易在Orderer中的流程" class="headerlink" title="配置交易在Orderer中的流程"></a>配置交易在Orderer中的流程</h3><p>配置交易可以用来创建通道、更新通道配置，与普通交易的处理流程总体是相似的，只不过多了一些地方或者使用不同的函数，比如：</p>
+<ul>
+<li>交易检查函数不是ProcessNormalMsg，而是ProcessConfigMsg</li>
+<li>配置交易单独打包在1个区块</li>
+<li>配置交易写入账本后，要让配置生效，即Orderer应用最新的配置</li>
+<li>…</li>
+</ul>
+<h2 id="源码简介"><a href="#源码简介" class="headerlink" title="源码简介"></a>源码简介</h2><p>Orderer的代码位于<code>fabric/orderer</code>，其目录结构如下，标注了每个目录结构的功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric git:(readCode) ✗ tree -L 2 orderer</span><br><span class="line">orderer</span><br><span class="line">├── README.md</span><br><span class="line">├── common</span><br><span class="line">│   ├── blockcutter 缓存待打包的交易，切块</span><br><span class="line">│   ├── bootstrap 启动时替换通道创世块</span><br><span class="line">│   ├── broadcast orderer的Broadcast接口</span><br><span class="line">│   ├── cluster （Raft）集群服务</span><br><span class="line">│   ├── localconfig 解析orderer配置文件orderer.yaml</span><br><span class="line">│   ├── metadata 区块元数据填写</span><br><span class="line">│   ├── msgprocessor 交易检查</span><br><span class="line">│   ├── multichannel 多通道支持：Registrar、chainSupport、写区块</span><br><span class="line">│   └── server Orderer节点的服务端程序</span><br><span class="line">├── consensus 共识插件</span><br><span class="line">│   ├── consensus.go 共识插件需要实现的接口等定义</span><br><span class="line">│   ├── etcdraft raft共识插件</span><br><span class="line">│   ├── inactive 未激活时的raft</span><br><span class="line">│   ├── kafka kafka共识插件</span><br><span class="line">│   ├── mocks 测试用的共识插件</span><br><span class="line">│   └── solo solo共识插件</span><br><span class="line">├── main.go orderer程序入口</span><br><span class="line">├── mocks</span><br><span class="line">│   ├── common</span><br><span class="line">│   └── util</span><br><span class="line">└── sample_clients orderer的客户端程序样例</span><br><span class="line">    ├── broadcast_config</span><br><span class="line">    ├── broadcast_msg</span><br><span class="line">    └── deliver_stdout</span><br><span class="line"></span><br><span class="line">23 directories, 3 files</span><br></pre></td></tr></table></figure>
+<p>阅读Orderer源码，深入学习Orderer的时候，建议以下顺序：</p>
+<ul>
+<li>核心的数据结构，主要在multichannel、consensus.go：<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">Fabric 1.4源码解读 6：Orderer核心数据结构</a></li>
+<li>Orderer的启动</li>
+<li>Broadcast接口</li>
+<li>msgprocessor</li>
+<li>通过Solo掌握共识插件需要做哪些工作</li>
+<li>切块：blockcutter</li>
+<li>写区块：BlockWriter、metadata</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从宏观的角度介绍了Orderer的功能、核心组成，以及交易在Orderer中的流程，Peer如何从Orderer获取区块。</p>
 
       
     </div>
@@ -562,8 +702,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -846,6 +995,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer介绍"><span class="nav-number">1.</span> <span class="nav-text">Orderer介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">2.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多通道"><span class="nav-number">2.1.</span> <span class="nav-text">多通道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共识插件"><span class="nav-number">2.2.</span> <span class="nav-text">共识插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC通信"><span class="nav-number">2.3.</span> <span class="nav-text">gRPC通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Local-Config"><span class="nav-number">2.4.</span> <span class="nav-text">Local Config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Metadata"><span class="nav-number">2.5.</span> <span class="nav-text">Metadata</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Msg-Processor"><span class="nav-number">2.6.</span> <span class="nav-text">Msg Processor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ledger"><span class="nav-number">2.7.</span> <span class="nav-text">Ledger</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer节点启动"><span class="nav-number">3.</span> <span class="nav-text">Orderer节点启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer处理交易的流程"><span class="nav-number">4.</span> <span class="nav-text">Orderer处理交易的流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#普通交易在Orderer中的流程"><span class="nav-number">4.1.</span> <span class="nav-text">普通交易在Orderer中的流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置交易在Orderer中的流程"><span class="nav-number">4.2.</span> <span class="nav-text">配置交易在Orderer中的流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码简介"><span class="nav-number">5.</span> <span class="nav-text">源码简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
