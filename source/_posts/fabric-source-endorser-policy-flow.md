@@ -520,6 +520,8 @@ func (lscc *LifeCycleSysCC) Invoke(stub shim.ChaincodeStubInterface) pb.Response
 
 我们终于知道Policy是哪来的，又是如何被使用的了。管理和查看链码信息，本质是创建一个调用LSCC的Proposal或者交易，链码的信息会保存在LSCC，当VSCC验证链码的交易时，会从LSCC获取信息，包括背书策略、vscc插件等，以验证交易。
 
+最后，ESCC、VSCC也是进行了可插拔设计的。
+
 ![endorser policy](http://img.lessisbetter.site/2019-09-endorser-policy.png)
 
 
