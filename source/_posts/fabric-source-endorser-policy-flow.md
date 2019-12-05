@@ -27,7 +27,7 @@ const (
 )
 ```
 
-`TxValidationCode_ENDORSEMENT_POLICY_FAILURE`被`VSCCValidateTx`使用，系统链码和普通链码都有背书策略需要满足，下面代码片是普通链码部分，可以发小调用`VSCCValidateTxForCC`验证交易。
+`TxValidationCode_ENDORSEMENT_POLICY_FAILURE`被`VSCCValidateTx`使用，系统链码和普通链码都有背书策略需要满足，下面代码片是普通链码部分，可以发现调用`VSCCValidateTxForCC`验证交易。
 
 ```go
 // VSCCValidateTx executes vscc validation for transaction
