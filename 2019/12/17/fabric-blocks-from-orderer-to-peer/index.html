@@ -102,27 +102,28 @@
 
 
 
-  <meta name="description" content="前言社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。  大家的问题是：  一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？  经过实证，这是不可行的。 分2种情况，2种都有问题：  不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码 部分pee">
+  <meta name="description" content="Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。 网络拓扑假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况： 网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的O">
 <meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Fabric 1.4不同peer使用不同语言链码的问题">
-<meta property="og:url" content="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/index.html">
+<meta property="og:title" content="Fabric 1.4源码解读 8：Orderer和Peer的交互">
+<meta property="og:url" content="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="前言社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。  大家的问题是：  一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？  经过实证，这是不可行的。 分2种情况，2种都有问题：  不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码 部分pee">
+<meta property="og:description" content="Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。 网络拓扑假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况： 网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的O">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png">
-<meta property="og:updated_time" content="2019-09-11T06:27:33.204Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-12-orderer-to-peer.png">
+<meta property="og:updated_time" content="2019-12-17T06:15:48.920Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Fabric 1.4不同peer使用不同语言链码的问题">
-<meta name="twitter:description" content="前言社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。  大家的问题是：  一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？  经过实证，这是不可行的。 分2种情况，2种都有问题：  不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码 部分pee">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png">
+<meta name="twitter:title" content="Fabric 1.4源码解读 8：Orderer和Peer的交互">
+<meta name="twitter:description" content="Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。 网络拓扑假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况： 网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的O">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/"/>
+  <link rel="canonical" href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/"/>
 
 
 
@@ -132,7 +133,7 @@
   };
 </script>
 
-  <title>Fabric 1.4不同peer使用不同语言链码的问题 | Go语言充电站</title>
+  <title>Fabric 1.4源码解读 8：Orderer和Peer的交互 | Go语言充电站</title>
   
 
 
@@ -378,7 +379,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="大彬">
@@ -395,7 +396,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Fabric 1.4不同peer使用不同语言链码的问题
+          <h1 class="post-title" itemprop="name headline">Fabric 1.4源码解读 8：Orderer和Peer的交互
 
               
             
@@ -421,24 +422,12 @@
                 
               
 
-              <time title="创建时间：2019-09-03 11:50:31" itemprop="dateCreated datePublished" datetime="2019-09-03T11:50:31+08:00">2019-09-03</time>
+              <time title="创建时间：2019-12-17 20:14:34 / 修改时间：14:15:48" itemprop="dateCreated datePublished" datetime="2019-12-17T20:14:34+08:00">2019-12-17</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-09-11 14:27:33" itemprop="dateModified" datetime="2019-09-11T14:27:33+08:00">2019-09-11</time>
               
             
           </span>
@@ -479,37 +468,39 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png" alt="fabric chaincode error"></p>
-<p>大家的问题是：</p>
-<blockquote>
-<p>一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？</p>
-</blockquote>
-<p>经过实证，这是不可行的。</p>
-<p>分2种情况，2种都有问题：</p>
+        <p>Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。</p>
+<h2 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h2><p>假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况：</p>
+<p>网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的Orderer1节点。</p>
+<p>网络中存在2个应用channel：channel1和channel2，它们的账本分别是channel1 ledger和channel2 ledger，Org1和Org2都加入了这2个channel。</p>
+<p>channel间是隔离的，所以Peer和Orderer对不同的channel都会分别处理。</p>
+<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>下图展示了Orderer向Peer传递区块的宏观视角，能够展示多个通道在Orderer和Peer间传递区块的情况：</p>
 <ol>
-<li>不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码</li>
-<li>部分peer先实例化，另外peer再安装不同语言链码：调用链码时报指纹不匹配错误</li>
+<li>Orderer上有2个通道的账本，每个Peer分别有2个Deliver Server对应2个通道的账本，从账本读取区块，发送给Peer。</li>
+<li>每个Peer有2个Deliver Client，也对应2个通道，接收Orderer发来的区块，加入到缓冲区Payloads Buffer，然后再从Payloads Buffer中提取区块，验证后写入对应的通道账本。</li>
 </ol>
-<h2 id="不同peer安装不同语言链码，然后同时实例化"><a href="#不同peer安装不同语言链码，然后同时实例化" class="headerlink" title="不同peer安装不同语言链码，然后同时实例化"></a>不同peer安装不同语言链码，然后同时实例化</h2><p>1、修改BFYN，只在peer0.org1和peer0.org2上安装Go语言链码，不进行后续操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Installing chaincode on peer0.org1...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.108 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer0.org1 =====================</span><br><span class="line"></span><br><span class="line">Install chaincode on peer0.org2...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com/chaincode/chaincode_example02/go/</span><br><span class="line">+ res=0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.529 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">===================== Chaincode is installed on peer0.org2 =====================</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">========= All GOOD, BYFN execution completed ===========</span><br></pre></td></tr></table></figure>
-<p>2、在peer1.org1上安装Java语言链码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -l java -p /opt/gopath/src/github.com/chaincode/chaincode_example02/java/</span><br><span class="line">2019-09-03 03:19:44.710 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:19:44.711 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 03:19:44.754 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br></pre></td></tr></table></figure>
-<p>3、在peer1.org1上发起实例化链码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc -l golang -v 1.0 -c &apos;&#123;&quot;Args&quot;:[&quot;init&quot;,&quot;a&quot;,&quot;100&quot;,&quot;b&quot;,&quot;200&quot;]&#125;&apos; -P &apos;OR (&apos;\&apos;&apos;Org1MSP.peer&apos;\&apos;&apos;,&apos;\&apos;&apos;Org2MSP.peer&apos;\&apos;&apos;)&apos;</span><br><span class="line">2019-09-03 03:22:12.430 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:22:12.431 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br></pre></td></tr></table></figure>
-<p>4、查看链码容器，只有peer1.org1的链码容器，peer0.org1和peer0.org2的链码容器都没有起来。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric-sdk-go-sample git:(master) ✗ docker ps</span><br><span class="line">CONTAINER ID        IMAGE                                                                                                  COMMAND                  CREATED             STATUS              PORTS                      NAMES</span><br><span class="line">f8f6aa8b5da6        dev-peer1.org1.example.com-mycc-1.0-cd123150154e6bf2df7ce682e0b1bcbea40499416f37a6da3aae14c4eb51b08d   &quot;/root/chaincode-jav…&quot;   37 seconds ago      Up 36 seconds                                  dev-peer1.org1.example.com-mycc-1.0</span><br><span class="line">6cec20eb7502        hyperledger/fabric-tools:latest                                                                        &quot;/bin/bash&quot;              About an hour ago   Up About an hour                               cli</span><br><span class="line">7e134fe7e8e9        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:8051-&gt;8051/tcp     peer1.org1.example.com</span><br><span class="line">ed6f5511d938        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:10051-&gt;10051/tcp   peer1.org2.example.com</span><br><span class="line">025a71178777        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:7051-&gt;7051/tcp     peer0.org1.example.com</span><br><span class="line">8687dfd14e7b        hyperledger/fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:9051-&gt;9051/tcp     peer0.org2.example.com</span><br><span class="line">e9cc8b410d7f        hyperledger/fabric-orderer:latest                                                                      &quot;orderer&quot;                About an hour ago   Up About an hour    0.0.0.0:7050-&gt;7050/tcp     orderer.example.com</span><br></pre></td></tr></table></figure>
-<h2 id="部分peer先实例化，另外peer再安装不同语言链码"><a href="#部分peer先实例化，另外peer再安装不同语言链码" class="headerlink" title="部分peer先实例化，另外peer再安装不同语言链码"></a>部分peer先实例化，另外peer再安装不同语言链码</h2><p>不改造BYFN，原生启动。peer0.org1，peer0.org2，peer1.org2都已经实例化了Go语言链码。</p>
-<p>然后在peer1.org1上安装Java语言的链码，在执行Invoke或者查询，报指纹不匹配-数据不匹配的错误。</p>
-<p>原因分析：操作链码时，会调用LSCC的<code>LifeCycleSysCC.getCCCode</code>获取链码，一份链码是从数据库取的，即当前链码容器的，一份链码是本地存储的，会对2份进行匹配，如果不匹配就会报指纹不匹配错误。</p>
-<p>匹配函数为<code>CDSPackage.ValidateCC</code>，匹配项为：</p>
+<p><img src="http://img.lessisbetter.site/2019-12-spread-of-blocks.png" alt=""></p>
+<p>后面，介绍区块同步某个通道区块的情况。</p>
+<h2 id="单通道区块同步"><a href="#单通道区块同步" class="headerlink" title="单通道区块同步"></a>单通道区块同步</h2><p>Peer利用Deliver从Orderer获取区块，就像SDK利用Deliver从Peer获取区块一样，Deliver服务端的处理是一样的，Deliver客户端的处理就由SDK、Peer自行处理了。</p>
+<p>Deliver本质是一个事件订阅接口，Leading Peer启动后，会为每个通道，分别向Orderer节点注册<strong>区块事件</strong>，并且指定结束的区块高度为<code>uint</code>类型的最大值，这是为了不停的从orderer获取区块。</p>
+<p>通过建立的gRPC连接，Orderer源源不断的向Peer发送区块，具体流程，如下图所示：</p>
 <ol>
-<li>名称、版本</li>
-<li>CodeHash、元数据Hash</li>
+<li>Orderer调用<code>deliverBlock</code>函数，该函数是循环函数，获取区块直到指定高度。</li>
+<li>每当有新区块产生，<code>deliverBlock</code>能利用<code>NextBlock</code>从通道账本中读到最新的区块，如果没有最新区块，<code>NextBlock</code>会阻塞。</li>
+<li><code>deliverBlock</code>把获取的区块封装成区块事件，发送给Peer（写入到gRPC缓冲区）。</li>
+<li>Peer从gRPC读到区块事件，把区块提取出来后，加入到Payloads Buffer，Payloads Buffer默认大小为200（通过源码和日志发现，Payloads Buffer实际存储202个区块），如果Orderer想向Peer发送更多的区块，必须等Payloads Buffer被消费，有空闲的位置才可以。</li>
+<li><code>deliverPayloads</code>为循环函数，不断<strong>消费</strong>Payloads Buffer中的区块，执行区块验证，添加区块剩余元数据，最后写入通道账本。</li>
+<li>写通道账本包含区块写入区块账本，修改世界状态数据库，历史索引等。</li>
 </ol>
-<p>调用链码时报的指纹不匹配错误：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -l java -p /opt/gopath/src/github.com/chaincode/chaincode_example02/java/</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 01:52:15.755 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode query -C mychannel -n mycc -c &apos;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&apos;</span><br><span class="line">Error: endorsement failure during query. response: status:500 message:&quot;failed to execute transaction b8b740aab0e6dd10cfe62416240ef94bfb90a55358904233c4d60dd5a39e6fe3: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt  -c &apos;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;a&quot;,&quot;b&quot;,&quot;50&quot;]&#125;&apos;</span><br><span class="line">Error: endorsement failure during invoke. response: status:500 message:&quot;failed to execute transaction aec5a0ccbcf86032774dc80220b90419d2816cc3f050a104c1cfcde55a2247cb: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="文章"><a href="#文章" class="headerlink" title="文章"></a>文章</h2><p>另外，社区里的hucg编写了一篇源码文章：<a href="https://blog.csdn.net/love_feng_forever/article/details/100532324" target="_blank" rel="noopener">https://blog.csdn.net/love_feng_forever/article/details/100532324</a></p>
+<p><img src="http://img.lessisbetter.site/2019-12-orderer-to-peer.png" alt=""></p>
+<h2 id="为何Peer从Orderer获取区块慢？"><a href="#为何Peer从Orderer获取区块慢？" class="headerlink" title="为何Peer从Orderer获取区块慢？"></a>为何Peer从Orderer获取区块慢？</h2><p>在性能测试过程中，我们发现Orderer排序完成后，Peer还在不断的从Orderer获取区块，而不是所有排序后的区块都先发送给Peer，Peer缓存起来，慢慢去验证？</p>
+<p>上面提到Orderer向Peer发送的区块，Peer收到后先存到Payloads Buffer中，Buffer有空闲位置的时候，Orderer发送的区块才能写入Buffer，deliverBlock 1次循环才能完成，才可以发送下一个区块。</p>
+<p>但Payloads Buffer大小是有限的，当Buffer满后，Orderer发送区块的操作也会收到阻塞。</p>
+<p>我们可以把Orderer和Peer间发送区块可以抽象一下，它们就是生产者-消费者模型，它们中间是缓冲区，Orderer是生产者，向缓冲区写数据，Peer是消费者，从缓冲区读数据，缓冲区满了会阻塞生产者写数据。</p>
+<p>所以Orderer向Peer发送数据的快慢，取决消费者的速度，即取决于deliverPayloads处理一个区块的快慢。</p>
+<p>deliverPayloads慢在把区块写入区块账本，也就是写账本，成了整个网络的瓶颈。</p>
+<h2 id="为何不让Peer缓存所有未处理的区块？"><a href="#为何不让Peer缓存所有未处理的区块？" class="headerlink" title="为何不让Peer缓存所有未处理的区块？"></a>为何不让Peer缓存所有未处理的区块？</h2><p>从我们测试的情况看，Orderer排序的速度远快于Peer，Peer和Orderer的高度差可以达到10万+，如果让Peer来缓存这些区块，然后再做处理是需要耗费大量的空间。</p>
+<p>在生产者-消费者模型中，只需要要消费者时刻都有数据处理即可。虽然Orderer和Peer之间是网络传输，测试网络比较可靠，传输速度远比Peer处理区块要快。</p>
+<p>Payloads Buffer可以让网络传输区块和Peer处理区块并行，这样缩短了一个区块从Orderer中发出，到Peer写入区块到账本的总时间，提升Fabric网络整体性能。</p>
 
       
     </div>
@@ -552,8 +543,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/02/hyperledger-projects/" rel="next" title="Hyperledger项目介绍">
-                <i class="fa fa-chevron-left"></i> Hyperledger项目介绍
+              <a href="/2019/12/16/fabric-2-0/" rel="next" title="Fabric 2.0 特性一览">
+                <i class="fa fa-chevron-left"></i> Fabric 2.0 特性一览
               </a>
             
           </div>
@@ -561,10 +552,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/05/etcd-raft-sources-structs/" rel="prev" title="Etcd Raft架构设计和源码剖析3：重要结构体定义">
-                Etcd Raft架构设计和源码剖析3：重要结构体定义 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -917,7 +904,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同peer安装不同语言链码，然后同时实例化"><span class="nav-number">2.</span> <span class="nav-text">不同peer安装不同语言链码，然后同时实例化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部分peer先实例化，另外peer再安装不同语言链码"><span class="nav-number">3.</span> <span class="nav-text">部分peer先实例化，另外peer再安装不同语言链码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文章"><span class="nav-number">4.</span> <span class="nav-text">文章</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络拓扑"><span class="nav-number">1.</span> <span class="nav-text">网络拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏观视角"><span class="nav-number">2.</span> <span class="nav-text">宏观视角</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单通道区块同步"><span class="nav-number">3.</span> <span class="nav-text">单通道区块同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为何Peer从Orderer获取区块慢？"><span class="nav-number">4.</span> <span class="nav-text">为何Peer从Orderer获取区块慢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为何不让Peer缓存所有未处理的区块？"><span class="nav-number">5.</span> <span class="nav-text">为何不让Peer缓存所有未处理的区块？</span></a></li></ol></div>
             
 
           </div>
