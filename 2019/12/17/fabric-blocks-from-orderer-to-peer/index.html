@@ -110,13 +110,13 @@
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。 网络拓扑假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况： 网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的O">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-12-orderer-to-peer.png">
-<meta property="og:updated_time" content="2019-12-17T06:15:48.920Z">
+<meta property="og:updated_time" content="2019-12-17T06:17:08.324Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 1.4源码解读 8：Orderer和Peer的交互">
 <meta name="twitter:description" content="Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。 网络拓扑假设存在如下的Fabric网络拓扑情况，本文使用此拓扑进行介绍Orderer到Peer的区块传播情况： 网络中存在两家组织：Org1和Org2，它们分别拥有Peer1作为主节点，连向了排序服务的O">
-<meta name="twitter:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks.png">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png">
 
 
 
@@ -422,7 +422,7 @@
                 
               
 
-              <time title="创建时间：2019-12-17 20:14:34 / 修改时间：14:15:48" itemprop="dateCreated datePublished" datetime="2019-12-17T20:14:34+08:00">2019-12-17</time>
+              <time title="创建时间：2019-12-17 20:14:34 / 修改时间：14:17:08" itemprop="dateCreated datePublished" datetime="2019-12-17T20:14:34+08:00">2019-12-17</time>
             
 
             
@@ -478,7 +478,7 @@
 <li>Orderer上有2个通道的账本，每个Peer分别有2个Deliver Server对应2个通道的账本，从账本读取区块，发送给Peer。</li>
 <li>每个Peer有2个Deliver Client，也对应2个通道，接收Orderer发来的区块，加入到缓冲区Payloads Buffer，然后再从Payloads Buffer中提取区块，验证后写入对应的通道账本。</li>
 </ol>
-<p><img src="http://img.lessisbetter.site/2019-12-spread-of-blocks.png" alt=""></p>
+<p><img src="http://img.lessisbetter.site/2019-12-spread-of-blocks-new.png" alt=""></p>
 <p>后面，介绍区块同步某个通道区块的情况。</p>
 <h2 id="单通道区块同步"><a href="#单通道区块同步" class="headerlink" title="单通道区块同步"></a>单通道区块同步</h2><p>Peer利用Deliver从Orderer获取区块，就像SDK利用Deliver从Peer获取区块一样，Deliver服务端的处理是一样的，Deliver客户端的处理就由SDK、Peer自行处理了。</p>
 <p>Deliver本质是一个事件订阅接口，Leading Peer启动后，会为每个通道，分别向Orderer节点注册<strong>区块事件</strong>，并且指定结束的区块高度为<code>uint</code>类型的最大值，这是为了不停的从orderer获取区块。</p>
