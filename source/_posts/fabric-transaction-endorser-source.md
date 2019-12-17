@@ -1018,9 +1018,11 @@ func (e *Endorser) endorseProposal(_ context.Context, chainID string, txid strin
 	// 调用插件背书
 	return e.s.EndorseWithPlugin(ctx)
 }
-```	
+```
+
 
 背书插件实现下面的接口即可。
+
 
 ```go
 // Plugin endorses a proposal response
