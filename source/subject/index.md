@@ -76,7 +76,7 @@ tag: ['TODO']
 ### 架构与源码
 1. [Fabric 1.4源码解读 1：背书策略是怎么使用的](http://lessisbetter.site/2019/09/06/fabric-source-endorser-policy-flow/)
 1. [Fabric 1.4源码解读 2：系统链码SCC是如何部署的](http://lessisbetter.site/2019/09/11/fabric-deploy-scc/)
-1. [http://lessisbetter.site/2019/09/20/fabric-event-source/](http://lessisbetter.site/2019/09/20/fabric-event-source/)
+1. [Fabric 1.4源码解读 3：事件(Event)原理解读](http://lessisbetter.site/2019/09/20/fabric-event-source/)
 1. [Fabric 1.4源码解读 4：交易背书流程解读](http://lessisbetter.site/2019/10/29/fabric-transaction-endorser-source/)
 1. [Fabric 1.4源码解读 5：Fabric是如何验证签名的？](http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/)
 1. [Fabric 1.4源码解读 6：Orderer核心数据结构](http://lessisbetter.site/2019/11/18/fabric-orderer-structs/)
