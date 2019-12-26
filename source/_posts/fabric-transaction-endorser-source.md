@@ -1123,6 +1123,8 @@ func (e *DefaultEndorsement) Endorse(prpBytes []byte, sp *peer.SignedProposal) (
 
 `ProcessProposal` 会把 ProposalResponse 作为返回值，剩下的就交给 gRPC，发送给请求方了。
 
+
+
 ## 总结
 
 本文从宏观和源码层面，解读了交易提案背书涉及的数据结构，以及其主要背书流程，核心可以主要包含以下几步：
