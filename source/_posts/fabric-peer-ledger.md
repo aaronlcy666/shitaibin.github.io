@@ -188,3 +188,8 @@ MVCC可以实现并发读写的能力，当读数据时，先确定待读数据�
 本文从账本的视角，介绍了Peer的账本，以及和账本打交道的功能。
 
 真正企业级的区块链、大用户规模的区块链，必然能够支撑大量的并发交易，这对账本以及底层存储，都会提出更高的性能要求、磁盘利用率要求，所以理解和掌握账本和存储机制是非常有必要的。
+
+## 参考
+
+- [浅谈数据库并发控制 - 锁和 MVCC](https://draveness.me/database-concurrency-control)
+- [WIKI: MVCC](https://en.wikipedia.org/wiki/Multiversion_concurrency_control)
