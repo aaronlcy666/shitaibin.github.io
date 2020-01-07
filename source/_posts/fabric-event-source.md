@@ -687,4 +687,6 @@ func (ed *Dispatcher) publishCCEvents(ccEvent *pb.ChaincodeEvent, blockNum uint6
 
 更多SDK事件的使用，请参考[文档](https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/event#New)。
 
+Fabric事件介绍的[官方文档(https://stone-fabric.readthedocs.io/zh/latest/peer_event_services.html)。
+
 Fabric在examples中还提供了一个[eventclient](https://github.com/hyperledger/fabric/tree/release-1.4/examples/events/eventsclient)样例，看这个样例更有助于理解Fabric event的原理，以及是如何交互的。
