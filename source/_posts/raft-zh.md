@@ -84,7 +84,7 @@ Raft 算法在许多方面和现有的一致性算法都很相似（主要是 Ok
 
 ## 3 Paxos 算法的问题
 
-在过去的 10 年里，Leslie Lamport 的 Paxos 算法几乎已经成为一致性的代名词：Paxos 是在课程教学中最经常使用的算法，同时也是大多数一致性算法实现的起点。Paxos 首先定义了一个能够达成单一决策一致的协议，比如单条的复制日志项。我们把这一子集叫做单决策 Paxos。然后通过组合多个 Paxos 协议的实例来促进一系列决策的达成。Paxos 保证安全性和活性，同时也支持集群成员关系的变更。Paxos 的正确性已经被证明，在通常情况下也很高效。
+在过去的 10 年里，Leslie Lamport 的 Paxos 算法几乎已经成为一致性的代名词：Paxos 是在课程教学中最经常使用的算法，同时也是大多数一致性算法实现的起点。**Paxos 首先定义了一个能够达成单一决策一致的协议，比如单条的复制日志项。我们把这一子集叫做单决策 Paxos。然后通过组合多个 Paxos 协议的实例来促进一系列决策的达成。Paxos 保证安全性和活性，同时也支持集群成员关系的变更。**Paxos 的正确性已经被证明，在通常情况下也很高效。
 
 不幸的是，Paxos 有两个明显的缺点。第一个缺点是 Paxos 算法特别的**难以理解**。完整的解释是出了名的不透明；通过极大的努力之后，也只有少数人成功理解了这个算法。因此，有了几次用更简单的术语来解释 Paxos 的尝试。尽管这些解释都只关注了单决策的子集问题，但依然很具有挑战性。在 2012 年 NSDI 的会议中的一次调查显示，很少有人对 Paxos 算法感到满意，甚至在经验老道的研究者中也是如此。我们自己也尝试去理解 Paxos；我们一直没能理解 Paxos 直到我们读了很多对 Paxos 的简化解释并且设计了我们自己的算法之后，这一过程花了近一年时间。
 
@@ -592,8 +592,28 @@ Raft 的强领导人模型简化了整个算法，但是同时也排斥了一些
 
 这项研究必须感谢以下人员的支持：Ali Ghodsi，David Mazie\`res，和伯克利 CS 294-91 课程、斯坦福 CS 240 课程的学生。Scott Klemmer 帮我们设计了用户调查，Nelson Ray 建议我们进行统计学的分析。在用户调查时使用的关于 Paxos 的幻灯片很大一部分是从 Lorenzo Alvisi 的幻灯片上借鉴过来的。特别的，非常感谢 DavidMazieres 和 Ezra Hoch，他们找到了 Raft 中一些难以发现的漏洞。许多人提供了关于这篇论文十分有用的反馈和用户调查材料，包括 Ed Bugnion，Michael Chan，Hugues Evrard，Daniel Giffin，Arjun Gopalan，Jon Howell，Vimalkumar Jeyakumar，Ankita Kejriwal，Aleksandar Kracun，Amit Levy，Joel Martin，Satoshi Matsushita，Oleg Pesok，David Ramos，Robbert van Renesse，Mendel Rosenblum，Nicolas Schiper，Deian Stefan，Andrew Stone，Ryan Stutsman，David Terei，Stephen Yang，Matei Zaharia 以及 24 位匿名的会议审查人员（可能有重复），并且特别感谢我们的领导人 Eddie Kohler。Werner Vogels 发了一条早期草稿链接的推特，给 Raft 带来了极大的关注。我们的工作由 Gigascale 系统研究中心和 Multiscale 系统研究中心给予支持，这两个研究中心由关注中心研究程序资金支持，一个是半导体研究公司的程序，由 STARnet 支持，一个半导体研究公司的程序由 MARCO 和 DARPA 支持，在国家科学基金会的 0963859 号批准，并且获得了来自 Facebook，Google，Mellanox，NEC，NetApp，SAP 和 Samsung 的支持。Diego Ongaro 由 Junglee 公司，斯坦福的毕业团体支持。
 
-## 参考
+# Paxos和Raft类比
 
-略
+用2个小故事场景，来对比Paxos和Raft，Paxos和Raft都是非拜占庭算法，所以就不要考虑故事中的作弊、欺骗等问题。
 
-[paper]: https://raft.github.io/raft.pdf "Raft英文论文"
+## 故事背景
+
+小岛上有个村子，村里的大事必须进行提案，如果想让所有村民都执行同1个提案，必须得到大部门村民的同意，但是，它们有2种达成一致的办法，分别称为Paxos和Raft。
+
+## Paxos
+
+Paxos是一种原始的民主，每一个人可以提案，提案人把提案发送给所有村民，村民投赞成或者反对，提案人收集投票，收到一半投票的时候，把投票结果分发给所有人，所有人执行提案。
+
+但是，因为每个人都可以提案，假如有个村民提案了，在村民执行提案之前，收到其他村民的新提案，老提案就会被打断，被废弃掉了。如果这种情况持续，就一直没有办法达成一致了。
+
+## Raft
+
+Raft是一种进化的民主，村民可以选举，村民都选举个村长，让村长来提案，大家来投票就行，当村长收到大多数村民，对提案的投票时，就告诉村民，某个提案通过了，大家都执行提案。
+
+如果村长不在了，村民还可以选举一个新的村长。
+
+无论是Paxos还是Raft，当参与投票的村民达不到半数时，都无法对提案达成一致。
+
+# 参考
+
+- paper: https://raft.github.io/raft.pdf
