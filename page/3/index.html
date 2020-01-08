@@ -666,7 +666,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-18 10:53:34" itemprop="dateModified" datetime="2019-11-18T10:53:34+08:00">2019-11-18</time>
+                <time title="修改时间：2020-01-08 17:45:26" itemprop="dateModified" datetime="2020-01-08T17:45:26+08:00">2020-01-08</time>
               
             
           </span>
@@ -747,7 +747,8 @@
 <li>raftNode会把日志写入到storage和WAL，把需要应用的日志，提交给状态机或数据库，去修改数据</li>
 <li>raftNode处理完Ready后，调用Advance函数，通过advancec发送一个信号给raft，告知raft传出来的Ready已经处理完毕</li>
 </ol>
-<p>可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的。Storage接口更多信息请看<a href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage">Storage接口介绍</a>。</p>
+<p>可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的，但raftNode.storage就是raft.MemoryStorage，所以不稳定的、稳定的都由raft存储，持久化存储由WAL负责，etcd中有现成实现的WAL操作可用，用来存储历史Entry、快照。</p>
+<p>Storage接口更多信息请看<a href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage">Storage接口介绍</a>。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png" alt="etcd raft apply logs flow"></p>
 
           
