@@ -69,7 +69,9 @@ raft会将达成一致的log通知给raftNode，让它应用到上层的数据�
 1. raftNode会把日志写入到storage和WAL，把需要应用的日志，提交给状态机或数据库，去修改数据
 1. raftNode处理完Ready后，调用Advance函数，通过advancec发送一个信号给raft，告知raft传出来的Ready已经处理完毕
 
-可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的。Storage接口更多信息请看[Storage接口介绍](http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage)。
+可以发现有2个storage，1个是raftLog.Storage，一个是raftNode.storage，Storage是一个接口，可以用来读取storage中的数据，但不写入，storage的数据写入是由raftNode完成的，但raftNode.storage就是raft.MemoryStorage，所以不稳定的、稳定的都由raft存储，持久化存储由WAL负责，etcd中有现成实现的WAL操作可用，用来存储历史Entry、快照。
+
+Storage接口更多信息请看[Storage接口介绍](http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage)。
 
 ![etcd raft apply logs flow](http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png)
 

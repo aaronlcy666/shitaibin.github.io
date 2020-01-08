@@ -116,12 +116,13 @@ Message中包含了很多字段，不同的消息类型使用的字段组合不�
 
 ## Storage
 
-etcd raft不负责数据存储和网络通信，网络数据都是通过Node接口的函数传入和传出raft。数据存储由创建raft.Node的应用层负责，数据存储包含：
+etcd/raft不负责**持久化数据存储**和网络通信，网络数据都是通过Node接口的函数传入和传出raft。持久化数据存储由创建raft.Node的应用层负责，包含：
 
 - 应用层使用Entry生成的状态机，即一致的应用数据。
-- raft算法使用的存储信息，比如保存Entry序列的文件，保存Snapshot的文件。
+- WAL：Write Ahead Log，历史的Entry（包含还未达成一致的Entry）和快照数据。
 
-它们都在应用层，raft为了能够**读取**这些数据，定义了一个接口`Storage`：
+Snapshot是已在节点间达成一致Entry的快照，快照之前的Entry必然都是已经达成一致的，而快照之后，有达成一致的，也有写入磁盘还未达成一致的Entry。etcd/raft会使用到这些Entry和快照，而`Storage`接口，就是用来读这些数据的。
+
 
 ```go
 // Storage is an interface that may be implemented by the application
@@ -167,6 +168,8 @@ type Storage interface {
 - LastIndex：获取本节点已存储的最新的Entry的Index
 - FirstIndex：获取本节点已存储的第一个Entry的Index
 - Snapshot：获取本节点最近生成的Snapshot，Snapshot是由应用层创建的，并暂时保存起来，raft调用此接口读取
+
+每次都从磁盘文件读取这些数据，效率必然是不高的，所以etcd/raft内定义了`MemoryStorage`，它实现了`Storage`接口，并且提供了函数来维护最新快照后的Entry，关于`MemoryStorage`见[raftLog](#raftLog)小节，其中的`storage`即为`MemoryStorage`。
 
 ## unstable
 
