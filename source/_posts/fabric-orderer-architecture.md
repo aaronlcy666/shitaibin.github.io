@@ -88,9 +88,9 @@ Orderer只有2个gRPC接口：
 
 区块Header中记录了Data.Hash()，Data是所有交易后序列化的结果，但不包含区块元数据，所以区块元数据是可以在产生区块后修改的。即，即使元数据上链了，但这数据是可以修改的，只不过修改也没有什么意义。
 
-### Msg Processor
+### MsgProcessor
 
-orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的Msg Processor，也就可以进行不同的检查。
+orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的MsgProcessor，也就可以进行不同的检查。
 
 当前Processor分2个：
 - 应用通道的叫StandardChannel
