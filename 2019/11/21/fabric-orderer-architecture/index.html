@@ -113,7 +113,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-arch-of-orderer.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png">
-<meta property="og:updated_time" content="2019-11-24T11:06:28.602Z">
+<meta property="og:updated_time" content="2020-01-10T07:39:02.124Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 1.4源码解读 7：Orderer架构解读">
 <meta name="twitter:description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
@@ -442,7 +442,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-24 19:06:28" itemprop="dateModified" datetime="2019-11-24T19:06:28+08:00">2019-11-24</time>
+                <time title="修改时间：2020-01-10 15:39:02" itemprop="dateModified" datetime="2020-01-10T15:39:02+08:00">2020-01-10</time>
               
             
           </span>
@@ -539,7 +539,7 @@
 <li>交易过滤，由验证交易的peer节点填写</li>
 </ul>
 <p>区块Header中记录了Data.Hash()，Data是所有交易后序列化的结果，但不包含区块元数据，所以区块元数据是可以在产生区块后修改的。即，即使元数据上链了，但这数据是可以修改的，只不过修改也没有什么意义。</p>
-<h3 id="Msg-Processor"><a href="#Msg-Processor" class="headerlink" title="Msg Processor"></a>Msg Processor</h3><p>orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的Msg Processor，也就可以进行不同的检查。</p>
+<h3 id="MsgProcessor"><a href="#MsgProcessor" class="headerlink" title="MsgProcessor"></a>MsgProcessor</h3><p>orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的MsgProcessor，也就可以进行不同的检查。</p>
 <p>当前Processor分2个：</p>
 <ul>
 <li>应用通道的叫StandardChannel</li>
@@ -1021,7 +1021,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer介绍"><span class="nav-number">1.</span> <span class="nav-text">Orderer介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">2.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多通道"><span class="nav-number">2.1.</span> <span class="nav-text">多通道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共识插件"><span class="nav-number">2.2.</span> <span class="nav-text">共识插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC通信"><span class="nav-number">2.3.</span> <span class="nav-text">gRPC通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Local-Config"><span class="nav-number">2.4.</span> <span class="nav-text">Local Config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Metadata"><span class="nav-number">2.5.</span> <span class="nav-text">Metadata</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Msg-Processor"><span class="nav-number">2.6.</span> <span class="nav-text">Msg Processor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ledger"><span class="nav-number">2.7.</span> <span class="nav-text">Ledger</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer节点启动"><span class="nav-number">3.</span> <span class="nav-text">Orderer节点启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer处理交易的流程"><span class="nav-number">4.</span> <span class="nav-text">Orderer处理交易的流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#普通交易在Orderer中的流程"><span class="nav-number">4.1.</span> <span class="nav-text">普通交易在Orderer中的流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置交易在Orderer中的流程"><span class="nav-number">4.2.</span> <span class="nav-text">配置交易在Orderer中的流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码简介"><span class="nav-number">5.</span> <span class="nav-text">源码简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer介绍"><span class="nav-number">1.</span> <span class="nav-text">Orderer介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">2.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多通道"><span class="nav-number">2.1.</span> <span class="nav-text">多通道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共识插件"><span class="nav-number">2.2.</span> <span class="nav-text">共识插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC通信"><span class="nav-number">2.3.</span> <span class="nav-text">gRPC通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Local-Config"><span class="nav-number">2.4.</span> <span class="nav-text">Local Config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Metadata"><span class="nav-number">2.5.</span> <span class="nav-text">Metadata</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MsgProcessor"><span class="nav-number">2.6.</span> <span class="nav-text">MsgProcessor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ledger"><span class="nav-number">2.7.</span> <span class="nav-text">Ledger</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer节点启动"><span class="nav-number">3.</span> <span class="nav-text">Orderer节点启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Orderer处理交易的流程"><span class="nav-number">4.</span> <span class="nav-text">Orderer处理交易的流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#普通交易在Orderer中的流程"><span class="nav-number">4.1.</span> <span class="nav-text">普通交易在Orderer中的流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置交易在Orderer中的流程"><span class="nav-number">4.2.</span> <span class="nav-text">配置交易在Orderer中的流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码简介"><span class="nav-number">5.</span> <span class="nav-text">源码简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
