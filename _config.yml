@@ -84,6 +84,5 @@ deploy:
   type: git
   repository:
     github: git@github.com:Shitaibin/shitaibin.github.io.git
-    coding: git@e.coding.net:shitaibin/blog.git
   branch: master
 
