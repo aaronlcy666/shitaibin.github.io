@@ -31,7 +31,7 @@ tags: ['Go']
 ### Go垃圾回收发展史
 
 - [go1.1](https://golang.org/doc/go1.1#performance)，提高效率和垃圾回收精确度。
-- [go.13](https://golang.org/doc/go1.3#garbage_collector)，提高了垃圾回收的精确度。
+- [go1.3](https://golang.org/doc/go1.3#garbage_collector)，提高了垃圾回收的精确度。
 - [go1.4](https://golang.org/doc/go1.4#runtime)，之前版本的runtime大部分是使用C写的，这个版本大量使用Go进行了重写，让GC有了扫描stack的能力，进一步提高了垃圾回收的精确度。
 
 - [go1.5](https://golang.org/doc/go1.5#gc)，目标是降低GC延迟，采用了**并发标记和并发清除，三色标记**，**write barrier**，以及实现了更好的**回收器调度**，设计[文档1](https://docs.google.com/document/d/16Y4IsnNRCN43Mx0NZc5YXZLovrHvvLhK_h0KN8woTO4/edit)，[文档2](https://golang.org/s/go15gcpacing)，以及这个版本的[Go talk][gotalk]。

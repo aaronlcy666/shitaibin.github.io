@@ -48,7 +48,7 @@ tags: ['Fabric', '区块链']
 
 **区块文件使用文件直接存储区块，没有使用数据库的原因**是：区块是一种自然的追加操作，写入后不再修改，即不会覆盖历史区块，使用文件系统直接存储区块，可以达到区块最快落盘的目的，因为向文件写区块是顺序写，而写数据库是随机写，磁盘（包含HD、SSD）的顺序写性能要高于随机写。
 
-世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持父查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档[使用 CouchDB](https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html)。
+世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持富查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档[使用 CouchDB](https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html)。
 
 其他数据库都使用leveldb作为底层存储。
 
