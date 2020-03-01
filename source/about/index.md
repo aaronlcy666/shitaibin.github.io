@@ -30,4 +30,4 @@
 网站文件托管变迁：
 1. [Github Pages](https://pages.github.com/)：国内访问太慢，迁移到Coding Pages。
 1. [Coding Pages](https://coding.net/)：服务器迁移到新加坡了，迁移到七牛云存储。
-1. [七牛云存储](qiniu.com)：目前访问较快、稳定。
+1. [七牛云存储](https://qiniu.com)：目前访问较快、稳定。
