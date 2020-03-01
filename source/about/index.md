@@ -23,3 +23,11 @@
 | ------ | ---------- | ---------------------------------------------------------- | --- |
 | 2019年06月02日 | Go语言中文网杭州MeetUp | [Go语言思维FirstClassFunction](http://img.lessisbetter.site/Go语言思维First-class-function.pdf) | [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/) |
 
+## 博客托管历史
+
+本博客图片一致托管在[七牛对象存储](https://www.qiniu.com/products/kodo)，感谢七牛提供的免费存储空间。
+
+网站文件托管变迁：
+1. [Github Pages](https://pages.github.com/)：国内访问太慢，迁移到Coding Pages。
+1. [Coding Pages](https://coding.net/)：服务器迁移到新加坡了，迁移到七牛云存储。
+1. [七牛云存储](qiniu.com)：目前访问较快、稳定。
