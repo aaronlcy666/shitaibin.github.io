@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2020-01-03-usage-of-peer-ledger.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2020-01-mvcc-read-write.png">
-<meta property="og:updated_time" content="2020-01-08T00:41:31.657Z">
+<meta property="og:updated_time" content="2020-02-14T07:02:17.527Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 1.4源码解读 9：从账本角度看Peer">
 <meta name="twitter:description" content="区块链最核心的是可信数据，所有的功能与设计根源都是数据。本次从数据存储的角度，看一看Peer。 账本区块链的数据存储在账本中，账本包含：  区块存储 区块文件 区块索引数据库   世界状态数据库 历史数据库 私有数据数据库  关于账本以上各数据库的工具，官方文档中对区块存储和世界状态数据库介绍的比较详细了，但我们介绍下它没有提到的。 区块文件和区块索引数据库区块是保存在文件中的，为了快速查找区块、">
@@ -443,7 +443,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-01-08 08:41:31" itemprop="dateModified" datetime="2020-01-08T08:41:31+08:00">2020-01-08</time>
+                <time title="修改时间：2020-02-14 15:02:17" itemprop="dateModified" datetime="2020-02-14T15:02:17+08:00">2020-02-14</time>
               
             
           </span>
@@ -512,7 +512,7 @@
 <p>答：通过历史数据库合成复合key，但复合key中没有交易在区块中的序号，创建一个迭代器，迭代器可以获取包含key的复合key，然后从复合key中提取到交易在区块的序号，然后去区块文件中提取交易，再提取到写集的Value，就可以合成某个key的所有历史值。</p>
 <p>因此<strong>查询历史状态，需要结合历史数据库和区块文件</strong>。</p>
 <h2 id="各数据库实现"><a href="#各数据库实现" class="headerlink" title="各数据库实现"></a>各数据库实现</h2><p><strong>区块文件使用文件直接存储区块，没有使用数据库的原因</strong>是：区块是一种自然的追加操作，写入后不再修改，即不会覆盖历史区块，使用文件系统直接存储区块，可以达到区块最快落盘的目的，因为向文件写区块是顺序写，而写数据库是随机写，磁盘（包含HD、SSD）的顺序写性能要高于随机写。</p>
-<p>世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持父查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档<a href="https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html" target="_blank" rel="noopener">使用 CouchDB</a>。</p>
+<p>世界状态数据库可以使用leveldb或者CouchDB，CouchDB支持富查询功能，当链码数据按JSON建模时，CouchDB可以提供更好的数据查询，更多CouchDB的信息见文档<a href="https://stone-fabric.readthedocs.io/zh/latest/couchdb_tutorial.html" target="_blank" rel="noopener">使用 CouchDB</a>。</p>
 <p>其他数据库都使用leveldb作为底层存储。</p>
 <p><img src="http://img.lessisbetter.site/2020-01-peer-ledger-storage.png" alt=""></p>
 <p><strong>提醒</strong>：Fabric支持多通道，逻辑上每个通道拥有一个账本。实现上区块文件是按通道名隔离开了，使用leveldb的各数据库，被各通道共用。</p>
