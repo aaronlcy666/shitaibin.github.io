@@ -84,6 +84,6 @@ deploy:
   type: git
   repository:
     github: git@github.com:Shitaibin/shitaibin.github.io.git
-    coding: git@git.dev.tencent.com:shitaibin/shitaibin.git
+    coding: git@e.coding.net:shitaibin/shitaibin.git
   branch: master
 
