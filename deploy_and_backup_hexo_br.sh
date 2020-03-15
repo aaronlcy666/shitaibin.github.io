@@ -19,9 +19,11 @@ git push origin hexo_resource
 echo "===================== Generate website files ====================="
 hexo generate
 
-echo "===================== Push website files to Qiniu ====================="
-qshell qupload qiniu.conf
-
 # No need deploy to github
-# hexo d
-# echo "===================== Deploy to github success ====================="
+echo "===================== Push website files to github ====================="
+hexo d
+
+# echo "===================== Push website files to Qiniu ====================="
+# qshell qupload qiniu.conf
+
+
