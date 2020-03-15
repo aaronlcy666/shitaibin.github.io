@@ -378,6 +378,632 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/03/go-concurrent-problems1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/03/go-concurrent-problems1/" class="post-title-link" itemprop="url">Go面试题：并发</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-03 09:23:17" itemprop="dateCreated datePublished" datetime="2019-05-03T09:23:17+08:00">2019-05-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Once"><a href="#Once" class="headerlink" title="Once"></a>Once</h3><p>这个once的实现有没有什么问题？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Once <span class="keyword">struct</span> &#123;</span><br><span class="line">	m    sync.Mutex</span><br><span class="line">	done <span class="keyword">uint32</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Once)</span> <span class="title">Do</span><span class="params">(f <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> o.done == <span class="number">1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	o.m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> o.m.Unlock()</span><br><span class="line">	<span class="keyword">if</span> o.done == <span class="number">0</span> &#123;</span><br><span class="line">		o.done = <span class="number">1</span></span><br><span class="line">		f()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有。讨论见这里：<a href="https://github.com/smallnest/gitalk/issues/101#issuecomment-490738912" target="_blank" rel="noopener">https://github.com/smallnest/gitalk/issues/101#issuecomment-490738912</a></p>
+<p>正确的姿势是使用原子操作，原子操作在修改变量的值后，会也让其他核立马看到数据的变动。Once.Do的官方实现就使用的原子操作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Once)</span> <span class="title">Do</span><span class="params">(f <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> atomic.LoadUint32(&amp;o.done) == <span class="number">1</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Slow-path.</span></span><br><span class="line">	o.m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> o.m.Unlock()</span><br><span class="line">	<span class="keyword">if</span> o.done == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> atomic.StoreUint32(&amp;o.done, <span class="number">1</span>)</span><br><span class="line">		f()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于缓存，可以看鸟窝的<a href="https://colobu.com/2019/01/24/cacheline-affects-performance-in-go/" target="_blank" rel="noopener">《cacheline 对 Go 程序的影响》</a>和知乎<a href="https://zhuanlan.zhihu.com/p/31875174" target="_blank" rel="noopener">《细说Cache-L1/L2/L3/TLB》</a>。</p>
+<h3 id="Wait-Group"><a href="#Wait-Group" class="headerlink" title="Wait Group"></a>Wait Group</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		time.Sleep(time.Millisecond)</span><br><span class="line">		wg.Done()</span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会panic：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">panic: sync: WaitGroup is reused before previous Wait has returned</span><br><span class="line"></span><br><span class="line">goroutine 1 [running]:</span><br><span class="line">sync.(*WaitGroup).Wait(0xc000018090)</span><br><span class="line">	/Users/shitaibin/go/src/github.com/golang/go/src/sync/waitgroup.go:132 +0xae</span><br><span class="line">main.main()</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/problems/concurrent/waitgroup0.go:16 +0x79</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+<p>原因：第13行执行<code>wg.Done()</code>后，wg的计数已经变成了0，<code>wg.Wait()</code>实际以及完成并返回，14行再次使用此<code>wg.Add()</code>报错。</p>
+<h3 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyMutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	count <span class="keyword">int</span></span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> mu MyMutex</span><br><span class="line">	mu.Lock()</span><br><span class="line">	<span class="keyword">var</span> mu2 = mu</span><br><span class="line">	mu.count++</span><br><span class="line">	mu.Unlock()</span><br><span class="line">	mu2.Lock()</span><br><span class="line">	mu2.count++</span><br><span class="line">	mu2.Unlock()</span><br><span class="line">	fmt.Println(mu.count, mu2.count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果panic：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">fatal error: all goroutines are asleep - deadlock!</span><br><span class="line"></span><br><span class="line">goroutine 1 [semacquire]:</span><br><span class="line">sync.runtime_SemacquireMutex(0xc0000180ac, 0x100ae00)</span><br><span class="line">	/Users/shitaibin/go/src/github.com/golang/go/src/runtime/sema.go:71 +0x3d</span><br><span class="line">sync.(*Mutex).Lock(0xc0000180a8)</span><br><span class="line">	/Users/shitaibin/go/src/github.com/golang/go/src/sync/mutex.go:134 +0x109</span><br><span class="line">main.main()</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/problems/concurrent/mutex0.go:19 +0xb4</span><br></pre></td></tr></table></figure>
+<p>原因：<code>MyMutex</code>和<code>sync.Mutex</code>都是结构体，不包含指针，第16行根据mu新建了mu2对象，2者占用不同的内存区域，但2者的“内容”是相同的，所以mu2新建后就已经是Lock状态。第19行<code>mu2.Lock()</code>所以会死锁。</p>
+<p>修改：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">gopackage main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyMutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	count <span class="keyword">int</span></span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> mu MyMutex</span><br><span class="line">	mu.Lock()</span><br><span class="line">	<span class="keyword">var</span> mu2 = mu</span><br><span class="line">	mu.count++</span><br><span class="line">	mu.Unlock()</span><br><span class="line">	mu2.Unlock() <span class="comment">// 先解锁，或新建mu2时移动到mu.Lock之前</span></span><br><span class="line">	mu2.Lock()</span><br><span class="line">	mu2.count++</span><br><span class="line">	mu2.Unlock()</span><br><span class="line">	fmt.Println(mu.count, mu2.count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Pool"><a href="#Pool" class="headerlink" title="Pool"></a>Pool</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bytes"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> pool = sync.Pool&#123;New: <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">interface</span></span>&#123;&#125; &#123; <span class="keyword">return</span> <span class="built_in">new</span>(bytes.Buffer) &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			processRequest(<span class="number">1</span> &lt;&lt; <span class="number">28</span>) <span class="comment">// 256MiB</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="keyword">for</span> &#123;</span><br><span class="line">				processRequest(<span class="number">1</span> &lt;&lt; <span class="number">10</span>) <span class="comment">// 1KiB</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> stats runtime.MemStats</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; ; i++ &#123;</span><br><span class="line">		runtime.ReadMemStats(&amp;stats)</span><br><span class="line">		fmt.Printf(<span class="string">"Cycle %d: %d MB\n"</span>, i, stats.Alloc/<span class="number">1024</span>/<span class="number">1024</span>)</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">		runtime.GC()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">processRequest</span><span class="params">(size <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	b := pool.Get().(*bytes.Buffer)</span><br><span class="line">	time.Sleep(<span class="number">500</span> * time.Millisecond)</span><br><span class="line">	b.Grow(size)</span><br><span class="line">	pool.Put(b)</span><br><span class="line">	time.Sleep(<span class="number">1</span> * time.Millisecond)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以编译，运行时内存先暴涨，但是过一会会回收掉。结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Cycle 0: 0 MB</span><br><span class="line">Cycle 1: 256 MB</span><br><span class="line">Cycle 2: 513 MB</span><br><span class="line">Cycle 3: 769 MB</span><br><span class="line">Cycle 4: 1281 MB</span><br><span class="line">Cycle 5: 1281 MB</span><br><span class="line">Cycle 6: 1281 MB</span><br><span class="line">Cycle 7: 1537 MB</span><br><span class="line">Cycle 8: 1793 MB</span><br><span class="line">Cycle 9: 2049 MB</span><br><span class="line">Cycle 10: 2049 MB</span><br><span class="line">......</span><br><span class="line">Cycle 107: 14593 MB</span><br><span class="line">Cycle 108: 15105 MB</span><br><span class="line">Cycle 109: 2304 MB</span><br><span class="line">Cycle 110: 0 MB</span><br><span class="line">Cycle 111: 256 MB</span><br><span class="line">Cycle 112: 513 MB</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p><code>sync.Pool</code>用来存放经常使用的临时对象，如果每次这些内存被GC回收，会加大GC的压力，Pool的出现就是为<strong>减缓</strong>GC的压力，而不是完全不让GC回收Pool的内存。</p>
+<p>关于Pool不可错过Dave在<a href="https://dave.cheney.net/high-performance-go-workshop/gopherchina-2019.html#using_sync_pool" target="_blank" rel="noopener">高性能Go程序的这段介绍</a>。</p>
+<h3 id="channel-1"><a href="#channel-1" class="headerlink" title="channel 1"></a>channel 1</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> ch <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">1</span>)</span><br><span class="line">		ch &lt;- <span class="number">1</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(ch <span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">		&lt;-ch</span><br><span class="line">	&#125;(ch)</span><br><span class="line">	c := time.Tick(<span class="number">1</span> * time.Second)</span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> c &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"#goroutines: %d\n"</span>, runtime.NumGoroutine())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2个闭包goroutine可运行并结束。最后只有main和定时器协程，所以最终有2个协程在运行，持续打印<code>#goroutines: 2</code>。</p>
+<h3 id="channel-2"><a href="#channel-2" class="headerlink" title="channel 2"></a>channel 2</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> ch <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch &lt;- <span class="number">1</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		count++</span><br><span class="line">		<span class="built_in">close</span>(ch)</span><br><span class="line">	&#125;()</span><br><span class="line">	&lt;-ch</span><br><span class="line">	fmt.Println(count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ch只声明，未进行初始化，所以panic：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">panic: close of nil channel</span><br><span class="line"></span><br><span class="line">goroutine 34 [running]:</span><br><span class="line">main.main.func2(0xc000096000, 0x0)</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/problems/concurrent/channel1.go:13 +0x33</span><br><span class="line">created by main.main</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/problems/concurrent/channel1.go:11 +0x87</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+<p>修改为下面这样，还有问题吗？：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// var ch chan int</span></span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ch &lt;- <span class="number">1</span></span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		count++</span><br><span class="line">		<span class="built_in">close</span>(ch)</span><br><span class="line">	&#125;()</span><br><span class="line">	&lt;-ch</span><br><span class="line">	fmt.Println(count)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样会panic，典型的channel由非发送者关闭，造成在关闭的channel上写数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">panic: send on closed channel</span><br><span class="line"></span><br><span class="line">goroutine 4 [running]:</span><br><span class="line">main.main.func1(0xc000070060)</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/problems/concurrent/channel1.go:10 +0x37</span><br><span class="line">created by main.main</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/problems/concurrent/channel1.go:9 +0x80</span><br><span class="line">exit status 2</span><br></pre></td></tr></table></figure>
+<h3 id="Map-1"><a href="#Map-1" class="headerlink" title="Map 1"></a>Map 1</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m sync.Map</span><br><span class="line">	m.LoadOrStore(<span class="string">"a"</span>, <span class="number">1</span>)</span><br><span class="line">	m.Delete(<span class="string">"a"</span>)</span><br><span class="line">	fmt.Println(m.Len())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>无法编译，因为Map没有Len()方法。</p>
+<h3 id="Map-2"><a href="#Map-2" class="headerlink" title="Map 2"></a>Map 2</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"sync"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Map <span class="keyword">struct</span> &#123;</span><br><span class="line">	m <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">int</span>, <span class="keyword">bool</span>)</span></span> &#123;</span><br><span class="line">	m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> m.Unlock()</span><br><span class="line">	i, ok := m.m[key]</span><br><span class="line">	<span class="keyword">return</span> i, ok</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Put</span><span class="params">(key, value <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> m.Unlock()</span><br><span class="line">	m.m[key] = value</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(m.m)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line">	m := Map&#123;m: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>)&#125;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++ &#123;</span><br><span class="line">			m.Put(i, i)</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++ &#123;</span><br><span class="line">			m.Len()</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>能正常编译和运行。map不是协程安全的，需要锁的保护，但Len()的实现并没有加锁，当map写数据时，并且调用Len读长度，则存在map的并发读写问题，因为不是同时读写map所存的内容，所以可以编译和运行，但存在读取的map内存长度不准确问题。map定义和len的声明如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Note: the format of the hmap is also encoded in cmd/compile/internal/gc/reflect.go.</span></span><br><span class="line">	<span class="comment">// Make sure this stays in sync with the compiler's definition.</span></span><br><span class="line">	count     <span class="keyword">int</span> <span class="comment">// # live cells == size of map.  Must be first (used by len() builtin)</span></span><br><span class="line">	flags     <span class="keyword">uint8</span></span><br><span class="line">	B         <span class="keyword">uint8</span>  <span class="comment">// log_2 of # of buckets (can hold up to loadFactor * 2^B items)</span></span><br><span class="line">	noverflow <span class="keyword">uint16</span> <span class="comment">// approximate number of overflow buckets; see incrnoverflow for details</span></span><br><span class="line">	hash0     <span class="keyword">uint32</span> <span class="comment">// hash seed</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer <span class="comment">// array of 2^B Buckets. may be nil if count==0.</span></span><br><span class="line">	oldbuckets unsafe.Pointer <span class="comment">// previous bucket array of half the size, non-nil only when growing</span></span><br><span class="line">	nevacuate  <span class="keyword">uintptr</span>        <span class="comment">// progress counter for evacuation (buckets less than this have been evacuated)</span></span><br><span class="line"></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The len built-in function returns the length of v, according to its type:</span></span><br><span class="line"><span class="comment">//	Array: the number of elements in v.</span></span><br><span class="line"><span class="comment">//	Pointer to array: the number of elements in *v (even if v is nil).</span></span><br><span class="line"><span class="comment">//	Slice, or map: the number of elements in v; if v is nil, len(v) is zero.</span></span><br><span class="line"><span class="comment">//	String: the number of bytes in v.</span></span><br><span class="line"><span class="comment">//	Channel: the number of elements queued (unread) in the channel buffer;</span></span><br><span class="line"><span class="comment">//	if v is nil, len(v) is zero.</span></span><br><span class="line"><span class="comment">// For some arguments, such as a string literal or a simple array expression, the</span></span><br><span class="line"><span class="comment">// result can be a constant. See the Go language specification's "Length and</span></span><br><span class="line"><span class="comment">// capacity" section for details.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">len</span><span class="params">(v Type)</span> <span class="title">int</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="slice"><a href="#slice" class="headerlink" title="slice"></a>slice</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line">	<span class="keyword">var</span> ints = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, <span class="number">1000</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">			ints = <span class="built_in">append</span>(ints, i)</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++ &#123;</span><br><span class="line">			ints = <span class="built_in">append</span>(ints, i)</span><br><span class="line">		&#125;</span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="built_in">len</span>(ints))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先，slice不是协程安全的，自身也又没锁的保护，多协程访问存在并发问题：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer</span><br><span class="line">	<span class="built_in">len</span>   <span class="keyword">int</span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其次，append中有可能还会分配新的内存空间，切片可能指向了新的内存区域：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The append built-in function appends elements to the end of a slice. If</span></span><br><span class="line"><span class="comment">// it has sufficient capacity, the destination is resliced to accommodate the</span></span><br><span class="line"><span class="comment">// new elements. If it does not, a new underlying array will be allocated.</span></span><br><span class="line"><span class="comment">// Append returns the updated slice. It is therefore necessary to store the</span></span><br><span class="line"><span class="comment">// result of append, often in the variable holding the slice itself:</span></span><br><span class="line"><span class="comment">//	slice = append(slice, elem1, elem2)</span></span><br><span class="line"><span class="comment">//	slice = append(slice, anotherSlice...)</span></span><br><span class="line"><span class="comment">// As a special case, it is legal to append a string to a byte slice, like this:</span></span><br><span class="line"><span class="comment">//	slice = append([]byte("hello "), "world"...)</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">append</span><span class="params">(slice []Type, elems ...Type)</span> []<span class="title">Type</span></span></span><br></pre></td></tr></table></figure>
+<p>所以，两个协程同时写，是不安全的，并且大概率可能存在数据丢失，所以结果可能不是2000。</p>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p><a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/problems" target="_blank" rel="noopener">golang_step_by_step</a></p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/05/03/go-concurrent-problems1/">http://lessisbetter.site/2019/05/03/go-concurrent-problems1/</a></li>
+</ol>
+</blockquote>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/26/ethereum-keys-transform/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/26/ethereum-keys-transform/" class="post-title-link" itemprop="url">以太坊密钥转换</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-26 10:04:00" itemprop="dateCreated datePublished" datetime="2019-04-26T10:04:00+08:00">2019-04-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>以太坊的每一个账号私钥都通过密码加密存放到一个keystore文件中，如果创建一个账户涉及：</p>
+<ol>
+<li>生成ECDSA密钥</li>
+<li>使用密码</li>
+<li>将加密信息生成json格式，等待写入到keystore文件</li>
+<li>创建keystore文件</li>
+<li>将信息写入到keystore文件</li>
+</ol>
+<p>经过测试，这一个过程需要耗时大约5s，也就是每创建一个账户都要耗时5s，如果要创建1万个测试账号，需要5万秒，需要将近14小时，需要进行并发，才能尽量减少时间浪费，但是，使用5s才生成1个账号，还是太浪费了。</p>
+<p>读取1个keystore文件涉及：</p>
+<ol>
+<li>读keystore文件</li>
+<li>对数据进行解密，将账号保存到内存</li>
+</ol>
+<p>经过测试，这个过程需要耗时大约3s，1万个账号顺序读取需要大约8小时。</p>
+<p><strong>能不能并发读取？</strong><br>不能。读取keystore时，指定的是keystore文件所在的目录，它会读取所有的keystore文件，在内存中保存到1个<code>Keystore</code>对象中。</p>
+<p>如果我们写一个测试程序，以太坊账号的管理，简直是一个噩梦。</p>
+<p><strong>有没有其他办法，能够加快账号的读取，交易的签名等？</strong></p>
+<p><strong>交易的签名本质</strong>是使用go的<code>ecdsa.PrivateKey</code>，没有以太坊这些账户加密和解密操作，这些操作是上述测试耗时的原因，直接使用<code>ecdsa.PrivateKey</code>，使用后保存到文件，使用时从文件读取，可以从若干小时，降低到不到1s。</p>
+<p>我们使用<code>ecdsa.PrivateKey</code>的思路：</p>
+<ol>
+<li>使用<code>ecdsa.GenerateKey()</code>生成私钥</li>
+<li>私钥能转为16进制字符串，把字符串保存到文本文件，每一行都是1个私钥的16进制</li>
+<li>使用时从文件读取每一个账号的16进制字符串，然后转换成所有的私钥</li>
+</ol>
+<p><strong>16进制字符串和<code>ecdsa.PrivateKey</code>相互转换是非常简单的</strong>，<code>ecdsa.Private</code>和以太坊的账号转换，则是非常乱的，整理出来了一幅图，没这幅图，每次看都要梳理一段时间，浪费生命。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-eth-keys-transform.png" alt=""></p>
+<p>图注：</p>
+<ol>
+<li><code>keystore</code>代表包名，<code>Keystore</code>代表类型</li>
+<li>以<code>()</code>为函数，否则为类型</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/14/golang-scheduler-4-explore-source-code/" class="post-title-link" itemprop="url">Go调度器系列（4）源码阅读与探索</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-14 15:38:59" itemprop="dateCreated datePublished" datetime="2019-04-14T15:38:59+08:00">2019-04-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>各位朋友，这次想跟大家分享一下Go调度器源码阅读相关的知识和经验，网络上已经有很多剖析源码的好文章，所以这篇文章<strong>不是又一篇源码剖析文章，注重的不是源码分析分享，而是带给大家一些学习经验，希望大家能更好的阅读和掌握Go调度器的实现</strong>。</p>
+<p>本文主要分2个部分：</p>
+<ol>
+<li><strong>解决如何阅读源码的问题</strong>。阅读源码本质是把脑海里已经有的调度设计，看看到底是不是这么实现的，是怎么实现的。</li>
+<li><strong>带给你一个探索Go调度器实现的办法</strong>。源码都到手了，你可以修改、<strong>窥探</strong>，通过这种方式解决阅读源码过程中的疑问，验证一些想法。比如：负责调度的是g0，怎么才能<code>schedule()</code>在执行时，当前是g0呢？</li>
+</ol>
+<h2 id="如何阅读源码"><a href="#如何阅读源码" class="headerlink" title="如何阅读源码"></a>如何阅读源码</h2><h3 id="阅读前提"><a href="#阅读前提" class="headerlink" title="阅读前提"></a>阅读前提</h3><p>阅读Go源码前，最好已经掌握Go调度器的设计和原理，如果你还无法回答以下问题：</p>
+<ol>
+<li>为什么需要Go调度器？</li>
+<li>Go调度器与系统调度器有什么区别和关系/联系？</li>
+<li>G、P、M是什么，三者的关系是什么？</li>
+<li>P有默认几个？</li>
+<li>M同时能绑定几个P？</li>
+<li>M怎么获得G？</li>
+<li>M没有G怎么办？</li>
+<li>为什么需要全局G队列？</li>
+<li>Go调度器中的负载均衡的2种方式是什么？</li>
+<li>work stealing是什么？什么原理？</li>
+<li>系统调用对G、P、M有什么影响？</li>
+<li>Go调度器抢占是什么样的？一定能抢占成功吗？</li>
+</ol>
+<p>建议阅读Go调度器系列文章，以及文章中的参考资料：</p>
+<ol>
+<li><a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">Go调度器系列（1）起源</a></li>
+<li><a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">Go调度器系列（2）宏观看调度器</a></li>
+<li><a href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">Go调度器系列（3）图解调度原理</a></li>
+</ol>
+<h3 id="优秀源码资料推荐"><a href="#优秀源码资料推荐" class="headerlink" title="优秀源码资料推荐"></a>优秀源码资料推荐</h3><p>既然你已经能回答以上问题，说明你对Go调度器的设计已经有了一定的掌握，关于Go调度器源码的优秀资料已经有很多，我这里推荐2个：</p>
+<ol>
+<li><strong>雨痕的Go源码剖析</strong>六章并发调度，不止是源码，是以源码为基础进行了详细的Go调度器介绍：<a href="https://github.com/qyuhen/book" target="_blank" rel="noopener">https://github.com/qyuhen/book</a></li>
+<li><strong>Go夜读</strong>第12期，golang中goroutine的调度，M、P、G各自的一生状态，以及转换关系：<a href="https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/" target="_blank" rel="noopener">https://reading.developerlearning.cn/reading/12-2018-08-02-goroutine-gpm/</a></li>
+</ol>
+<p>Go调度器的源码还涉及GC等，阅读源码时，可以暂时先跳过，主抓调度的逻辑。</p>
+<p>另外，Go调度器涉及汇编，也许你不懂汇编，不用担心，雨痕的文章对汇编部分有进行解释。</p>
+<p>最后，送大家一幅流程图，画出了主要的调度流程，大家也可边阅读边画，增加理解，<strong>高清版可到博客下载（原图原文跳转）</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-04-shcedule-flow.png" alt=""></p>
+<h2 id="如何探索调度器"><a href="#如何探索调度器" class="headerlink" title="如何探索调度器"></a>如何探索调度器</h2><p>这部分教你探索Go调度器的源码，验证想法，主要思想就是，下载Go的源码，添加调试打印，编译修改的源文件，生成修改的go，然后使用修改go运行测试代码，观察结果。</p>
+<h3 id="下载和编译Go"><a href="#下载和编译Go" class="headerlink" title="下载和编译Go"></a>下载和编译Go</h3><ol>
+<li><p>Github下载，并且换到go1.11.2分支，本文所有代码修改都基于go1.11.2版本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ GODIR=<span class="variable">$GOPATH</span>/src/github.com/golang/go</span><br><span class="line">$ mkdir -p <span class="variable">$GODIR</span></span><br><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/..</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/golang/go.git</span><br><span class="line">$ <span class="built_in">cd</span> go</span><br><span class="line">$ git fetch origin go1.11.2</span><br><span class="line">$ git checkout origin/go1.11.2</span><br><span class="line">$ git checkout -b go1.11.2</span><br><span class="line">$ git checkout go1.11.2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>初次编译，会跑测试，耗时长一点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> <span class="variable">$GODIR</span>/src</span><br><span class="line">$ ./all.bash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以后每次修改go源码后可以这样，4分钟左右可以编译完成</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span>  <span class="variable">$GODIR</span>/src</span><br><span class="line">$ time ./make.bash</span><br><span class="line">Building Go cmd/dist using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go toolchain1 using /usr/<span class="built_in">local</span>/go.</span><br><span class="line">Building Go bootstrap cmd/go (go_bootstrap) using Go toolchain1.</span><br><span class="line">Building Go toolchain2 using go_bootstrap and Go toolchain1.</span><br><span class="line">Building Go toolchain3 using go_bootstrap and Go toolchain2.</span><br><span class="line">Building packages and commands <span class="keyword">for</span> linux/amd64.</span><br><span class="line">---</span><br><span class="line">Installed Go <span class="keyword">for</span> linux/amd64 <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go</span><br><span class="line">Installed commands <span class="keyword">in</span> /home/xxx/go/src/github.com/golang/go/bin</span><br><span class="line"></span><br><span class="line">real	1m11.675s</span><br><span class="line">user	4m4.464s</span><br><span class="line">sys	0m18.312s</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>编译好的go和gofmt在<code>$GODIR/bin</code>目录。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ ll <span class="variable">$GODIR</span>/bin</span><br><span class="line">total 16044</span><br><span class="line">-rwxrwxr-x 1 vnt vnt 13049123 Apr 14 10:53 go</span><br><span class="line">-rwxrwxr-x 1 vnt vnt  3377614 Apr 14 10:53 gofmt</span><br></pre></td></tr></table></figure></p>
+<ol start="4">
+<li><p>为了防止我们修改的go和过去安装的go冲突，创建igo软连接，指向修改的go。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p ~/testgo/bin</span><br><span class="line">$ <span class="built_in">cd</span> ~/testgo/bin</span><br><span class="line">$ ln -sf <span class="variable">$GODIR</span>/bin/go igo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，把<code>~/testgo/bin</code>加入到<code>PATH</code>，就能使用<code>igo</code>来编译代码了，运行下igo，应当获得go1.11.2的版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ igo version</span><br><span class="line">go version go1.11.2 linux/amd64</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>当前，已经掌握编译和使用修改的go的办法，接下来就以1个简单的例子，教大家如何验证想法。</p>
+<h3 id="验证schedule-由g0执行"><a href="#验证schedule-由g0执行" class="headerlink" title="验证schedule()由g0执行"></a>验证schedule()由g0执行</h3><p>阅读源码的文章，你已经知道了g0是负责调度的，并且g0是全局变量，可在runtime包的任何地方直接使用，看到<code>schedule()</code>代码如下（所在文件：<code>$GODIR/src/runtime/proc.go</code>）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">"schedule: holding locks"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// m已经被某个g锁定，先停止当前m，等待g可运行时，再执行g，并且还得到了g所在的p</span></span><br><span class="line">	<span class="keyword">if</span> _g_.m.lockedg != <span class="number">0</span> &#123;</span><br><span class="line">		stoplockedm()</span><br><span class="line">		execute(_g_.m.lockedg.ptr(), <span class="literal">false</span>) <span class="comment">// Never returns.</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>问题</strong>：既然g0是负责调度的，为何<code>schedule()</code>每次还都执行<code>_g_ := getg()</code>，直接使用g0不行吗？<code>schedule()</code>真的是g0执行的吗？</p>
+<p>在<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">《Go调度器系列（2）宏观看调度器》</a>这篇文章中我曾介绍了trace的用法，阅读代码时发现<strong>使用<code>debug.schedtrace</code>和<code>print()</code>函数可以用作打印调试信息</strong>，那我们是不是可以使用这种方法打印我们想获取的信息呢？当然可以。</p>
+<p>另外，注意<code>print()</code>并不是<code>fmt.Print()</code>，也不是C语言的<code>printf</code>，所以不是格式化输出，它是汇编实现的，我们不深入去了解它的实现了，现在要掌握它的用法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The print built-in function formats its arguments in an</span></span><br><span class="line"><span class="comment">// implementation-specific way and writes the result to standard error.</span></span><br><span class="line"><span class="comment">// Print is useful for bootstrapping and debugging; it is not guaranteed</span></span><br><span class="line"><span class="comment">// to stay in the language.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">print</span><span class="params">(args ...Type)</span></span></span><br></pre></td></tr></table></figure>
+<p>从上面可以看到，它接受可变长参数，我们使用的时候只需要传进去即可，但要手动控制格式。</p>
+<p>我们修改<code>schedule()</code>函数，使用<code>debug.schedtrace &gt; 0</code>控制打印，加入3行代码，把goid给打印出来，如果始终打印goid为0，则代表调度确实是由g0执行的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> debug.schedtrace &gt; <span class="number">0</span> &#123;</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">"schedule(): goid = "</span>, _g_.goid, <span class="string">"\n"</span>) <span class="comment">// 会是0吗？是的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>schedule()</code>如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// One round of scheduler: find a runnable goroutine and execute it.</span></span><br><span class="line"><span class="comment">// Never returns.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">schedule</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取当前g，调度时这个g应当是g0</span></span><br><span class="line">	_g_ := getg()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> debug.schedtrace &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="built_in">print</span>(<span class="string">"schedule(): goid = "</span>, _g_.goid, <span class="string">"\n"</span>) <span class="comment">// 会是0吗？是的</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _g_.m.locks != <span class="number">0</span> &#123;</span><br><span class="line">		throw(<span class="string">"schedule: holding locks"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译igo：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd  $GODIR/src</span><br><span class="line">$ ./make.bash</span><br></pre></td></tr></table></figure></p>
+<p>编写一个简单的demo（不能更简单）：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果如下，你会发现所有的<code>schedule()</code>函数调用都打印<code>goid = 0</code>，足以证明Go调度器的调度由g0完成（如果你认为还是缺乏说服力，可以写复杂一些的demo）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ GODEBUG=schedtrace=1000 igo run demo1.go</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">SCHED 0ms: gomaxprocs=8 idleprocs=6 threads=4 spinningthreads=1 idlethreads=0 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">schedule(): goid = 0</span><br><span class="line">// 省略几百行</span><br></pre></td></tr></table></figure></p>
+<p><strong>启发比结论更重要，希望各位朋友在学习Go调度器的时候，能多一些自己的探索和研究，而不仅仅停留在看看别人文章之上</strong>。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a href="https://golang.org/doc/install/source" target="_blank" rel="noopener">Installing Go from source</a></li>
+</ol>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/">http://lessisbetter.site/2019/04/14/golang-scheduler-4-explore-source-code/</a></li>
+</ol>
+</blockquote>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/04/04/golang-scheduler-3-principle-with-graph/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1813,580 +2439,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/03/golang-channel-design-and-source/" class="post-title-link" itemprop="url">深入理解channel：设计+源码</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-03 15:32:15" itemprop="dateCreated datePublished" datetime="2019-03-03T15:32:15+08:00">2019-03-03</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>channel是大家在Go中用的最频繁的特性，也是Go最自豪的特性之一，你有没有思考过：</p>
-<ul>
-<li>Why：为什么要设计channel？</li>
-<li>What：channel是什么样的？</li>
-<li>How：channel是如何实现的？</li>
-</ul>
-<p>这篇文章，就来回答这3个问题。</p>
-<h3 id="channel解决什么问题？"><a href="#channel解决什么问题？" class="headerlink" title="channel解决什么问题？"></a>channel解决什么问题？</h3><p>在Golang诞生之前，各编程语言都使用多线程进行编程，但多线程复杂、混乱、难以管理，对开发者并不是多么友好。</p>
-<p>Golang是Google为了解决高并发搜索而设计的，它们想使用简单的方式，高效解决并发问题，最后做成了，然后又把Golang开源了出来，以及到处推广，所以Golang自从诞生之初，就风风火火。</p>
-<p>从Golang文档中，我们可以知道，为啥Golang设计了channel，以及channel解决了什么问题？</p>
-<p><a href="https://golang.org/doc/#go_concurrency_patterns" target="_blank" rel="noopener">Go Concurrency Patterns:</a></p>
-<blockquote>
-<p>Concurrency is the key to designing high performance network services. Go’s concurrency primitives (goroutines and channels) provide a simple and efficient means of expressing concurrent execution. In this talk we see how tricky concurrency problems can be solved gracefully with simple Go code.</p>
-</blockquote>
-<p>Golang使用<code>goroutine</code>和<code>channel</code>简单、高效的解决并发问题，<strong>channel解决的是goroutine之间的通信</strong>。</p>
-<h3 id="channel是怎么设计的？"><a href="#channel是怎么设计的？" class="headerlink" title="channel是怎么设计的？"></a>channel是怎么设计的？</h3><p>我们以为channel是一个通道：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-pipeline.jpeg" alt=""></p>
-<p>实际上，channel的内在是这样的：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-channel_design.png" alt=""></p>
-<p>channel设计涉及的数据结构很简单：</p>
-<ul>
-<li>基于数组的循环队列，有缓冲的channel用它暂存数据</li>
-<li>基于链表的单向队列，用于保存阻塞在此channel上的goroutine</li>
-</ul>
-<p>我本来想自己码一篇channel的设计文章，但已经有大牛：Kavya深入分析了Channel的设计，我也相信自己写的肯定不如他好，所以我把<strong>Kavya在Gopher Con上的PPT推荐给你，如果你希望成为Go大牛，你一定要读一下，现在请收藏好</strong>。</p>
-<p>Kavya在Gopher Con上的演讲主题是：理解channel，他并不是教你如何使用channel，而是<strong>把channel的设计和goroutine的调度结合起来，从内在方式向你介绍</strong>。这份PPT足足有80页，包含了大量的动画，非常容易理解，你会了解到：</p>
-<ul>
-<li>channel的创建</li>
-<li>各种场景的发送和接收</li>
-<li>goroutine的调度</li>
-<li>goroutine的阻塞和唤醒</li>
-<li>channel和goroutine在select操作下</li>
-</ul>
-<p>Kavya的PPT应该包含了channel的80%的设计思想，但也有一些缺失，需要你阅读源码：</p>
-<ul>
-<li>channel关闭时，gorontine的处理</li>
-<li>创建channel时，不同的创建方法</li>
-<li>读channel时的非阻塞操作</li>
-<li>…</li>
-</ul>
-<p>PPT在此：<a href="https://speakerdeck.com/kavya719/understanding-channels" target="_blank" rel="noopener">Understanding Channels</a>，如果你有心，还可以在这个网站看到Kavya关于goroutine调度的PPT，福利哦😝。(访问不了请翻墙，或阅读原文从博客文章最下面看Github备份)</p>
-<p>微信二维码跳转：<br><img src="http://img.lessisbetter.site/2019-03-channel_design_qrcode.png" alt=""></p>
-<h3 id="channel是怎么实现的？"><a href="#channel是怎么实现的？" class="headerlink" title="channel是怎么实现的？"></a>channel是怎么实现的？</h3><p><a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">chan.go</a>是channel的主要实现文件，只有700行，十分佩服Go团队，<strong>实现的如此精简，却发挥如此大的作用</strong>！！！</p>
-<p>看完Kavya的PPT，你已经可以直接看channel的源码了，如果有任何问题，思考一下你也可以想通，如果有任何问题可博客文章留言或公众号私信进行讨论。</p>
-<p>另外，推荐一篇在Medium（国外高质量文章社区）上获得500+赞的源码分析文章，非常详细。</p>
-<p>文章链接：<a href="https://codeburst.io/diving-deep-into-the-golang-channels-549fd4ed21a8" target="_blank" rel="noopener">Diving deep into the golang channels</a></p>
-<p>微信二维码跳转：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-channel_source_qrcode.png" alt=""></p>
-<h3 id="我学到了什么？"><a href="#我学到了什么？" class="headerlink" title="我学到了什么？"></a>我学到了什么？</h3><p>阅读channel源码我学到了一些东西，分享给大家。</p>
-<p>channel的4个特性的实现：</p>
-<ul>
-<li>channel的goroutine安全，是通过mutex实现的。</li>
-<li>channel的FIFO，是通过循环队列实现的。</li>
-<li>channel的通信：在goroutine间传递数据，是通过仅共享hchan+数据拷贝实现的。</li>
-<li>channel的阻塞是通过goroutine自己挂起，唤醒goroutine是通过对方goroutine唤醒实现的。</li>
-</ul>
-<p>channel的其他实现：</p>
-<ul>
-<li>发送goroutine是可以访问接收goroutine的内存空间的，接收goroutine也是可以直接访问发送goroutine的内存空间的，看<code>sendDirect</code>、<code>recvDirect</code>函数。</li>
-<li>无缓冲的channel始终都是直接访问对方goroutine内存的方式，把手伸到别人的内存，把数据放到接收变量的内存，或者从发送goroutine的内存拷贝到自己内存。省掉了对方再加锁获取数据的过程。</li>
-<li>接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的，这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看<code>gopark</code>、<code>goready</code>函数在<code>chan.go</code>中的调用。</li>
-<li>接收goroutine当channel关闭时，读channel会得到0值，并不是channel保存了0值，而是它发现channel关闭了，把接收数据的变量的值设置为0值。</li>
-<li>channel的操作/调用，是通过reflect实现的，可以看reflect包的<code>makechan</code>, <code>chansend</code>, <code>chanrecv</code>函数。</li>
-<li>channel关闭时，所有在channel上读数据的g都会收到通知。其实并非关闭channel的g给每个接收的g发送信号，而是关闭channel的g，把channel关闭后，会唤醒每一个读取channel的g，它们发现channel关闭了，把待读的数据设置为零值并返回，所以这并非一次性的事件通知，。看到这种本质，你应当理解下面这种奇淫巧计：这种“通知”效果并不一定需要接收数据的g先启动，先把channel关闭了，然后启动读取channel的g依然是可行的，代码无需任何改变，任何逻辑也都无需改变，它会发现channel关闭了，然后走原来的逻辑。</li>
-</ul>
-<p>如果阅读<a href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go" target="_blank" rel="noopener">chan_test.go</a>还会学到一些骚操作，比如：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> &lt;-stopCh &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>而不是写成：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> stop := &lt;-stopCh; stop &#123;</span><br><span class="line">    <span class="comment">// do stop</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这就是关于channel的设计和实现的分享，希望你通过Kavya的PPT和代码阅读能深入了解channel。</p>
-<h3 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h3><ul>
-<li>chan.go：<a href="https://github.com/golang/go/blob/master/src/runtime/chan.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/chan.go</a></li>
-<li>chan_test.go：<a href="https://github.com/golang/go/blob/master/src/runtime/chan_test.go" target="_blank" rel="noopener">https://github.com/golang/go/blob/master/src/runtime/chan_test.go</a></li>
-<li>Understanding channels在Github的备份: <a href="https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf" target="_blank" rel="noopener">https://github.com/Shitaibin/shitaibin.github.io/blob/hexo_resource/files/GopherCon_v10.0.pdf</a></li>
-</ul>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
-<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/" target="_blank" rel="noopener">http://www.lessisbetter.site/2019/03/03/golang-channel-design-and-source/</a></li>
-</ol>
-</blockquote>
-<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/01/linux-location-of-process/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/01/linux-location-of-process/" class="post-title-link" itemprop="url">查看Linux运行程序的文件路径</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-01 19:15:29" itemprop="dateCreated datePublished" datetime="2019-03-01T19:15:29+08:00">2019-03-01</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>通过ps及top命令查看进程信息时，看不到进程的绝对路径，可以使用：<code>sudo ls -l /proc/PID</code>查看。</p>
-<p>Linux在启动一个进程时，系统会在/proc下创建一个以PID命名的文件夹，在该文件夹下会有该进程的信息，其中包括一个名为exe的文件即记录了绝对路径。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-proc_path.png" alt=""></p>
-<h2 id="解决的问题"><a href="#解决的问题" class="headerlink" title="解决的问题"></a>解决的问题</h2><p>发现服务器上并没有运行耗CPU的服务，但top查看时，总存在占用CPU 60%的进程，kill一段时间后，又会出现新进程，名字变化而已，并且名字类似系统服务的名字，怀疑是恶意程序（挖矿木马）。</p>
-<p>找到创建该进程的父进程，杀死父进程后，再杀死此恶意程序，最后从磁盘删除。</p>
-<p>在top中，按f选择要显示的列，通过向下箭头找到PPID，按空格选中，按q退出，看到恶意进程的父进程。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-top_f.png" alt=""></p>
-<p>或使用<code>ps -ef | grep 进程号/程序名</code>，第3列为父进程。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-ps_ef.png" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/02/27/good-resource-poket/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/27/good-resource-poket/" class="post-title-link" itemprop="url">好文收藏夹</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-02-27 09:43:24" itemprop="dateCreated datePublished" datetime="2019-02-27T09:43:24+08:00">2019-02-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-15 08:39:49" itemprop="dateModified" datetime="2019-08-15T08:39:49+08:00">2019-08-15</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这是一个收藏夹，收藏每一篇都仔细阅读过的好文章。</p>
-<h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><h3 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h3><ol>
-<li><a href="http://xargin.com/go-timer/" target="_blank" rel="noopener">曹大：Go 系列文章5 : 定时器</a>，相当深刻，学完还讨论了一下</li>
-</ol>
-<h2 id="分布式"><a href="#分布式" class="headerlink" title="分布式"></a>分布式</h2><h3 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h3><ol>
-<li><a href="https://segmentfault.com/a/1190000019360335#articleHeader0" target="_blank" rel="noopener">当我们在谈论高并发的时候究竟在谈什么?</a></li>
-</ol>
-<h3 id="分布式一致性"><a href="#分布式一致性" class="headerlink" title="分布式一致性"></a>分布式一致性</h3><ol>
-<li><a href="https://danielw.cn/network-failure-models" target="_blank" rel="noopener">分布式系统中的网络模型和故障模型</a></li>
-<li><a href="https://danielw.cn/history-of-distributed-systems-1" target="_blank" rel="noopener">分布式系统一致性的发展历史 (一)</a></li>
-<li><a href="https://danielw.cn/history-of-distributed-systems-2" target="_blank" rel="noopener">分布式系统一致性的发展历史 (二)</a></li>
-<li><a href="https://www.codedump.info/post/20180922-etcd-raft/" target="_blank" rel="noopener">etcd Raft库解析</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/51063866" target="_blank" rel="noopener">etcd raft 设计与实现《一》</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/51065416" target="_blank" rel="noopener">etcd raft 设计与实现《二》</a></li>
-<li><a href="https://blog.betacat.io/post/raft-implementation-in-etcd/" target="_blank" rel="noopener">Raft在etcd中的实现</a></li>
-</ol>
-<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><h3 id="P2P"><a href="#P2P" class="headerlink" title="P2P"></a>P2P</h3><ol>
-<li><a href="https://colobu.com/2018/03/26/distributed-hash-table/" target="_blank" rel="noopener">DHT 分布式哈希表</a></li>
-</ol>
-<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><h3 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h3><ul>
-<li>Commit规范：<a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="noopener">Commit message 和 Change log 编写指南</a></li>
-<li>commit检查工具：<a href="https://github.com/conventional-changelog/commitlint" target="_blank" rel="noopener">commitlint</a></li>
-<li>commit生成relase：<a href="https://github.com/conventional-changelog/conventional-changelog" target="_blank" rel="noopener">conventional-changelog</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2438,7 +2490,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">116</span>
+                    <span class="site-state-item-count">119</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2581,7 +2633,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">64</span>
+                      
+                    
+                    <span class="site-state-item-count">65</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
