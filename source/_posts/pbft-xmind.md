@@ -1,5 +1,5 @@
 ---
-title: PBFT思维导图
+title: 一张思维导图看懂PBFT
 date: 2020-03-11 21:08:05
 tags: ['PBFT', '区块链']
 ---
