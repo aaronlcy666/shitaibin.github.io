@@ -103,13 +103,12 @@
 
 
   <meta name="description" content="代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。  好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。  你滥用日志了吗？是什么导致了滥用log？是不是存在这些误解： 1. 害怕出了问题，现有的log无法定位，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。 2. 不知道log多了，定位效">
-<meta name="keywords" content="Go,log">
 <meta property="og:type" content="article">
 <meta property="og:title" content="你滥用log了吗">
 <meta property="og:url" content="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。  好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。  你滥用日志了吗？是什么导致了滥用log？是不是存在这些误解： 1. 害怕出了问题，现有的log无法定位，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。 2. 不知道log多了，定位效">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-debug-demo.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-test.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-ret.png">
@@ -117,12 +116,16 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-call.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-log-debug.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.418Z">
+<meta property="article:published_time" content="2019-07-12T10:17:24.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.418Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="log">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="你滥用log了吗">
-<meta name="twitter:description" content="代码Review的时候，遇到过一些log滥用的情况，今天聊一聊滥用（过渡使用）日志。  好的log能够帮助开发人员快速定位bug，而差的log各有各的不同。  你滥用日志了吗？是什么导致了滥用log？是不是存在这些误解： 1. 害怕出了问题，现有的log无法定位，要多加一些log，恨不得每段都有一个log，log数简直越多越好，看日志有一种，每一步都非常清晰的错觉。 2. 不知道log多了，定位效">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-07-debug-demo.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -179,7 +182,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -531,7 +534,7 @@
 <li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/</a></li>
 </ol>
 </blockquote>
-<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
 
       
     </div>
@@ -984,7 +987,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -995,7 +998,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

@@ -103,13 +103,12 @@
 
 
   <meta name="description" content="最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。 关于Go的内存泄露有这么一句话不知道你听过没有：  10次内存泄露，有9次是goroutine泄露。  我所解决的问题，也是goroutine泄露导致的内存泄露，所以这篇文章主要介绍Go程序的">
-<meta name="keywords" content="Go,内存">
 <meta property="og:type" content="article">
 <meta property="og:title" content="实战Go内存泄露">
 <meta property="og:url" content="http://lessisbetter.site/2019/05/18/go-goroutine-leak/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。 关于Go的内存泄露有这么一句话不知道你听过没有：  10次内存泄露，有9次是goroutine泄露。  我所解决的问题，也是goroutine泄露导致的内存泄露，所以这篇文章主要介绍Go程序的">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190512111200988-7630721.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190512172935195-7653375.png">
@@ -118,12 +117,16 @@
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.431Z">
+<meta property="article:published_time" content="2019-05-18T02:30:47.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.431Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="内存">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="实战Go内存泄露">
-<meta name="twitter:description" content="最近解决了我们项目中的一个内存泄露问题，事实再次证明pprof是一个好工具，但掌握好工具的正确用法，才能发挥好工具的威力，不然就算你手里有屠龙刀，也成不了天下第一，本文就是带你用pprof定位内存泄露问题。 关于Go的内存泄露有这么一句话不知道你听过没有：  10次内存泄露，有9次是goroutine泄露。  我所解决的问题，也是goroutine泄露导致的内存泄露，所以这篇文章主要介绍Go程序的">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-05-image-20190516173924325-7999564.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -180,7 +183,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -635,7 +638,7 @@
 <p><em>文件：<a href="https://github.com/Shitaibin/golang_step_by_step/blob/master/pprof/goroutine/leak_demo1.go" target="_blank" rel="noopener">golang_step_by_step/pprof/goroutine/leak_demo1.go</a></em></p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// goroutine泄露导致内存泄露</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">	_ <span class="string">"net/http/pprof"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 开启pprof</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		ip := <span class="string">"0.0.0.0:6060"</span></span><br><span class="line">		<span class="keyword">if</span> err := http.ListenAndServe(ip, <span class="literal">nil</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">"start pprof failed on %s\n"</span>, ip)</span><br><span class="line">			os.Exit(<span class="number">1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	outCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="comment">// 死代码，永不读取</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">if</span> <span class="literal">false</span> &#123;</span><br><span class="line">			&lt;-outCh</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">select</span> &#123;&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 每s起100个goroutine，goroutine会阻塞，不释放内存</span></span><br><span class="line">	tick := time.Tick(time.Second / <span class="number">100</span>)</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> tick &#123;</span><br><span class="line">		i++</span><br><span class="line">		fmt.Println(i)</span><br><span class="line">		alloc1(outCh)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">alloc1</span><span class="params">(outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> alloc2(outCh)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">alloc2</span><span class="params">(outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(<span class="string">"alloc-fm exit"</span>)</span><br><span class="line">		<span class="comment">// 分配内存，假用一下</span></span><br><span class="line">		buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>*<span class="number">10</span>)</span><br><span class="line">		_ = <span class="built_in">len</span>(buf)</span><br><span class="line">		fmt.Println(<span class="string">"alloc done"</span>)</span><br><span class="line"></span><br><span class="line">		outCh &lt;- <span class="number">0</span> <span class="comment">// 53行</span></span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>编译并运行以上代码，然后使用<code>go tool pprof</code>获取gorourine的profile文件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof http://localhost:6060/debug/pprof/goroutine</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof http:&#x2F;&#x2F;localhost:6060&#x2F;debug&#x2F;pprof&#x2F;goroutine</span><br></pre></td></tr></table></figure>
 <p>已经通过pprof命令获取了2个goroutine的profile文件:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ ls</span><br><span class="line">/home/ubuntu/pprof/pprof.leak_demo.goroutine.001.pb.gz</span><br><span class="line">/home/ubuntu/pprof/pprof.leak_demo.goroutine.002.pb.gz</span><br></pre></td></tr></table></figure>
 <p>同heap一样，我们可以使用<code>base</code>对比2个goroutine profile文件：</p>
@@ -652,7 +655,7 @@
 <li><strong>查看某条调用路径上，当前阻塞在此goroutine的数量</strong></li>
 <li>查看所有goroutine的运行栈（调用路径），可以<strong>显示阻塞在此的时间</strong></li>
 </ol>
-<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><p>url请求中设置debug=1：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://ip:port/debug/pprof/goroutine?debug=1</span><br></pre></td></tr></table></figure></p>
+<h3 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h3><p>url请求中设置debug=1：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;1</span><br></pre></td></tr></table></figure></p>
 <p>效果如下：</p>
 <p><img src="http://img.lessisbetter.site/2019-05-image-20190516143740567-7988660.png" alt=""></p>
 <p>看起来密密麻麻的，其实简单又十分有用，看上图标出来的部分，手机上图看起来可能不方便，那就放大图片，或直接看下面各字段的含义：</p>
@@ -661,13 +664,13 @@
 <li><code>32015 @ 0x42e15a 0x42e20e 0x40534b 0x4050e5 ...</code>：32015代表当前有32015个goroutine运行这个调用栈，并且停在相同位置，@后面的十六进制，现在用不到这个数据，所以暂不深究了。</li>
 <li>下面是当前goroutine的<strong>调用栈</strong>，列出了<strong>函数和所在文件的行数，这个行数对定位很有帮助</strong>，如下：</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">32015 @ 0x42e15a 0x42e20e 0x40534b 0x4050e5 0x6d8559 0x6d831b 0x45abe1</span><br><span class="line">#	0x6d8558	main.alloc2.func1+0xf8	/home/ubuntu/heap/leak_demo.go:53</span><br><span class="line">#	0x6d831a	main.alloc2+0x2a	/home/ubuntu/heap/leak_demo.go:54</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">32015 @ 0x42e15a 0x42e20e 0x40534b 0x4050e5 0x6d8559 0x6d831b 0x45abe1</span><br><span class="line">#	0x6d8558	main.alloc2.func1+0xf8	&#x2F;home&#x2F;ubuntu&#x2F;heap&#x2F;leak_demo.go:53</span><br><span class="line">#	0x6d831a	main.alloc2+0x2a	&#x2F;home&#x2F;ubuntu&#x2F;heap&#x2F;leak_demo.go:54</span><br></pre></td></tr></table></figure>
 <p>根据上面的提示，就能判断32015个goroutine运行到<code>leak_demo.go</code>的53行：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">alloc2</span><span class="params">(outCh <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> fmt.Println(<span class="string">"alloc-fm exit"</span>)</span><br><span class="line">		<span class="comment">// 分配内存，假用一下</span></span><br><span class="line">		buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">1024</span>*<span class="number">1024</span>*<span class="number">10</span>)</span><br><span class="line">		_ = <span class="built_in">len</span>(buf)</span><br><span class="line">		fmt.Println(<span class="string">"alloc done"</span>)</span><br><span class="line"></span><br><span class="line">		outCh &lt;- <span class="number">0</span> <span class="comment">// 53行</span></span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>阻塞的原因是outCh这个写操作无法完成，outCh是无缓冲的通道，并且由于以下代码是死代码，所以goroutine始终没有从outCh读数据，造成outCh阻塞，进而造成无数个alloc2的goroutine阻塞，形成内存泄露：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="literal">false</span> &#123;</span><br><span class="line">    &lt;-outCh</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h3><p>url请求中设置debug=2：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://ip:port/debug/pprof/goroutine?debug=2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ip:port&#x2F;debug&#x2F;pprof&#x2F;goroutine?debug&#x3D;2</span><br></pre></td></tr></table></figure>
 <p><img src="http://img.lessisbetter.site/2019-05-image-20190516143537339-7988537.png" alt=""></p>
 <p>第2种方式和第1种方式是互补的，它可以看到每个goroutine的信息：</p>
 <ol>
@@ -724,7 +727,7 @@
 <li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">http://lessisbetter.site/2019/05/18/go-goroutine-leak/</a></li>
 </ol>
 </blockquote>
-<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
 
       
     </div>
@@ -754,7 +757,7 @@
           
             <a href="/tags/Go/" rel="tag"><i class="fa fa-tag"></i> Go</a>
           
-            <a href="/tags/内存/" rel="tag"><i class="fa fa-tag"></i> 内存</a>
+            <a href="/tags/%E5%86%85%E5%AD%98/" rel="tag"><i class="fa fa-tag"></i> 内存</a>
           
         </div>
       
@@ -1177,7 +1180,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1188,7 +1191,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

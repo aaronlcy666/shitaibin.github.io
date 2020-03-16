@@ -102,19 +102,21 @@
 
 
 
-  <meta name="description" content="教程资料 简单操作：https://segmentfault.com/a/1190000016703769 多项介绍：https://learnku.com/golang/t/33859 官方教程：https://blog.golang.org/using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
-<meta name="keywords" content="Go">
+  <meta name="description" content="教程资料 简单操作：https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000016703769 多项介绍：https:&#x2F;&#x2F;learnku.com&#x2F;golang&#x2F;t&#x2F;33859 官方教程：https:&#x2F;&#x2F;blog.golang.org&#x2F;using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go Modules 方法、问题汇总贴">
 <meta property="og:url" content="http://lessisbetter.site/2019/10/31/go-modules-notes/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="教程资料 简单操作：https://segmentfault.com/a/1190000016703769 多项介绍：https://learnku.com/golang/t/33859 官方教程：https://blog.golang.org/using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T09:29:11.578Z">
+<meta property="og:description" content="教程资料 简单操作：https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000016703769 多项介绍：https:&#x2F;&#x2F;learnku.com&#x2F;golang&#x2F;t&#x2F;33859 官方教程：https:&#x2F;&#x2F;blog.golang.org&#x2F;using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-31T09:07:59.000Z">
+<meta property="article:modified_time" content="2019-10-31T09:29:11.578Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Go Modules 方法、问题汇总贴">
-<meta name="twitter:description" content="教程资料 简单操作：https://segmentfault.com/a/1190000016703769 多项介绍：https://learnku.com/golang/t/33859 官方教程：https://blog.golang.org/using-go-modules  问题汇总replace 使用http或https在使用go replace时，有2点注意：  目标仓库不能带协议头，比">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -171,7 +173,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -477,23 +479,23 @@
 <li>目标仓库不能带协议头，比如http、https，要从域名或者IP开始</li>
 <li>版本号格式要符合语义格式化，测试版本是否符合规则：<a href="https://play.golang.org/p/S_Jz3-Uxh_T" target="_blank" rel="noopener">Go playground 样例代码</a></li>
 </ul>
-<p>直接修改 <code>go.mod</code> 文件格式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replace github.com/hyperledger/fabric v1.4.1 =&gt; 192.168.9.251/hyperledger/fabric v1.4.1-alpha.11-yx</span><br></pre></td></tr></table></figure></p>
-<p>或使用命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go mod edit -replace=github.com/hyperledger/fabric@v1.4.1=192.168.9.251/hyperledger/fabric@v1.4.1</span><br></pre></td></tr></table></figure></p>
+<p>直接修改 <code>go.mod</code> 文件格式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replace github.com&#x2F;hyperledger&#x2F;fabric v1.4.1 &#x3D;&gt; 192.168.9.251&#x2F;hyperledger&#x2F;fabric v1.4.1-alpha.11-yx</span><br></pre></td></tr></table></figure></p>
+<p>或使用命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go mod edit -replace&#x3D;github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1&#x3D;192.168.9.251&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br></pre></td></tr></table></figure></p>
 <h3 id="Gitlab-仓库没开启https"><a href="#Gitlab-仓库没开启https" class="headerlink" title="Gitlab 仓库没开启https"></a>Gitlab 仓库没开启https</h3><p>go mod 默认使用 go get 下载依赖，而 go get 默认使用 https，如果 Gitlab 仓库没有启用 https，需要使用 <code>-insecure</code> 让go get走http。</p>
 <p>问题：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY=&quot;&quot; go get github.com/hyperledger/fabric@v1.4.1</span><br><span class="line">go: 192.168.9.251/hyperledger/fabric@v1.4.1-alpha.11-yx: unrecognized import path &quot;192.168.9.251/hyperledger/fabric&quot; (https fetch: Get https://192.168.9.251/hyperledger/fabric?go-get=1: dial tcp 192.168.9.251:443: connect: connection refused)</span><br><span class="line">go: error loading module requirements</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY&#x3D;&quot;&quot; go get github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br><span class="line">go: 192.168.9.251&#x2F;hyperledger&#x2F;fabric@v1.4.1-alpha.11-yx: unrecognized import path &quot;192.168.9.251&#x2F;hyperledger&#x2F;fabric&quot; (https fetch: Get https:&#x2F;&#x2F;192.168.9.251&#x2F;hyperledger&#x2F;fabric?go-get&#x3D;1: dial tcp 192.168.9.251:443: connect: connection refused)</span><br><span class="line">go: error loading module requirements</span><br></pre></td></tr></table></figure>
 <p>方案：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY=&quot;&quot; go get -insecure github.com/hyperledger/fabric@v1.4.1</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY&#x3D;&quot;&quot; go get -insecure github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>注解：遇到问题时，使用 <code>go get -v</code> 可以看到更多信息，有助分析问题。</p>
 </blockquote>
 <h3 id="Go-Modules-代理"><a href="#Go-Modules-代理" class="headerlink" title="Go Modules 代理"></a>Go Modules 代理</h3><p>由于某些网络原因，国内下载 Github 等处的依赖，不够流程，需要设置代理，不同版本的设置如下：</p>
 <ul>
 <li><p>go1.12</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPROXY=https://goproxy.cn</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>go1.13</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPRIVATE=192.168.9.251</span><br><span class="line">$ export GOPROXY=https://goproxy.cn,direct</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPRIVATE&#x3D;192.168.9.251</span><br><span class="line">$ export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn,direct</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h3 id="私有仓库"><a href="#私有仓库" class="headerlink" title="私有仓库"></a>私有仓库</h3><p>如果仓库设置为私有，这要求用户必须登录才能访问仓库。</p>
@@ -958,7 +960,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -969,7 +971,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

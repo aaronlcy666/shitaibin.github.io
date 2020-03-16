@@ -103,24 +103,26 @@
 
 
   <meta name="description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
-<meta name="keywords" content="Mac">
 <meta property="og:type" content="article">
 <meta property="og:title" content="让终端科学上网">
 <meta property="og:url" content="http://lessisbetter.site/2018/09/06/Science-and-the-Internet/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-ss-ng.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-08-ssr-user-pac.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss_http.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-http-set.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-07-ss-socks5.png">
-<meta property="og:updated_time" content="2019-08-28T02:27:55.338Z">
+<meta property="article:published_time" content="2018-09-06T12:35:40.000Z">
+<meta property="article:modified_time" content="2019-08-28T02:27:55.338Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Mac">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="让终端科学上网">
-<meta name="twitter:description" content="前言科学上网，为祖国建设添砖加瓦。  教你浏览器科学上网，获取学习资料。 教你终端科学上网，获取学习资料。  软件列表 Shadowsocks:sock5代理 proxychains-ng:为终端命令设置SOCKS5代理">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-01-ss-ng.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -177,7 +179,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -527,7 +529,7 @@
 <p>安装proxychains-ng</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install proxychains-ng</span><br></pre></td></tr></table></figure>
 <p>运行会列出配置文件位置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: /usr/local/etc/proxychains.conf</span><br><span class="line">[proxychains] preloading /usr/local/Cellar/proxychains-ng/4.13/lib/libproxychains4.dylib</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: &#x2F;usr&#x2F;local&#x2F;etc&#x2F;proxychains.conf</span><br><span class="line">[proxychains] preloading &#x2F;usr&#x2F;local&#x2F;Cellar&#x2F;proxychains-ng&#x2F;4.13&#x2F;lib&#x2F;libproxychains4.dylib</span><br></pre></td></tr></table></figure>
 <p>打开配置文件：<code>/usr/local/etc/proxychains.conf</code>。</p>
 <ul>
 <li>dynamic_chain，取消这行注释</li>
@@ -535,9 +537,9 @@
 <li>最后一行添加<code>socks5 127.0.0.1 1086</code></li>
 </ul>
 <p><strong>验证科学上网的唯一标准：能用wget下载google主页</strong>，什么<code>curl ip.cn</code>这种不一定准，虽然显示你的是国外IP了，说明这次<code>curl</code>走了代理，但不代表你能使用wget下载，能更新源码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  t proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: /usr/local/etc/proxychains.conf</span><br><span class="line">[proxychains] preloading /usr/local/Cellar/proxychains-ng/4.13/lib/libproxychains4.dylib</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.13</span><br><span class="line">--2018-09-06 20:24:26--  http://www.google.com/</span><br><span class="line">正在解析主机 www.google.com (www.google.com)... 224.0.0.1</span><br><span class="line">正在连接 www.google.com (www.google.com)|224.0.0.1|:80... [proxychains] Strict chain  ...  127.0.0.1:1080  ...  www.google.com:80  ...  OK</span><br><span class="line">已连接。</span><br><span class="line">已发出 HTTP 请求，正在等待回应... 200 OK</span><br><span class="line">长度：未指定 [text/html]</span><br><span class="line">正在保存至: “index.html.10”</span><br><span class="line"></span><br><span class="line">index.html.10                    [ &lt;=&gt;                                           ]  11.11K  --.-KB/s  用时 0s</span><br><span class="line"></span><br><span class="line">2018-09-06 20:24:27 (59.9 MB/s) - “index.html.10” 已保存 [11375]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  t proxychains4 wget www.google.com</span><br><span class="line">[proxychains] config file found: &#x2F;usr&#x2F;local&#x2F;etc&#x2F;proxychains.conf</span><br><span class="line">[proxychains] preloading &#x2F;usr&#x2F;local&#x2F;Cellar&#x2F;proxychains-ng&#x2F;4.13&#x2F;lib&#x2F;libproxychains4.dylib</span><br><span class="line">[proxychains] DLL init: proxychains-ng 4.13</span><br><span class="line">--2018-09-06 20:24:26--  http:&#x2F;&#x2F;www.google.com&#x2F;</span><br><span class="line">正在解析主机 www.google.com (www.google.com)... 224.0.0.1</span><br><span class="line">正在连接 www.google.com (www.google.com)|224.0.0.1|:80... [proxychains] Strict chain  ...  127.0.0.1:1080  ...  www.google.com:80  ...  OK</span><br><span class="line">已连接。</span><br><span class="line">已发出 HTTP 请求，正在等待回应... 200 OK</span><br><span class="line">长度：未指定 [text&#x2F;html]</span><br><span class="line">正在保存至: “index.html.10”</span><br><span class="line"></span><br><span class="line">index.html.10                    [ &lt;&#x3D;&gt;                                           ]  11.11K  --.-KB&#x2F;s  用时 0s</span><br><span class="line"></span><br><span class="line">2018-09-06 20:24:27 (59.9 MB&#x2F;s) - “index.html.10” 已保存 [11375]</span><br></pre></td></tr></table></figure>
 <p>为了方便使用proxychains可以设置命令昵称，比如我的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alias py4=&quot;proxychains4&quot;</span><br><span class="line">alias wget=&quot;py4 wget&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alias py4&#x3D;&quot;proxychains4&quot;</span><br><span class="line">alias wget&#x3D;&quot;py4 wget&quot;</span><br></pre></td></tr></table></figure>
 <p>使用这种方式还遇到过某些https就是连接超时的情况，比如<code>google.golang.org</code>，可以这么解决：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 zsh</span><br></pre></td></tr></table></figure>
 <p>这样会新启动一个zsh会话，当前会话的所有连接都转换为socks5代理。</p>
@@ -995,7 +997,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1006,7 +1008,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

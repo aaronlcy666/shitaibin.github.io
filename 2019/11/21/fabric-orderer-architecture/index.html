@@ -103,24 +103,27 @@
 
 
   <meta name="description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
-<meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fabric 1.4源码解读 7：Orderer架构解读">
 <meta property="og:url" content="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-arch-of-orderer.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2020-01-orderer-using-raft.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2020-01-fabric-order-with-etcdraft.png">
-<meta property="og:updated_time" content="2020-01-10T09:30:42.951Z">
+<meta property="article:published_time" content="2019-11-21T12:07:54.000Z">
+<meta property="article:modified_time" content="2020-01-10T09:30:42.951Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Fabric 1.4源码解读 7：Orderer架构解读">
-<meta name="twitter:description" content="Orderer介绍排序服务由一组排序节点组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的一致性服务。   图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft  排序服务所提供的一致性，依赖确定性的共识算法，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有S">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -177,7 +180,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -683,7 +686,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+            <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
           
             <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
           
@@ -1108,7 +1111,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1119,7 +1122,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

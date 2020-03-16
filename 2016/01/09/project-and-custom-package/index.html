@@ -103,18 +103,22 @@
 
 
   <meta name="description" content="需求驱动学习。  前言这篇文章是包和单元测试的姊妹篇，内容是如何在自己的工程中导入自定义包，而不出现导入错误。 在文章：包和单元测试中，已经叙述了如何单元测试的导入问题，本质上讲，只要导入的模块在搜索路径中，python就可以发现该模块。也验证了python命令会将运行文件所在目录加到sys.path中，而python -m unittest命令，将运行命令所在目录加入到sys.path中。">
-<meta name="keywords" content="Python,Package,单元测试">
 <meta property="og:type" content="article">
 <meta property="og:title" content="对自定义包的引用">
 <meta property="og:url" content="http://lessisbetter.site/2016/01/09/project-and-custom-package/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="需求驱动学习。  前言这篇文章是包和单元测试的姊妹篇，内容是如何在自己的工程中导入自定义包，而不出现导入错误。 在文章：包和单元测试中，已经叙述了如何单元测试的导入问题，本质上讲，只要导入的模块在搜索路径中，python就可以发现该模块。也验证了python命令会将运行文件所在目录加到sys.path中，而python -m unittest命令，将运行命令所在目录加入到sys.path中。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.127Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-01-09T02:31:52.000Z">
+<meta property="article:modified_time" content="2018-05-31T05:57:23.127Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Package">
+<meta property="article:tag" content="单元测试">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="对自定义包的引用">
-<meta name="twitter:description" content="需求驱动学习。  前言这篇文章是包和单元测试的姊妹篇，内容是如何在自己的工程中导入自定义包，而不出现导入错误。 在文章：包和单元测试中，已经叙述了如何单元测试的导入问题，本质上讲，只要导入的模块在搜索路径中，python就可以发现该模块。也验证了python命令会将运行文件所在目录加到sys.path中，而python -m unittest命令，将运行命令所在目录加入到sys.path中。">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -171,7 +175,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -487,7 +491,7 @@
 <a id="more"></a>
 <h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p>为了写笔记，该系列实验仍然在Windows上进行，使用Python 2.7。</p>
 <h2 id="1-同级目录引用自定义包"><a href="#1-同级目录引用自定义包" class="headerlink" title="1. 同级目录引用自定义包"></a>1. 同级目录引用自定义包</h2><h4 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h4><p>如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">my_project</span><br><span class="line">	./foo</span><br><span class="line">		./__init__.py</span><br><span class="line">		./bar.py</span><br><span class="line">	./tests</span><br><span class="line">		./__init__.py</span><br><span class="line">		./test_foo.py</span><br><span class="line">		./test_bar.py</span><br><span class="line">	./reference_foo_bar.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">my_project</span><br><span class="line">	.&#x2F;foo</span><br><span class="line">		.&#x2F;__init__.py</span><br><span class="line">		.&#x2F;bar.py</span><br><span class="line">	.&#x2F;tests</span><br><span class="line">		.&#x2F;__init__.py</span><br><span class="line">		.&#x2F;test_foo.py</span><br><span class="line">		.&#x2F;test_bar.py</span><br><span class="line">	.&#x2F;reference_foo_bar.py</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>my_project</code>是项目目录</li>
 <li><code>foo</code>是包目录</li>
@@ -500,11 +504,11 @@
 <li><p><code>bar.py</code>内容：</p>
 </li>
 </ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumb_true</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dumb_true</span><span class="params">()</span>:</span></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>test_bar.py</code>内容如下，但今天的实验中不会用到单元测试。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import unittest</span><br><span class="line"></span><br><span class="line">from foo import bar</span><br><span class="line"></span><br><span class="line">class TestBar(unittest.TestCase):</span><br><span class="line">    def test_bar_true(self):</span><br><span class="line">        self.assertTrue(bar.dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import unittest</span><br><span class="line"></span><br><span class="line">from foo import bar</span><br><span class="line"></span><br><span class="line">class TestBar(unittest.TestCase):</span><br><span class="line">    def test_bar_true(self):</span><br><span class="line">        self.assertTrue(bar.dumb_true())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &quot;__main__&quot;:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>reference_foo_bar.py</code>内容如下：</li>
 </ul>
@@ -517,9 +521,9 @@
 <h2 id="2-不同目录引用自定义包"><a href="#2-不同目录引用自定义包" class="headerlink" title="2. 不同目录引用自定义包"></a>2. 不同目录引用自定义包</h2><p>我们使用的标准库和第三方库，都是这种情况，因为这些包都不在我们工程的目录下。本质上讲，他们也都是自定义的，只不过在安装他们的时候，将他们所在的目录，放到了Python的搜索路径中，即<code>sys.path</code>。</p>
 <p>我们本实验中自定义的包，指我们自己写的工具包，这样我们可以在自己项目中的各处都可以使用。</p>
 <h4 id="目录结构-1"><a href="#目录结构-1" class="headerlink" title="目录结构"></a>目录结构</h4><p>本实验目录结构如下，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">my_project</span><br><span class="line">	./foo</span><br><span class="line">		./__init__.py</span><br><span class="line">		./bar.py</span><br><span class="line">	./tests</span><br><span class="line">		./__init__.py</span><br><span class="line">		./test_foo.py</span><br><span class="line">		./test_bar.py</span><br><span class="line">	./sub_project</span><br><span class="line">		./reference_foo_bar.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">my_project</span><br><span class="line">	.&#x2F;foo</span><br><span class="line">		.&#x2F;__init__.py</span><br><span class="line">		.&#x2F;bar.py</span><br><span class="line">	.&#x2F;tests</span><br><span class="line">		.&#x2F;__init__.py</span><br><span class="line">		.&#x2F;test_foo.py</span><br><span class="line">		.&#x2F;test_bar.py</span><br><span class="line">	.&#x2F;sub_project</span><br><span class="line">		.&#x2F;reference_foo_bar.py</span><br></pre></td></tr></table></figure>
 <p>建立新目录<code>sub_project</code>，并将<code>reference_foo_bar.py</code>移至此目录。</p>
-<h4 id="运行测试-1"><a href="#运行测试-1" class="headerlink" title="运行测试"></a>运行测试</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_project</span><br><span class="line">python subproject\reference_foo_bar.py   #linux 下用： python subproject/reference_foo_bar.py</span><br></pre></td></tr></table></figure>
+<h4 id="运行测试-1"><a href="#运行测试-1" class="headerlink" title="运行测试"></a>运行测试</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_project</span><br><span class="line">python subproject\reference_foo_bar.py   #linux 下用： python subproject&#x2F;reference_foo_bar.py</span><br></pre></td></tr></table></figure>
 <p>得错误信息：找不到模块foo</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;sub_project\reference_foo_bar.py&quot;, line 1, in &lt;module&gt;</span><br><span class="line">    from foo import bar</span><br><span class="line">ImportError: No module named foo</span><br></pre></td></tr></table></figure>
 <h4 id="问题来了"><a href="#问题来了" class="headerlink" title="问题来了"></a>问题来了</h4><p>当前的搜索路径中包含<code>...\sub_project</code>，在本目录下是找不到<code>foo</code>的。</p>
@@ -580,7 +584,7 @@
           
             <a href="/tags/Package/" rel="tag"><i class="fa fa-tag"></i> Package</a>
           
-            <a href="/tags/单元测试/" rel="tag"><i class="fa fa-tag"></i> 单元测试</a>
+            <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" rel="tag"><i class="fa fa-tag"></i> 单元测试</a>
           
         </div>
       
@@ -1003,7 +1007,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1014,7 +1018,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

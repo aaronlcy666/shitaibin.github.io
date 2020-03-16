@@ -103,24 +103,26 @@
 
 
   <meta name="description" content="上一篇文章《Go语言高阶：调度器系列（1）起源》，学goroutine调度器之前的一些背景知识，这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理。 三个角度分别是：  调度器的宏观组成 调度器的生命周期 GMP的可视化感受  在开始前，先回忆下调度器相关的3个缩写：  G: goroutine，每个G都代表1个goroutine">
-<meta name="keywords" content="Go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go调度器系列（2）宏观看调度器">
 <meta property="og:url" content="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="上一篇文章《Go语言高阶：调度器系列（1）起源》，学goroutine调度器之前的一些背景知识，这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理。 三个角度分别是：  调度器的宏观组成 调度器的生命周期 GMP的可视化感受  在开始前，先回忆下调度器相关的3个缩写：  G: goroutine，每个G都代表1个goroutine">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-scheduler-lifetime.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-go-tool-trace.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-for-print-syscall.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-01-article_qrcode.jpg">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.438Z">
+<meta property="article:published_time" content="2019-03-26T09:29:29.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.438Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Go调度器系列（2）宏观看调度器">
-<meta name="twitter:description" content="上一篇文章《Go语言高阶：调度器系列（1）起源》，学goroutine调度器之前的一些背景知识，这篇文章则是为了对调度器有个宏观的认识，从宏观的3个角度，去看待和理解调度器是什么样子的，但仍然不涉及具体的调度原理。 三个角度分别是：  调度器的宏观组成 调度器的生命周期 GMP的可视化感受  在开始前，先回忆下调度器相关的3个缩写：  G: goroutine，每个G都代表1个goroutine">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-goroutine-scheduler-model.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -177,7 +179,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -559,7 +561,7 @@
 <p>编译和运行，运行过程会打印trace：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  one_routine2 git:(master) ✗ go build .</span><br><span class="line">➜  one_routine2 git:(master) ✗ GODEBUG=schedtrace=1000 ./one_routine2</span><br></pre></td></tr></table></figure>
 <p>结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SCHED 0ms: gomaxprocs=8 idleprocs=5 threads=5 spinningthreads=1 idlethreads=0 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">SCHED 1001ms: gomaxprocs=8 idleprocs=8 threads=5 spinningthreads=0 idlethreads=3 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 2002ms: gomaxprocs=8 idleprocs=8 threads=5 spinningthreads=0 idlethreads=3 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 3004ms: gomaxprocs=8 idleprocs=8 threads=5 spinningthreads=0 idlethreads=3 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 4005ms: gomaxprocs=8 idleprocs=8 threads=5 spinningthreads=0 idlethreads=3 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 5013ms: gomaxprocs=8 idleprocs=8 threads=5 spinningthreads=0 idlethreads=3 runqueue=0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SCHED 0ms: gomaxprocs&#x3D;8 idleprocs&#x3D;5 threads&#x3D;5 spinningthreads&#x3D;1 idlethreads&#x3D;0 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">SCHED 1001ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 2002ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 3004ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 4005ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br><span class="line">SCHED 5013ms: gomaxprocs&#x3D;8 idleprocs&#x3D;8 threads&#x3D;5 spinningthreads&#x3D;0 idlethreads&#x3D;3 runqueue&#x3D;0 [0 0 0 0 0 0 0 0]</span><br><span class="line">Hello scheduler</span><br></pre></td></tr></table></figure>
 <p>看到这密密麻麻的文字就有点担心，不要愁！因为每行字段都是一样的，各字段含义如下：</p>
 <ul>
 <li>SCHED：调试信息输出标志字符串，代表本行是goroutine调度器的输出；</li>
@@ -610,7 +612,7 @@
 <li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/">http://lessisbetter.site/2019/03/26/golang-scheduler-2-macro-view/</a></li>
 </ol>
 </blockquote>
-<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
 
       
     </div>
@@ -1061,7 +1063,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1072,7 +1074,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

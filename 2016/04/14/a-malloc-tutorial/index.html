@@ -103,18 +103,20 @@
 
 
   <meta name="description" content="读了张洋的《如何实现一个malloc》和Marwan Burlle的《A Malloc Turorial》，张洋的博文是对Marwan Burlle的理解、翻译和补充，缺失了一些细节。但读了张洋的文章后，再读《A Malloc Turorial》会快很多。 #A Malloc Tutorial 讲了什么 什么是malloc 堆的内存模型 如何通过系统调用操纵堆 什么是块、块的数据结构 结构体的本质">
-<meta name="keywords" content="malloc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="malloc的故事">
 <meta property="og:url" content="http://lessisbetter.site/2016/04/14/a-malloc-tutorial/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="读了张洋的《如何实现一个malloc》和Marwan Burlle的《A Malloc Turorial》，张洋的博文是对Marwan Burlle的理解、翻译和补充，缺失了一些细节。但读了张洋的文章后，再读《A Malloc Turorial》会快很多。 #A Malloc Tutorial 讲了什么 什么是malloc 堆的内存模型 如何通过系统调用操纵堆 什么是块、块的数据结构 结构体的本质">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-05-31T05:57:23.133Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-04-14T11:05:37.000Z">
+<meta property="article:modified_time" content="2018-05-31T05:57:23.133Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="malloc">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="malloc的故事">
-<meta name="twitter:description" content="读了张洋的《如何实现一个malloc》和Marwan Burlle的《A Malloc Turorial》，张洋的博文是对Marwan Burlle的理解、翻译和补充，缺失了一些细节。但读了张洋的文章后，再读《A Malloc Turorial》会快很多。 #A Malloc Tutorial 讲了什么 什么是malloc 堆的内存模型 如何通过系统调用操纵堆 什么是块、块的数据结构 结构体的本质">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -171,7 +173,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -1016,7 +1018,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1027,7 +1029,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

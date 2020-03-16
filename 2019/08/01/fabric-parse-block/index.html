@@ -103,18 +103,21 @@
 
 
   <meta name="description" content="获取人类可读的区块内容分2步：  从账本里把区块取出来，格式为protobuf 把protobuf格式的区块，转换为JSON格式  所以这篇文章3步走：  获取区块 解析区块 常见区块类型样例  获取区块拉取应用通道区块peer channel fetch能够拉去某个通道最新、最老、特定高度的区块，只不过得到的区块是protobuf格式的，人眼不可读。 1234567891011121314151">
-<meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
 <meta property="og:title" content="利用工具解析Fabric区块与工具详解">
 <meta property="og:url" content="http://lessisbetter.site/2019/08/01/fabric-parse-block/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="获取人类可读的区块内容分2步：  从账本里把区块取出来，格式为protobuf 把protobuf格式的区块，转换为JSON格式  所以这篇文章3步走：  获取区块 解析区块 常见区块类型样例  获取区块拉取应用通道区块peer channel fetch能够拉去某个通道最新、最老、特定高度的区块，只不过得到的区块是protobuf格式的，人眼不可读。 1234567891011121314151">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.430Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-01T11:41:28.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.430Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="利用工具解析Fabric区块与工具详解">
-<meta name="twitter:description" content="获取人类可读的区块内容分2步：  从账本里把区块取出来，格式为protobuf 把protobuf格式的区块，转换为JSON格式  所以这篇文章3步走：  获取区块 解析区块 常见区块类型样例  获取区块拉取应用通道区块peer channel fetch能够拉去某个通道最新、最老、特定高度的区块，只不过得到的区块是protobuf格式的，人眼不可读。 1234567891011121314151">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -171,7 +174,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -491,13 +494,13 @@
 <li>常见区块类型样例</li>
 </ol>
 <h2 id="获取区块"><a href="#获取区块" class="headerlink" title="获取区块"></a>获取区块</h2><h3 id="拉取应用通道区块"><a href="#拉取应用通道区块" class="headerlink" title="拉取应用通道区块"></a>拉取应用通道区块</h3><p><code>peer channel fetch</code>能够拉去某个通道最新、最老、特定高度的区块，只不过得到的区块是protobuf格式的，人眼不可读。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@eedf1a41eb00:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel fetch -h</span><br><span class="line">Fetch a specified block, writing it to a file.</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  peer channel fetch &lt;newest|oldest|config|(number)&gt; [outputfile] [flags]</span><br><span class="line"></span><br><span class="line">Flags:</span><br><span class="line">      --bestEffort         Whether fetch requests should ignore errors and return blocks on a best effort basis</span><br><span class="line">  -c, --channelID string   In case of a newChain command, the channel ID to create. It must be all lower case, less than 250 characters long and match the regular expression: [a-z][a-z0-9.-]*</span><br><span class="line">  -h, --help               help for fetch</span><br><span class="line"></span><br><span class="line">Global Flags:</span><br><span class="line">      --cafile string                       Path to file containing PEM-encoded trusted certificate(s) for the ordering endpoint</span><br><span class="line">      --certfile string                     Path to file containing PEM-encoded X509 public key to use for mutual TLS communication with the orderer endpoint</span><br><span class="line">      --clientauth                          Use mutual TLS when communicating with the orderer endpoint</span><br><span class="line">      --connTimeout duration                Timeout for client to connect (default 3s)</span><br><span class="line">      --keyfile string                      Path to file containing PEM-encoded private key to use for mutual TLS communication with the orderer endpoint</span><br><span class="line">  -o, --orderer string                      Ordering service endpoint</span><br><span class="line">      --ordererTLSHostnameOverride string   The hostname override to use when validating the TLS connection to the orderer.</span><br><span class="line">      --tls                                 Use TLS when communicating with the orderer endpoint</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@eedf1a41eb00:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer channel fetch -h</span><br><span class="line">Fetch a specified block, writing it to a file.</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  peer channel fetch &lt;newest|oldest|config|(number)&gt; [outputfile] [flags]</span><br><span class="line"></span><br><span class="line">Flags:</span><br><span class="line">      --bestEffort         Whether fetch requests should ignore errors and return blocks on a best effort basis</span><br><span class="line">  -c, --channelID string   In case of a newChain command, the channel ID to create. It must be all lower case, less than 250 characters long and match the regular expression: [a-z][a-z0-9.-]*</span><br><span class="line">  -h, --help               help for fetch</span><br><span class="line"></span><br><span class="line">Global Flags:</span><br><span class="line">      --cafile string                       Path to file containing PEM-encoded trusted certificate(s) for the ordering endpoint</span><br><span class="line">      --certfile string                     Path to file containing PEM-encoded X509 public key to use for mutual TLS communication with the orderer endpoint</span><br><span class="line">      --clientauth                          Use mutual TLS when communicating with the orderer endpoint</span><br><span class="line">      --connTimeout duration                Timeout for client to connect (default 3s)</span><br><span class="line">      --keyfile string                      Path to file containing PEM-encoded private key to use for mutual TLS communication with the orderer endpoint</span><br><span class="line">  -o, --orderer string                      Ordering service endpoint</span><br><span class="line">      --ordererTLSHostnameOverride string   The hostname override to use when validating the TLS connection to the orderer.</span><br><span class="line">      --tls                                 Use TLS when communicating with the orderer endpoint</span><br></pre></td></tr></table></figure>
 <p>以下命令下载了指定channel的第0个区块，即此channel的创世块，区块保存为mychannel.block。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer channel fetch 0 mychannel.block  -c mychannel</span><br></pre></td></tr></table></figure>
 <p>如果不指定保存的区块名，会自动生成，格式：通道名_区块号，比如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer channel fetch 3 -c mychannel</span><br></pre></td></tr></table></figure>
 <p>操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@ca8843f81b89:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer channel fetch 3 -c mychannel</span><br><span class="line">2019-08-01 02:20:45.378 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-08-01 02:20:45.382 UTC [cli.common] readBlock -&gt; INFO 002 Received block: 3</span><br><span class="line">root@ca8843f81b89:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@ca8843f81b89:/opt/gopath/src/github.com/hyperledger/fabric/peer# ls</span><br><span class="line">channel-artifacts  crypto  log.txt  mychannel.block  mychannel_3.block  scripts</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@ca8843f81b89:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer channel fetch 3 -c mychannel</span><br><span class="line">2019-08-01 02:20:45.378 UTC [channelCmd] InitCmdFactory -&gt; INFO 001 Endorser and orderer connections initialized</span><br><span class="line">2019-08-01 02:20:45.382 UTC [cli.common] readBlock -&gt; INFO 002 Received block: 3</span><br><span class="line">root@ca8843f81b89:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@ca8843f81b89:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# ls</span><br><span class="line">channel-artifacts  crypto  log.txt  mychannel.block  mychannel_3.block  scripts</span><br></pre></td></tr></table></figure>
 <h3 id="获取通道配置去块"><a href="#获取通道配置去块" class="headerlink" title="获取通道配置去块"></a>获取通道配置去块</h3><p>如果使用<code>peer channel fetch config</code>可以获取某个通道的最新配置所在的区块。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer channel fetch config -c mychannel</span><br></pre></td></tr></table></figure>
 <p>命令执行结果的最后一行会显示配置所在的区块号，区块文件保存为<code>mychannel_config.block</code>。</p>
@@ -505,10 +508,10 @@
 <p>系统通道区块是保存在orderer节点上的，需要在获取的时候指定orderer配置和证书，然后使用config而不是区块号，直接获取最新的配置，创世块使用区块0获取。</p>
 <ol>
 <li><p>连接到orderer节点，查询系统通道名称</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /var/hyperledger/production/orderer/chains/</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls &#x2F;var&#x2F;hyperledger&#x2F;production&#x2F;orderer&#x2F;chains&#x2F;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>cli上设置orderer的设置，设置上面查询的通道名字，获取的区块与通道同名</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">export CHANNEL_NAME=byfn-sys-channel</span><br><span class="line">export ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem</span><br><span class="line">export CORE_PEER_ADDRESS=orderer.example.com:7050</span><br><span class="line">export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem</span><br><span class="line">export CORE_PEER_LOCALMSPID=&quot;OrdererMSP&quot;</span><br><span class="line">export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp</span><br><span class="line">export ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem</span><br><span class="line"></span><br><span class="line">peer channel fetch config $CHANNEL_NAME.block -o orderer.example.com:7050 -c $CHANNEL_NAME --tls --cafile $ORDERER_CA</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">export CHANNEL_NAME&#x3D;byfn-sys-channel</span><br><span class="line">export ORDERER_CA&#x3D;&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem</span><br><span class="line">export CORE_PEER_ADDRESS&#x3D;orderer.example.com:7050</span><br><span class="line">export CORE_PEER_TLS_ROOTCERT_FILE&#x3D;&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem</span><br><span class="line">export CORE_PEER_LOCALMSPID&#x3D;&quot;OrdererMSP&quot;</span><br><span class="line">export CORE_PEER_MSPCONFIGPATH&#x3D;&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp</span><br><span class="line">export ORDERER_CA&#x3D;&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem</span><br><span class="line"></span><br><span class="line">peer channel fetch config $CHANNEL_NAME.block -o orderer.example.com:7050 -c $CHANNEL_NAME --tls --cafile $ORDERER_CA</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>以上命令执行结果的最后一行，会显示当前配置所在的区块高度。</p>
@@ -596,7 +599,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+            <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
           
             <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
           
@@ -1021,7 +1024,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1032,7 +1035,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

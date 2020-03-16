@@ -103,20 +103,22 @@
 
 
   <meta name="description" content="最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。 连不上1发现卡在：debug1: expecting SSH2_MSG_KEX_ECDH_REPLY上， 12345678910111213141516171819202122232425262728$ ssh -v xxx@47.88.217.222OpenSSH_7.9p1, LibreSSL 2.7.3debug1: Readin">
-<meta name="keywords" content="Linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SSH问题记录">
 <meta property="og:url" content="http://lessisbetter.site/2019/03/04/ssh-problems/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。 连不上1发现卡在：debug1: expecting SSH2_MSG_KEX_ECDH_REPLY上， 12345678910111213141516171819202122232425262728$ ssh -v xxx@47.88.217.222OpenSSH_7.9p1, LibreSSL 2.7.3debug1: Readin">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-03-fail1.png">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.445Z">
+<meta property="article:published_time" content="2019-03-04T03:07:20.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.445Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SSH问题记录">
-<meta name="twitter:description" content="最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。 连不上1发现卡在：debug1: expecting SSH2_MSG_KEX_ECDH_REPLY上， 12345678910111213141516171819202122232425262728$ ssh -v xxx@47.88.217.222OpenSSH_7.9p1, LibreSSL 2.7.3debug1: Readin">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-03-fail1.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -173,7 +175,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -483,7 +485,7 @@
       
         <p>最近经常连国外的服务器，出现了连不上、连上又经常断开的问题。</p>
 <h4 id="连不上1"><a href="#连不上1" class="headerlink" title="连不上1"></a>连不上1</h4><p>发现卡在：<code>debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</code>上，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data /Users/shitaibin/.ssh/config</span><br><span class="line">debug1: Reading configuration data /etc/ssh/ssh_config</span><br><span class="line">debug1: /etc/ssh/ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_rsa type 0</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_rsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_dsa type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_dsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ecdsa type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ed25519 type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_ed25519-cert type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_xmss type -1</span><br><span class="line">debug1: identity file /Users/shitaibin/.ssh/id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &apos;nameXXX&apos;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -v xxx@47.88.217.222</span><br><span class="line">OpenSSH_7.9p1, LibreSSL 2.7.3</span><br><span class="line">debug1: Reading configuration data &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;config</span><br><span class="line">debug1: Reading configuration data &#x2F;etc&#x2F;ssh&#x2F;ssh_config</span><br><span class="line">debug1: &#x2F;etc&#x2F;ssh&#x2F;ssh_config line 48: Applying options for *</span><br><span class="line">debug1: Connecting to 47.88.217.222 [47.88.217.222] port 22.</span><br><span class="line">debug1: Connection established.</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa type 0</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_rsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_dsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ecdsa-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519 type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_ed25519-cert type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss type -1</span><br><span class="line">debug1: identity file &#x2F;Users&#x2F;shitaibin&#x2F;.ssh&#x2F;id_xmss-cert type -1</span><br><span class="line">debug1: Local version string SSH-2.0-OpenSSH_7.9</span><br><span class="line">debug1: Remote protocol version 2.0, remote software version OpenSSH_7.2p2 Ubuntu-4ubuntu2.4</span><br><span class="line">debug1: match: OpenSSH_7.2p2 Ubuntu-4ubuntu2.4 pat OpenSSH_7.0*,OpenSSH_7.1*,OpenSSH_7.2*,OpenSSH_7.3*,OpenSSH_7.4*,OpenSSH_7.5*,OpenSSH_7.6*,OpenSSH_7.7* compat 0x04000002</span><br><span class="line">debug1: Authenticating to 47.88.217.222:22 as &#39;nameXXX&#39;</span><br><span class="line">debug1: SSH2_MSG_KEXINIT sent</span><br><span class="line">debug1: SSH2_MSG_KEXINIT received</span><br><span class="line">debug1: kex: algorithm: curve25519-sha256@libssh.org</span><br><span class="line">debug1: kex: host key algorithm: ecdsa-sha2-nistp256</span><br><span class="line">debug1: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: none</span><br><span class="line">debug1: expecting SSH2_MSG_KEX_ECDH_REPLY</span><br></pre></td></tr></table></figure>
 <p>Google一下，</p>
 <ul>
 <li>原因：MTU太大了，造成了丢包。</li>
@@ -491,7 +493,7 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ifconfig eth0 mtu 1200</span><br></pre></td></tr></table></figure>
 <p>或</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; /sys/class/net/eth0/mtu</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;1460&quot; &gt; &#x2F;sys&#x2F;class&#x2F;net&#x2F;eth0&#x2F;mtu</span><br></pre></td></tr></table></figure>
 <h3 id="连不上2"><a href="#连不上2" class="headerlink" title="连不上2"></a>连不上2</h3><p>使用iterm2保存了机器的Profile，连接的时候报错，在本机ssh命令连接正常，错误如下图：</p>
 <p><img src="http://img.lessisbetter.site/2019-03-fail1.png" alt=""></p>
 <p>出现: <code>command not found</code>。</p>
@@ -960,7 +962,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -971,7 +973,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

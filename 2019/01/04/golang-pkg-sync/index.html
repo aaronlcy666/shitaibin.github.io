@@ -102,21 +102,23 @@
 
 
 
-  <meta name="description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通">
-<meta name="keywords" content="Go">
+  <meta name="description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步&#x2F;并发操作最好选用通">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Golang并发的次优选择：sync包">
 <meta property="og:url" content="http://lessisbetter.site/2019/01/04/golang-pkg-sync/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步&#x2F;并发操作最好选用通">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.437Z">
+<meta property="article:published_time" content="2019-01-04T13:31:48.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.437Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Golang并发的次优选择：sync包">
-<meta name="twitter:description" content="我们都知道Golang并发优选channel，但channel不是万能的，Golang为我们提供了另一种选择：sync。通过这篇文章，你会了解sync包最基础、最常用的方法，至于sync和channel之争留给下一篇文章。 sync包提供了基础的异步操作方法，比如互斥锁（Mutex）、单次执行（Once）和等待组（WaitGroup），这些异步操作主要是为低级库提供，上层的异步/并发操作最好选用通">
 <meta name="twitter:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -173,7 +175,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -501,9 +503,7 @@
 <p>经过了上面这么“官方”的介绍，举个例子：你在工商银行有100元存款，这张卡绑定了支付宝和微信，在中午12点你用支付宝支付外卖30元，你在微信发红包，抢到10块。银行需要按顺序执行上面两件事，先减30再加10或者先加10再减30，结果都是80，但如果同时执行，结果可能是，只减了30或者只加了10，即你有70元或者你有110元。前一个结果是你赔了，后一个结果是银行赔了，银行可不希望把这种事算错。</p>
 <p>看看实际使用吧：创建一个银行，银行里存每个账户的钱，存储查询都加了锁操作，这样银行就不会算错账了。<br>银行的定义：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Bank <span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.Mutex</span><br><span class="line">	saving <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span> <span class="comment">// 每账户的存款金额</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBank</span><span class="params">()</span> *<span class="title">Bank</span></span> &#123;</span><br><span class="line">	b := &amp;Bank&#123;</span><br><span class="line">		saving: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>),</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>银行的存取钱：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Deposit 存款</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Deposit</span><span class="params">(name <span class="keyword">string</span>, amount <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	b.Lock()</span><br><span class="line">	<span class="keyword">defer</span> b.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		b.saving[name] = <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line">	b.saving[name] += amount</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Withdraw 取款，返回实际取到的金额</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Withdraw</span><span class="params">(name <span class="keyword">string</span>, amount <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	b.Lock()</span><br><span class="line">	<span class="keyword">defer</span> b.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> b.saving[name] &lt; amount &#123;</span><br><span class="line">		amount = b.saving[name]</span><br><span class="line">	&#125;</span><br><span class="line">	b.saving[name] -= amount</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> amount</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Query 查询余额</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bank)</span> <span class="title">Query</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	b.Lock()</span><br><span class="line">	<span class="keyword">defer</span> b.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> _, ok := b.saving[name]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> b.saving[name]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>模拟操作：小米支付宝存了100，并且同时花了20。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	b := NewBank()</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">"xiaoming"</span>, <span class="number">100</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Withdraw(<span class="string">"xiaoming"</span>, <span class="number">20</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">"xiaogang"</span>, <span class="number">2000</span>)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Printf(<span class="string">"xiaoming has: %d\n"</span>, b.Query(<span class="string">"xiaoming"</span>))</span><br><span class="line">	fmt.Printf(<span class="string">"xiaogang has: %d\n"</span>, b.Query(<span class="string">"xiaogang"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>结果：先存后花。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run mutex.go</span><br><span class="line">xiaoming has: 80</span><br><span class="line">xiaogang has: 2000</span><br></pre></td></tr></table></figure></p>
-<p>也可能是：先花后存，因为先花20，因为小明没钱，所以没花出去。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run mutex.go</span><br><span class="line">xiaoming has: 100</span><br><span class="line">xiaogang has: 2000</span><br></pre></td></tr></table></figure></p>
+<p>模拟操作：小米支付宝存了100，并且同时花了20。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	b := NewBank()</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">"xiaoming"</span>, <span class="number">100</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Withdraw(<span class="string">"xiaoming"</span>, <span class="number">20</span>)</span><br><span class="line">	<span class="keyword">go</span> b.Deposit(<span class="string">"xiaogang"</span>, <span class="number">2000</span>)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Printf(<span class="string">"xiaoming has: %d\n"</span>, b.Query(<span class="string">"xiaoming"</span>))</span><br><span class="line">	fmt.Printf(<span class="string">"xiaogang has: %d\n"</span>, b.Query(<span class="string">"xiaogang"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>结果：先存后花。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run mutex.go</span><br><span class="line">xiaoming has: 80</span><br><span class="line">xiaogang has: 2000</span><br></pre></td></tr></table></figure><br>也可能是：先花后存，因为先花20，因为小明没钱，所以没花出去。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  sync_pkg git:(master) ✗ go run mutex.go</span><br><span class="line">xiaoming has: 100</span><br><span class="line">xiaogang has: 2000</span><br></pre></td></tr></table></figure></p>
 <p><em>这个例子只是介绍了mutex的基本使用，如果你想多研究下mutex，那就去我的Github（阅读原文）下载下来代码，自己修改测试。Github中还提供了没有锁的例子，运行多次总能碰到错误：</em></p>
 <blockquote>
 <p>fatal error: concurrent map writes<br>这是由于并发访问map造成的。</p>
@@ -565,7 +565,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align="center"></p>
+<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center /></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>
@@ -1016,7 +1016,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1027,7 +1027,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

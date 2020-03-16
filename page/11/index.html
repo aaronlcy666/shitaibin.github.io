@@ -103,17 +103,18 @@
 
 
   <meta name="description" content="区块链、Go语言">
-<meta name="keywords" content="区块链 Go语言 后端 技术 人生 编程">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Go语言充电站">
 <meta property="og:url" content="http://lessisbetter.site/page/11/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="区块链、Go语言">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链 Go语言 后端 技术 人生 编程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Go语言充电站">
-<meta name="twitter:description" content="区块链、Go语言">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -170,7 +171,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -1643,7 +1644,7 @@
 <h2 id="无法commit或add已经modified的文件-夹"><a href="#无法commit或add已经modified的文件-夹" class="headerlink" title="无法commit或add已经modified的文件(夹)"></a>无法commit或add已经modified的文件(夹)</h2><p>明明显示修改了，但就是提交不上去，原因是那个目录是子模块，有自己的git信息。</p>
 <p>参考资料：<a href="http://stackoverflow.com/questions/5186371/problem-with-modified-files-showing-up-in-git-but-not-updating" target="_blank" rel="noopener">时光机1号</a>，<a href="http://stackoverflow.com/questions/7726131/git-add-a-is-not-adding-all-modified-files-in-directories" target="_blank" rel="noopener">时光机2号</a>。</p>
 <h2 id="http代理带来的问题"><a href="#http代理带来的问题" class="headerlink" title="http代理带来的问题"></a>http代理带来的问题</h2><p>在push操作的时候出现了这个问题：<code>error: RPC failed; result=56, HTTP code = 0</code>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git push ...</span><br><span class="line">error: RPC failed; result=56, HTTP code = 200</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">Everything up-to-date</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git push ...</span><br><span class="line">error: RPC failed; result&#x3D;56, HTTP code &#x3D; 200</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">fatal: The remote end hung up unexpectedly</span><br><span class="line">Everything up-to-date</span><br></pre></td></tr></table></figure>
 <p>原因：git设置的http的缓冲区太小了。</p>
 <p>调大即可解决：<code>git config http.postBuffer 524288000</code>。</p>
 <p><a href="https://flyingtomoon.com/2013/10/02/using-bitbucket-as-assignment-submission-system-for-the-courses/" target="_blank" rel="noopener">参考资料</a></p>
@@ -2018,7 +2019,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot; aria-label&#x3D;&quot;上一页&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/12/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot; aria-label&#x3D;&quot;下一页&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2368,7 +2369,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -2379,7 +2380,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

@@ -103,57 +103,59 @@
 
 
   <meta name="description" content="6月2日Go语言中文网在杭州举办了线下的MeetUp活动，这次活动办很成功，感谢站长polaris在杭州举办活动的提议，感谢Seekload的筹备与主持，感谢Aaron提供场地，感谢所有到场者的技术经验分享，没有你们就没有这次精彩的活动。 在活动上，我做了个主题分享，今天把分享整理成文章，分享给学习Go语言的各位朋友。 参加本次活动的朋友，大多是刚接触Go，少数几个朋友把玩Go 2~3年了，所以">
-<meta name="keywords" content="Go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="First class function in Go">
 <meta property="og:url" content="http://lessisbetter.site/2019/06/09/golang-first-class-function/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="6月2日Go语言中文网在杭州举办了线下的MeetUp活动，这次活动办很成功，感谢站长polaris在杭州举办活动的提议，感谢Seekload的筹备与主持，感谢Aaron提供场地，感谢所有到场者的技术经验分享，没有你们就没有这次精彩的活动。 在活动上，我做了个主题分享，今天把分享整理成文章，分享给学习Go语言的各位朋友。 参加本次活动的朋友，大多是刚接触Go，少数几个朋友把玩Go 2~3年了，所以">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-photo.jpeg">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片04.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片05.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片06.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片07.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片08.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片09.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片10.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片11.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片12.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片13.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片14.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片15.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片16.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片17.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片19.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片20.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片21.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片22.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片23.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片24.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片25.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片26.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片27.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片28.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片29.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片30.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片31.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片32.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片33.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片34.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片35.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片36.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片37.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片38.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片40.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片41.png">
-<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-幻灯片42.png">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.436Z">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8704.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8705.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8706.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8707.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8708.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8709.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8710.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8711.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8712.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8713.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8714.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8715.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8716.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8717.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8719.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8720.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8721.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8722.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8723.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8724.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8725.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8726.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8727.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8728.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8729.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8730.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8731.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8732.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8733.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8734.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8735.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8736.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8737.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8738.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8740.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8741.png">
+<meta property="og:image" content="http://img.lessisbetter.site/2019-06-09-%E5%B9%BB%E7%81%AF%E7%89%8742.png">
+<meta property="article:published_time" content="2019-06-09T14:00:26.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.436Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="First class function in Go">
-<meta name="twitter:description" content="6月2日Go语言中文网在杭州举办了线下的MeetUp活动，这次活动办很成功，感谢站长polaris在杭州举办活动的提议，感谢Seekload的筹备与主持，感谢Aaron提供场地，感谢所有到场者的技术经验分享，没有你们就没有这次精彩的活动。 在活动上，我做了个主题分享，今天把分享整理成文章，分享给学习Go语言的各位朋友。 参加本次活动的朋友，大多是刚接触Go，少数几个朋友把玩Go 2~3年了，所以">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-06-09-photo.jpeg">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -210,7 +212,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -1112,7 +1114,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1123,7 +1125,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

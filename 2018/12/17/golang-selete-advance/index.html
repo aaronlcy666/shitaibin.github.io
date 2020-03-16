@@ -103,20 +103,22 @@
 
 
   <meta name="description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select{}阻塞">
-<meta name="keywords" content="Go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Golang并发模型：select进阶">
 <meta property="og:url" content="http://lessisbetter.site/2018/12/17/golang-selete-advance/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select{}阻塞">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
-<meta property="og:updated_time" content="2019-08-21T04:46:30.605Z">
+<meta property="article:published_time" content="2018-12-17T12:22:09.000Z">
+<meta property="article:modified_time" content="2019-08-21T04:46:30.605Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Golang并发模型：select进阶">
-<meta name="twitter:description" content="最近公司工作有点多，Golang的select进阶就这样被拖沓啦，今天坚持把时间挤一挤，把吹的牛皮补上。 前一篇文章《Golang并发模型：轻松入门select》介绍了select的作用和它的基本用法，这次介绍它的3个进阶特性。  nil的通道永远阻塞 如何跳出for-select select{}阻塞">
 <meta name="twitter:image" content="http://img.lessisbetter.site/gzh-qrcode-with-text.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -173,7 +175,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -492,15 +494,13 @@
 <h3 id="nil的通道永远阻塞"><a href="#nil的通道永远阻塞" class="headerlink" title="nil的通道永远阻塞"></a><code>nil</code>的通道永远阻塞</h3><p><strong>当<code>case</code>上读一个通道时，如果这个通道是<code>nil</code>，则该<code>case</code>永远阻塞</strong>。这个功能有1个妙用，<code>select</code>通常处理的是多个通道，当某个读通道关闭了，但不想<code>select</code>再继续关注此<code>case</code>，继续处理其他<code>case</code>，把该通道设置为<code>nil</code>即可。<br>下面是一个合并程序等待两个输入通道都关闭后才退出的例子，就使用了这个特性。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">combine</span><span class="params">(inCh1, inCh2 &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span> &lt;-<span class="title">chan</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="comment">// 输出通道</span></span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动协程合并数据</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(out)</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> x, open := &lt;-inCh1:</span><br><span class="line">				<span class="keyword">if</span> !open &#123;</span><br><span class="line">					inCh1 = <span class="literal">nil</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				out&lt;-x</span><br><span class="line">			<span class="keyword">case</span> x, open := &lt;-inCh2:</span><br><span class="line">				<span class="keyword">if</span> !open &#123;</span><br><span class="line">					inCh2 = <span class="literal">nil</span></span><br><span class="line">					<span class="keyword">break</span></span><br><span class="line">				&#125;</span><br><span class="line">				out&lt;-x</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 当ch1和ch2都关闭是才退出</span></span><br><span class="line">			<span class="keyword">if</span> inCh1 == <span class="literal">nil</span> &amp;&amp; inCh2 == <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="如何跳出for-select"><a href="#如何跳出for-select" class="headerlink" title="如何跳出for-select"></a>如何跳出for-select</h3><p><strong><code>break</code>在<code>select</code>内的并不能跳出<code>for-select</code>循环</strong>。看下面的例子，<code>consume</code>函数从通道<code>inCh</code>不停读数据，期待在<code>inCh</code>关闭后退出<code>for-select</code>循环，但结果是永远没有退出。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">consume</span><span class="params">(inCh &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	i := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"for: %d\n"</span>, i)</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> x, open := &lt;-inCh:</span><br><span class="line">			<span class="keyword">if</span> !open &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">			fmt.Printf(<span class="string">"read: %d\n"</span>, x)</span><br><span class="line">		&#125;</span><br><span class="line">		i++</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"combine-routine exit"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>运行结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜ go run x.go</span><br><span class="line"><span class="keyword">for</span>: 0</span><br><span class="line"><span class="built_in">read</span>: 0</span><br><span class="line"><span class="keyword">for</span>: 1</span><br><span class="line"><span class="built_in">read</span>: 1</span><br><span class="line"><span class="keyword">for</span>: 2</span><br><span class="line"><span class="built_in">read</span>: 2</span><br><span class="line"><span class="keyword">for</span>: 3</span><br><span class="line">gen <span class="built_in">exit</span></span><br><span class="line"><span class="keyword">for</span>: 4</span><br><span class="line"><span class="keyword">for</span>: 5</span><br><span class="line"><span class="keyword">for</span>: 6</span><br><span class="line"><span class="keyword">for</span>: 7</span><br><span class="line"><span class="keyword">for</span>: 8</span><br><span class="line">... // never stop</span><br></pre></td></tr></table></figure></p>
-<p>既然<code>break</code>不能跳出<code>for-select</code>，那怎么办呢？给你3个锦囊：</p>
+<p>运行结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜ go run x.go</span><br><span class="line"><span class="keyword">for</span>: 0</span><br><span class="line"><span class="built_in">read</span>: 0</span><br><span class="line"><span class="keyword">for</span>: 1</span><br><span class="line"><span class="built_in">read</span>: 1</span><br><span class="line"><span class="keyword">for</span>: 2</span><br><span class="line"><span class="built_in">read</span>: 2</span><br><span class="line"><span class="keyword">for</span>: 3</span><br><span class="line">gen <span class="built_in">exit</span></span><br><span class="line"><span class="keyword">for</span>: 4</span><br><span class="line"><span class="keyword">for</span>: 5</span><br><span class="line"><span class="keyword">for</span>: 6</span><br><span class="line"><span class="keyword">for</span>: 7</span><br><span class="line"><span class="keyword">for</span>: 8</span><br><span class="line">... // never stop</span><br></pre></td></tr></table></figure><br>既然<code>break</code>不能跳出<code>for-select</code>，那怎么办呢？给你3个锦囊：</p>
 <ol>
 <li>在满足条件的<code>case</code>内，使用<code>return</code>，如果有结尾工作，尝试交给<code>defer</code>。</li>
 <li>在<code>select</code>外<code>for</code>内使用<code>break</code>挑出循环，如<code>combine</code>函数。</li>
 <li>使用<code>goto</code>。</li>
 </ol>
-<h3 id="select-永远阻塞"><a href="#select-永远阻塞" class="headerlink" title="select{}永远阻塞"></a><code>select{}</code>永远阻塞</h3><p><code>select{}</code>的效果等价于创建了1个通道，直接从通道读数据：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">&lt;-ch</span><br></pre></td></tr></table></figure></p>
-<p>但是，这个写起来多麻烦啊！没<code>select{}</code>简洁啊。<br>但是，永远阻塞能有什么用呢！？<br>当你开发一个并发程序的时候，<code>main</code>函数千万不能在子协程干完活前退出啊，不然所有的协程都<strong>被迫退出</strong>了，还怎么提供服务呢？<br>比如，写了个Web服务程序，端口监听、后端处理等等都在子协程跑起来了，<code>main</code>函数这时候能退出吗？</p>
+<h3 id="select-永远阻塞"><a href="#select-永远阻塞" class="headerlink" title="select{}永远阻塞"></a><code>select{}</code>永远阻塞</h3><p><code>select{}</code>的效果等价于创建了1个通道，直接从通道读数据：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">&lt;-ch</span><br></pre></td></tr></table></figure><br>但是，这个写起来多麻烦啊！没<code>select{}</code>简洁啊。<br>但是，永远阻塞能有什么用呢！？<br>当你开发一个并发程序的时候，<code>main</code>函数千万不能在子协程干完活前退出啊，不然所有的协程都<strong>被迫退出</strong>了，还怎么提供服务呢？<br>比如，写了个Web服务程序，端口监听、后端处理等等都在子协程跑起来了，<code>main</code>函数这时候能退出吗？</p>
 <h3 id="select应用场景"><a href="#select应用场景" class="headerlink" title="select应用场景"></a>select应用场景</h3><p>最后，介绍下我常用的<code>select</code>场景：</p>
 <ol>
 <li>无阻塞的读、写通道。即使通道是带缓存的，也是存在阻塞的情况，使用select可以完美的解决阻塞读写，这篇文章我之前发在了个人博客，后面给大家介绍下。</li>
@@ -522,7 +522,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align="center"></p>
+<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center /></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
       
     </div>
@@ -973,7 +973,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -984,7 +984,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

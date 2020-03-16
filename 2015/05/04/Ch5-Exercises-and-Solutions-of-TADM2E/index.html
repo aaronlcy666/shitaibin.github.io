@@ -102,26 +102,31 @@
 
 
 
-  <meta name="description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Graphs-TADM2E 我的解答遍历5-6题目 In breadth-first and depth-first search, an undiscovered node is marked discovere">
-<meta name="keywords" content="TADM,搜索,面试,图论">
+  <meta name="description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Graphs-TADM2E 我的解答遍历5-6题目 In breadth-first and depth-first search, an undiscovered node is marked discovere">
 <meta property="og:type" content="article">
 <meta property="og:title" content="算法设计手册第二版第五章课后习题解答">
 <meta property="og:url" content="http://lessisbetter.site/2015/05/04/Ch5-Exercises-and-Solutions-of-TADM2E/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Graphs-TADM2E 我的解答遍历5-6题目 In breadth-first and depth-first search, an undiscovered node is marked discovere">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http:&#x2F;&#x2F;www.algorithm.cs.sunysb.edu&#x2F;algowiki&#x2F;index.php&#x2F;Graphs-TADM2E 我的解答遍历5-6题目 In breadth-first and depth-first search, an undiscovered node is marked discovere">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/Figure_5.17.JPG">
 <meta property="og:image" content="http://img.lessisbetter.site/Ex-5-13b.jpg">
 <meta property="og:image" content="http://img.lessisbetter.site/Ex-5-13a.jpg">
 <meta property="og:image" content="http://img.lessisbetter.site/Ex-5-14.JPG">
 <meta property="og:image" content="http://img.lessisbetter.site/Ex-5-16-b.JPG">
 <meta property="og:image" content="http://img.lessisbetter.site/Ex-5-17.JPG">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.407Z">
+<meta property="article:published_time" content="2015-05-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.407Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="TADM">
+<meta property="article:tag" content="搜索">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="图论">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="算法设计手册第二版第五章课后习题解答">
-<meta name="twitter:description" content="列出的解答仅为自己的思路，仅供参考，欢迎指出错误。  题目Wiki及参考答案http://www.algorithm.cs.sunysb.edu/algowiki/index.php/Graphs-TADM2E 我的解答遍历5-6题目 In breadth-first and depth-first search, an undiscovered node is marked discovere">
 <meta name="twitter:image" content="http://img.lessisbetter.site/Figure_5.17.JPG">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -178,7 +183,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -515,13 +520,13 @@
 <p>解答</p>
 <p>访问所有的边和点的时间复杂度：<br>邻接矩阵：O(n<sup>2</sup>)<br>邻接链表：O(n+m)</p>
 <p>(a) 无向图的邻接矩阵具有对称性，不必遍历整个矩阵。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for x from 1 to n</span><br><span class="line">    for y from x+1 to n</span><br><span class="line">        if M[x][y] = 1</span><br><span class="line">            insert(&amp;g, x, y)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for x from 1 to n</span><br><span class="line">    for y from x+1 to n</span><br><span class="line">        if M[x][y] &#x3D; 1</span><br><span class="line">            insert(&amp;g, x, y)</span><br></pre></td></tr></table></figure>
 <p>需要花费O(n<sup>2</sup>)从邻接矩阵读数据，然后花费O(n+m)建立邻接链表。</p>
 <p>(b) 关联矩阵：形成点和边的映射，矩阵大小为 <code>n·m</code>，建立关联矩阵并初始化需要O(nm)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">edgesx[]    // 边i连接的x节点</span><br><span class="line">edgesy[]    // 边i连接的y节点，x&lt;y</span><br><span class="line">cur = -1    // 当前边的编号</span><br><span class="line"></span><br><span class="line">list_2_incidence(&amp;g, IM[][]):</span><br><span class="line">    for x from 1 to g-&gt;nvertices</span><br><span class="line">        p = p-&gt;edges[x]</span><br><span class="line">        while p != null</span><br><span class="line">            y = p-&gt;y</span><br><span class="line">            if !recorded_edge(x, y)</span><br><span class="line">                recording_edge(x,y)</span><br><span class="line">                IM[x][cur] = 1</span><br><span class="line">                IM[y][cur] = 1</span><br><span class="line">            p = p-&gt;next</span><br><span class="line"></span><br><span class="line">recording_edge(x, y):</span><br><span class="line">    if (x &gt; y)</span><br><span class="line">        swap(x, y)</span><br><span class="line">    edgesx[i] = x</span><br><span class="line">    edgesy[i] = y</span><br><span class="line">    cur++</span><br><span class="line"></span><br><span class="line">recorded_edge(x, y):</span><br><span class="line">    if (x &gt; y)</span><br><span class="line">        swap(x, y)</span><br><span class="line">    for i from 0 to cur</span><br><span class="line">        if x == edges[i] &amp;&amp; y == edgesy[i] // 存在一个i</span><br><span class="line">            return 1</span><br><span class="line">    return 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">edgesx[]    &#x2F;&#x2F; 边i连接的x节点</span><br><span class="line">edgesy[]    &#x2F;&#x2F; 边i连接的y节点，x&lt;y</span><br><span class="line">cur &#x3D; -1    &#x2F;&#x2F; 当前边的编号</span><br><span class="line"></span><br><span class="line">list_2_incidence(&amp;g, IM[][]):</span><br><span class="line">    for x from 1 to g-&gt;nvertices</span><br><span class="line">        p &#x3D; p-&gt;edges[x]</span><br><span class="line">        while p !&#x3D; null</span><br><span class="line">            y &#x3D; p-&gt;y</span><br><span class="line">            if !recorded_edge(x, y)</span><br><span class="line">                recording_edge(x,y)</span><br><span class="line">                IM[x][cur] &#x3D; 1</span><br><span class="line">                IM[y][cur] &#x3D; 1</span><br><span class="line">            p &#x3D; p-&gt;next</span><br><span class="line"></span><br><span class="line">recording_edge(x, y):</span><br><span class="line">    if (x &gt; y)</span><br><span class="line">        swap(x, y)</span><br><span class="line">    edgesx[i] &#x3D; x</span><br><span class="line">    edgesy[i] &#x3D; y</span><br><span class="line">    cur++</span><br><span class="line"></span><br><span class="line">recorded_edge(x, y):</span><br><span class="line">    if (x &gt; y)</span><br><span class="line">        swap(x, y)</span><br><span class="line">    for i from 0 to cur</span><br><span class="line">        if x &#x3D;&#x3D; edges[i] &amp;&amp; y &#x3D;&#x3D; edgesy[i] &#x2F;&#x2F; 存在一个i</span><br><span class="line">            return 1</span><br><span class="line">    return 0</span><br></pre></td></tr></table></figure>
 <p>在关联矩阵中为每条边写入数据需要花费O(1)，共m条边，需要花费O(m)。从邻接链表读取数据，并检测该边是不是已经记录需要花费O(n+m<sup>2</sup>)，其中检测一条边需要O(m)。因此总的时间花费为O(nm+n+m*m) = O(nm+m<sup>2</sup>)。</p>
 <p>(c) 遍历每一条边，然后插入到邻接矩阵</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for j from 1 to m</span><br><span class="line">    x = y = -1</span><br><span class="line">    for i from 1 to n</span><br><span class="line">        if M[i][j] = 1</span><br><span class="line">            if x == -1, x = i</span><br><span class="line">            else y = i, insert(&amp;g, x, y), break</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for j from 1 to m</span><br><span class="line">    x &#x3D; y &#x3D; -1</span><br><span class="line">    for i from 1 to n</span><br><span class="line">        if M[i][j] &#x3D; 1</span><br><span class="line">            if x &#x3D;&#x3D; -1, x &#x3D; i</span><br><span class="line">            else y &#x3D; i, insert(&amp;g, x, y), break</span><br></pre></td></tr></table></figure>
 <p>遍历需要O(nm)，插入需要O(1)，故共需要O(nm)。</p>
 <h4 id="5-9"><a href="#5-9" class="headerlink" title="5-9"></a>5-9</h4><p>题目</p>
 <p>Suppose an arithmetic expression is given as a tree. Each leaf is an integer and each internal node is one of the standard arithmetical operations <code>(+,−,*,/)</code>. For example, the expression <code>2+3*4+(3*4)/5</code> is represented by the tree in Figure 5.17(a).<br>Give an O(n) algorithm for evaluating such an expression, where there are n nodes in the tree.</p>
@@ -602,7 +607,7 @@
 <p><img src="http://img.lessisbetter.site/Ex-5-16-b.JPG" alt="二叉树着色"></p>
 <p>先着色，进行一次遍历，将不同颜色的放入两个序列，取总度的和较大者。</p>
 <p>不进行着色的处理方案:设置root颜色为0，则其子为1。递归遍历左右子树，时间复杂度为O(n)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void classify(root, color):</span><br><span class="line">    if color = 0 then</span><br><span class="line">        put root into list1</span><br><span class="line">    else</span><br><span class="line">        put root into list2</span><br><span class="line">    if root-&gt;left then</span><br><span class="line">        classify(root-&gt;left, !color)</span><br><span class="line">    if root-&gt;right then</span><br><span class="line">        classify(root-&gt;right, !color)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void classify(root, color):</span><br><span class="line">    if color &#x3D; 0 then</span><br><span class="line">        put root into list1</span><br><span class="line">    else</span><br><span class="line">        put root into list2</span><br><span class="line">    if root-&gt;left then</span><br><span class="line">        classify(root-&gt;left, !color)</span><br><span class="line">    if root-&gt;right then</span><br><span class="line">        classify(root-&gt;right, !color)</span><br></pre></td></tr></table></figure>
 <ul>
 <li>(c) 与(b)的不同仅仅是最后，取权重的和的较大者。</li>
 </ul>
@@ -612,12 +617,12 @@
 <p>解答</p>
 <ul>
 <li><p>(a) Brute force。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for each inode in V do</span><br><span class="line">    for each jnode in Adj[inode] do</span><br><span class="line">        for each knode in Adj[jnode] do</span><br><span class="line">            for each lnode in Adj[knode] do</span><br><span class="line">                if lnode = inode then</span><br><span class="line">                    return true</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for each inode in V do</span><br><span class="line">    for each jnode in Adj[inode] do</span><br><span class="line">        for each knode in Adj[jnode] do</span><br><span class="line">            for each lnode in Adj[knode] do</span><br><span class="line">                if lnode &#x3D; inode then</span><br><span class="line">                    return true</span><br></pre></td></tr></table></figure>
 <p>  时间复杂度是O(n<sup>4</sup>)，看样子不符合题目的要求。</p>
 </li>
 <li><p>(b) DFS。</p>
 <p>  DFS可以发现图中的环，那么当检测到环时，可以进进一步检测环的大小是否为3.采用的就是DFS一次遍历，因此时间复杂度是O(|V|+|E|)。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">process_edge(v, y):</span><br><span class="line">    if parent[parent[x]] = y then</span><br><span class="line">        is_triangle = true</span><br><span class="line">        finish = true</span><br></pre></td></tr></table></figure>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">process_edge(v, y):</span><br><span class="line">    if parent[parent[x]] &#x3D; y then</span><br><span class="line">        is_triangle &#x3D; true</span><br><span class="line">        finish &#x3D; true</span><br></pre></td></tr></table></figure>
 <p>  <img src="http://img.lessisbetter.site/Ex-5-17.JPG" alt="5-17"></p>
 <p>  github仓库源码及测试数据:<a href="https://github.com/Shitaibin/The-Algorithm-Design-Manual/blob/master/5.11/5-17.c" target="_blank" rel="noopener">传送门–&gt;</a></p>
 </li>
@@ -638,7 +643,7 @@
 <li>该节点定义了diameter。</li>
 <li>该节点的任一子节点定义了diameter。</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">diameter(tree):</span><br><span class="line">    maxdiameter = 0</span><br><span class="line">    maxdepth = secdepth = -1</span><br><span class="line">    foreach child in children(tree) do</span><br><span class="line">        depth, diameter = diameter(child)</span><br><span class="line">        if diameter &gt; maxdiameter then</span><br><span class="line">            maxdiameter = diameter</span><br><span class="line">        if depth &gt;= maxdepth then</span><br><span class="line">            secdepth = maxdepth</span><br><span class="line">            maxdepth = depth</span><br><span class="line">        else if depth &gt; secdepth then</span><br><span class="line">            secdepth = depth</span><br><span class="line">    return maxdepth, max(maxdiameter, maxdepth+secdepth+2)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">diameter(tree):</span><br><span class="line">    maxdiameter &#x3D; 0</span><br><span class="line">    maxdepth &#x3D; secdepth &#x3D; -1</span><br><span class="line">    foreach child in children(tree) do</span><br><span class="line">        depth, diameter &#x3D; diameter(child)</span><br><span class="line">        if diameter &gt; maxdiameter then</span><br><span class="line">            maxdiameter &#x3D; diameter</span><br><span class="line">        if depth &gt;&#x3D; maxdepth then</span><br><span class="line">            secdepth &#x3D; maxdepth</span><br><span class="line">            maxdepth &#x3D; depth</span><br><span class="line">        else if depth &gt; secdepth then</span><br><span class="line">            secdepth &#x3D; depth</span><br><span class="line">    return maxdepth, max(maxdiameter, maxdepth+secdepth+2)</span><br></pre></td></tr></table></figure>
 <h4 id="5-20"><a href="#5-20" class="headerlink" title="5-20"></a>5-20</h4><p>题目</p>
 <p>Given an undirected graph G with n vertices and m edges, and an integer k, give an O(m+n) algorithm that finds the maximum induced subgraph H of G such that each vertex in H has degree ≥k, or prove that no such graph exists. An induced subgraph F=(U,R) of a graph G=(V,E) is a subset of U of the vertices V of G, and all edges R of G such that both vertices of each edge are in U.</p>
 <p>解答</p>
@@ -691,11 +696,11 @@
           
             <a href="/tags/TADM/" rel="tag"><i class="fa fa-tag"></i> TADM</a>
           
-            <a href="/tags/搜索/" rel="tag"><i class="fa fa-tag"></i> 搜索</a>
+            <a href="/tags/%E6%90%9C%E7%B4%A2/" rel="tag"><i class="fa fa-tag"></i> 搜索</a>
           
-            <a href="/tags/面试/" rel="tag"><i class="fa fa-tag"></i> 面试</a>
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"><i class="fa fa-tag"></i> 面试</a>
           
-            <a href="/tags/图论/" rel="tag"><i class="fa fa-tag"></i> 图论</a>
+            <a href="/tags/%E5%9B%BE%E8%AE%BA/" rel="tag"><i class="fa fa-tag"></i> 图论</a>
           
         </div>
       
@@ -1118,7 +1123,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1129,7 +1134,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

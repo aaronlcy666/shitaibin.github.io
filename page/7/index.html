@@ -103,17 +103,18 @@
 
 
   <meta name="description" content="区块链、Go语言">
-<meta name="keywords" content="区块链 Go语言 后端 技术 人生 编程">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Go语言充电站">
 <meta property="og:url" content="http://lessisbetter.site/page/7/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="区块链、Go语言">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链 Go语言 后端 技术 人生 编程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Go语言充电站">
-<meta name="twitter:description" content="区块链、Go语言">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -170,7 +171,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -500,7 +501,7 @@
 <li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">http://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/</a></li>
 </ol>
 </blockquote>
-<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
 
           
         
@@ -791,7 +792,7 @@
 <li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/01/20/golang-channel-all-usage/">http://lessisbetter.site/2019/01/20/golang-channel-all-usage/</a></li>
 </ol>
 </blockquote>
-<div style="text-align:center">关注公众号，获取最新Golang文章。</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"><br><div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
+<div style="text-align:center">关注公众号，获取最新Golang文章。</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /><br><div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
           
         
       
@@ -1069,7 +1070,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0" align="center"></p>
+<p><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
 
           
@@ -1436,7 +1437,7 @@
 </blockquote>
 <div style="text-align:center">关注公众号，获取最新Golang文章。</div>
 
-<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align="center"></p>
+<p><img src="http://img.lessisbetter.site/gzh-qrcode-with-text.png" style="border:0" width="256" hegiht="30" align=center /></p>
 <div style="color:#0096FF; text-align:center">一起学Golang-分享有料的Go语言技术</div>
 
           
@@ -1787,8 +1788,7 @@
 <li><code>default</code>是，没人喊我吃饭，也不到时间睡觉，我就打豆豆。</li>
 </ol>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">	<span class="string">"math/rand"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">eat</span><span class="params">()</span> <span class="title">chan</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	out := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span> <span class="params">()</span></span>&#123;</span><br><span class="line">		rand.Seed(time.Now().UnixNano())</span><br><span class="line">		time.Sleep(time.Duration(rand.Intn(<span class="number">5</span>)) * time.Second)</span><br><span class="line">		out &lt;- <span class="string">"Mom call you eating"</span></span><br><span class="line">		<span class="built_in">close</span>(out)</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> out</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	eatCh := eat()</span><br><span class="line">	sleep := time.NewTimer(time.Second * <span class="number">3</span>)</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> s := &lt;-eatCh:</span><br><span class="line">		fmt.Println(s)</span><br><span class="line">	<span class="keyword">case</span> &lt;- sleep.C:</span><br><span class="line">		fmt.Println(<span class="string">"Time to sleep"</span>)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		fmt.Println(<span class="string">"Beat DouDou"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由于前2个case都要等待一会，所以都不能执行，所以执行<code>default</code>，运行结果一直是打豆豆：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Beat DouDou</span><br></pre></td></tr></table></figure></p>
-<p>现在我们不打豆豆了，你把<code>default</code>和下面的打印注释掉，多运行几次，有时候会吃饭，有时候会睡觉，比如这样：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Mom call you eating</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br></pre></td></tr></table></figure></p>
+<p>由于前2个case都要等待一会，所以都不能执行，所以执行<code>default</code>，运行结果一直是打豆豆：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Beat DouDou</span><br></pre></td></tr></table></figure><br>现在我们不打豆豆了，你把<code>default</code>和下面的打印注释掉，多运行几次，有时候会吃饭，有时候会睡觉，比如这样：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go run x.go</span><br><span class="line">Mom call you eating</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br><span class="line">$ go run x.go</span><br><span class="line">Time to sleep</span><br></pre></td></tr></table></figure></p>
 <p><strong>select很简单但功能很强大，它让golang的并发功能变的更强大。这篇文章写的啰嗦了点，重点是为下一篇文章做铺垫，下一篇我们将介绍下select的高级用法。</strong></p>
 <p><strong>select的应用场景很多，让我总结一下，放在下一篇文章中吧。</strong></p>
 <h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>可在Github查看：<a href="https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select" target="_blank" rel="noopener">https://github.com/Shitaibin/golang_step_by_step/tree/master/golang_select</a></p>
@@ -2349,7 +2349,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot; aria-label&#x3D;&quot;上一页&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/8/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot; aria-label&#x3D;&quot;下一页&quot;&gt;&lt;&#x2F;i&gt;</a>
   </nav>
 
 
@@ -2699,7 +2699,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -2710,7 +2710,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

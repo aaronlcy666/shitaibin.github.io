@@ -103,20 +103,24 @@
 
 
   <meta name="description" content="如果不高清fork的设计思想，是无法实现正确高效的fork。 JOS中写时拷贝的fork设计">
-<meta name="keywords" content="JOS,fork,操作系统">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JOS中具有写时拷贝的fork设计">
 <meta property="og:url" content="http://lessisbetter.site/2016/05/17/design-fork-with-COW-in-JOS/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="如果不高清fork的设计思想，是无法实现正确高效的fork。 JOS中写时拷贝的fork设计">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/fork-design.jpg">
-<meta property="og:updated_time" content="2019-08-13T08:18:50.416Z">
+<meta property="article:published_time" content="2016-05-17T05:44:39.000Z">
+<meta property="article:modified_time" content="2019-08-13T08:18:50.416Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="JOS">
+<meta property="article:tag" content="fork">
+<meta property="article:tag" content="操作系统">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JOS中具有写时拷贝的fork设计">
-<meta name="twitter:description" content="如果不高清fork的设计思想，是无法实现正确高效的fork。 JOS中写时拷贝的fork设计">
 <meta name="twitter:image" content="http://img.lessisbetter.site/fork-design.jpg">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -173,7 +177,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -492,7 +496,7 @@
 <li>返回新进程的eid</li>
 </ol>
 <h5 id="kern-syscall-c-sys-env-set-pgfault-upcall"><a href="#kern-syscall-c-sys-env-set-pgfault-upcall" class="headerlink" title="kern/syscall.c/sys_env_set_pgfault_upcall():"></a>kern/syscall.c/sys_env_set_pgfault_upcall():</h5><ol>
-<li>在Env结构体中设置upcall，本质：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env-&gt;env_pgfault_upcall = _pgfault_upcall</span><br></pre></td></tr></table></figure>
+<li>在Env结构体中设置upcall，本质：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env-&gt;env_pgfault_upcall &#x3D; _pgfault_upcall</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <h5 id="kern-trap-c-pgfault-handler"><a href="#kern-trap-c-pgfault-handler" class="headerlink" title="kern/trap.c/pgfault_handler():"></a>kern/trap.c/pgfault_handler():</h5><ol>
@@ -554,7 +558,7 @@
           
             <a href="/tags/fork/" rel="tag"><i class="fa fa-tag"></i> fork</a>
           
-            <a href="/tags/操作系统/" rel="tag"><i class="fa fa-tag"></i> 操作系统</a>
+            <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> 操作系统</a>
           
         </div>
       
@@ -945,7 +949,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JOS中写时拷贝的fork设计"><span class="nav-number">1.</span> <span class="nav-text">JOS中写时拷贝的fork设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内核态"><span class="nav-number">2.</span> <span class="nav-text">内核态</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#kern-syscall-c-sys-exofork"><span class="nav-number">2.0.0.0.1.</span> <span class="nav-text">kern/syscall.c/sys_exofork():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#kern-syscall-c-sys-env-set-pgfault-upcall"><span class="nav-number">2.0.0.0.2.</span> <span class="nav-text">kern/syscall.c/sys_env_set_pgfault_upcall():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#kern-trap-c-pgfault-handler"><span class="nav-number">2.0.0.0.3.</span> <span class="nav-text">kern/trap.c/pgfault_handler():</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户态"><span class="nav-number">3.</span> <span class="nav-text">用户态</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-fork-c-fork"><span class="nav-number">3.0.0.0.1.</span> <span class="nav-text">lib/fork.c/fork():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-pgfault-c-set-pgfault-handler"><span class="nav-number">3.0.0.0.2.</span> <span class="nav-text">lib/pgfault.c/set_pgfault_handler():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-fork-c-duppage"><span class="nav-number">3.0.0.0.3.</span> <span class="nav-text">lib/fork.c/duppage():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-pfentry-S-pgfault-upcall"><span class="nav-number">3.0.0.0.4.</span> <span class="nav-text">lib/pfentry.S/_pgfault_upcall</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-fork-c-pgfault"><span class="nav-number">3.0.0.0.5.</span> <span class="nav-text">lib/fork.c/pgfault():</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JOS中写时拷贝的fork设计"><span class="nav-number">1.</span> <span class="nav-text">JOS中写时拷贝的fork设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内核态"><span class="nav-number">2.</span> <span class="nav-text">内核态</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#kern-syscall-c-sys-exofork"><span class="nav-number">2.0.0.0.1.</span> <span class="nav-text">kern&#x2F;syscall.c&#x2F;sys_exofork():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#kern-syscall-c-sys-env-set-pgfault-upcall"><span class="nav-number">2.0.0.0.2.</span> <span class="nav-text">kern&#x2F;syscall.c&#x2F;sys_env_set_pgfault_upcall():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#kern-trap-c-pgfault-handler"><span class="nav-number">2.0.0.0.3.</span> <span class="nav-text">kern&#x2F;trap.c&#x2F;pgfault_handler():</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户态"><span class="nav-number">3.</span> <span class="nav-text">用户态</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-fork-c-fork"><span class="nav-number">3.0.0.0.1.</span> <span class="nav-text">lib&#x2F;fork.c&#x2F;fork():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-pgfault-c-set-pgfault-handler"><span class="nav-number">3.0.0.0.2.</span> <span class="nav-text">lib&#x2F;pgfault.c&#x2F;set_pgfault_handler():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-fork-c-duppage"><span class="nav-number">3.0.0.0.3.</span> <span class="nav-text">lib&#x2F;fork.c&#x2F;duppage():</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-pfentry-S-pgfault-upcall"><span class="nav-number">3.0.0.0.4.</span> <span class="nav-text">lib&#x2F;pfentry.S&#x2F;_pgfault_upcall</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-fork-c-pgfault"><span class="nav-number">3.0.0.0.5.</span> <span class="nav-text">lib&#x2F;fork.c&#x2F;pgfault():</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -977,7 +981,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -988,7 +992,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 

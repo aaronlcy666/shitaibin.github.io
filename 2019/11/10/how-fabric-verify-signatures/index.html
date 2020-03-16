@@ -103,22 +103,25 @@
 
 
   <meta name="description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
-<meta name="keywords" content="区块链,Fabric">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
 <meta property="og:url" content="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/index.html">
 <meta property="og:site_name" content="Go语言充电站">
 <meta property="og:description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-signed_proposal.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-tx_envelop.jpeg">
 <meta property="og:image" content="http://img.lessisbetter.site/2019-11-verify-signature.png">
-<meta property="og:updated_time" content="2019-11-18T07:30:42.775Z">
+<meta property="article:published_time" content="2019-11-10T13:23:36.000Z">
+<meta property="article:modified_time" content="2019-11-18T07:30:42.775Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="Fabric">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Fabric 1.4源码解读 5：Fabric是如何验证签名的？">
-<meta name="twitter:description" content="理论知识如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的数字签名是什么？。 Fabric证书和密钥文件使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下： 1234567891011121314151617➜  first-network git:(release-1.4) ✗ tree cr">
 <meta name="twitter:image" content="http://img.lessisbetter.site/2019-11-signed_proposal.png">
 
+
+  
 
 
   <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
@@ -175,7 +178,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -485,7 +488,7 @@
       
         <h2 id="理论知识"><a href="#理论知识" class="headerlink" title="理论知识"></a>理论知识</h2><p>如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的<a href="https://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html" target="_blank" rel="noopener">数字签名是什么？</a>。</p>
 <h2 id="Fabric证书和密钥文件"><a href="#Fabric证书和密钥文件" class="headerlink" title="Fabric证书和密钥文件"></a>Fabric证书和密钥文件</h2><p>使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) ✗ tree crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com</span><br><span class="line">crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com</span><br><span class="line">├── msp</span><br><span class="line">│   ├── admincerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   ├── cacerts</span><br><span class="line">│   │   └── ca.org1.example.com-cert.pem</span><br><span class="line">│   ├── keystore</span><br><span class="line">│   │   └── f9f3dddb7fcc40086de6d5ae77f1481abbb99bff7a74839b950720d3dca0d8ee_sk</span><br><span class="line">│   ├── signcerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   └── tlscacerts</span><br><span class="line">│       └── tlsca.org1.example.com-cert.pem</span><br><span class="line">└── tls</span><br><span class="line">    ├── ca.crt</span><br><span class="line">    ├── client.crt</span><br><span class="line">    └── client.key</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) ✗ tree crypto-config&#x2F;peerOrganizations&#x2F;org1.example.com&#x2F;users&#x2F;Admin@org1.example.com</span><br><span class="line">crypto-config&#x2F;peerOrganizations&#x2F;org1.example.com&#x2F;users&#x2F;Admin@org1.example.com</span><br><span class="line">├── msp</span><br><span class="line">│   ├── admincerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   ├── cacerts</span><br><span class="line">│   │   └── ca.org1.example.com-cert.pem</span><br><span class="line">│   ├── keystore</span><br><span class="line">│   │   └── f9f3dddb7fcc40086de6d5ae77f1481abbb99bff7a74839b950720d3dca0d8ee_sk</span><br><span class="line">│   ├── signcerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   └── tlscacerts</span><br><span class="line">│       └── tlsca.org1.example.com-cert.pem</span><br><span class="line">└── tls</span><br><span class="line">    ├── ca.crt</span><br><span class="line">    ├── client.crt</span><br><span class="line">    └── client.key</span><br></pre></td></tr></table></figure>
 <p>msp目录，为Admin的身份信息：</p>
 <ul>
 <li>admincerts：组织管理员的身份验证证书。</li>
@@ -593,7 +596,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/区块链/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
+            <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"><i class="fa fa-tag"></i> 区块链</a>
           
             <a href="/tags/Fabric/" rel="tag"><i class="fa fa-tag"></i> Fabric</a>
           
@@ -1018,7 +1021,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -1029,7 +1032,7 @@
   <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
 
 
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+<a href="http://www.beian.miit.gov.cn" target="_blank" rel="noopener"> 浙ICP备18051706号</a> 
 
 
 
