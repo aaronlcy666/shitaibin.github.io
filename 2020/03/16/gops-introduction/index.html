@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next pisces" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=6.6.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=6.6.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.6.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="gops简介gops是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。 可以查看：  当前有哪些go语言进程，哪些使用gops的go进程 进程的概要信息 进程的调用栈 进程的内存使用情况 构建程序的Go版本 运行时统计信息  可以获取：  trace cpu profile和memory profile  还可以：  让进程进行1次GC 设置GC百分比  示例代码使用Options配置">
+<meta name="keywords" content="区块链 Go语言 后端 技术 人生 编程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gops introduction">
+<meta property="og:url" content="http://lessisbetter.site/2020/03/16/gops-introduction/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="gops简介gops是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。 可以查看：  当前有哪些go语言进程，哪些使用gops的go进程 进程的概要信息 进程的调用栈 进程的内存使用情况 构建程序的Go版本 运行时统计信息  可以获取：  trace cpu profile和memory profile  还可以：  让进程进行1次GC 设置GC百分比  示例代码使用Options配置">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-03-gops.png">
+<meta property="og:updated_time" content="2020-03-16T06:11:13.021Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gops introduction">
+<meta name="twitter:description" content="gops简介gops是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。 可以查看：  当前有哪些go语言进程，哪些使用gops的go进程 进程的概要信息 进程的调用栈 进程的内存使用情况 构建程序的Go版本 运行时统计信息  可以获取：  trace cpu profile和memory profile  还可以：  让进程进行1次GC 设置GC百分比  示例代码使用Options配置">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-03-gops.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="http://lessisbetter.site/2020/03/16/gops-introduction/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>gops introduction | Go语言充电站</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion .logo-line-before i { left: initial; }
+    .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Go语言充电站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">大彬 less is better</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-主页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />主页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签云">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-专题文章">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/subject/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br />专题文章</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-文章列表">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-关于">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-大牛博客">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blogs/" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />大牛博客</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+  
+  
+
+  
+
+    <a href="https://github.com/Shitaibin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/16/gops-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">gops introduction
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-16 13:20:47 / 修改时间：14:11:13" itemprop="dateCreated datePublished" datetime="2020-03-16T13:20:47+08:00">2020-03-16</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="gops简介"><a href="#gops简介" class="headerlink" title="gops简介"></a>gops简介</h2><p>gops是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。</p>
+<p>可以查看：</p>
+<ul>
+<li>当前有哪些go语言进程，哪些使用gops的go进程</li>
+<li>进程的概要信息</li>
+<li>进程的调用栈</li>
+<li>进程的内存使用情况</li>
+<li>构建程序的Go版本</li>
+<li>运行时统计信息</li>
+</ul>
+<p>可以获取：</p>
+<ul>
+<li>trace</li>
+<li>cpu profile和memory profile</li>
+</ul>
+<p>还可以：</p>
+<ul>
+<li>让进程进行1次GC</li>
+<li>设置GC百分比</li>
+</ul>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><p>使用<code>Options</code>配置agent。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"runtime"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/google/gops/agent"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err := agent.Listen(agent.Options&#123;</span><br><span class="line">		Addr:            <span class="string">"0.0.0.0:8848"</span>,</span><br><span class="line">		<span class="comment">// ConfigDir:       "/home/centos/gopsconfig", // 最好使用默认</span></span><br><span class="line">		ShutdownCleanup: <span class="literal">true</span>&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试代码</span></span><br><span class="line">	_ = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1000</span>, <span class="number">1000</span>)</span><br><span class="line">	runtime.GC()</span><br><span class="line"></span><br><span class="line">	_ = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">1000</span>, <span class="number">2000</span>)</span><br><span class="line">	runtime.GC()</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Hour)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="agent-Option选项"><a href="#agent-Option选项" class="headerlink" title="agent Option选项"></a>agent Option选项</h2><p>agent有3个配置：</p>
+<ul>
+<li><code>Addr</code>：agent要监听的ip和端口，默认ip为环回地址，端口随机分配。</li>
+<li><code>ConfigDir</code>：该目录存放的不是agent的配置，而是每一个使用了agent的go进程信息，文件以pid命名，内容是该pid进程所监听的端口号，所以其中文件的目的是形成pid到端口的映射。默认值为<code>~/.config/gops</code></li>
+<li><code>ShutdownCleanup</code>：进程退出时，是否清理ConfigDir中的文件，默认值为false，不清理</li>
+</ul>
+<p>通常可以把<code>Addr</code>设置为要监听的IP，把<code>ShutdownCleanup</code>设置为<code>ture</code>，进程退出后，残留在ConfigDir目录的文件不再有用，最好清除掉。</p>
+<p><code>ConfigDir</code>示例：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// gopsconfig为设置的ConfigDir目录，2051为pid，8848为端口号。</span><br><span class="line">➜  ~ cat gopsconfig/2051</span><br><span class="line">8848%</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      2051/./gopsexample</span><br></pre></td></tr></table></figure>
+<h2 id="gops原理"><a href="#gops原理" class="headerlink" title="gops原理"></a>gops原理</h2><p>gops的原理是，代码中导入<code>gops/agent</code>，建立agent服务，gops命令连接<code>agent</code>读取进程信息。</p>
+<p><img src="http://img.lessisbetter.site/2020-03-gops.png" alt="gops"></p>
+<p><code>agent</code>的实现原理可以查看<code>agent/handle</code><a href="https://github.com/google/gops/blob/master/agent/agent.go#L182" target="_blank" rel="noopener">函数</a>。</p>
+<p>使用go标准库中原生接口实现相关功能，如同你要在自己的程序中开启pprof类似，只不过这部分功能由<code>gops/agent</code>实现了：</p>
+<ul>
+<li>使用<code>runtime.MemStats</code>获取内存情况</li>
+<li>使用<code>runtime/pprof</code>获取调用栈、cpu profile和memory profile</li>
+<li>使用<code>runtime/trace</code>获取trace</li>
+<li>使用<code>runtime</code>获取stats信息</li>
+<li>使用<code>runtime/debug</code>、<code>GC</code>设置和启动GC</li>
+</ul>
+<p>再谈<code>ConfigDir</code>。从源码上看，<code>ConfigDir</code>对agent并没有用途，对gops有用。当gops和ConfigDir在一台机器上时，即gops查看本机的go进程信息，gops可以通过其中的文件，快速找到agent服务的端口。能够实现：<code>gops &lt;sub-cmd&gt; pid</code>到<code>gops &lt;sub-cmd&gt; 127.0.0.1:port</code>的转换。</p>
+<h2 id="子命令介绍"><a href="#子命令介绍" class="headerlink" title="子命令介绍"></a>子命令介绍</h2><p>gops后面可以跟子命令，然后是pid或者远端地址。</p>
+<p>也可以直接跟pid，查看本机进程信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops help memstats</span><br><span class="line">gops is a tool to list and diagnose Go processes.</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  gops &lt;cmd&gt; &lt;pid|addr&gt; ...</span><br><span class="line">  gops &lt;pid&gt; # displays process info</span><br><span class="line">  gops help  # displays this help message</span><br><span class="line"></span><br><span class="line">Commands:</span><br><span class="line">  stack      Prints the stack trace.</span><br><span class="line">  gc         Runs the garbage collector and blocks until successful.</span><br><span class="line">  setgc	     Sets the garbage collection target percentage.</span><br><span class="line">  memstats   Prints the allocation and garbage collection stats.</span><br><span class="line">  version    Prints the Go version used to build the program.</span><br><span class="line">  stats      Prints runtime stats.</span><br><span class="line">  trace      Runs the runtime tracer for 5 secs and launches &quot;go tool trace&quot;.</span><br><span class="line">  pprof-heap Reads the heap profile and launches &quot;go tool pprof&quot;.</span><br><span class="line">  pprof-cpu  Reads the CPU profile and launches &quot;go tool pprof&quot;.</span><br><span class="line"></span><br><span class="line">All commands require the agent running on the Go process.</span><br><span class="line">&quot;*&quot; indicates the process is running the agent.</span><br></pre></td></tr></table></figure>
+<h3 id="查看当前机器上go程序进程信息"><a href="#查看当前机器上go程序进程信息" class="headerlink" title="查看当前机器上go程序进程信息"></a>查看当前机器上go程序进程信息</h3><p>查看当前机器上的go进程，可以列出pid、ppid、进程名、可执行程序所使用的go版本，以及可执行程序的路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops</span><br><span class="line">67292 66333 gops                         * go1.13    /Users/shitaibin/Workspace/golang_step_by_step/gops/gops</span><br><span class="line">67434 65931 gops                           go1.13    /Users/shitaibin/go/bin/gops</span><br><span class="line">66551 1     gocode                         go1.11.2  /Users/shitaibin/go/bin/gocode</span><br><span class="line">137   1     com.docker.vmnetd              go1.12.7  /Library/PrivilegedHelperTools/com.docker.vmnetd</span><br><span class="line">811   807   com.docker.backend             go1.12.13 /Applications/Docker.app/Contents/MacOS/com.docker.backend</span><br><span class="line">807   746   com.docker.supervisor          go1.12.13 /Applications/Docker.app/Contents/MacOS/com.docker.supervisor</span><br><span class="line">810   807   com.docker.driver.amd64-linux  go1.12.13 /Applications/Docker.app/Contents/MacOS/com.docker.driver.amd64-linux</span><br></pre></td></tr></table></figure>
+<p>带<code>*</code>的是程序中使用了gops/agent，不带<code>*</code>的是普通的go程序。</p>
+<p>使用<code>ls ~/.config/gops/</code>，也可以查看，曾经和现在gops捕获到的使用gops/agent的go程序。</p>
+<p><code>~/.config/gops</code>是agent保存数据的默认目录，可以通过环境变量<code>GOPS_CONFIG_DIR</code>修改。</p>
+<h3 id="go程序进程树"><a href="#go程序进程树" class="headerlink" title="go程序进程树"></a>go程序进程树</h3><p>查看进程树：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops tree</span><br><span class="line">...</span><br><span class="line">├── 66333</span><br><span class="line">│   └── [*]  67292 (gops) &#123;go1.13&#125;</span><br><span class="line">├── 1</span><br><span class="line">│   ├── 66551 (gocode) &#123;go1.11.2&#125;</span><br><span class="line">│   └── 137 (com.docker.vmnetd) &#123;go1.12.7&#125;</span><br><span class="line">├── 65931</span><br><span class="line">│   └── 67476 (gops) &#123;go1.13&#125;</span><br><span class="line">└── 746</span><br><span class="line">    └── 807 (com.docker.supervisor) &#123;go1.12.13&#125;</span><br><span class="line">        ├── 811 (com.docker.backend) &#123;go1.12.13&#125;</span><br><span class="line">        └── 810 (com.docker.driver.amd64-linux) &#123;go1.12.13&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="pid：进程概要信息"><a href="#pid：进程概要信息" class="headerlink" title="pid：进程概要信息"></a>pid：进程概要信息</h3><p>查看进程的概要信息，非gops进程也可以：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops 67292</span><br><span class="line">parent PID:	66333</span><br><span class="line">threads:	7</span><br><span class="line">memory usage:	0.018%</span><br><span class="line">cpu usage:	0.000%</span><br><span class="line">username:	shitaibin</span><br><span class="line">cmd+args:	./gops</span><br><span class="line">elapsed time:	11:28</span><br><span class="line">local/remote:	127.0.0.1:54753 &lt;-&gt; :0 (LISTEN)</span><br><span class="line">➜  ~</span><br><span class="line">➜  ~ gops 807</span><br><span class="line">parent PID:	746</span><br><span class="line">threads:	28</span><br><span class="line">memory usage:	0.057%</span><br><span class="line">cpu usage:	0.003%</span><br><span class="line">username:	shitaibin</span><br><span class="line">cmd+args:	/Applications/Docker.app/Contents/MacOS/com.docker.supervisor -watchdog fd:0</span><br><span class="line">elapsed time:	27-23:36:35</span><br><span class="line">local/remote:	127.0.0.1:54832 &lt;-&gt; :0 ()</span><br><span class="line">local/remote:	*:53849 &lt;-&gt; :0 ()</span><br><span class="line">local/remote:	127.0.0.1:49473 &lt;-&gt; :0 (LISTEN)</span><br></pre></td></tr></table></figure>
+<h3 id="stack：当前调用栈"><a href="#stack：当前调用栈" class="headerlink" title="stack：当前调用栈"></a>stack：当前调用栈</h3><p>查看使用gops的进程的调用栈：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stack 67292</span><br><span class="line">goroutine 19 [running]:</span><br><span class="line">runtime/pprof.writeGoroutineStacks(0x1197160, 0xc00009c028, 0x0, 0x0)</span><br><span class="line">	/Users/shitaibin/goroot/src/runtime/pprof/pprof.go:679 +0x9d</span><br><span class="line">runtime/pprof.writeGoroutine(0x1197160, 0xc00009c028, 0x2, 0x0, 0x0)</span><br><span class="line">	/Users/shitaibin/goroot/src/runtime/pprof/pprof.go:668 +0x44</span><br><span class="line">runtime/pprof.(*Profile).WriteTo(0x1275c60, 0x1197160, 0xc00009c028, 0x2, 0xc00009c028, 0x0)</span><br><span class="line">	/Users/shitaibin/goroot/src/runtime/pprof/pprof.go:329 +0x3da</span><br><span class="line">github.com/google/gops/agent.handle(0x1665008, 0xc00009c028, 0xc000014068, 0x1, 0x1, 0x0, 0x0)</span><br><span class="line">	/Users/shitaibin/go/src/github.com/google/gops/agent/agent.go:185 +0x1ab</span><br><span class="line">github.com/google/gops/agent.listen()</span><br><span class="line">	/Users/shitaibin/go/src/github.com/google/gops/agent/agent.go:133 +0x2bf</span><br><span class="line">created by github.com/google/gops/agent.Listen</span><br><span class="line">	/Users/shitaibin/go/src/github.com/google/gops/agent/agent.go:111 +0x364</span><br><span class="line"></span><br><span class="line">goroutine 1 [sleep]:</span><br><span class="line">runtime.goparkunlock(...)</span><br><span class="line">	/Users/shitaibin/goroot/src/runtime/proc.go:310</span><br><span class="line">time.Sleep(0x34630b8a000)</span><br><span class="line">	/Users/shitaibin/goroot/src/runtime/time.go:105 +0x157</span><br><span class="line">main.main()</span><br><span class="line">	/Users/shitaibin/Workspace/golang_step_by_step/gops/example.go:15 +0xa3</span><br><span class="line"></span><br><span class="line">goroutine 18 [syscall]:</span><br><span class="line">os/signal.signal_recv(0x0)</span><br><span class="line">	/Users/shitaibin/goroot/src/runtime/sigqueue.go:144 +0x96</span><br><span class="line">os/signal.loop()</span><br><span class="line">	/Users/shitaibin/goroot/src/os/signal/signal_unix.go:23 +0x22</span><br><span class="line">created by os/signal.init.0</span><br><span class="line">	/Users/shitaibin/goroot/src/os/signal/signal_unix.go:29 +0x41</span><br></pre></td></tr></table></figure>
+<h3 id="memstats-内存使用情况"><a href="#memstats-内存使用情况" class="headerlink" title="memstats: 内存使用情况"></a>memstats: 内存使用情况</h3><p>查看gops进程内存使用情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops memstats 67944</span><br><span class="line">alloc: 136.80KB (140088 bytes) // 当前分配出去未收回的内存总量</span><br><span class="line">total-alloc: 152.08KB (155728 bytes) // 已分配出去的内存总量</span><br><span class="line">sys: 67.25MB (70518784 bytes) // 当前进程从OS获取的内存总量</span><br><span class="line">lookups: 0</span><br><span class="line">mallocs: 418 // 分配的对象数量</span><br><span class="line">frees: 82 // 释放的对象数量</span><br><span class="line">heap-alloc: 136.80KB (140088 bytes) // 当前分配出去未收回的堆内存总量</span><br><span class="line">heap-sys: 63.56MB (66650112 bytes) // 当前堆从OS获取的内存</span><br><span class="line">heap-idle: 62.98MB (66035712 bytes) // 当前堆中空闲的内存量</span><br><span class="line">heap-in-use: 600.00KB (614400 bytes) // 当前堆使用中的内存量</span><br><span class="line">heap-released: 62.89MB (65945600 bytes)</span><br><span class="line">heap-objects: 336 // 堆中对象数量</span><br><span class="line">stack-in-use: 448.00KB (458752 bytes) // 栈使用中的内存量 </span><br><span class="line">stack-sys: 448.00KB (458752 bytes) // 栈从OS获取的内存总量 </span><br><span class="line">stack-mspan-inuse: 10.89KB (11152 bytes)</span><br><span class="line">stack-mspan-sys: 16.00KB (16384 bytes)</span><br><span class="line">stack-mcache-inuse: 13.56KB (13888 bytes)</span><br><span class="line">stack-mcache-sys: 16.00KB (16384 bytes)</span><br><span class="line">other-sys: 1.01MB (1062682 bytes)</span><br><span class="line">gc-sys: 2.21MB (2312192 bytes)</span><br><span class="line">next-gc: when heap-alloc &gt;= 4.00MB (4194304 bytes) // 下次GC的条件</span><br><span class="line">last-gc: 2020-03-16 10:06:26.743193 +0800 CST // 上次GC的世界</span><br><span class="line">gc-pause-total: 83.84µs // GC总暂停时间</span><br><span class="line">gc-pause: 44891 // 上次GC暂停时间，单位纳秒</span><br><span class="line">num-gc: 2 // 已进行的GC次数</span><br><span class="line">enable-gc: true // 是否开始GC</span><br><span class="line">debug-gc: false</span><br></pre></td></tr></table></figure>
+<h3 id="stats-运行时信息"><a href="#stats-运行时信息" class="headerlink" title="stats: 运行时信息"></a>stats: 运行时信息</h3><p>查看运行时统计信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stats 68125</span><br><span class="line">goroutines: 3</span><br><span class="line">OS threads: 12</span><br><span class="line">GOMAXPROCS: 8</span><br><span class="line">num CPU: 8</span><br></pre></td></tr></table></figure>
+<h3 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h3><p>获取当前运行5s的trace信息，会打开网页：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops trace 68125</span><br><span class="line">Tracing now, will take 5 secs...</span><br><span class="line">Trace dump saved to: /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/trace116447431</span><br><span class="line">2020/03/16 10:23:37 Parsing trace...</span><br><span class="line">2020/03/16 10:23:37 Splitting trace...</span><br><span class="line">2020/03/16 10:23:37 Opening browser. Trace viewer is listening on http://127.0.0.1:55480</span><br></pre></td></tr></table></figure>
+<h3 id="cpu-profile"><a href="#cpu-profile" class="headerlink" title="cpu profile"></a>cpu profile</h3><p>获取cpu profile，并进入交互模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops pprof-cpu 68125</span><br><span class="line">Profiling CPU now, will take 30 secs...</span><br><span class="line"></span><br><span class="line">Profile dump saved to: /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile431166544</span><br><span class="line">Binary file saved to: /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/binary765361519</span><br><span class="line">File: binary765361519</span><br><span class="line">Type: cpu</span><br><span class="line">Time: Mar 16, 2020 at 10:25am (CST)</span><br><span class="line">Duration: 30s, Total samples = 0</span><br><span class="line">No samples were found with the default sample value type.</span><br><span class="line">Try &quot;sample_index&quot; command to analyze different sample values.</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) top</span><br><span class="line">Showing nodes accounting for 0, 0% of 0 total</span><br><span class="line">      flat  flat%   sum%        cum   cum%</span><br></pre></td></tr></table></figure>
+<h3 id="memory-profile"><a href="#memory-profile" class="headerlink" title="memory profile"></a>memory profile</h3><p>获取memory profile，并进入交互模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops pprof-heap 68125</span><br><span class="line">Profile dump saved to: /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/profile292136242</span><br><span class="line">Binary file saved to: /var/folders/5g/rz16gqtx3nsdfs7k8sb80jth0000gn/T/binary693335273</span><br><span class="line">File: binary693335273</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: Mar 16, 2020 at 10:27am (CST)</span><br><span class="line">No samples were found with the default sample value type.</span><br><span class="line">Try &quot;sample_index&quot; command to analyze different sample values.</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof)</span><br><span class="line">(pprof) traces</span><br><span class="line">File: binary693335273</span><br><span class="line">Type: inuse_space</span><br><span class="line">Time: Mar 16, 2020 at 10:27am (CST)</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  256kB</span><br><span class="line">         0   compress/flate.(*compressor).init</span><br><span class="line">             compress/flate.NewWriter</span><br><span class="line">             compress/gzip.(*Writer).Write</span><br><span class="line">             runtime/pprof.(*profileBuilder).build</span><br><span class="line">             runtime/pprof.profileWriter</span><br><span class="line">-----------+-------------------------------------------------------</span><br><span class="line">     bytes:  64kB</span><br><span class="line">         0   compress/flate.newDeflateFast</span><br><span class="line">             compress/flate.(*compressor).init</span><br><span class="line">             compress/flate.NewWriter</span><br><span class="line">             compress/gzip.(*Writer).Write</span><br><span class="line">             runtime/pprof.(*profileBuilder).build</span><br><span class="line">             runtime/pprof.profileWriter</span><br><span class="line">-----------+-------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<h2 id="使用远程连接"><a href="#使用远程连接" class="headerlink" title="使用远程连接"></a>使用远程连接</h2><p>agent的默认配置<code>Option{}</code>，监听的是环回地址。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ sudo netstat -nap | grep 414</span><br><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">(Not all processes could be identified, non-owned process info</span><br><span class="line"> will not be shown, you would have to be root to see it all.)</span><br><span class="line">tcp        0      0 127.0.0.1:36812         0.0.0.0:*               LISTEN      414/./gopsexample</span><br></pre></td></tr></table></figure>
+<p>修改程序，在<code>Option</code>中设置监听的地址和端口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">agent.Listen(agent.Options&#123;Addr:<span class="string">"0.0.0.0:8848"</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>在远程主机上重新编译、重启进程，确认进程监听的端口：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ netstat -nap | grep `pgrep gopsexample`</span><br><span class="line">(Not all processes could be identified, non-owned process info</span><br><span class="line"> will not be shown, you would have to be root to see it all.)</span><br><span class="line">tcp6       0      0 :::8848                 :::*                    LISTEN      887/./gopsexample</span><br></pre></td></tr></table></figure>
+<p>在本地主机上使用gops连接远端go进程，并查看数据：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops stats 192.168.9.137:8848</span><br><span class="line">goroutines: 3</span><br><span class="line">OS threads: 9</span><br><span class="line">GOMAXPROCS: 4</span><br><span class="line">num CPU: 4</span><br></pre></td></tr></table></figure>
+<p><code>gops</code>后面只能跟pid查看进程简要信息，不能跟ip和port查看远端go进程简要信息，这些简要信息可以通过子命令汇集起来。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ gops 192.168.9.137:8848</span><br><span class="line">gops: unknown subcommand</span><br><span class="line">➜  ~ </span><br><span class="line">➜  ~ gops version 192.168.9.137:8848</span><br><span class="line">go1.13</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/15/why-pbft-needs-3-phase-message/" rel="next" title="为什么PBFT需要3个阶段消息？">
+                <i class="fa fa-chevron-left"></i> 为什么PBFT需要3个阶段消息？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div id="gitalk-container">
+    </div>
+    
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png"
+                alt="大彬" />
+            
+              <p class="site-author-name" itemprop="name">大彬</p>
+              <p class="site-description motion-element" itemprop="description">区块链、Go语言</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">120</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 &rarr; http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/shitaibin" title="GitHub &rarr; https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault &rarr; https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 &rarr; https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow &rarr; https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:hz_stb@163.com" title="E-Mail &rarr; mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                友链
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#gops简介"><span class="nav-number">1.</span> <span class="nav-text">gops简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码"><span class="nav-number">2.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#agent-Option选项"><span class="nav-number">3.</span> <span class="nav-text">agent Option选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gops原理"><span class="nav-number">4.</span> <span class="nav-text">gops原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子命令介绍"><span class="nav-number">5.</span> <span class="nav-text">子命令介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看当前机器上go程序进程信息"><span class="nav-number">5.1.</span> <span class="nav-text">查看当前机器上go程序进程信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go程序进程树"><span class="nav-number">5.2.</span> <span class="nav-text">go程序进程树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pid：进程概要信息"><span class="nav-number">5.3.</span> <span class="nav-text">pid：进程概要信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stack：当前调用栈"><span class="nav-number">5.4.</span> <span class="nav-text">stack：当前调用栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memstats-内存使用情况"><span class="nav-number">5.5.</span> <span class="nav-text">memstats: 内存使用情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stats-运行时信息"><span class="nav-number">5.6.</span> <span class="nav-text">stats: 运行时信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#trace"><span class="nav-number">5.7.</span> <span class="nav-text">trace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu-profile"><span class="nav-number">5.8.</span> <span class="nav-text">cpu profile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-profile"><span class="nav-number">5.9.</span> <span class="nav-text">memory profile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用远程连接"><span class="nav-number">6.</span> <span class="nav-text">使用远程连接</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">[object Object]</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
+
+
+<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754" language="JavaScript"></script>
+  </div>
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.6.0"></script>
+
+  <script src="/js/src/motion.js?v=6.6.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.6.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.6.0"></script>
+<script src="/js/src/post-details.js?v=6.6.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+
+  
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.css">
+
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+   <script>
+        var gitalk = new Gitalk({
+          clientID: '42138cdfb007b8368d81',
+          clientSecret: '317f1e9c0f7579358dcefb5402abe1bcc3e7388a',
+          repo: 'shitaibin.github.io',
+          owner: 'Shitaibin',
+          admin: ['Shitaibin'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')
+       </script>
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap');
+      $(e).after($wrap);
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text();
+        }).toArray().join('\n');
+        var ta = document.createElement('textarea');
+        var range = document.createRange(); //For Chrome
+        var sel = window.getSelection(); //For Chrome
+        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+        ta.style.top = yPosition + 'px'; //Prevent page scroll
+        ta.style.position = 'absolute';
+        ta.style.opacity = '0';
+        ta.value = code;
+        ta.textContent = code; //For FireFox
+        ta.contentEditable = true;
+        ta.readOnly = false;
+        document.body.appendChild(ta);
+        range.selectNode(ta);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        ta.setSelectionRange(0, code.length);
+        var result = document.execCommand('copy');
+        
+        ta.blur(); //For iOS
+        $(this).blur();
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn');
+        setTimeout(function () {
+          $b.text('复制');
+        }, 300);
+      }).append(e);
+    })
+  </script>
+
+
+  
+
+</body>
+</html>
