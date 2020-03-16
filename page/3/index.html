@@ -1,106 +1,24 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<html class="theme-next pisces" lang="zh-CN">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=6.6.0" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.6.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=6.6.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=6.6.0">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=6.6.0" color="#222">
-
-
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Pisces',
-    version: '6.6.0',
-    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
 
   <meta name="description" content="区块链、Go语言">
 <meta name="keywords" content="区块链 Go语言 后端 技术 人生 编程">
@@ -114,31 +32,20 @@
 <meta name="twitter:title" content="Go语言充电站">
 <meta name="twitter:description" content="区块链、Go语言">
 
+<link rel="canonical" href="http://lessisbetter.site/page/3/">
 
 
-  <link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml" />
-
-
-
-
-  <link rel="canonical" href="http://lessisbetter.site/page/3/"/>
-
-
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome : true,
+    isPost : false
   };
 </script>
 
-  <title>Go语言充电站 – 大彬 less is better</title>
+  <title>Go语言充电站 - 大彬 less is better</title>
   
-
-
-
-
-
-
 
 
 
@@ -147,322 +54,187 @@
 
   <noscript>
   <style>
-    .use-motion .motion-element,
-    .use-motion .brand,
-    .use-motion .menu-item,
-    .sidebar-inner,
-    .use-motion .post-block,
-    .use-motion .pagination,
-    .use-motion .comments,
-    .use-motion .post-header,
-    .use-motion .post-body,
-    .use-motion .collection-title { opacity: initial; }
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
 
-    .use-motion .logo,
-    .use-motion .site-title,
-    .use-motion .site-subtitle {
-      opacity: initial;
-      top: initial;
-    }
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
 
-    .use-motion .logo-line-before i { left: initial; }
-    .use-motion .logo-line-after i { right: initial; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left 
-  page-home">
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
 
-    <div class="custom-logo-site-title">
+  <div class="site-meta">
+
+    <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Go语言充电站</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-    
-      
         <p class="site-subtitle">大彬 less is better</p>
-      
-    
-    
   </div>
 
-  <div class="site-nav-toggle">
-    <button aria-label="切换导航栏">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
   </div>
 </div>
-
 
 
 <nav class="site-nav">
   
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-主页">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-主页">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br />主页</a>
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>主页</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-标签云">
+        <li class="menu-item menu-item-标签云">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签云</a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签云</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-专题文章">
+        <li class="menu-item menu-item-专题文章">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/subject/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br />专题文章</a>
+    <a href="/subject/" rel="section"><i class="fa fa-fw fa-th"></i>专题文章</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-文章列表">
+        <li class="menu-item menu-item-文章列表">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br />文章列表</a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>文章列表</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-关于">
+        <li class="menu-item menu-item-关于">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-大牛博客">
+        <li class="menu-item menu-item-大牛博客">
 
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/blogs/" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />大牛博客</a>
+    <a href="/blogs/" rel="section"><i class="fa fa-fw fa-sitemap"></i>大牛博客</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
 
-      
-      
-    </ul>
-  
-
-  
-
-  
 </nav>
-
-
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
 
   
+</div>
+<div class="search-pop-overlay"></div>
 
-
-
+  </div>
 </div>
     </header>
 
     
-  
-  
-  
-  
-
-  
-
-    <a href="https://github.com/Shitaibin" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill: #222; color: #fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
-
-    <main id="main" class="main">
+    <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
           
+
+          <div class="content">
             
 
-          
-          <div id="content" class="content">
-            
-  <section id="posts" class="posts-expand">
-    
-      
-
-  
-
+  <div class="posts-expand">
+        
   
   
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/05/etcd-raft-sources-structs/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析3：重要结构体定义</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/05/etcd-raft-sources-structs/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析3：重要结构体定义</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-09-05 21:59:35" itemprop="dateCreated datePublished" datetime="2019-09-05T21:59:35+08:00">2019-09-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2020-01-08 19:24:11" itemprop="dateModified" datetime="2020-01-08T19:24:11+08:00">2020-01-08</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -470,12 +242,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。</p>
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。</p>
 <p>在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。</p>
 <p><img src="http://img.lessisbetter.site/2019-08-raft-%E5%9B%BE1.png" alt="State machine"></p>
 <p>Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并不是raft的一部分，而是用来存储数据的模块。</p>
@@ -569,146 +336,62 @@
 <p>ReadStates用来处理读请求，MustSync用来指明应用层是否采用异步的方式写数据。</p>
 <p>应用层在接收到Ready后，应当处理Ready中的每一个有效字段，处理完毕后，调用<code>Advance()</code>通知raft Ready已处理完毕。</p>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/" class="post-title-link" itemprop="url">Fabric 1.4不同peer使用不同语言链码的问题</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/" class="post-title-link" itemprop="url">Fabric 1.4不同peer使用不同语言链码的问题</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-09-03 11:50:31" itemprop="dateCreated datePublished" datetime="2019-09-03T11:50:31+08:00">2019-09-03</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-09-11 14:27:33" itemprop="dateModified" datetime="2019-09-11T14:27:33+08:00">2019-09-11</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -716,12 +399,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。</p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png" alt="fabric chaincode error"></p>
 <p>大家的问题是：</p>
 <blockquote>
@@ -753,146 +431,62 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode install -n mycc -v 1.0 -l java -p /opt/gopath/src/github.com/chaincode/chaincode_example02/java/</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 01:52:15.755 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode query -C mychannel -n mycc -c &apos;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&apos;</span><br><span class="line">Error: endorsement failure during query. response: status:500 message:&quot;failed to execute transaction b8b740aab0e6dd10cfe62416240ef94bfb90a55358904233c4d60dd5a39e6fe3: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer#</span><br><span class="line">root@d0533ffe1864:/opt/gopath/src/github.com/hyperledger/fabric/peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt  -c &apos;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;a&quot;,&quot;b&quot;,&quot;50&quot;]&#125;&apos;</span><br><span class="line">Error: endorsement failure during invoke. response: status:500 message:&quot;failed to execute transaction aec5a0ccbcf86032774dc80220b90419d2816cc3f050a104c1cfcde55a2247cb: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br></pre></td></tr></table></figure>
 <h2 id="文章"><a href="#文章" class="headerlink" title="文章"></a>文章</h2><p>另外，社区里的hucg编写了一篇源码文章：<a href="https://blog.csdn.net/love_feng_forever/article/details/100532324" target="_blank" rel="noopener">https://blog.csdn.net/love_feng_forever/article/details/100532324</a></p>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/02/hyperledger-projects/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/02/hyperledger-projects/" class="post-title-link" itemprop="url">Hyperledger项目介绍</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/02/hyperledger-projects/" class="post-title-link" itemprop="url">Hyperledger项目介绍</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-09-02 15:04:06" itemprop="dateCreated datePublished" datetime="2019-09-02T15:04:06+08:00">2019-09-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-09-04 10:58:38" itemprop="dateModified" datetime="2019-09-04T10:58:38+08:00">2019-09-04</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -900,157 +494,68 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <p>Hyperledger下有许多区块链相关的项目，曾以为它们分别是不同的类别，专注不同的功能，梳理一下其实并不是这样，比如光区块链框架就有Fabric、Iroha和Sawtooth。</p>
+          <p>Hyperledger下有许多区块链相关的项目，曾以为它们分别是不同的类别，专注不同的功能，梳理一下其实并不是这样，比如光区块链框架就有Fabric、Iroha和Sawtooth。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-hyperledger-projects.png" alt="hyperledger projects"></p>
 <p>各项目的简要介绍以及TWGC的介绍，一定要看看Baohua Yang大佬的<a href="https://github.com/dWChina/ibm-opentech-ma/blob/master/fabric1.4LTS/02_Hyperledger_Overview.pdf" target="_blank" rel="noopener">PPT</a>，ppt介绍Hyperledger社区的现状，各子项目概览，以及发展方向，以及Hyperledger 中国技术工作组的最新动态。。</p>
 <p>做Fabric相关的工作，需要关注Fabric、Cello、Caliper、Explorer等几个项目。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-fabric-projects-archs.png" alt="fabric projects arch"></p>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/02/fabric-sdk-go-chaincode/" class="post-title-link" itemprop="url">使用fabric-sdk-go操作链码</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/02/fabric-sdk-go-chaincode/" class="post-title-link" itemprop="url">使用fabric-sdk-go操作链码</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-09-02 14:55:16" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-09-05 11:45:15" itemprop="dateModified" datetime="2019-09-05T11:45:15+08:00">2019-09-05</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -1058,12 +563,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。</p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk.png" alt="fabric sdk"></p>
 <h2 id="fabric-sdk-go项目简介"><a href="#fabric-sdk-go项目简介" class="headerlink" title="fabric-sdk-go项目简介"></a>fabric-sdk-go项目简介</h2><p><a href="https://github.com/hyperledger/fabric-sdk-go" target="_blank" rel="noopener">fabric-sdk-go</a>是Fabric官方的Go语言SDK，它的目录结构如下：</p>
 <p><img src="http://img.lessisbetter.site/2019-09-fabric-sd-go.png" alt="fabric sdk go"></p>
@@ -1123,146 +623,62 @@
 <h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目<a href="https://github.com/Shitaibin/fabric-sdk-go-sample" target="_blank" rel="noopener">README文档</a>，项目地址：<a href="https://github.com/Shitaibin/fabric-sdk-go-sample" target="_blank" rel="noopener">https://github.com/Shitaibin/fabric-sdk-go-sample</a> ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-byfn-sdk.png" alt="byfn-sdk"></p>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/27/protobuf-in-go-2/" class="post-title-link" itemprop="url">Go是如何实现protobuf的编解码的(2)：源码</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/27/protobuf-in-go-2/" class="post-title-link" itemprop="url">Go是如何实现protobuf的编解码的(2)：源码</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-08-27 20:27:13" itemprop="dateCreated datePublished" datetime="2019-08-27T20:27:13+08:00">2019-08-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-09-12 17:46:55" itemprop="dateModified" datetime="2019-09-12T17:46:55+08:00">2019-09-12</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -1270,12 +686,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：</p>
+          <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：</p>
 <ol>
 <li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的(1): 原理</a></li>
 <li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的(2): 源码</a></li>
@@ -1377,146 +788,62 @@
 <li><a href="https://godoc.org/github.com/golang/protobuf/proto" target="_blank" rel="noopener">https://godoc.org/github.com/golang/protobuf/proto</a><br>《package proto文档》可以把proto包当做Go语言操作protobuf数据的SDK，它实现了结构体和protobuf数据的转换，它和<code>.pb.go</code>文件配合使用。</li>
 </ul>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/26/protobuf-in-go/" class="post-title-link" itemprop="url">Go是如何实现protobuf的编解码的(1)：原理</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/26/protobuf-in-go/" class="post-title-link" itemprop="url">Go是如何实现protobuf的编解码的(1)：原理</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-08-26 20:52:58" itemprop="dateCreated datePublished" datetime="2019-08-26T20:52:58+08:00">2019-08-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-09-07 11:30:58" itemprop="dateModified" datetime="2019-09-07T11:30:58+08:00">2019-09-07</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -1524,12 +851,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：</p>
+          <p>这是一篇姊妹篇文章，浅析一下Go是如何实现protobuf编解码的：</p>
 <ol>
 <li><a href="http://lessisbetter.site/2019/08/26/protobuf-in-go/">Go是如何实现protobuf的编解码的(1): 原理</a></li>
 <li><a href="http://lessisbetter.site/2019/08/27/protobuf-in-go-2/">Go是如何实现protobuf的编解码的(2): 源码</a></li>
@@ -1603,146 +925,62 @@
 <li><a href="https://godoc.org/github.com/golang/protobuf/proto" target="_blank" rel="noopener">https://godoc.org/github.com/golang/protobuf/proto</a><br>《package proto文档》可以把proto包当做Go语言操作protobuf数据的SDK，它实现了结构体和protobuf数据的转换，它和<code>.pb.go</code>文件配合使用。</li>
 </ul>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/22/etcd-raft-source-data-flow/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析2：数据流</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/22/etcd-raft-source-data-flow/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析2：数据流</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-08-22 20:24:08" itemprop="dateCreated datePublished" datetime="2019-08-22T20:24:08+08:00">2019-08-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2020-01-08 17:45:26" itemprop="dateModified" datetime="2020-01-08T17:45:26+08:00">2020-01-08</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -1750,12 +988,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，再介绍一下。</p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前看到一幅描述etcd raft的流程图，感觉非常直观，但和自己看源码的又有些不同，所以自己模仿着画了一下，再介绍一下。</p>
 <p>下图从左到右依次分为4个部分：</p>
 <ol>
 <li>raft：raft主体功能部分</li>
@@ -1805,146 +1038,62 @@
 <p>Storage接口更多信息请看<a href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/#Storage">Storage接口介绍</a>。</p>
 <p><img src="http://img.lessisbetter.site/2019-09-etcd-raft-msg-flow-commit.png" alt="etcd raft apply logs flow"></p>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/19/etcd-raft-sources-arch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/19/etcd-raft-sources-arch/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析1：宏观架构</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/19/etcd-raft-sources-arch/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析1：宏观架构</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-08-19 09:42:37" itemprop="dateCreated datePublished" datetime="2019-08-19T09:42:37+08:00">2019-08-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-11-18 10:19:18" itemprop="dateModified" datetime="2019-11-18T10:19:18+08:00">2019-11-18</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -1952,12 +1101,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p><a href="https://github.com/etcd-io/etcd" target="_blank" rel="noopener">Etcd</a>提供了一个样例<a href="https://github.com/etcd-io/etcd/tree/master/contrib/raftexample" target="_blank" rel="noopener">contrib/raftexample</a>，用来展示如何使用etcd raft。这篇文章通过raftexample介绍如何使用etcd raft。</p>
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p><a href="https://github.com/etcd-io/etcd" target="_blank" rel="noopener">Etcd</a>提供了一个样例<a href="https://github.com/etcd-io/etcd/tree/master/contrib/raftexample" target="_blank" rel="noopener">contrib/raftexample</a>，用来展示如何使用etcd raft。这篇文章通过raftexample介绍如何使用etcd raft。</p>
 <h2 id="raft服务"><a href="#raft服务" class="headerlink" title="raft服务"></a>raft服务</h2><p>raftexample是一个分布式KV数据库，客户端可以向集群的节点发送写数据和读数据，以及修改集群配置的请求，它使用etcd raft保持各集群之间数据的一致性。</p>
 <p><img src="http://img.lessisbetter.site/2019-08-cluster.png" alt="cluster"></p>
 <h2 id="etcd-raft"><a href="#etcd-raft" class="headerlink" title="etcd raft"></a>etcd raft</h2><p>etcd raft实现了raft论文的核心，所有的IO（磁盘存储、网络通信）它都没有实现，它做了解耦。</p>
@@ -2034,146 +1178,62 @@
 <li>一个写请求从客户端到在节点之间达成一致，应用到状态机的过程</li>
 </ul>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/13/raft-zh/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/13/raft-zh/" class="post-title-link" itemprop="url">Raft中文翻译与笔记</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/13/raft-zh/" class="post-title-link" itemprop="url">Raft中文翻译与笔记</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-08-13 20:49:05" itemprop="dateCreated datePublished" datetime="2019-08-13T20:49:05+08:00">2019-08-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2020-01-08 09:26:34" itemprop="dateModified" datetime="2020-01-08T09:26:34+08:00">2020-01-08</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -2181,12 +1241,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文在 <a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="noopener">https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md</a> 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文在 <a href="https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md" target="_blank" rel="noopener">https://github.com/maemual/raft-zh_cn/blob/master/raft-zh_cn.md</a> 基础上修改、标注重点。如果遇到中文别扭的地方、不懂的地方，建议配合[英文原文][paper]一起阅读。</p>
 <p>Raft与PBFT、Paxos等其他一致性算法相比，确实简单不少，易于理解和实现，还有很强的可用性。</p>
 <p>Raft的3大核心是强领导者、领导者选举和成员关系变更（增加和减少Raft节点），论文就是围绕着3个核心进行介绍，以及论证安全性（正确性、一致性）和可用性。但成员关系变更的细节，依然还有一些疑问，做了一些注释在文中，需要去看源码和讨论弄清楚。</p>
 <p>除了3大核心，论文还提到了一些优化策略：</p>
@@ -2822,146 +1877,62 @@
 <li>paper: <a href="https://raft.github.io/raft.pdf" target="_blank" rel="noopener">https://raft.github.io/raft.pdf</a></li>
 </ul>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
-
-
-    
-      
-
-  
-
   
   
   
 
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+        
   
   
-  
-  <div class="post-block">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/08/01/fabric-new-org/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
       <meta itemprop="name" content="大彬">
       <meta itemprop="description" content="区块链、Go语言">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Go语言充电站">
     </span>
-
-    
       <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/01/fabric-new-org/" class="post-title-link" itemprop="url">Fabric组织动态加入</a>
-              
-            
-          </h1>
-        
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/01/fabric-new-org/" class="post-title-link" itemprop="url">Fabric组织动态加入</a>
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
+              <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2019-08-01 20:33:48" itemprop="dateCreated datePublished" datetime="2019-08-01T20:33:48+08:00">2019-08-01</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+            </span>
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
+                <span class="post-meta-item-text">更新于</span>
                 <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
+              </span>
 
           
 
         </div>
       </header>
-    
 
     
     
@@ -2969,12 +1940,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-      
-
-      
-        
-          
-            <p>联盟链中动态加入组织是很正常的一件事，但联盟链不会像公链那样，可以自由加入和退出，所以，加入是要费一般功夫的。</p>
+          <p>联盟链中动态加入组织是很正常的一件事，但联盟链不会像公链那样，可以自由加入和退出，所以，加入是要费一般功夫的。</p>
 <p>需要做以下几件事情：</p>
 <ol>
 <li>生成新组织的证书和在要加入通道中的配置</li>
@@ -3052,47 +2018,21 @@
 <li><a href="https://github.com/hyperledger/fabric-samples/blob/release-1.4/first-network/eyfn.sh" target="_blank" rel="noopener">first network项目中的eyfn</a>，运行脚本可以看到具体流程。</li>
 </ol>
 
-          
-        
       
     </div>
 
     
-
     
     
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
+      <footer class="post-footer">
         <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
+      </footer>
   </article>
+  
+  
+  
 
-
-    
-  </section>
+  </div>
 
   
   <nav class="pagination">
@@ -3104,434 +2044,208 @@
           </div>
           
 
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
         </div>
-        
           
   
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
   </div>
 
-  <aside id="sidebar" class="sidebar">
-    
+  <aside class="sidebar">
     <div class="sidebar-inner">
 
-      
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
 
-      
-
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image"
-                src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png"
-                alt="大彬" />
-            
-              <p class="site-author-name" itemprop="name">大彬</p>
-              <p class="site-description motion-element" itemprop="description">区块链、Go语言</p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives">
-                
-                    <span class="site-state-item-count">120</span>
-                    <span class="site-state-item-name">日志</span>
-                  </a>
-                </div>
-              
-
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">65</span>
-                    <span class="site-state-item-name">标签</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 &rarr; http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://github.com/shitaibin" title="GitHub &rarr; https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault &rarr; https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 &rarr; https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow &rarr; https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  
-                  
-                    
-                  
-                  
-                    
-                  
-                  <a href="mailto:hz_stb@163.com" title="E-Mail &rarr; mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                </span>
-              
-            </div>
-          
-
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-block">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-link"></i>
-                友链
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-            
-          
-          
-
-        </div>
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
       </div>
+      <!--/noindex-->
 
-      
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">区块链、Go语言</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 → http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/shitaibin" title="GitHub → https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault → https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 → https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow → https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hz_stb@163.com" title="E-Mail → mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
 
-      
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友链
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://theme-next.iissnan.com/getting-started.html" title="http://theme-next.iissnan.com/getting-started.html" rel="noopener" target="_blank">Hexo Next主题配置</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
 
     </div>
   </aside>
+  <div id="sidebar-dimmer"></div>
 
 
-        
       </div>
     </main>
 
-    <footer id="footer" class="footer">
+    <footer class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
-  <span class="with-love" id="animate">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">[object Object]</span>
-
-  
-
-  
+  <span class="author" itemprop="copyrightHolder">大彬</span>
 </div>
-
-
-  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1</div>
-
-
-
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.7.1
+  </div>
   <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.6.0</div>
-
-
-<a href="http://www.beian.miit.gov.cn"> 浙ICP备18051706号</a> 
-
-
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
 
         
 <div class="busuanzi-count">
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="site-uv" title="总访客量">
-      <i class="fa fa-user"></i>
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
     </span>
-  
-
-  
-    <span class="site-pv" title="总访问量">
-      <i class="fa fa-eye"></i>
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
     </span>
-  
 </div>
 
 
-
-
-
-
-
-
-
   <div style="display: none;">
-    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754" language="JavaScript"></script>
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754"></script>
   </div>
 
 
 
-        
+
+
+
       </div>
     </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
   </div>
 
   
-
-<script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
 
 
 
-
+  
 
 
 
 
-
-
-
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script><script src="/js/algolia-search.js"></script>
 
 
 
@@ -3546,184 +2260,9 @@
 
 
   
-  
-    <script src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
 
   
 
-
-  <script src="/js/src/utils.js?v=6.6.0"></script>
-
-  <script src="/js/src/motion.js?v=6.6.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/affix.js?v=6.6.0"></script>
-
-  <script src="/js/src/schemes/pisces.js?v=6.6.0"></script>
-
-
-
-  
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=6.6.0"></script>
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-<script>
-(function(){
-    var bp = document.createElement('script');
-    var curProtocol = window.location.protocol.split(':')[0];
-    if (curProtocol === 'https') {
-        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
-    }
-    else {
-        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-    }
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(bp, s);
-})();
-</script>
-
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  <style>
-    .copy-btn {
-      display: inline-block;
-      padding: 6px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 20px;
-      color: #333;
-      white-space: nowrap;
-      vertical-align: middle;
-      cursor: pointer;
-      background-color: #eee;
-      background-image: linear-gradient(#fcfcfc, #eee);
-      border: 1px solid #d5d5d5;
-      border-radius: 3px;
-      user-select: none;
-      outline: 0;
-    }
-
-    .highlight-wrap .copy-btn {
-      transition: opacity .3s ease-in-out;
-      opacity: 0;
-      padding: 2px 6px;
-      position: absolute;
-      right: 4px;
-      top: 8px;
-    }
-
-    .highlight-wrap:hover .copy-btn,
-    .highlight-wrap .copy-btn:focus {
-      opacity: 1
-    }
-
-    .highlight-wrap {
-      position: relative;
-    }
-  </style>
-  <script>
-    $('.highlight').each(function (i, e) {
-      var $wrap = $('<div>').addClass('highlight-wrap');
-      $(e).after($wrap);
-      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
-        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
-          return $(e).text();
-        }).toArray().join('\n');
-        var ta = document.createElement('textarea');
-        var range = document.createRange(); //For Chrome
-        var sel = window.getSelection(); //For Chrome
-        var yPosition = window.pageYOffset || document.documentElement.scrollTop;
-        ta.style.top = yPosition + 'px'; //Prevent page scroll
-        ta.style.position = 'absolute';
-        ta.style.opacity = '0';
-        ta.value = code;
-        ta.textContent = code; //For FireFox
-        ta.contentEditable = true;
-        ta.readOnly = false;
-        document.body.appendChild(ta);
-        range.selectNode(ta);
-        sel.removeAllRanges();
-        sel.addRange(range);
-        ta.setSelectionRange(0, code.length);
-        var result = document.execCommand('copy');
-        
-        ta.blur(); //For iOS
-        $(this).blur();
-      })).on('mouseleave', function (e) {
-        var $b = $(this).find('.copy-btn');
-        setTimeout(function () {
-          $b.text('复制');
-        }, 300);
-      }).append(e);
-    })
-  </script>
-
-
-  
 
 </body>
 </html>
