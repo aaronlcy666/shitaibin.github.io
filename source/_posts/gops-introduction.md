@@ -1,7 +1,7 @@
 ---
 title: Go官方进程诊断工具gops详解
-date: 2020-03-16 13:20:47
-tags:
+date: 2020-03-15 20:20:47
+tags: ['Go']
 ---
 
 
@@ -96,6 +96,7 @@ gops的原理是，代码中导入`gops/agent`，建立agent服务，gops命令�
 
 再谈`ConfigDir`。从源码上看，`ConfigDir`对agent并没有用途，对gops有用。当gops和ConfigDir在一台机器上时，即gops查看本机的go进程信息，gops可以通过其中的文件，快速找到agent服务的端口。能够实现：`gops <sub-cmd> pid`到`gops <sub-cmd> 127.0.0.1:port`的转换。
 
+如果代码中通过`ConfigDir`指定了其他目录，使用`gops`时，需要添加环境变量`GOPS_CONFIG_DIR`指向`ConfigDir`使用的目录。
 
 ## 子命令介绍
 
@@ -144,9 +145,6 @@ All commands require the agent running on the Go process.
 
 带`*`的是程序中使用了gops/agent，不带`*`的是普通的go程序。
 
-使用`ls ~/.config/gops/`，也可以查看，曾经和现在gops捕获到的使用gops/agent的go程序。
-
-`~/.config/gops`是agent保存数据的默认目录，可以通过环境变量`GOPS_CONFIG_DIR`修改。
 
 ### go程序进程树
 
