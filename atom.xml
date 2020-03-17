@@ -103,16 +103,17 @@
     <published>2020-03-03T12:33:19.000Z</published>
     <updated>2020-03-16T14:51:33.540Z</updated>
     
-    <content type="html"><![CDATA[<p>PDF如下：</p><div class="pdf" target="http://img.lessisbetter.site/contribute-to-fabric.pdf" height=""></div><blockquote><p>PDF不显示时，hexo安装插件：<code>npm install --save hexo-pdf</code>。</p></blockquote>]]></content>
+    <content type="html"><![CDATA[<p>PDF如下：</p><div class="row">    <embed src="http://img.lessisbetter.site/contribute-to-fabric.pdf" width="100%" height="550" type="application/pdf"></div><blockquote><p>PDF不显示时，hexo安装插件：<code>npm install --save hexo-pdf</code>。</p></blockquote>]]></content>
     
     <summary type="html">
     
       
       
         &lt;p&gt;PDF如下：&lt;/p&gt;
-&lt;div class=&quot;pdf&quot; target=&quot;http://img.lessisbetter.site/contribute-to-fabric.pdf&quot; height=&quot;&quot;&gt;&lt;/div&gt;
-&lt;blockquote&gt;
-&lt;p&gt;PDF不显示时，hexo安
+
+
+	&lt;div class=&quot;row&quot;&gt;
+    &lt;embed src=&quot;http://img.lessisbetter.site/contribute-to-fabric.pdf&quot; width=&quot;100%&quot; height=&quot;550&quot; type=&quot;ap
       
     
     </summary>
