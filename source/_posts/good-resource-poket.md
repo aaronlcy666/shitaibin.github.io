@@ -40,3 +40,6 @@ tags:
 - Commit规范：[Commit message 和 Change log 编写指南](http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html)
 - commit检查工具：[commitlint](https://github.com/conventional-changelog/commitlint)
 - commit生成relase：[conventional-changelog](https://github.com/conventional-changelog/conventional-changelog)
+
+## Linux
+- [在 Linux 上如何清除内存的 Cache、Buffer 和交换空间](https://colobu.com/2015/10/31/How-to-Clear-RAM-Memory-Cache-Buffer-and-Swap-Space-on-Linux/)

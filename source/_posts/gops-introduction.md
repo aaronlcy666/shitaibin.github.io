@@ -7,7 +7,7 @@ tags: ['Go']
 
 ## gops简介
 
-gops是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。
+[gops](https://github.com/google/gops) 是Go团队提供的命令行工具，它可以用来获取go进程运行时信息。
 
 可以查看：
 - 当前有哪些go语言进程，哪些使用gops的go进程
