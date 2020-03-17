@@ -23,7 +23,7 @@ tags: ["Github Pages", "Hexo"]
 1. 框架：[Hexo](https://hexo.io/)，静态博客
 1. 主题：[Next](https://theme-next.org/)，这个主题的配置文件中有大量的插件配置，包含评论、阅读数、统计、友链等等，都在主题下的配置文件中
 1. 服务器：Github pages
-1. 评论：Gitalk
+1. 评论：[Gitalk](https://github.com/gitalk/gitalk)，遇到登录失败错误看这个[Issue](https://github.com/gitalk/gitalk/issues/162)。
 1. 阅读数：[busuanzi](http://ibruce.info/2015/04/04/busuanzi/)，阅读数存储在卜算子的服务器，或者主题插件leancloud_visitors
 1. 网站图标：准备好图标图片，然后去[Favicon](https://realfavicongenerator.net)网站制作，最后放到`/themes/next/source/images`目录。
 1. 站长统计：CNZZ，可在Next主题填写网站id。
