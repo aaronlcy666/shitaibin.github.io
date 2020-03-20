@@ -214,7 +214,6 @@ p {
 }
 a,
 span.exturl {
-  border-bottom: 1px solid #ff7601;
   color: var(--link-color);
   outline: 0;
   text-decoration: none;
@@ -1170,7 +1169,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #b41469;
+  background: #ffc2ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1501,9 +1500,15 @@ pre .javascript .function {
     font-size: 1.125em;
   }
 }
-.post-body span.exturl .fa {
+.post-body .fa {
   font-size: 0.875em;
   margin-left: 4px;
+}
+.post-body a,
+.post-body span.exturl {
+  font-size: 0.875em;
+  margin-left: 4px;
+  color: #ff7601;
 }
 .post-body .image-caption,
 .post-body .figure .caption {
