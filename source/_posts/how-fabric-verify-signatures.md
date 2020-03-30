@@ -333,11 +333,13 @@ func (msp *bccspmsp) deserializeIdentityInternal(serializedIdentity []byte) (Ide
 	// We can't do it yet because there is no standardized way
 	// (yet) to encode the MSP ID into the x.509 body of a cert
 
+	// 从证书中提取公钥，封装一下，满足bccsp.Key接口
 	pub, err := msp.bccsp.KeyImport(cert, &bccsp.X509PublicKeyImportOpts{Temporary: true})
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to import certificate's public key")
 	}
 
+	// 利用证书、公钥和msp建立角色身份
 	return newIdentity(cert, pub, msp)
 }
 ```
