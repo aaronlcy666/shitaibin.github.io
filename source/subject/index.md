@@ -29,6 +29,7 @@ tag: ['TODO']
 1. [实战Go内存泄露](http://lessisbetter.site/2019/05/18/go-goroutine-leak/)
 1. [Go内存分配那些事，就这么简单！](http://lessisbetter.site/2019/07/06/go-memory-allocation/)
 1. [你滥用log了吗](http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/)
+1. [Go垃圾回收 1：历史和原理](https://lessisbetter.site/2019/10/20/go-gc-1-history-and-priciple/)
 
 ### 其他
 
@@ -38,7 +39,10 @@ tag: ['TODO']
 1. [反射3定律](http://lessisbetter.site/2019/02/24/go-law-of-reflect/)
 1. [First class function in Go](http://lessisbetter.site/2019/06/09/golang-first-class-function/)
 
+### 工具
 
+1. [Go官方进程诊断工具gops详解](https://lessisbetter.site/2020/03/15/gops-introduction/)
+1. [Go Modules 方法、问题汇总贴](https://lessisbetter.site/2019/10/31/go-modules-notes/)
 
 
 ## 以太坊
@@ -82,7 +86,7 @@ tag: ['TODO']
 1. [Fabric 1.4源码解读 6：Orderer核心数据结构](http://lessisbetter.site/2019/11/18/fabric-orderer-structs/)
 1. [Fabric 1.4源码解读 7：Orderer架构解读](http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/)
 1. [Fabric 1.4源码解读 8：Orderer和Peer的交互](http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/)
-
+1. [Fabric 1.4源码解读 9：从账本角度看Peer](https://lessisbetter.site/2020/01/03/fabric-peer-ledger/)
 
 
 ### 周边工具
@@ -91,6 +95,21 @@ tag: ['TODO']
 1. [使用fabric-sdk-go操作链码](http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/)
 1. [使用fabric-sdk-go订阅Fabric事件](http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/)
 
+### 贡献
+1. [向Fabric贡献代码](https://lessisbetter.site/2020/03/03/contribute-to-fabric/)
+
+## 一致性
+
+### BFT
+1. [为什么PBFT的节点数量是3f+1?](https://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/)
+1. [为什么PBFT需要3个阶段消息？](https://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/)
+1. [为什么PBFT需要View Changes](https://lessisbetter.site/2020/03/22/why-pbft-needs-viewchange/)
+
+### Raft
+1. [Raft中文翻译与笔记](https://lessisbetter.site/2019/08/13/raft-zh/)
+1. [Etcd Raft架构设计和源码剖析1：宏观架构](https://lessisbetter.site/2019/08/19/etcd-raft-sources-arch/)
+1. [Etcd Raft架构设计和源码剖析2：数据流](https://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/)
+1. [Etcd Raft架构设计和源码剖析3：重要结构体定义](https://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/)
 
 ## Linux
 
