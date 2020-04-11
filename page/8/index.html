@@ -196,6 +196,158 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/11/ethereum-design-of-txpool/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/12/11/ethereum-design-of-txpool/" class="post-title-link" itemprop="url">以太坊源码分析：交易缓冲池txpool</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-11 10:51:00" itemprop="dateCreated datePublished" datetime="2018-12-11T10:51:00+08:00">2018-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>区块链就是何交易打交道，我们今天就介绍下，交易处理过程中的一个重要组成部分：txpool。这篇文章主要从功能角度介绍，通过这篇文章会了解：</p>
+<ol>
+<li>txpool的在交易中的位置和作用。</li>
+<li>txpool的功能，核心组成部分queued和pending。</li>
+<li>txpool如何实现它的功能。</li>
+<li>txpool源码的重要关注点。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/12/11/ethereum-design-of-txpool/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/12/02/golang-exit-goroutine-in-3-ways/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/12/02/golang-exit-goroutine-in-3-ways/" class="post-title-link" itemprop="url">Golang并发模型：并发协程的优雅退出</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-02 11:26:04" itemprop="dateCreated datePublished" datetime="2018-12-02T11:26:04+08:00">2018-12-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>goroutine作为Golang并发的核心，我们不仅要关注它们的创建和管理，当然还要关注如何合理的退出这些协程，不（合理）退出不然可能会造成阻塞、panic、程序行为异常、数据结果不正确等问题。这篇文章介绍，如何合理的退出goroutine，减少软件bug。</p>
+<p>goroutine在退出方面，不像线程和进程，不能通过某种手段<strong>强制</strong>关闭它们，只能等待goroutine主动退出。但也无需为退出、关闭goroutine而烦恼，下面就介绍3种优雅退出goroutine的方法，只要采用这种最佳实践去设计，基本上就可以确保goroutine退出上不会有问题，尽情享用。</p>
+<h3 id="1：使用for-range退出"><a href="#1：使用for-range退出" class="headerlink" title="1：使用for-range退出"></a>1：使用for-range退出</h3><p><code>for-range</code>是使用频率很高的结构，常用它来遍历数据，<strong><code>range</code>能够感知channel的关闭，当channel被发送数据的协程关闭时，range就会结束</strong>，接着退出for循环。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/12/02/golang-exit-goroutine-in-3-ways/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/11/28/golang-pipeline-fan-model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -802,165 +954,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/10/24/go-handle-error/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/10/24/go-handle-error/" class="post-title-link" itemprop="url">如何优雅的处理Golang错误</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-10-24 14:38:41" itemprop="dateCreated datePublished" datetime="2018-10-24T14:38:41+08:00">2018-10-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在看《Go入门指南》的<a href="https://www.kancloud.cn/kancloud/the-way-to-go/81402" target="_blank" rel="noopener">一种用闭包处理错误的模式</a>时，里面提到了一种错误的优雅处理方式，减少我们重复写<code>if err:=f(); err !=  nil{}</code>式的代码，感觉很心动，做了下测试，结论如下：</p>
-<ol>
-<li>能减少<code>if err</code>式的代码，代码可以变清新整洁。</li>
-<li>使用存在限制：只有当错误需要结束调用时才可以使用这种方法，如果被调用函数返回错误，但调用者函数需处理错误后，向下继续执行，则不能采用这种方法。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/10/24/go-handle-error/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2018/10/18/ethereum-code-event-framework/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/10/18/ethereum-code-event-framework/" class="post-title-link" itemprop="url">以太坊源码分析：事件框架</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-10-18 20:16:01" itemprop="dateCreated datePublished" datetime="2018-10-18T20:16:01+08:00">2018-10-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>过去在学Actor模型的时候，就认为异步消息是相当的重要，在华为的时候，也深扒了一下当时产品用的消息模型，简单实用，支撑起了很多模块和业务，但也有一个缺点是和其他的框架有耦合，最近看到以太坊的事件框架，同样简单简洁，理念很适合初步接触事件框架的同学，写文介绍一下。</p>
-<p>以太坊的事件框架是一个单独的基础模块，存在于目录<code>go-ethereum/event</code>中，它有2中独立的事件框架实现，老点的叫<code>TypeMux</code>，已经基本弃用，新的叫<code>Feed</code>，当前正在广泛使用。</p>
-<p><code>TypeMux</code>和<code>Feed</code>还只是简单的事件框架，与Kafka、RocketMQ等消息系统相比，是非常的传统和简单，但是<code>TypeMux</code>和<code>Feed</code>的简单简洁，已经很好的支撑以太坊的上层模块，这是当下最好的选择。</p>
-<p><code>TypeMux</code>和<code>Feed</code>各有优劣，最优秀的共同特点是，他们只依赖于Golang原始的包，完全与以太坊的其他模块隔离开来，也就是说，你完全可以把这两个事件框架用在自己的项目中。</p>
-<p><code>TypeMux</code>的特点是，你把所有的订阅塞给它就好，事件来了它自会通知你，但有可能会阻塞，通知你不是那么及时，甚至过了一段挺长的时间。</p>
-<p><code>Feed</code>的特点是，它通常不存在阻塞的情况，会及时的把事件通知给你，但需要你为<strong>每类事件</strong>都建立一个Feed，然后不同的事件去不同的Feed上订阅和发送，这其实挺烦人的，如果你用错了Feed，会导致panic。</p>
-<p>接下来，介绍下这种简单事件框架的抽象模型，然后再回归到以太坊，介绍下<code>TypeMux</code>和<code>Feed</code>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/10/18/ethereum-code-event-framework/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1027,13 +1025,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-count">122</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">68</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1192,6 +1190,19 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'default',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   

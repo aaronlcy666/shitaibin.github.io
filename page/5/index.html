@@ -196,6 +196,313 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/06/09/golang-first-class-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/06/09/golang-first-class-function/" class="post-title-link" itemprop="url">First class function in Go</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-06-09 22:00:26" itemprop="dateCreated datePublished" datetime="2019-06-09T22:00:26+08:00">2019-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="http://img.lessisbetter.site/2019-06-09-photo.jpeg" alt="合照"></p>
+<p>6月2日Go语言中文网在杭州举办了线下的MeetUp活动，这次活动办很成功，感谢站长polaris在杭州举办活动的提议，感谢Seekload的筹备与主持，感谢Aaron提供场地，感谢所有到场者的技术经验分享，没有你们就没有这次精彩的活动。</p>
+<p>在活动上，我做了个主题分享，今天把分享整理成文章，分享给学习Go语言的各位朋友。</p>
+<p>参加本次活动的朋友，大多是刚接触Go，少数几个朋友把玩Go 2~3年了，所以我把主题定位到能让所有人听懂的主题。另外，大家所处行业各有不同，这就要求专注介绍Go本身的特性，这才是大家通用的地方。</p>
+<p>最后选题为First class function in Go，这次没有做中文翻译，避免翻译后有误解。这个特性浅显易懂，但掌握Go语言的思维，才能把它用好。</p>
+<p>线下分享后，证明选题选对了，大家都能听懂，所以现在不了解First class function的朋友不用着急，后面我会层层推进的方式介绍，相信你一定能理解，那就进入正文吧。</p>
+<h1 id="First-class-function-in-Go"><a href="#First-class-function-in-Go" class="headerlink" title="First class function in Go"></a>First class function in Go</h1><h2 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a>概念介绍</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片04.png" alt="幻灯片04"></p>
+<p>某个编程语言拥有First class function特性指可以把函数作为变量对待。也就说，函数与变量没有差别，它们是一样的，变量出现的地方都可以替换成函数，并且编译也是可以通过的，没有任何语法问题。</p>
+<p>在Go里，变量可以存在于哪些地方？</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片05.png" alt="幻灯片05"></p>
+<p>变量可以被声明、定义，可以使用<code>type</code>创建变量的类型，可以作为函数的入参和返回值，可以存在<code>slice</code>, <code>array</code>, <code>map</code>等数据结构里，可以被动态的创建。</p>
+<p>在Go中，函数也可以被声明、定义，可以使用<code>type</code>创建一个函数类型，可以作为其他函数的入参和返回值，可以保存在其他类型的数据结构里，最后，函数是可以被动态创建的。</p>
+<p>简要归类一下就是下图的样子，除了上面提到的内容，还有匿名函数和闭包，将按下图顺序介绍每一个小特性。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片06.png" alt="幻灯片06"></p>
+<h2 id="定义函数类型"><a href="#定义函数类型" class="headerlink" title="定义函数类型"></a>定义函数类型</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片07.png" alt="幻灯片07"></p>
+<p>使用<code>type</code>定义一个函数类型，<code>type</code>后是类型名称，本例中是<code>Operation</code>，再后面是类型的定义，对于函数而言，被称为signature，即函数签名，这个函数签名表示：Operation类型的函数，它以2个int类型为入参，以1个int为返回值。所有满足该函数签名的函数，都是Operation类型的函数。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片08.png" alt="幻灯片08"></p>
+<p>函数<code>Add</code>和<code>Sub</code>都符合<code>Operation</code>的签名，所以<code>Add</code>和<code>Sub</code>都是<code>Operation</code>类型。</p>
+<h2 id="声明函数类型的变量和为变量赋值"><a href="#声明函数类型的变量和为变量赋值" class="headerlink" title="声明函数类型的变量和为变量赋值"></a>声明函数类型的变量和为变量赋值</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片09.png" alt="幻灯片09"></p>
+<p>变量<code>op</code>是<code>Operation</code>类型的，可以把<code>Add</code>作为值赋值给变量<code>op</code>，执行<code>op</code>等价于执行<code>Add</code>。</p>
+<h2 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h2><p>高阶函数分为函数作为入参和函数作为返回值2部分。</p>
+<h3 id="函数作为其他函数入参"><a href="#函数作为其他函数入参" class="headerlink" title="函数作为其他函数入参"></a>函数作为其他函数入参</h3><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片10.png" alt="幻灯片10"></p>
+<p>定义一个<code>Calculator</code>结构体，它始终保持计算后的结果。</p>
+<p>它有一个方法<code>Do</code>，入参为一个<code>Operation</code>类型的函数<code>op</code>和1个<code>int</code>类型的变量a，使用计算器的值<code>c.v</code>和<code>a</code>作为<code>op</code>的入参，进行指定运算，并把结果保存会<code>c.v</code>。</p>
+<p><code>main</code>中，声明了一个变量<code>calc</code>，<code>calc.v</code>初始值为0，然后运行了加1和减2的操作，加减法的完成使用的我们之前定义的函数<code>Add</code>和<code>Sub</code>。操作等价于：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">calc.v = Add(calc.v, <span class="number">1</span>)</span><br><span class="line">calc.v = Sub(calc.v, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="函数作为返回值-动态创建"><a href="#函数作为返回值-动态创建" class="headerlink" title="函数作为返回值+动态创建"></a>函数作为返回值+动态创建</h3><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片11.png" alt="幻灯片11"></p>
+<p>这次，改变<code>Operation</code>的定义，修改为接收1个<code>int</code>类型的入参，返回1个<code>int</code>类型的返回值。</p>
+<p>同时修改函数<code>Add</code>和<code>Sub</code>，它们接收1个<code>int</code>类型的入参，返回1个<code>Operation</code>类型的函数，这个函数是动态创建出来的。</p>
+<p>以<code>Add</code>为例介绍，在<code>Add</code>里动态创建了一个函数，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数实现了在变量a基础上加b的操作，并返回结果，我们把这个函数赋值给<strong>变量<code>addB</code></strong>，把<code>addB</code>作为返回值返回。</p>
+<p>所以本例实现了以函数作为返回值和动态创建函数。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片12.png" alt="幻灯片12"></p>
+<p><code>Operation</code>，<code>Add</code>和<code>Sub</code>修改后，<code>Calculator</code>也要同步修改，方法<code>Do</code>修改为只接收<code>Operation</code>类型的函数。</p>
+<p><code>main</code>函数里，注意<code>Do</code>的入参：<code>Add(1)</code>，它实现的效果是，创建了1个函数，该函数接收1个值，然后把这个值+1返回，如果用数学表示就是这样：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add(1)</span></span><br><span class="line">add1(x) = x + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>同理，<code>Sub(2)</code>的数学表示如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Sub(2)</span></span><br><span class="line">sub2(x) = x - <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>所以2次<code>Do</code>操作等价于：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// calc.Do(Add(1))</span></span><br><span class="line">calc.v = add1(calc.v)</span><br><span class="line"><span class="comment">// calc.Do(Sub(2))</span></span><br><span class="line">calc.v = sub2(calc.v)</span><br></pre></td></tr></table></figure>
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片13.png" alt="幻灯片13"></p>
+<p>上图左边是普通函数，<code>func</code>后为函数名，然后为函数签名。右边只有<code>func</code>和函数签名，缺少函数名，右边的情况为匿名函数。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片14.png" alt="幻灯片14"></p>
+<p>以<code>Add</code>函数其中定义的函数为例：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这就是1个匿名函数，它没有名字。<strong><code>addB</code>并不是函数的名字，只是1个变量名而已，只不过这个变量名的类型是没有显示定义出来的</strong>。</p>
+<p><code>Add</code>通常简写为右边的形式。</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片15.png" alt="幻灯片15"></p>
+<p>很多人搞不清什么是匿名函数，什么是闭包，所以这里分开介绍这2个概念。</p>
+<p><strong>闭包指有权访问另一个函数作用域中的变量的函数</strong>。大白话就是，可以创建1个函数，它可以访问其他函数遍历，但不需要传值。</p>
+<p>仍然是<code>Add</code>函数为例，比如匿名函数里直接使用了变量b，该匿名函数也是闭包函数。</p>
+<p>闭包的特性注定了，闭包函数要定义在一个函数里面，定义在一个函数里面又只能是匿名函数。</p>
+<p><strong>那，匿名函数和闭包是不是就等价了？</strong></p>
+<p><strong>No，一个函数可以是匿名函数，但不是闭包函数，因为闭包有时是有副作用的。</strong></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片16.png" alt="幻灯片16"></p>
+<p>我们想并发的把sl中的值打印出来，结果为何会是右边这样？</p>
+<p>因为并发的匿名函数，使用的是<code>test1</code>中的<code>i,v</code>，即这是闭包函数，所有的goroutine都共享这2个值，并且启动1个goroutine后，这2个值变为下一个位置的值。你运行的结果也许不是9 9 9….，因为这个goroutine的调度有关。</p>
+<p>如何才能符合预期的打印？只使用匿名函数进行传值，不使用闭包。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片17.png" alt="幻灯片17"></p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><p>接下来以一个实际的场景，和3种实现版本看如何用Go的思维去解决问题。</p>
+<h2 id="场景介绍"><a href="#场景介绍" class="headerlink" title="场景介绍"></a>场景介绍</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片19.png" alt="幻灯片19"></p>
+<p>做Go语言工作，尤其是跟网络打交道的工作，连接管理是逃不开的。我做区块链相关的技术工作，区块链中也有网络管理，所以我就以区块链的网络管理为场景进行介绍，但不涉及具体的技术细节，大家莫慌，只需要理解2个概念就行。</p>
+<p>区块链是构建在P2P网络之上，在P2P网络中：</p>
+<ol>
+<li>一个节点即可以是服务器也可以是客户端，被称为<strong>Host</strong>，</li>
+<li>和本节点连接的所有节点都被称为<strong>Peer</strong>。</li>
+</ol>
+<p><strong>具体的场景是：Host需要保存所有建立连接的Peer，并对这些Peer进行维护：增加和删除Peer，并且提供Peer的查询和向所有Peer广播消息的接口</strong>。</p>
+<p>针对这个问题场景，我写了3个版本的Demo，我们依次来介绍，再看的时候，可以思考其中的不同。</p>
+<h2 id="版本1"><a href="#版本1" class="headerlink" title="版本1"></a>版本1</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片20.png" alt="幻灯片20"></p>
+<p>先看<code>Peer</code>定义，<code>Peer</code>中保存了<code>ID</code>，我们可以通过<code>ID</code>来表示全网中所有的节点，<code>Peer</code>中还有其他字段，比如网络连接、地址、协议版本等信息，此处已经省略掉。</p>
+<p><code>Peer</code>有一个<code>WriteMsg</code>的方法，实现向该<code>Peer</code>发送消息的功能，例子中使用打印替代。</p>
+<p><strong>Peer的定义在3个版本中都不会发生变化，所以后面就不再展示</strong>。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片21.png" alt="幻灯片21"></p>
+<p><code>Host</code>通过<code>peers</code>保存了所有连接的Peer，可以通过<code>Peer.ID</code>对Peer进行索引。Peer的管理是并发场景，比如，我们可能同时接收到多个Peer的连接，又同时需要向所有Peer广播消息，需要对<code>peers</code>加锁保护。最后，我们省略了<code>Host</code>的其他字段。</p>
+<p><code>NewHost()</code>用来创建一个<code>Host</code>对象，用来代表当前节点。</p>
+<p><em>友情提醒：<code>Host</code>在每一个版本都会不同。</em></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片22.png" alt="幻灯片22"></p>
+<p><code>Host</code>有4个方法，分别是：</p>
+<ol>
+<li><code>AddPeer</code>: 增加1个Peer。</li>
+<li><code>RemovePeer</code>: 删除1个Peer。</li>
+<li><code>GetPeer</code>: 通过Peer.ID查询1个Peer。</li>
+<li><code>BroadcastMsg</code>: 向所有Peer发送消息。</li>
+</ol>
+<p>每一个方法都需要获取<code>lock</code>，然后访问<code>peers</code>，如果只读取<code>peers</code>则使用读锁。</p>
+<p><strong>第1个版本已经介绍完了，大家可以思考一下版本1的缺点。</strong></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片23.png" alt="幻灯片23"></p>
+<p>第1个版本跟其他语言实现其实没有本质区别，用C++、Java等也能写出上面逻辑的代码，只不过这个是Go语言实现的罢了。</p>
+<p><strong>这个版本是一个communicate by sharing memory的体现</strong>，具体来讲，每个goroutine都是1个实体，它们同时运行，调用<code>Host</code>的不同方法来访问<code>peers</code>，只有拿到当前<code>lock</code>的goroutine才能访问peers，仿佛当前goroutine在同其他goroutine讲：我现在有访问权，你们等一下。本质上就是，通过共享<code>Host.lock</code>这块内存，各goroutine进行交流（表明自己拥有访问权）。</p>
+<h2 id="版本2"><a href="#版本2" class="headerlink" title="版本2"></a>版本2</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片24.png" alt="幻灯片24"></p>
+<p>很多Go老手都听过这句话了，这是Go的“联合创始人”<strong>Rob Pike</strong>某个会议上说的。</p>
+<p><strong>在Go中，推荐使用CSP实现并发，而不是习惯性的使用Lock，使用channel传递数据，达到多goroutine间共享数据的目的，也就是share memory by communicating</strong>。</p>
+<p>所以，我们版本2，就使用channel的方式，来实现Peer的管理。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片25.png" alt="幻灯片25"></p>
+<p>在版本1中，<code>peers</code>是大家都想访问的，并且Host有4个方法，画到了上面的图中，我们看下怎么用CSP实现。</p>
+<p><code>peers</code>需要在单独的goroutine中，其他的4个方法在其他的goroutine中调用，它们之间进行通信。</p>
+<p>我对使用CSP有一个好的实践，就是把数据流动画出来，并把要流动的数据标上，然后那些数据流动的线条，就是channel，线条上的数据就是channel要传递的数据，图中也把这些线条和数据标上了。具体的细节，可以识别图片中的二维码，看看这篇老文，还有就是并不是所有的并发场景都适合使用channel，有些用锁更好，这篇文章也有介绍。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片26.png" alt="幻灯片26"></p>
+<p>重新定义Host，增加了4个channel，从上到下分别用于增加Peer、广播消息、删除Peer和停止Host。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片27.png" alt="幻灯片27"></p>
+<p>Host增加了2个方法：</p>
+<ol>
+<li><code>Start()</code>用于启动1个goroutine运行<code>loop()</code>，<code>loop</code>保存所有的<code>peers</code>。</li>
+<li><code>Stop()</code>用于关闭Host，让<code>loop</code>退出。</li>
+</ol>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片28.png" alt="幻灯片28"></p>
+<p>左边是<code>loop()</code>的实现，它从4个channel里接收数据，然后做不同的操作。</p>
+<p>右边是<code>AddPeer</code>， <code>RemovePeer</code>, <code>BroadcastMsg</code>的实现。</p>
+<p>利用1分钟的事件，左右两边对照着看，理解增加1个Peer的全过程。</p>
+<p>这就是版本2的全部实现了，思考一下版本2有什么问题，原因是啥？</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片29.png" alt="幻灯片29"></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片30.png" alt="幻灯片30"></p>
+<p>问题就是我们没有实现<code>GetPeer</code>这个方法，聪明的你一定在Host的定义就发现了，只有增加、删除和广播消息的channel。</p>
+<p><strong>没能实现<code>GetPeer</code>的原因下图中进行了介绍，你有没有解决办法？</strong></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片31.png" alt="幻灯片31"></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片32.png" alt="幻灯片32"></p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片33.png" alt="幻灯片33"></p>
+<p>可能会有很多goroutine调用<code>GetPeer</code>，我们需要向每一个goroutine发送结果，这就需要每一个goroutine都需要对应的1个接收结果的channel。</p>
+<p>所以<strong>我们可以增加1个query channel，channel里传递Peer.ID和接收结果的channel。</strong></p>
+<p><strong>还有没有其他办法？</strong>我们今天的主题<code>First class function</code>还有入场，你有办法用这个特性实现吗？</p>
+<h2 id="版本3"><a href="#版本3" class="headerlink" title="版本3"></a>版本3</h2><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片34.png" alt="幻灯片34"></p>
+<p>First class function: 函数可以向变量一样使用。那channel里面是不是可以传递函数呢？当然可以。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片35.png" alt="幻灯片35"></p>
+<p>我们可以建立一个channel，用这个channel向<code>loop</code>传递操作<code>peers</code>的函数，所以函数的入参是<code>peers map[string]*Peer</code>，无需返回值，因为函数是在<code>loop</code>里面调用的，调用<code>AddPeer</code>等函数的goroutine是接收不到返回值的。我们把这个类型的函数定义为<code>Operation</code>。</p>
+<p><code>Host</code>修改为只有2个channel，<code>stop</code>功能如版本2，<code>opCh</code>用来传递<code>Operation</code>类型的函数。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片36.png" alt="幻灯片36"></p>
+<p><code>loop</code>函数可以简化为左边的形式了，右边是<code>AddPeer</code>和<code>RemovePeer</code>，以<code>AddPeer</code>为例进行介绍，创建了一个匿名函数，向<code>peers</code>里增加<code>p</code>，然后把函数发送到<code>opCh</code>。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片37.png" alt="幻灯片37"></p>
+<p><code>BroadcastMsg</code>与<code>AddPeer</code>类似。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片38.png" alt="幻灯片38"></p>
+<p>我们重点看一下<code>GetPeer</code>，创建了<code>retCh</code>用于接收查询的结果，创建了匿名函数进行查询，并把查询结果发送到<code>retCh</code>，然后启动1个goroutine把匿名函数写入到<code>opCh</code>，最后等待从<code>retCh</code>读取查询结果。</p>
+<p>这样就实现了向每个调用<code>GetPeer</code>的goroutine发送查询结果。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片40.png" alt="幻灯片40"></p>
+<p>总结都在上面了，不多说了。</p>
+<p><strong>友情提醒：这3种方式本身并无优劣之分，具体要用那种实现，要依赖自身的实际场景进行取舍。</strong></p>
+<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><p>识别下图二维码。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片41.png" alt="幻灯片41"></p>
+<h2 id="PPT下载"><a href="#PPT下载" class="headerlink" title="PPT下载"></a>PPT下载</h2><p>下载链接：<a href="http://img.lessisbetter.site/Go%E8%AF%AD%E8%A8%80%E6%80%9D%E7%BB%B4First-class-function.pdf" target="_blank" rel="noopener">http://img.lessisbetter.site/Go%E8%AF%AD%E8%A8%80%E6%80%9D%E7%BB%B4First-class-function.pdf</a></p>
+<p>或<strong>阅读原文</strong>下载。</p>
+<h1 id="云象介绍"><a href="#云象介绍" class="headerlink" title="云象介绍"></a>云象介绍</h1><p>广告时间，云象区块链持续招人，欢迎来撩。</p>
+<p><img src="http://img.lessisbetter.site/2019-06-09-幻灯片42.png" alt="幻灯片42"></p>
+<h1 id="活动总结"><a href="#活动总结" class="headerlink" title="活动总结"></a>活动总结</h1><p>最后奉上Seekload关于本次活动的总结：<a href="https://mp.weixin.qq.com/s/wfDW4cKjzuEE1K94anuImA" target="_blank" rel="noopener">Gopher杭州线下面基第一期</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/18/linux-simulate-bad-network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/18/linux-simulate-bad-network/" class="post-title-link" itemprop="url">Linux内网测试环境模拟网络丢包和延时</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-05-18 15:37:05" itemprop="dateCreated datePublished" datetime="2019-05-18T15:37:05+08:00">2019-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>本文源自同事分享，在此基础之上做简要修改而成。</p>
+</blockquote>
+<p>Linux下有2traffic control（简写TC）和netem这2个工具。Netem 是 Linux 2.6 及以上内核版本提供的一个网络模拟功能模块，该功能模块可以用来在性能良好的局域网中，模拟出复杂的互联网传输性能，诸如低带宽、传输延迟、丢包等等情况。使用 Linux 2.6 (或以上) 版本内核的很多发行版 Linux 都开启了该内核功能，比如Fedora、Ubuntu、Redhat、OpenSuse、CentOS、Debian等等。TC可以用来控制 netem 的工作模式，可完成如下功能：（故障模拟） 模拟时延，丢包，重复包，乱序，控制带宽等。</p>
+<p>本文介绍简单的使用方法，更详细的介绍及用法见：<a href="https://wiki.linuxfoundation.org/networking/netem" target="_blank" rel="noopener">wiki:network emulation</a>。</p>
+<h1 id="TC实现原理"><a href="#TC实现原理" class="headerlink" title="TC实现原理"></a>TC实现原理</h1><p>TC用于Linux内核的流量控制，主要是通过在输出端口处建立一个队列来实现流量控制。接收包从输入接口（Input Interface）进来后，经过流量限制（Ingress Policing）丢弃不符合规定的数据包，由输入多路分配器（Input De-Multiplexing）进行判断选择：如果接收包的目的是本主机，那么将该包送给上层处理；否则需要进行转发，将接收包交到转发块（Forwarding Block）处理。转发块同时也接收本主机上层（TCP、UDP等）产生的包。转发块通过查看路由表，决定所处理包的下一跳。然后，对包进行排列以便将它们传送到输出接口（Output Interface）。一般我们只能限制网卡发送的数据包，不能限制网卡接收的数据包，所以我们可以通过改变发送次序来控制传输速率。Linux流量控制主要是在输出接口排列时进行处理和实现的。</p>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>以下模拟命令可配合使用，实现即延迟又丢包等情况。</p>
+<h2 id="模拟延迟传输"><a href="#模拟延迟传输" class="headerlink" title="模拟延迟传输"></a>模拟延迟传输</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem delay 100ms</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为延迟100毫秒发送。<br>更真实的情况下，延迟值不会这么精确，会有一定的波动，我们可以用下面的情况来模拟出带有波动性的延迟值：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem delay 100ms 50ms</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为延迟 100ms ± 50ms （50 ~ 150 ms 之间的任意值）发送。<br>还可以更进一步加强这种波动的随机性：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem delay 100ms 50ms 30%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为 100ms ，同时，大约有 30% 的包会延迟 ± 50ms 发送。
+　　</p>
+<h2 id="模拟网络丢包"><a href="#模拟网络丢包" class="headerlink" title="模拟网络丢包"></a>模拟网络丢包</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem loss 10%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为随机丢掉 10% 的数据包。<br>也可以设置丢包的成功率：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem loss 10% 30%</span><br></pre></td></tr></table></figure>
+<h2 id="模拟包重复"><a href="#模拟包重复" class="headerlink" title="模拟包重复"></a>模拟包重复</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem duplicate 10%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为随机产生 10% 的重复数据包 。</p>
+<h2 id="模拟包损坏"><a href="#模拟包损坏" class="headerlink" title="模拟包损坏"></a>模拟包损坏</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root netem corrupt 1%</span><br></pre></td></tr></table></figure>
+<h2 id="模拟包乱序"><a href="#模拟包乱序" class="headerlink" title="模拟包乱序"></a>模拟包乱序</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc change dev eth0 root netem delay 10ms reorder 10% 50%</span><br></pre></td></tr></table></figure>
+<p>该命令将 eth0 网卡的传输设置为:有 10% 的数据包（50%相关）会被立即发送，其他的延迟 10 秒。</p>
+<h2 id="删除设备及显示设置"><a href="#删除设备及显示设置" class="headerlink" title="删除设备及显示设置"></a>删除设备及显示设置</h2><p>显示配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc sh dev eth0</span><br></pre></td></tr></table></figure>
+<p>删除配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qd del dev eth0 root</span><br></pre></td></tr></table></figure>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://www.cnblogs.com/fsw-blog/p/4788036.html" target="_blank" rel="noopener">Linux网络流量控制工具—Netem</a></p>
+<blockquote>
+<ol>
+<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
+<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
+<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/05/18/linux-simulate-bad-network/">http://lessisbetter.site/2019/05/18/linux-simulate-bad-network/</a></li>
+</ol>
+</blockquote>
+<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1333,263 +1640,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/12/distribute-system-network-partition/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/12/distribute-system-network-partition/" class="post-title-link" itemprop="url">分布式系统基础：网络分区</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-12 14:42:01" itemprop="dateCreated datePublished" datetime="2019-03-12T14:42:01+08:00">2019-03-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>分布式系统永远离不开对网络分区的考虑，大名鼎鼎的CAP定理更是指出有P的情况下，只能A和C二选一，虽然CAP的提出人Brewer在2012年又写文章说大家对CAP是有误解的，尤其是三选二，但这不在讨论范围，我们只探究下网络分区。</p>
-<p>下图来自Wiki。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-Network_Partition_for_Optimization-2.png" alt=""></p>
-<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>WIKI给的定义是：<strong>网络分区指由于网络设备的failure，造成网络分裂为多个独立的组</strong>。</p>
-<p>Gilbert和Lynch在论文中定义分区容忍性的：<strong>网络允许丢失一个节点发给另一个节点的任意多的消息</strong>。</p>
-<p>我认为Gilbert和Lynch给的更有通用意义，因为造成网络分区的不仅仅是网络设备的failure，两个节点无法再交互的时候就形成分区了，分区原因有：</p>
-<ul>
-<li>网络设备failure：比如网线断了，交换机故障了。</li>
-<li>节点failure：节点的软件或者硬件坏了，节点成为故障节点。当故障的节点非常多，故障节点和正常节点就不在1个分区，如果正常的节点数量达不到quorum，分布式系统无法正常运作。</li>
-</ul>
-<p>所以我认为网络分区的原因即有Network failure又有Node failure。</p>
-<h3 id="网络分区和网络模型"><a href="#网络分区和网络模型" class="headerlink" title="网络分区和网络模型"></a>网络分区和网络模型</h3><p><img src="http://img.lessisbetter.site/2019-03-network-partion-1.jpg" alt=""></p>
-<p>我们考虑下网络分区的检测。</p>
-<ul>
-<li>同步网络下，橘黄色节点和青色节点间的通信中断，就当网线断裂好了，节点向对方发送的消息如果在超时时间内没有收到响应，就可以认为消息丢失，形成了网络分区。</li>
-<li>异步网络下，通信差是一种常态，消息的传递是非常不可靠的，消息无限延时，也可能丢失，根本无法确认消息是否到达对方节点，所以也无法确认/检测是否形成分区。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/10/golang-scheduler-1-history/" class="post-title-link" itemprop="url">Go调度器系列（1）起源</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-03-10 17:25:57" itemprop="dateCreated datePublished" datetime="2019-03-10T17:25:57+08:00">2019-03-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-13 16:18:50" itemprop="dateModified" datetime="2019-08-13T16:18:50+08:00">2019-08-13</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>如果把语言比喻为武侠小说中的武功，如果只是会用，也就是达到四五层，如果用的熟练也就六七层，如果能见招拆招也得八九层，如果你出神入化，立于不败之地十层。</p>
-<p>如果你想真正掌握一门语言的，怎么也得八层以上，需要你深入了解这门语言方方面面的细节。</p>
-<p>希望以后对Go语言的掌握能有八九层，怎么能不懂调度器！？</p>
-<p>Google、百度、微信搜索了许多Go语言调度的文章，这些文章上来就讲调度器是什么样的，它由哪些组成，它的运作原理，搞的我只能从这些零散的文章中形成调度器的“概貌”，这是我想要的结果，但这还不够。</p>
-<p>学习不仅要知其然，还要知其所以然。</p>
-<p>学习之前，先学知识点的历史，再学知识，这样你就明白，为什么它是当下这个样子。</p>
-<p>所以，我打算写一个goroutine调度器的系列文章，从历史背景讲起，循序渐进，希望大家能对goroutine调度器有一个全面的认识。</p>
-<p>这篇文章介绍调度器相关的历史背景，请慢慢翻阅。</p>
-<h3 id="远古时代"><a href="#远古时代" class="headerlink" title="远古时代"></a>远古时代</h3><p><img src="http://img.lessisbetter.site/2019-03-Eniac.jpg" alt=""></p>
-<p>上面这个大家伙是ENIAC，它诞生在宾夕法尼亚大学，是世界第一台真正的通用计算机，和现代的计算机相比，它是相当的“笨重”，它的计算能力，跟现代人手普及的智能手机相比，简直是一个天上一个地下，ENIAC在地下，智能手机在天上。</p>
-<p>它上面没有操作系统，更别提进程、线程和协程了。</p>
-<h3 id="进程时代"><a href="#进程时代" class="headerlink" title="进程时代"></a>进程时代</h3><p><img src="http://img.lessisbetter.site/2019-03-apple-II.jpeg" alt=""></p>
-<p>后来，现代化的计算机有了操作系统，每个程序都是一个进程，但是操作系统在一段时间只能运行一个进程，直到这个进程运行完，才能运行下一个进程，这个时期可以成为<strong>单进程时代——串行时代</strong>。</p>
-<p>和ENIAC相比，单进程是有了几万倍的提度，但依然是太慢了，比如进程要读数据阻塞了，CPU就在哪浪费着，伟大的程序员们就想了，不能浪费啊，<strong>怎么才能充分的利用CPU呢？</strong></p>
-<p>后来操作系统就具有了<strong>最早的并发能力：多进程并发</strong>，当一个进程阻塞的时候，切换到另外等待执行的进程，这样就能尽量把CPU利用起来，CPU就不浪费了。</p>
-<h3 id="线程时代"><a href="#线程时代" class="headerlink" title="线程时代"></a>线程时代</h3><p><img src="http://img.lessisbetter.site/2019-03-Macintosh.jpeg" alt=""></p>
-<p>多进程真实个好东西，有了对进程的调度能力之后，伟大的程序员又发现，进程拥有太多资源，在创建、切换和销毁的时候，都会占用很长的时间，CPU虽然利用起来了，但CPU有很大的一部分都被用来进行进程调度了，<strong>怎么才能提高CPU的利用率呢？</strong></p>
-<p>大家希望能有一种轻量级的进程，调度不怎么花时间，这样CPU就有更多的时间用在执行任务上。</p>
-<p>后来，操作系统支持了线程，线程在进程里面，线程运行所需要资源比进程少多了，跟进程比起来，切换简直是“不算事”。</p>
-<p>一个进程可以有多个线程，CPU在执行调度的时候切换的是线程，如果下一个线程也是当前进程的，就只有线程切换，“很快”就能完成，如果下一个线程不是当前的进程，就需要切换进程，这就得费点时间了。</p>
-<p>这个时代，<strong>CPU的调度切换的是进程和线程</strong>。多线程看起来很美好，但实际多线程编程却像一坨屎，一是由于线程的设计本身有点复杂，而是由于需要考虑很多底层细节，比如锁和冲突检测。</p>
-<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><p><img src="http://img.lessisbetter.site/2019-macbook-steve.jpeg" alt=""></p>
-<p>多进程、多线程已经提高了系统的并发能力，但是在当今互联网高并发场景下，为每个任务都创建一个线程是不现实的，因为会消耗大量的内存（每个线程的内存占用级别为MB），线程多了之后调度也会消耗大量的CPU。伟大的程序员们有开始想了，<strong>如何才能充分利用CPU、内存等资源的情况下，实现更高的并发</strong>？</p>
-<p>既然线程的资源占用、调度在高并发的情况下，依然是比较大的，是否有一种东西，更加轻量？</p>
-<p>你可能知道：线程分为内核态线程和用户态线程，用户态线程需要绑定内核态线程，CPU并不能感知用户态线程的存在，它只知道它在运行1个线程，这个线程实际是内核态线程。</p>
-<p><strong>用户态线程实际有个名字叫协程（co-routine）</strong>，为了容易区分，我们使用协程指用户态线程，使用线程指内核态线程。</p>
-<blockquote>
-<p>User-level threads, Application-level threads, Green threads都指一样的东西，就是不受OS感知的线程，如果你Google coroutine相关的资料，会看到它指的就是用户态线程，在<a href="https://en.wikipedia.org/wiki/Green_threads" target="_blank" rel="noopener">Green threads的维基百科</a>里，看Green threads的实现列表，你会看到好很多coroutine实现，比如Java、Lua、Go、Erlang、Common Lisp、Haskell、Rust、PHP、Stackless Python，所以，我认为用户态线程就是协程。</p>
-</blockquote>
-<p>协程跟线程是有区别的，线程由CPU调度是抢占式的，<strong>协程由用户态调度是协作式的</strong>，一个协程让出CPU后，才执行下一个协程。</p>
-<p>协程和线程有3种映射关系：</p>
-<ul>
-<li>N:1，N个协程绑定1个线程，优点就是<strong>协程在用户态线程即完成切换，不会陷入到内核态，这种切换非常的轻量快速</strong>。但也有很大的缺点，1个进程的所有协程都绑定在1个线程上，一是某个程序用不了硬件的多核加速能力，二是一旦某协程阻塞，造成线程阻塞，本进程的其他协程都无法执行了，根本就没有并发的能力了。</li>
-<li>1:1，1个协程绑定1个线程，这种最容易实现。协程的调度都由CPU完成了，不存在N:1缺点，但有一个缺点是协程的创建、删除和切换的代价都由CPU完成，有点略显昂贵了。</li>
-<li>M:N，M个协程绑定N个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂。</li>
-</ul>
-<p>协程是个好东西，不少语言支持了协程，比如：Lua、Erlang、Java（C++即将支持），就算语言不支持，也有库支持协程，比如C语言的coroutine（风云大牛作品）、Kotlin的kotlinx.coroutines、Python的gevent。</p>
-<h3 id="goroutine"><a href="#goroutine" class="headerlink" title="goroutine"></a>goroutine</h3><p><strong>Go语言的诞生就是为了支持高并发</strong>，有2个支持高并发的模型：CSP和Actor。<a href="https://golang.org/doc/faq" target="_blank" rel="noopener">鉴于Occam和Erlang都选用了CSP</a>(来自Go FAQ)，并且效果不错，Go也选了CSP，但与前两者不同的是，Go把channel作为头等公民。</p>
-<p>就像前面说的多线程编程太不友好了，<strong>Go为了提供更容易使用的并发方法，使用了goroutine和channel</strong>。goroutine来自协程的概念，让一组可复用的函数运行在一组线程之上，即使有协程阻塞，该线程的其他协程也可以被<code>runtime</code>调度，转移到其他可运行的线程上。最关键的是，程序员看不到这些底层的细节，这就降低了编程的难度，提供了更容易的并发。</p>
-<p>Go中，协程被称为goroutine（Rob Pike说goroutine不是协程，因为他们并不完全相同），它非常轻量，一个goroutine只占几KB，并且这几KB就足够goroutine运行完，这就能在有限的内存空间内支持大量goroutine，支持了更多的并发。虽然一个goroutine的栈只占几KB，但实际是可伸缩的，如果需要更多内容，<code>runtime</code>会自动为goroutine分配。</p>
-<h3 id="Go语言的老调度器"><a href="#Go语言的老调度器" class="headerlink" title="Go语言的老调度器"></a>Go语言的老调度器</h3><p>终于来到了Go语言的调度器环节。</p>
-<p><strong>调度器的任务是在用户态完成goroutine的调度，而调度器的实现好坏，对并发实际有很大的影响，并且Go的调度器就是M:N类型的，实现起来也是最复杂</strong>。</p>
-<p>现在的Go语言调度器是2012年重新设计的（<a href="https://golang.org/s/go11sched" target="_blank" rel="noopener">设计方案</a>），在这之前的调度器称为老调度器，老调度器的实现不太好，存在性能问题，所以用了4年左右就被替换掉了，老调度器大概是下面这个样子：</p>
-<p><img src="http://img.lessisbetter.site/2019-03-old-scheduler.png" alt=""></p>
-<p>最下面是操作系统，中间是runtime，runtime在Go中很重要，许多程序运行时的工作都由runtime完成，调度器就是runtime的一部分，虚线圈出来的为调度器，它有两个重要组成：</p>
-<ul>
-<li><strong>M，代表线程</strong>，它要运行goroutine。</li>
-<li>Global G Queue，是全局goroutine队列，所有的goroutine都保存在这个队列中，<strong>goroutine用G进行代表</strong>。</li>
-</ul>
-<p>M想要执行、放回G都必须访问全局G队列，并且M有多个，即多线程访问同一资源需要加锁进行保证互斥/同步，所以全局G队列是有互斥锁进行保护的。</p>
-<p>老调度器有4个缺点：</p>
-<ol>
-<li>创建、销毁、调度G都需要每个M获取锁，这就形成了<strong>激烈的锁竞争</strong>。</li>
-<li>M转移G会造成<strong>延迟和额外的系统负载</strong>。比如当G中包含创建新协程的时候，M创建了G’，为了继续执行G，需要把G’交给M’执行，也造成了<strong>很差的局部性</strong>，因为G’和G是相关的，最好放在M上执行，而不是其他M’。</li>
-<li>M中的mcache是用来存放小对象的，mcache和栈都和M关联造成了大量的内存开销和差的局部性。</li>
-<li>系统调用导致频繁的线程阻塞和取消阻塞操作增加了系统开销。</li>
-</ol>
-<h3 id="Go语言的新调度器"><a href="#Go语言的新调度器" class="headerlink" title="Go语言的新调度器"></a>Go语言的新调度器</h3><p>面对以上老调度的问题，Go设计了新的调度器，设计文稿：<a href="https://golang.org/s/go11sched" target="_blank" rel="noopener">https://golang.org/s/go11sched</a></p>
-<p>新调度器引入了：</p>
-<ul>
-<li><strong>P</strong>：<strong>Processor，它包含了运行goroutine的资源</strong>，如果线程想运行goroutine，必须先获取P，P中还包含了可运行的G队列。</li>
-<li>work stealing：当M绑定的P没有可运行的G时，它可以从其他运行的M’那里偷取G。</li>
-</ul>
-<p>现在，<strong>调度器中3个重要的缩写你都接触到了，所有文章都用这几个缩写，请牢记</strong>：</p>
-<ul>
-<li><strong>G</strong>: goroutine </li>
-<li><strong>M</strong>: 工作线程 </li>
-<li><strong>P</strong>: 处理器，它包含了运行Go代码的资源，M必须和一个P关联才能运行G。 </li>
-</ul>
-<p>这篇文章的目的不是介绍调度器的实现，而是调度器的一些理念，帮助你后面更好理解调度器的实现，所以我们回归到调度器设计思想上。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-thoughts-of-scheduler.png" alt="thoughts-of-scheduler"></p>
-<p>调度器的有<strong>两大思想</strong>：</p>
-<p><strong>复用线程</strong>：协程本身就是运行在一组线程之上，不需要频繁的创建、销毁线程，而是对线程的复用。在调度器中复用线程还有2个体现：1）work stealing，当本线程无可运行的G时，尝试从其他线程绑定的P偷取G，而不是销毁线程。2）hand off，当本线程因为G进行系统调用阻塞时，线程释放绑定的P，把P转移给其他空闲的线程执行。</p>
-<p><strong>利用并行</strong>：GOMAXPROCS设置P的数量，当GOMAXPROCS大于1时，就最多有GOMAXPROCS个线程处于运行状态，这些线程可能分布在多个CPU核上同时运行，使得并发利用并行。另外，GOMAXPROCS也限制了并发的程度，比如GOMAXPROCS = 核数/2，则最多利用了一半的CPU核进行并行。</p>
-<p>调度器的<strong>两小策略</strong>：</p>
-<p><strong>抢占</strong>：在coroutine中要等待一个协程主动让出CPU才执行下一个协程，在Go中，一个goroutine最多占用CPU 10ms，防止其他goroutine被饿死，这就是goroutine不同于coroutine的一个地方。</p>
-<p><strong>全局G队列</strong>：在新的调度器中依然有全局G队列，但功能已经被弱化了，当M执行work stealing从其他P偷不到G时，它可以从全局G队列获取G。</p>
-<p>上面提到并行了，关于并发和并行再说一下：Go创始人Rob Pike一直在强调go是并发，不是并行，因为Go做的是在一段时间内完成几十万、甚至几百万的工作，而不是同一时间同时在做大量的工作。<strong>并发可以利用并行提高效率，调度器是有并行设计的</strong>。</p>
-<p>并行依赖多核技术，每个核上在某个时间只能执行一个线程，当我们的CPU有8个核时，我们能同时执行8个线程，这就是并行。</p>
-<p><img src="http://img.lessisbetter.site/2019-03-concurrency-parallelism.png" alt=""></p>
-<h3 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h3><p>这篇文章的主要目的是为后面介绍Go语言调度器做铺垫，由远及近的方式简要介绍了多进程、多线程、协程、并发和并行有关的“史料”，希望你了解为什么Go采用了goroutine，又为何调度器如此重要。</p>
-<p>如果你等不急了，想了解Go调度器相关的原理，看下这些文章：</p>
-<ul>
-<li>设计方案：<a href="https://golang.org/s/go11sched" target="_blank" rel="noopener">https://golang.org/s/go11sched</a></li>
-<li>代码中关于调度器的描述：<a href="https://golang.org/src/runtime/proc.go" target="_blank" rel="noopener">https://golang.org/src/runtime/proc.go</a></li>
-<li>引用最多的调度器文章：<a href="https://morsmachine.dk/go-scheduler" target="_blank" rel="noopener">https://morsmachine.dk/go-scheduler</a></li>
-<li>kavya的PPT，目前看到的讲调度最好的PPT：<a href="https://speakerdeck.com/kavya719/the-scheduler-saga" target="_blank" rel="noopener">https://speakerdeck.com/kavya719/the-scheduler-saga</a></li>
-<li>work stealing论文：<a href="http://supertech.csail.mit.edu/papers/steal.pdf" target="_blank" rel="noopener">http://supertech.csail.mit.edu/papers/steal.pdf</a></li>
-<li>分析调度器的论文（就问你6不6，还有论文研究）：<a href="http://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf" target="_blank" rel="noopener">http://www.cs.columbia.edu/~aho/cs6998/reports/12-12-11_DeshpandeSponslerWeiss_GO.pdf</a></li>
-</ul>
-<p><strong>声明</strong>：关于老调度器的资料已经完全搜不到，根据新版调度器设计方案的描述，想象着写了老调度器这一章，可能存在错误。</p>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
-<li><a href="https://en.wikipedia.org/wiki/Computer#History" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Computer#History</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Process_(computing)#History" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Process_(computing)#History</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Thread_(computing)#History" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Thread_(computing)#History</a></li>
-<li><a href="https://golang.org/doc/faq#goroutines" target="_blank" rel="noopener">https://golang.org/doc/faq#goroutines</a></li>
-<li><a href="https://golang.org/s/go11sched" target="_blank" rel="noopener">https://golang.org/s/go11sched</a></li>
-<li><a href="https://golang.org/src/runtime/proc.go" target="_blank" rel="noopener">https://golang.org/src/runtime/proc.go</a></li>
-</ol>
-<blockquote>
-<ol>
-<li>如果这篇文章对你有帮助，不妨关注下我的Github，有文章会收到通知。</li>
-<li>本文作者：<a href="http://lessisbetter.site/about/">大彬</a></li>
-<li>如果喜欢本文，随意转载，但请保留此原文链接：<a href="http://lessisbetter.site/2019/03/10/golang-scheduler-1-history">http://lessisbetter.site/2019/03/10/golang-scheduler-1-history</a></li>
-</ol>
-</blockquote>
-<p><div style="color:#0096FF; text-align:center">关注公众号，获取最新Golang文章</div><br><img src="http://img.lessisbetter.site/2019-01-article_qrcode.jpg" style="border:0"  align=center /></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1656,13 +1711,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-count">122</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">68</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1821,6 +1876,19 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'default',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   
