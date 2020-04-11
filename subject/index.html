@@ -28,7 +28,7 @@
 <meta property="og:description" content="Golang并发 Golang并发模型：轻松入门流水线模型 Golang并发模型：轻松入门流水线FAN模式 Golang并发模型：并发协程的优雅退出 Golang并发模型：轻松入门select Golang并发模型：select进阶 Golang并发模型：轻松入门协程池 Golang并发的次优选择：sync包  Go调度器 Go调度器系列（1）起源 Go调度器系列（2）宏观看调度器 Go调度器系列">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-01-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2019-12-23T00:57:44.495Z">
+<meta property="article:modified_time" content="2020-04-11T09:58:31.360Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="区块链 Go语言 后端 技术 人生 编程">
 <meta name="twitter:card" content="summary">
@@ -237,6 +237,7 @@
 <li><a href="http://lessisbetter.site/2019/05/18/go-goroutine-leak/">实战Go内存泄露</a></li>
 <li><a href="http://lessisbetter.site/2019/07/06/go-memory-allocation/">Go内存分配那些事，就这么简单！</a></li>
 <li><a href="http://lessisbetter.site/2019/07/12/do-not-abuse-of-log/">你滥用log了吗</a></li>
+<li><a href="https://lessisbetter.site/2019/10/20/go-gc-1-history-and-priciple/">Go垃圾回收 1：历史和原理</a></li>
 </ol>
 <h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ol>
 <li><a href="http://lessisbetter.site/2019/03/03/golang-channel-design-and-source/">深入理解channel：设计+源码</a></li>
@@ -244,6 +245,10 @@
 <li><a href="http://lessisbetter.site/2018/10/24/go-handle-error/">如何优雅的处理Golang错误</a></li>
 <li><a href="http://lessisbetter.site/2019/02/24/go-law-of-reflect/">反射3定律</a></li>
 <li><a href="http://lessisbetter.site/2019/06/09/golang-first-class-function/">First class function in Go</a></li>
+</ol>
+<h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><ol>
+<li><a href="https://lessisbetter.site/2020/03/15/gops-introduction/">Go官方进程诊断工具gops详解</a></li>
+<li><a href="https://lessisbetter.site/2019/10/31/go-modules-notes/">Go Modules 方法、问题汇总贴</a></li>
 </ol>
 <h2 id="以太坊"><a href="#以太坊" class="headerlink" title="以太坊"></a>以太坊</h2><h3 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h3><ol>
 <li><a href="http://lessisbetter.site/2018/06/22/ethereum-code-consensus-1/">以太坊源码分析：共识（1）</a></li>
@@ -282,12 +287,27 @@
 <li><a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">Fabric 1.4源码解读 6：Orderer核心数据结构</a></li>
 <li><a href="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/">Fabric 1.4源码解读 7：Orderer架构解读</a></li>
 <li><a href="http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/">Fabric 1.4源码解读 8：Orderer和Peer的交互</a></li>
+<li><a href="https://lessisbetter.site/2020/01/03/fabric-peer-ledger/">Fabric 1.4源码解读 9：从账本角度看Peer</a></li>
 </ol>
 <h3 id="周边工具"><a href="#周边工具" class="headerlink" title="周边工具"></a>周边工具</h3><ol>
 <li><a href="http://lessisbetter.site/2019/08/01/fabric-parse-block/">利用工具解析Fabric区块与工具详解</a></li>
 <li><a href="http://lessisbetter.site/2019/10/31/fabric-sdk-go-configure-graph/">fabric-sdk-go 配置项分类</a></li>
 <li><a href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">使用fabric-sdk-go操作链码</a></li>
 <li><a href="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/">使用fabric-sdk-go订阅Fabric事件</a></li>
+</ol>
+<h3 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h3><ol>
+<li><a href="https://lessisbetter.site/2020/03/03/contribute-to-fabric/">向Fabric贡献代码</a></li>
+</ol>
+<h2 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h2><h3 id="BFT"><a href="#BFT" class="headerlink" title="BFT"></a>BFT</h3><ol>
+<li><a href="https://lessisbetter.site/2019/01/23/why-pbft-using-3f-plus-1/">为什么PBFT的节点数量是3f+1?</a></li>
+<li><a href="https://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/">为什么PBFT需要3个阶段消息？</a></li>
+<li><a href="https://lessisbetter.site/2020/03/22/why-pbft-needs-viewchange/">为什么PBFT需要View Changes</a></li>
+</ol>
+<h3 id="Raft"><a href="#Raft" class="headerlink" title="Raft"></a>Raft</h3><ol>
+<li><a href="https://lessisbetter.site/2019/08/13/raft-zh/">Raft中文翻译与笔记</a></li>
+<li><a href="https://lessisbetter.site/2019/08/19/etcd-raft-sources-arch/">Etcd Raft架构设计和源码剖析1：宏观架构</a></li>
+<li><a href="https://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/">Etcd Raft架构设计和源码剖析2：数据流</a></li>
+<li><a href="https://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/">Etcd Raft架构设计和源码剖析3：重要结构体定义</a></li>
 </ol>
 <h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><ol>
 <li><a href="http://lessisbetter.site/2019/03/01/linux-location-of-process/">查看Linux运行程序的文件路径</a></li>
@@ -363,7 +383,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Golang"><span class="nav-number">1.</span> <span class="nav-text">Golang</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发"><span class="nav-number">1.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go调度器"><span class="nav-number">1.2.</span> <span class="nav-text">Go调度器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存管理"><span class="nav-number">1.3.</span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-number">1.4.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以太坊"><span class="nav-number">2.</span> <span class="nav-text">以太坊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#共识"><span class="nav-number">2.1.</span> <span class="nav-text">共识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储"><span class="nav-number">2.2.</span> <span class="nav-text">存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步"><span class="nav-number">2.3.</span> <span class="nav-text">同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#交易"><span class="nav-number">2.4.</span> <span class="nav-text">交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#框架"><span class="nav-number">2.5.</span> <span class="nav-text">框架</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fabric"><span class="nav-number">3.</span> <span class="nav-text">Fabric</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#宏观"><span class="nav-number">3.1.</span> <span class="nav-text">宏观</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">3.2.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构与源码"><span class="nav-number">3.3.</span> <span class="nav-text">架构与源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#周边工具"><span class="nav-number">3.4.</span> <span class="nav-text">周边工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux"><span class="nav-number">4.</span> <span class="nav-text">Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代理与镜像"><span class="nav-number">4.1.</span> <span class="nav-text">代理与镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#书籍"><span class="nav-number">5.</span> <span class="nav-text">书籍</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Golang"><span class="nav-number">1.</span> <span class="nav-text">Golang</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#并发"><span class="nav-number">1.1.</span> <span class="nav-text">并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go调度器"><span class="nav-number">1.2.</span> <span class="nav-text">Go调度器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存管理"><span class="nav-number">1.3.</span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-number">1.4.</span> <span class="nav-text">其他</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具"><span class="nav-number">1.5.</span> <span class="nav-text">工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以太坊"><span class="nav-number">2.</span> <span class="nav-text">以太坊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#共识"><span class="nav-number">2.1.</span> <span class="nav-text">共识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储"><span class="nav-number">2.2.</span> <span class="nav-text">存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步"><span class="nav-number">2.3.</span> <span class="nav-text">同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#交易"><span class="nav-number">2.4.</span> <span class="nav-text">交易</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#框架"><span class="nav-number">2.5.</span> <span class="nav-text">框架</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fabric"><span class="nav-number">3.</span> <span class="nav-text">Fabric</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#宏观"><span class="nav-number">3.1.</span> <span class="nav-text">宏观</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">3.2.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#架构与源码"><span class="nav-number">3.3.</span> <span class="nav-text">架构与源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#周边工具"><span class="nav-number">3.4.</span> <span class="nav-text">周边工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#贡献"><span class="nav-number">3.5.</span> <span class="nav-text">贡献</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性"><span class="nav-number">4.</span> <span class="nav-text">一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BFT"><span class="nav-number">4.1.</span> <span class="nav-text">BFT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Raft"><span class="nav-number">4.2.</span> <span class="nav-text">Raft</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux"><span class="nav-number">5.</span> <span class="nav-text">Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代理与镜像"><span class="nav-number">5.1.</span> <span class="nav-text">代理与镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#书籍"><span class="nav-number">6.</span> <span class="nav-text">书籍</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
