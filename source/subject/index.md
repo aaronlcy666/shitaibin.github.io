@@ -87,7 +87,7 @@ tag: ['TODO']
 1. [Fabric 1.4源码解读 7：Orderer架构解读](http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/)
 1. [Fabric 1.4源码解读 8：Orderer和Peer的交互](http://lessisbetter.site/2019/12/17/fabric-blocks-from-orderer-to-peer/)
 1. [Fabric 1.4源码解读 9：从账本角度看Peer](https://lessisbetter.site/2020/01/03/fabric-peer-ledger/)
-
+1. [Fabric 1.4源码解读 10：可扩展密码服务提供者BCCSP，以及可扩展国密](https://lessisbetter.site/2020/04/12/fabric-bccsp/)
 
 ### 周边工具
 1. [利用工具解析Fabric区块与工具详解](http://lessisbetter.site/2019/08/01/fabric-parse-block/)
