@@ -247,10 +247,12 @@ import (
 
 func main() {
 	var ch chan int
+	// g1
 	go func() {
 		ch = make(chan int, 1)
 		ch <- 1
 	}()
+	//g2
 	go func(ch chan int) {
 		time.Sleep(time.Second)
 		<-ch
@@ -262,7 +264,7 @@ func main() {
 }
 ```
 
-2个闭包goroutine可运行并结束。最后只有main和定时器协程，所以最终有2个协程在运行，持续打印`#goroutines: 2`。
+结果是持续打印`#goroutines: 2`。`ch`声明后为`nil`，在g1中被初始化为缓冲区大小为1的通道，g1向ch写数据后退出；通过参数把ch传递给g2时，ch还是`nil`，所以在g2内部ch为nil，从nil的通道读数据会阻塞，所以g2无法退出；另外Main协程不会退出，会持续遍历通道`c`，感谢[Bububuger](https://github.com/Bububuger)提醒，定时器的通道并不统计在`NumGoroutine`中，所以会打印存在2个goroutine。
 
 ### channel 2
 
