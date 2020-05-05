@@ -76,7 +76,7 @@ Google、百度、微信搜索了许多Go语言调度的文章，这些文章上
 - 1:1，1个协程绑定1个线程，这种最容易实现。协程的调度都由CPU完成了，不存在N:1缺点，但有一个缺点是协程的创建、删除和切换的代价都由CPU完成，有点略显昂贵了。
 - M:N，M个协程绑定N个线程，是N:1和1:1类型的结合，克服了以上2种模型的缺点，但实现起来最为复杂。
 
-协程是个好东西，不少语言支持了协程，比如：Lua、Erlang、Java（C++即将支持），就算语言不支持，也有库支持协程，比如C语言的coroutine（风云大牛作品）、Kotlin的kotlinx.coroutines、Python的gevent。
+协程是个好东西，不少语言支持了协程，比如：Lua、Erlang、Java（C++即将支持），就算语言不支持，也有库支持协程，比如C语言的[coroutine](https://github.com/cloudwu/coroutine/)（云风大牛作品）、Kotlin的kotlinx.coroutines、Python的gevent。
 
 ### goroutine
 
