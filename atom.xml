@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://lessisbetter.site/"/>
-  <updated>2020-05-05T06:56:58.180Z</updated>
+  <updated>2020-05-05T06:58:26.497Z</updated>
   <id>http://lessisbetter.site/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="http://lessisbetter.site/2020/05/05/open-source-license/"/>
     <id>http://lessisbetter.site/2020/05/05/open-source-license/</id>
     <published>2020-05-05T06:37:26.000Z</published>
-    <updated>2020-05-05T06:56:58.180Z</updated>
+    <updated>2020-05-05T06:58:26.497Z</updated>
     
-    <content type="html"><![CDATA[<p>当基于开源项目发布新的开源项目时，我们需要说明项目所使用的License，同样也需要考虑你基于开源项目所做的事情，是否满足该项目的License。</p><p>下面这2幅图摘自 <a href="https://www.zhihu.com/question/28292322" target="_blank" rel="noopener">开源许可证都有什么区别,一般开源项目用什么许可证? - 知乎</a>，足以帮助我们判断：</p><ol><li>要做的事情，是否满足开源项目的License。</li><li>开源一个项目，该如何选择License。</li></ol><p><img src="http://img.lessisbetter.site/2020-05-license-choose.jpg" alt=""><br>来源：<a href="https://www.zhihu.com/question/28292322/answer/656121132" target="_blank" rel="noopener">https://www.zhihu.com/question/28292322/answer/656121132</a></p><p><img src="http://img.lessisbetter.site/2020-05-license-2.jpg" alt=""><br>来源：<a href="https://www.zhihu.com/question/28292322/answer/840556759" target="_blank" rel="noopener">https://www.zhihu.com/question/28292322/answer/840556759</a><br>从左到右，是从宽松到严格。</p><p>举例：</p><ol><li>以太坊采License用的是LGPLv3，修改源码后如果提供给外部使用必须开源，不要求新增代码采用相同的License，也不要求对新增代码进行文档说明。</li><li>Fabric采用Apache 2.0，基于Fabric项目原有代码都必须放置Fabric原有版权声明，但可以选择不开源。</li></ol>]]></content>
+    <content type="html"><![CDATA[<p>当基于开源项目发布新的开源项目时，我们需要说明项目所使用的License，同样也需要考虑你基于开源项目所做的事情，是否满足该项目的License。</p><p>下面这2幅图摘自 <a href="https://www.zhihu.com/question/28292322" target="_blank" rel="noopener">开源许可证都有什么区别,一般开源项目用什么许可证? - 知乎</a>，足以帮助我们判断：</p><ol><li>要做的事情，是否满足开源项目的License。</li><li>开源一个项目，该如何选择License。</li></ol><p><img src="http://img.lessisbetter.site/2020-05-license-choose.jpg" alt=""><br>来源：<a href="https://www.zhihu.com/question/28292322/answer/656121132" target="_blank" rel="noopener">https://www.zhihu.com/question/28292322/answer/656121132</a></p><p><img src="http://img.lessisbetter.site/2020-05-license-2.jpg" alt=""><br>来源：<a href="https://www.zhihu.com/question/28292322/answer/840556759" target="_blank" rel="noopener">https://www.zhihu.com/question/28292322/answer/840556759</a><br>从左到右，是从宽松到严格。</p><p>举例：</p><ol><li>以太坊采License用的是LGPLv3，修改源码后如果提供给外部使用必须开源，不要求新增代码采用相同的License，也不要求对新增代码进行文档说明，后来我们项目同样采用了LGPLv3。</li><li>Fabric采用Apache 2.0，基于Fabric项目原有代码都必须放置Fabric原有版权声明，但可以选择不开源。</li></ol>]]></content>
     
     <summary type="html">
     
