@@ -227,7 +227,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-08-28 10:45:31" itemprop="dateModified" datetime="2019-08-28T10:45:31+08:00">2019-08-28</time>
+                <time title="修改时间：2020-05-07 17:14:47" itemprop="dateModified" datetime="2020-05-07T17:14:47+08:00">2020-05-07</time>
               </span>
 
           
@@ -312,10 +312,12 @@
 <h1 id="镜像解读"><a href="#镜像解读" class="headerlink" title="镜像解读"></a>镜像解读</h1><p>通过<code>make all</code>或<code>make docker</code>可以生成fabric的所有镜像，这些镜像可以通过<code>make docker-list</code>查看，如果使用docker images查看，会看到更多的镜像，并且发现下面这5个镜像还有另外一个”lastest”的标签，看Makefile可以知道，其实是1个镜像2个标签而已。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric git:(r1.4) make docker-list</span><br><span class="line">hyperledger&#x2F;fabric-peer:amd64-1.4.2-snapshot-9dce7357b</span><br><span class="line">hyperledger&#x2F;fabric-orderer:amd64-1.4.2-snapshot-9dce7357b</span><br><span class="line">hyperledger&#x2F;fabric-ccenv:amd64-1.4.2-snapshot-9dce7357b</span><br><span class="line">hyperledger&#x2F;fabric-buildenv:amd64-1.4.2-snapshot-9dce7357b</span><br><span class="line">hyperledger&#x2F;fabric-tools:amd64-1.4.2-snapshot-9dce7357b</span><br></pre></td></tr></table></figure>
 <ul>
+<li>fabric-baseos: peer、orderer、链码容器的镜像所依赖的基础镜像。</li>
+<li>fabric-baseimage：是fabric-buildenv所依赖的镜像。</li>
 <li>fabric-peer：可以使用该镜像启动一个peer节点。</li>
 <li>fabric-orderer：可以使用该镜像启动一个排序节点。</li>
-<li>fabric-ccenv：这是智能合约环境镜像，ccenv是chaincode env的缩写。</li>
-<li>fabric-buildenv：实际包含的是go tools.tar.bz2和protoc-gen-go的镜像。</li>
+<li>fabric-ccenv：peer进程使用ccenv来构建链码容器镜像，注意ccenv不是链码容器镜像的运行环境，链码容器镜像是基于baseos的。</li>
+<li>fabric-buildenv：实际包含的是go tools.tar.bz2和protoc-gen-go的镜像，Make时一些工具会使用该镜像。</li>
 <li>fabric-tools：是fabric自身tools集合的镜像。</li>
 </ul>
 <p>这几个镜像的Dockerfile文件在：<code>images</code>目录下，各镜像具体内容见各自的Dockerfile。</p>
