@@ -1080,10 +1080,12 @@ hyperledger/fabric-buildenv:amd64-1.4.2-snapshot-9dce7357b
 hyperledger/fabric-tools:amd64-1.4.2-snapshot-9dce7357b
 ```
 
+- fabric-baseos: peer、orderer、链码容器的镜像所依赖的基础镜像。
+- fabric-baseimage：是fabric-buildenv所依赖的镜像。
 - fabric-peer：可以使用该镜像启动一个peer节点。
 - fabric-orderer：可以使用该镜像启动一个排序节点。
-- fabric-ccenv：这是智能合约环境镜像，ccenv是chaincode env的缩写。
-- fabric-buildenv：实际包含的是go tools.tar.bz2和protoc-gen-go的镜像。
+- fabric-ccenv：peer进程使用ccenv来构建链码容器镜像，注意ccenv不是链码容器镜像的运行环境，链码容器镜像是基于baseos的。
+- fabric-buildenv：实际包含的是go tools.tar.bz2和protoc-gen-go的镜像，Make时一些工具会使用该镜像。
 - fabric-tools：是fabric自身tools集合的镜像。
 
 这几个镜像的Dockerfile文件在：`images`目录下，各镜像具体内容见各自的Dockerfile。
@@ -1114,7 +1116,7 @@ images
 现在国内已经有第三方的Go modules代理服务了，比如：
 
 1. [goproxy.io](https://goproxy.io/zh/)，是即将毕业的[盛奥飞](https://github.com/aofei)小哥捐给了七牛搭建的Go modules代理服务。
-1. [aliyun goproxy](http://mirrors.aliyun.com/goproxy/)，现在阿里云开放了Go modules代理服务。
+2. [aliyun goproxy](http://mirrors.aliyun.com/goproxy/)，现在阿里云开放了Go modules代理服务。
 
 fabric使用vendor，下载各种东西的时候需要翻墙，即便是可以翻墙，也是有缺点的：
 
