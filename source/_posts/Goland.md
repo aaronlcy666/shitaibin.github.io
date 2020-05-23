@@ -1,17 +1,40 @@
 ---
-title: VSCode V.S. Goland
+title: VSCode && Goland
 date: 2018-06-02 18:40:01
 tags: ['Go','IDE']
 ---
 
-Goland是我目前（2018年06月02日）体验过的最方便/高效的Golang IDE。
+大项目选Goland，小项目选VSCode。
 
 <!--more-->
 
-# 丢弃VSCODE
+# VSCODE
 
-我一直使用VSCODE作为Golang的开发工具，并且用起来也很顺手，效率也相对很高。抛弃它有以下原因：
-1. 查找函数引用慢
+我一直使用VSCODE作为Golang的开发工具，并且用起来也很顺手，效率也相对很高，但由于查找函数慢，没有在大的Go项目中使用VSCODE，小项目倾向于使用VSCODE。
+
+## 问题
+
+
+Mac上如果遇到：
+
+```
+Could not create temporary directory: 权限被拒绝
+```
+
+使用下面命令解决：
+
+```
+sudo chown $USER ~/Library/Caches/com.microsoft.VSCode.ShipIt/  
+```
+
+## 插件
+
+1. Docker
+2. Go
+3. hightligt-words：高亮关键词
+4. Markdown All in One：算是增强了自带markdown，有很多方便的命令
+5. Partial Diff：比较代码片段，而不是以文件为基础进行比较
+6. Drawio. Integration：画图必备
 
 
 # 转向Goland
