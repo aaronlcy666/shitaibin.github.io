@@ -52,7 +52,7 @@ client使用sdk与fabric网络交互，需要告诉sdk两类信息：
 
 ![fabric sdk config](http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png)
 
-这里提供一个适合[BFYN](https://github.com/hyperledger/fabric-samples/tree/release-1.4/first-network)的精简配置文件[fabric-sdk-go-sample/config.yaml](https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/config/config.yaml)。
+这里提供一个适合[BFYN](https://github.com/hyperledger/fabric-samples/tree/release-1.4/first-network)的精简配置文件[fabric-sdk-go-sample/config.yaml](https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/config/org1sdk-config.yaml)。
 
 ## 使用go mod管理依赖
 
