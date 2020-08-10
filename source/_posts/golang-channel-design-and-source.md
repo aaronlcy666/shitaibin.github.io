@@ -37,9 +37,11 @@ Golang使用`goroutine`和`channel`简单、高效的解决并发问题，**chan
 
 ![](http://img.lessisbetter.site/2019-03-channel_design.png)
 
-channel设计涉及的数据结构很简单：
+channel设计涉及的数据结构很简单，这就是**channel的本质**：
 - 基于数组的循环队列，有缓冲的channel用它暂存数据
 - 基于链表的单向队列，用于保存阻塞在此channel上的goroutine
+- 锁，用于实现goroutine对channel并发安全，保证某一时刻只有1个goroutine操作channel，
+
 
 我本来想自己码一篇channel的设计文章，但已经有大牛：Kavya深入分析了Channel的设计，我也相信自己写的肯定不如他好，所以我把**Kavya在Gopher Con上的PPT推荐给你，如果你希望成为Go大牛，你一定要读一下，现在请收藏好**。
 
@@ -90,7 +92,8 @@ channel的4个特性的实现：
 channel的其他实现：
 - 发送goroutine是可以访问接收goroutine的内存空间的，接收goroutine也是可以直接访问发送goroutine的内存空间的，看`sendDirect`、`recvDirect`函数。
 - 无缓冲的channel始终都是直接访问对方goroutine内存的方式，把手伸到别人的内存，把数据放到接收变量的内存，或者从发送goroutine的内存拷贝到自己内存。省掉了对方再加锁获取数据的过程。
-- 接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的，这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看`gopark`、`goready`函数在`chan.go`中的调用。
+- 有缓冲的channel在缓冲区空时，接收数据的goroutine无法读数据，会把自己阻塞放到接收链表，当发送goroutine到来时，发送goroutine直接使用`sendDirect`把数据放到第一个阻塞的接收goroutine，然后把它唤醒。`recvDirect`在有缓冲区通道的情况，反过来。
+- 接收goroutine读不到数据和发送goroutine无法写入数据时，是把自己挂起的（创建一个节点，插入到双向链表的尾部），这就是channel的阻塞操作。阻塞的接收goroutine是由发送goroutine唤醒的，阻塞的发送goroutine是由接收goroutine唤醒的，看`gopark`、`goready`函数在`chan.go`中的调用。
 - 接收goroutine当channel关闭时，读channel会得到0值，并不是channel保存了0值，而是它发现channel关闭了，把接收数据的变量的值设置为0值。
 - channel的操作/调用，是通过reflect实现的，可以看reflect包的`makechan`, `chansend`, `chanrecv`函数。
 - channel关闭时，所有在channel上读数据的g都会收到通知。其实并非关闭channel的g给每个接收的g发送信号，而是关闭channel的g，把channel关闭后，会唤醒每一个读取channel的g，它们发现channel关闭了，把待读的数据设置为零值并返回，所以这并非一次性的事件通知，。看到这种本质，你应当理解下面这种奇淫巧计：这种“通知”效果并不一定需要接收数据的g先启动，先把channel关闭了，然后启动读取channel的g依然是可行的，代码无需任何改变，任何逻辑也都无需改变，它会发现channel关闭了，然后走原来的逻辑。
