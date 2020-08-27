@@ -44,24 +44,24 @@ sudo chown $USER ~/Library/Caches/com.microsoft.VSCode.ShipIt/
 
 ### Goland 快捷键
 
-|功能|快捷键|使用频率|
-|------|------|------|
-|查找任何| 两下Shift|★|
-|跳到定义、查看任何的调用|Cmd + B 或者 Cmd + 单击|★★★★★|
-|查看实现某个接口函数的所有函数|Alt + Cmd + 单
-|查找类|Cmd + O|★|
-|查找符号/函数|Alt + Cmd + O|★★★|
-|跳转到文件|Shift + Cmd + O|★|
-|前一个位置|Alt + Cmd + <-|★★★|
-|行首(尾)|Cmd + <-(->)|★|
-|注释|Cmd + /|★★★|
-|折叠、可以快速调到函数开头|Alt + -||
-|终端|Cmd + F12，自己改为Cmd + 0|★★★|
-|TODO 列表| Cmd + 6|★|
-|左边文件列表|Cmd + 1|★★★|
-|Git面板|Cmd + 9|★★|
-|Git提交|Cmd + K|★★|
-||||
+| 功能                           | 快捷键                     | 使用频率 |
+| ------------------------------ | -------------------------- | -------- |
+| 查找任何                       | 两下Shift                  | ★        |
+| 跳到定义、查看任何的调用       | Cmd + B 或者 Cmd + 单击    | ★★★★★    |
+| 查看实现某个接口函数的所有函数 | Alt + Cmd + 单             |
+| 查找类                         | Cmd + O                    | ★        |
+| 查找符号/函数                  | Alt + Cmd + O              | ★★★      |
+| 跳转到文件                     | Shift + Cmd + O            | ★        |
+| 前一个位置                     | Alt + Cmd + <-             | ★★★      |
+| 行首(尾)                       | Cmd + <-(->)               | ★        |
+| 注释                           | Cmd + /                    | ★★★      |
+| 折叠、可以快速调到函数开头     | Alt + -                    |          |
+| 终端                           | Cmd + F12，自己改为Cmd + 0 | ★★★      |
+| TODO 列表                      | Cmd + 6                    | ★        |
+| 左边文件列表                   | Cmd + 1                    | ★★★      |
+| Git面板                        | Cmd + 9                    | ★★       |
+| Git提交                        | Cmd + K                    | ★★       |
+|                                |                            |          |
 
 ### Goland其他设置
 
@@ -70,3 +70,7 @@ sudo chown $USER ~/Library/Caches/com.microsoft.VSCode.ShipIt/
 
 ### Goland插件
 1. MultiHighlight：一直高亮单词，方便阅读和查找。
+2. `golangci-lint`：保存文件时，自动运行lint
+   1. 安装：`# binary will be $(go env GOPATH)/bin/golangci-lint
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.30.0`
+    2. FileWatcher中添加golangci-lint
