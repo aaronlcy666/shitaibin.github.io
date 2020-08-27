@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lessisbetter.site","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CgroupCgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源限制、控制、统计能力，包括CPU、内存、磁盘、网络。 Cgroup 包含3个组件：  cgroup ：一组进程，可以加上subsystem subsystem ：一组资源控制模块，CPU、内存… hierarchy ： 把一组cgroup串成树状结构，这样就能实现cgroup的继承。为什么要继承呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="容器基础：Cgroup">
+<meta property="og:url" content="http://lessisbetter.site/2020/08/27/cgroup-1/index.html">
+<meta property="og:site_name" content="Go语言充电站">
+<meta property="og:description" content="CgroupCgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源限制、控制、统计能力，包括CPU、内存、磁盘、网络。 Cgroup 包含3个组件：  cgroup ：一组进程，可以加上subsystem subsystem ：一组资源控制模块，CPU、内存… hierarchy ： 把一组cgroup串成树状结构，这样就能实现cgroup的继承。为什么要继承呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.lessisbetter.site/2020-08-cgroup.png">
+<meta property="article:published_time" content="2020-08-27T13:43:52.000Z">
+<meta property="article:modified_time" content="2020-08-27T13:48:02.386Z">
+<meta property="article:author" content="大彬">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.lessisbetter.site/2020-08-cgroup.png">
+
+<link rel="canonical" href="http://lessisbetter.site/2020/08/27/cgroup-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>容器基础：Cgroup | Go语言充电站</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Go语言充电站" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Go语言充电站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">大彬 less is better</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签云">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签云</a>
+
+  </li>
+        <li class="menu-item menu-item-专题文章">
+
+    <a href="/subject/" rel="section"><i class="fa fa-fw fa-th"></i>专题文章</a>
+
+  </li>
+        <li class="menu-item menu-item-文章列表">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>文章列表</a>
+
+  </li>
+        <li class="menu-item menu-item-关于">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-大牛博客">
+
+    <a href="/blogs/" rel="section"><i class="fa fa-fw fa-sitemap"></i>大牛博客</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container"></div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="algolia-results">
+  <div id="algolia-stats"></div>
+  <div id="algolia-hits"></div>
+  <div id="algolia-pagination" class="algolia-pagination"></div>
+</div>
+
+  
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/27/cgroup-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          容器基础：Cgroup
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-27 21:43:52 / 修改时间：21:48:02" itemprop="dateCreated datePublished" datetime="2020-08-27T21:43:52+08:00">2020-08-27</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Cgroup"><a href="#Cgroup" class="headerlink" title="Cgroup"></a>Cgroup</h3><p>Cgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源限制、控制、统计能力，包括CPU、内存、磁盘、网络。</p>
+<p>Cgroup 包含3个组件：</p>
+<ul>
+<li>cgroup ：一组进程，可以加上subsystem</li>
+<li>subsystem ：一组资源控制模块，CPU、内存…</li>
+<li>hierarchy ： 把一组cgroup串成树状结构，这样就能实现cgroup的继承。为什么要继承呢？就如同docker镜像的继承，站在前人的基础之上，免去重复的配置</li>
+</ul>
+<h3 id="查看Docker的Cgroup信息"><a href="#查看Docker的Cgroup信息" class="headerlink" title="查看Docker的Cgroup信息"></a>查看Docker的Cgroup信息</h3><ol>
+<li>创建一个容器，限制为内存为128MB</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~]$ docker run -itd -m 128m ubuntu:16.04</span><br><span class="line">9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529</span><br></pre></td></tr></table></figure>
+<p><code>9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529</code>为容器id</p>
+<ol start="2">
+<li>Linux下容器的cgroup信息在<code>/sys/fs/cgroup/</code>目录，每个目录应该都是一类资源信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[~]$ cd &#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ ll</span><br><span class="line">总用量 0</span><br><span class="line">drwxr-xr-x 4 root root  0 8月  26 12:10 blkio</span><br><span class="line">lrwxrwxrwx 1 root root 11 8月  26 12:10 cpu -&gt; cpu,cpuacct</span><br><span class="line">lrwxrwxrwx 1 root root 11 8月  26 12:10 cpuacct -&gt; cpu,cpuacct</span><br><span class="line">drwxr-xr-x 4 root root  0 8月  26 12:10 cpu,cpuacct</span><br><span class="line">drwxr-xr-x 3 root root  0 8月  26 12:10 cpuset</span><br><span class="line">drwxr-xr-x 4 root root  0 8月  26 12:10 devices</span><br><span class="line">drwxr-xr-x 3 root root  0 8月  26 12:10 freezer</span><br><span class="line">drwxr-xr-x 3 root root  0 8月  26 12:10 hugetlb</span><br><span class="line">drwxr-xr-x 4 root root  0 8月  26 12:10 memory</span><br><span class="line">lrwxrwxrwx 1 root root 16 8月  26 12:10 net_cls -&gt; net_cls,net_prio</span><br><span class="line">drwxr-xr-x 3 root root  0 8月  26 12:10 net_cls,net_prio</span><br><span class="line">lrwxrwxrwx 1 root root 16 8月  26 12:10 net_prio -&gt; net_cls,net_prio</span><br><span class="line">drwxr-xr-x 3 root root  0 8月  26 12:10 perf_event</span><br><span class="line">drwxr-xr-x 4 root root  0 8月  26 12:10 pids</span><br><span class="line">drwxr-xr-x 4 root root  0 8月  26 12:10 systemd</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>利用容器id找到与当前容器相关的cgroup信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup]$ find . -name &quot;*9fe91cc60ff0a94345e13a9*&quot; -print</span><br><span class="line">.&#x2F;memory&#x2F;system.slice&#x2F;var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount</span><br><span class="line">.&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;freezer&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;blkio&#x2F;system.slice&#x2F;var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount</span><br><span class="line">.&#x2F;blkio&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;cpuset&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;hugetlb&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;devices&#x2F;system.slice&#x2F;var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount</span><br><span class="line">.&#x2F;devices&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;perf_event&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;net_cls,net_prio&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;pids&#x2F;system.slice&#x2F;var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount</span><br><span class="line">.&#x2F;pids&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount</span><br><span class="line">.&#x2F;cpu,cpuacct&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br><span class="line">.&#x2F;systemd&#x2F;system.slice&#x2F;var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount</span><br><span class="line">.&#x2F;systemd&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>容器memory的信息在<code>memory</code>目录</li>
+</ol>
+<p>通过容器id可以找到容器对于的目录：<code>docker-xxx</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ ls</span><br><span class="line">cgroup.clone_children           memory.kmem.slabinfo                memory.memsw.failcnt             memory.soft_limit_in_bytes</span><br><span class="line">cgroup.event_control            memory.kmem.tcp.failcnt             memory.memsw.limit_in_bytes      memory.stat</span><br><span class="line">cgroup.procs                    memory.kmem.tcp.limit_in_bytes      memory.memsw.max_usage_in_bytes  memory.swappiness</span><br><span class="line">memory.failcnt                  memory.kmem.tcp.max_usage_in_bytes  memory.memsw.usage_in_bytes      memory.usage_in_bytes</span><br><span class="line">memory.force_empty              memory.kmem.tcp.usage_in_bytes      memory.move_charge_at_immigrate  memory.use_hierarchy</span><br><span class="line">memory.kmem.failcnt             memory.kmem.usage_in_bytes          memory.numa_stat                 notify_on_release</span><br><span class="line">memory.kmem.limit_in_bytes      memory.limit_in_bytes               memory.oom_control               tasks</span><br><span class="line">memory.kmem.max_usage_in_bytes  memory.max_usage_in_bytes           memory.pressure_level</span><br></pre></td></tr></table></figure>
+<p>查看内存限制，刚好是设置的128MB：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ cat memory.limit_in_bytes</span><br><span class="line">134217728</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ python</span><br><span class="line">Python 2.7.5 (default, Apr 11 2018, 07:36:10)</span><br><span class="line">[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux2</span><br><span class="line">Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</span><br><span class="line">&gt;&gt;&gt; 134217728 &#x2F; 1024 &#x2F;1024</span><br><span class="line">128</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>查看容器内存统计信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ cat memory.stat</span><br><span class="line">cache 0</span><br><span class="line">rss 479232</span><br><span class="line">rss_huge 0</span><br><span class="line">mapped_file 0</span><br><span class="line">swap 0</span><br><span class="line">pgpgin 554</span><br><span class="line">pgpgout 437</span><br><span class="line">pgfault 1862</span><br><span class="line">pgmajfault 0</span><br><span class="line">inactive_anon 0</span><br><span class="line">active_anon 479232</span><br><span class="line">inactive_file 0</span><br><span class="line">active_file 0</span><br><span class="line">unevictable 0</span><br><span class="line">hierarchical_memory_limit 134217728</span><br><span class="line">hierarchical_memsw_limit 268435456</span><br><span class="line">total_cache 0</span><br><span class="line">total_rss 479232</span><br><span class="line">total_rss_huge 0</span><br><span class="line">total_mapped_file 0</span><br><span class="line">total_swap 0</span><br><span class="line">total_pgpgin 554</span><br><span class="line">total_pgpgout 437</span><br><span class="line">total_pgfault 1862</span><br><span class="line">total_pgmajfault 0</span><br><span class="line">total_inactive_anon 0</span><br><span class="line">total_active_anon 479232</span><br><span class="line">total_inactive_file 0</span><br><span class="line">total_active_file 0</span><br><span class="line">total_unevictable 0</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;system.slice&#x2F;docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ docker stats</span><br><span class="line">CONTAINER           CPU %               MEM USAGE &#x2F; LIMIT   MEM %               NET I&#x2F;O             BLOCK I&#x2F;O           PIDS</span><br><span class="line">9fe91cc60ff0        0.00%               468 KiB &#x2F; 128 MiB   0.36%               1.3 kB &#x2F; 648 B      0 B &#x2F; 0 B           1</span><br></pre></td></tr></table></figure>
+<p>可以看到内存统计信息和<code>docker stats</code>的信息是匹配的，因为这就是<code>docker stats</code>数据的来源。</p>
+<ol start="6">
+<li>查看cgroup中的cpu信息</li>
+</ol>
+<p>之前的容器样例限制了内存，没有限制cpu，我们启动一个限制cpu的容器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -itd -c 2 -m 128m ubuntu:16.04</span><br><span class="line">30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d</span><br></pre></td></tr></table></figure>
+<p>然后另外开1个进程，登录该容器，查看容器中的进程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it 30a1da397ec4 &#x2F;bin&#x2F;bash</span><br><span class="line">root@30a1da397ec4:&#x2F;# ps -A</span><br><span class="line">  PID TTY          TIME CMD</span><br><span class="line">    1 ?        00:00:00 bash</span><br><span class="line">   36 ?        00:00:00 bash</span><br><span class="line">   48 ?        00:00:00 ps</span><br></pre></td></tr></table></figure>
+<p>发现有2个bash进程，分别是启动容器运行的bash和exec启动的bash，容器启动是bash的pid在容器中是1。</p>
+<p>到Linux主机的cgroup目录下，利用find命令，找到容器cpu相关的目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;system.slice&#x2F;docker-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d.scope]$ cat cgroup.procs</span><br><span class="line">3022</span><br><span class="line">3381</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;system.slice&#x2F;docker-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d.scope]$ cat tasks</span><br><span class="line">3022</span><br><span class="line">3381</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpuset&#x2F;system.slice&#x2F;docker-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d.scope]$ ps -ef | grep &#x2F;bin&#x2F;bash</span><br><span class="line">root      3022  3003  0 13:04 pts&#x2F;1    00:00:00 &#x2F;bin&#x2F;bash</span><br><span class="line">centos    3353  2196  0 13:10 pts&#x2F;2    00:00:00 &#x2F;usr&#x2F;bin&#x2F;docker-current exec -it 30a1da397ec4 &#x2F;bin&#x2F;bash</span><br><span class="line">root      3381  3362  0 13:10 pts&#x2F;3    00:00:00 &#x2F;bin&#x2F;bash</span><br><span class="line">centos    3409  2337  0 13:10 pts&#x2F;0    00:00:00 grep --color&#x3D;auto --exclude-dir&#x3D;.bzr --exclude-dir&#x3D;CVS --exclude-dir&#x3D;.git --exclude-dir&#x3D;.hg --exclude-dir&#x3D;.svn --exclude-dir&#x3D;.idea --exclude-dir&#x3D;.tox &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure>
+<p>通过<code>cgroup.procs</code>或者<code>tasks</code>文件（记录加入到cgroup的容器进程号），也能看到2个进程，然后通过ps把这2个进程找出来，就是2个<code>/bin/bash</code>，这就是容器进程，在Linux主机中的进程号，是通过PID Namespace实现的。</p>
+<p><strong>Cgroup的本质就是通过树形文件系统实现了cgroup hierarchy，cgroup下的目录，都是上层目录的子节点，即子cgroup，会继承上层目录的限制，代表容器的目录，就是针对当前容器的子cgroup，它限定了容器的某一类资源，正是由于这是一颗资源限制树，按不同的资源类别划分，并进行继承，所以一个容器的多种资源限制，分布在多个目录中</strong>。</p>
+<h3 id="利用Go演示Cgroup内存限制"><a href="#利用Go演示Cgroup内存限制" class="headerlink" title="利用Go演示Cgroup内存限制"></a>利用Go演示Cgroup内存限制</h3><h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><p>cgroup的演示如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// https://github.com/Shitaibin/notes/blob/master/docker/codes/02.1.cgroup.go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">// 参考《自动动手写Docker》</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io/ioutil"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"os/exec"</span></span><br><span class="line">	<span class="string">"path"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line">	<span class="string">"syscall"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> CgroupMemoryHierarchyMount = <span class="string">"/sys/fs/cgroup/memory"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> os.Args[<span class="number">0</span>] == <span class="string">"/proc/self/exe"</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"---------- 2 ------------"</span>)</span><br><span class="line">		fmt.Printf(<span class="string">"Current pid: %d\n"</span>, syscall.Getpid())</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 创建stress子进程，施加内存压力</span></span><br><span class="line">		allocMemSize := <span class="string">"101m"</span> <span class="comment">// 另外1项测试为99m</span></span><br><span class="line">		fmt.Printf(<span class="string">"allocMemSize: %v\n"</span>, allocMemSize)</span><br><span class="line">		stressCmd := fmt.Sprintf(<span class="string">"stress --vm-bytes %s --vm-keep -m 1"</span>, allocMemSize)</span><br><span class="line">		cmd := exec.Command(<span class="string">"sh"</span>, <span class="string">"-c"</span>, stressCmd)</span><br><span class="line">		cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;&#125;</span><br><span class="line">		cmd.Stdin = os.Stdin</span><br><span class="line">		cmd.Stdout = os.Stdout</span><br><span class="line">		cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err := cmd.Run(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">"stress run error: %v"</span>, err)</span><br><span class="line">			os.Exit(<span class="number">-1</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"---------- 1 ------------"</span>)</span><br><span class="line">	cmd := exec.Command(<span class="string">"/proc/self/exe"</span>)</span><br><span class="line">	cmd.SysProcAttr = &amp;syscall.SysProcAttr&#123;</span><br><span class="line">		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWNS | syscall.CLONE_NEWPID,</span><br><span class="line">	&#125;</span><br><span class="line">	cmd.Stdin = os.Stdin</span><br><span class="line">	cmd.Stdout = os.Stdout</span><br><span class="line">	cmd.Stderr = os.Stderr</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动子进程</span></span><br><span class="line">	<span class="keyword">if</span> err := cmd.Start(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"/proc/self/exe start error: %v"</span>, err)</span><br><span class="line">		os.Exit(<span class="number">-1</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cmdPid := cmd.Process.Pid</span><br><span class="line">	fmt.Printf(<span class="string">"cmdPid: %d\n"</span>, cmdPid)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建子cgroup</span></span><br><span class="line">	memoryGroup := path.Join(CgroupMemoryHierarchyMount, <span class="string">"test_memory_limit"</span>)</span><br><span class="line">	os.Mkdir(memoryGroup, <span class="number">0755</span>)</span><br><span class="line">	<span class="comment">// 设定内存限制</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">"memory.limit_in_bytes"</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(<span class="string">"100m"</span>), <span class="number">0644</span>)</span><br><span class="line">	<span class="comment">// 将进程加入cgroup</span></span><br><span class="line">	ioutil.WriteFile(path.Join(memoryGroup, <span class="string">"tasks"</span>),</span><br><span class="line">		[]<span class="keyword">byte</span>(strconv.Itoa(cmdPid)), <span class="number">0644</span>)</span><br><span class="line"></span><br><span class="line">	cmd.Process.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关于源码中的<code>/proc/self/exe</code>看<a href="#补充小知识">补充小知识</a>。</p>
+<p>源码运行解读：</p>
+<ol>
+<li>使用<code>go run</code>运行程序，或build后运行程序时，程序的名字是<code>02.1.cgroup</code>，所以不满足<code>os.Args[0] == &quot;/proc/self/exe&quot;</code>会被跳过。</li>
+<li>然后使用<code>&quot;/proc/self/exe&quot;</code>新建了子进程，子进程此时叫：<code>&quot;/proc/self/exe&quot;</code></li>
+<li>创建cgroup <code>test_memory_limit</code>，然后设置内存限制为100MB</li>
+<li>把子进程加入到cgroup <code>test_memory_limit</code></li>
+<li>等待子进程结束</li>
+<li>子进程干了啥呢？子进程其实还是当前程序，只不过它的名字是<code>&quot;/proc/self/exe&quot;</code>，符合最初的if语句，之后它会创建stress子进程，然后运行stress，可以修改<code>allocMemSize</code>设置stress所要占用的内存</li>
+</ol>
+<p>修改源码，stress命令设置内存占用为99m，然后启动测试程序：</p>
+<h4 id="不超越内存限制情况"><a href="#不超越内存限制情况" class="headerlink" title="不超越内存限制情况"></a>不超越内存限制情况</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;workspace&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.1.cgroup.go</span><br><span class="line">---------- 1 ------------</span><br><span class="line">cmdPid: 2533</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">allocMemSize: 99m</span><br><span class="line">stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br></pre></td></tr></table></figure>
+<p>可以看到，子进程<code>&quot;/proc/self/exe&quot;</code>运行后取得的pid为 <strong>2533</strong> ，在新的Namespace中，子进程<code>&quot;/proc/self/exe&quot;</code>的pid已经变成1，然后利用stress打了99M内存。</p>
+<p>使用top查看资源使用情况，stress进程内存RES大约为99M，pid 为 <strong>2539</strong> 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND</span><br><span class="line">2539 root      20   0  103940 101680    284 R 93.8  9.9   0:06.09 stress</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.limit_in_bytes</span><br><span class="line">104857600</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ # 104857600 刚好为100MB</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat memory.usage_in_bytes</span><br><span class="line">2617344</span><br><span class="line">[&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;memory&#x2F;test_memory_limit]$ cat tasks</span><br><span class="line">2533 &lt;--- &#x2F;prof&#x2F;self&#x2F;exe进程</span><br><span class="line">2534</span><br><span class="line">2535</span><br><span class="line">2536</span><br><span class="line">2537</span><br><span class="line">2538</span><br><span class="line">2539 &lt;--- stress进程</span><br></pre></td></tr></table></figure>
+<p>tasks下都是在cgroup <code>test_memory_limit</code> 中的进程，这些是Host中真实的进程号，通过<code>pstree -p</code>查看进程树，看看这些都是哪些进程：</p>
+<p><img src="http://img.lessisbetter.site/2020-08-cgroup.png" alt="Cgroup限制内存的进程树"></p>
+<p>进程树佐证了前面的代码执行流程分析大致是对的，只不过这其中还涉及一些创建子进程的具体手段，比如stress是通过sh命令创建出来的。</p>
+<h4 id="内存超过限制被Kill情况"><a href="#内存超过限制被Kill情况" class="headerlink" title="内存超过限制被Kill情况"></a>内存超过限制被Kill情况</h4><p>内存超过cgroup限制的内存会怎么样？会OOM吗？</p>
+<p>如果将内存提高到占用101MB，大于cgroup中内存的限制100M时就会被Kill。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;notes&#x2F;docker&#x2F;codes]$ go run 02.1.cgroup.go                                                                        *[master]</span><br><span class="line">---------- 1 ------------</span><br><span class="line">cmdPid: 21492</span><br><span class="line">---------- 2 ------------</span><br><span class="line">Current pid: 1</span><br><span class="line">allocMemSize: 101m</span><br><span class="line">stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd</span><br><span class="line">stress: FAIL: [6] (415) &lt;-- worker 7 got signal 9</span><br><span class="line">stress: WARN: [6] (417) now reaping child worker processes</span><br><span class="line">stress: FAIL: [6] (421) kill error: No such process</span><br><span class="line">stress: FAIL: [6] (451) failed run completed in 0s</span><br><span class="line">2020&#x2F;08&#x2F;27 17:38:52 exit status 1</span><br></pre></td></tr></table></figure>
+<p><code>stress: FAIL: [6] (415) &lt;-- worker 7 got signal 9</code> 说明收到了信号9，即SIGKILL 。</p>
+<h3 id="补充小知识"><a href="#补充小知识" class="headerlink" title="补充小知识"></a>补充小知识</h3><p>在演示源码中，使用到<code>&quot;/proc/self/exe&quot;</code>，它在Linux是一个特殊的软链接，它指向当前正在运行的程序，比如执行<code>ll</code>查看该文件时，它就执行了<code>/usr/bin/ls</code>，因为当前的程序是<code>ls</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~]$ ll &#x2F;proc&#x2F;self&#x2F;exe</span><br><span class="line">lrwxrwxrwx 1 centos centos 0 8月  27 12:44 &#x2F;proc&#x2F;self&#x2F;exe -&gt; &#x2F;usr&#x2F;bin&#x2F;ls</span><br></pre></td></tr></table></figure>
+<p>演示代码中的技巧就是通过<code>&quot;/proc/self/exe&quot;</code>重新启动一个子进程，只不过进程名称叫<code>&quot;/proc/self/exe&quot;</code>而已。如果代码中没有那句if判断，又会执行到创建子进程，最终会导致递归溢出。</p>
+<h3 id="演示环境"><a href="#演示环境" class="headerlink" title="演示环境"></a>演示环境</h3><p>阿里云 Ubuntu14.04</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;notes&#x2F;docker&#x2F;codes]$ uname -a                                                                                     *[master]</span><br><span class="line">Linux aliyun 4.4.0-117-generic #141-Ubuntu SMP Tue Mar 13 12:01:47 UTC 2018 i686 i686 i686 GNU&#x2F;Linux</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>大彬
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://lessisbetter.site/2020/08/27/cgroup-1/" title="容器基础：Cgroup">http://lessisbetter.site/2020/08/27/cgroup-1/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+                <span class="icon">
+                  <i class="fa fa-wechat"></i>
+                </span>
+
+                <span class="label">公众号</span>
+              </a>
+            </div>
+
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="/atom.xml">
+                <span class="icon">
+                  <i class="fa fa-rss"></i>
+                </span>
+
+                <span class="label">RSS</span>
+              </a>
+            </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/27/play-minikube/" rel="prev" title="玩转minikube">
+      <i class="fa fa-chevron-left"></i> 玩转minikube
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cgroup"><span class="nav-number">1.</span> <span class="nav-text">Cgroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看Docker的Cgroup信息"><span class="nav-number">2.</span> <span class="nav-text">查看Docker的Cgroup信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用Go演示Cgroup内存限制"><span class="nav-number">3.</span> <span class="nav-text">利用Go演示Cgroup内存限制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#源码"><span class="nav-number">3.1.</span> <span class="nav-text">源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不超越内存限制情况"><span class="nav-number">3.2.</span> <span class="nav-text">不超越内存限制情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存超过限制被Kill情况"><span class="nav-number">3.3.</span> <span class="nav-text">内存超过限制被Kill情况</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充小知识"><span class="nav-number">4.</span> <span class="nav-text">补充小知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#演示环境"><span class="nav-number">5.</span> <span class="nav-text">演示环境</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="大彬"
+      src="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+  <p class="site-author-name" itemprop="name">大彬</p>
+  <div class="site-description" itemprop="description">区块链、Go语言</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">74</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="http://img.lessisbetter.site/gzh-qrcode-logo-small.png" title="公众号 → http://img.lessisbetter.site/gzh-qrcode-logo-small.png" rel="noopener" target="_blank"><i class="fa fa-fw fa-wechat"></i>公众号</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/shitaibin" title="GitHub → https://github.com/shitaibin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://segmentfault.com/u/lessisbetter" title="SegmentFault → https://segmentfault.com/u/lessisbetter" rel="noopener" target="_blank"><i class="fa fa-fw fa-crosshairs"></i>SegmentFault</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/u/947f3ccdd481" title="简书 → https://www.jianshu.com/u/947f3ccdd481" rel="noopener" target="_blank"><i class="fa fa-fw fa-heartbeat"></i>简书</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/4296218/james-shi" title="StackOverflow → https://stackoverflow.com/users/4296218/james-shi" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hz_stb@163.com" title="E-Mail → mailto:hz_stb@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友链
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://xargin.com" title="https://xargin.com" rel="noopener" target="_blank">Xargin曹大博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://pingcap.com/blog-cn/" title="https://pingcap.com/blog-cn/" rel="noopener" target="_blank">PingCap技术博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://qcrao.github.io/" title="https://qcrao.github.io/" rel="noopener" target="_blank">码农桃花源博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://book.eddycjy.com/golang/" title="https://book.eddycjy.com/golang/" rel="noopener" target="_blank">煎鱼的迷之博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://dave.cheney.net" title="https://dave.cheney.net" rel="noopener" target="_blank">Dave Cheney的博客</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://theme-next.iissnan.com/getting-started.html" title="http://theme-next.iissnan.com/getting-started.html" rel="noopener" target="_blank">Hexo Next主题配置</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+  <div class="beian"><a href="http://www.beian.miit.gov.cn" rel="noopener" target="_blank">浙ICP </a><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=18051706" rel="noopener" target="_blank">备18051706 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大彬</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1275814754&web_id=1275814754"></script>
+  </div>
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="//cdn.jsdelivr.net/npm/algoliasearch@4/dist/algoliasearch-lite.umd.js"></script>
+<script src="//cdn.jsdelivr.net/npm/instantsearch.js@4/dist/instantsearch.production.min.js"></script>
+<script src="/js/algolia-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'default',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '5bfe6f6d1ad3c04f357d',
+      clientSecret: '478b8db1365b4cd59cd27297cafe5d5a29f2cf0e',
+      repo        : 'shitaibin.github.io',
+      owner       : 'Shitaibin',
+      admin       : ['Shitaibin'],
+      id          : '52fb4c627bdd7d17704bd8b73486714e',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

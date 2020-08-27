@@ -196,6 +196,493 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/18/fabric-orderer-structs/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 6：Orderer核心数据结构</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-18 20:45:23 / 修改时间：11:46:55" itemprop="dateCreated datePublished" datetime="2019-11-18T20:45:23+08:00">2019-11-18</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>许多Orderer的文章，都是从Orderer的启动过程讲起，今天换一种“乐高”角度，先看看有哪些“零件”，再看这些零件怎么配合。</p>
+<p>Orderer负责接收交易，把交易打包成区块，然后区块在所有Orderer节点之间达成一致，再分发给Peer的功能，这涉及了：</p>
+<ul>
+<li>网络：gRPC接收交易，向Peer发送区块</li>
+<li>切块：把交易打包成区块</li>
+<li>共识：所有Orderer节点达成一致</li>
+</ul>
+<p>这些功能是由Orderer核心数据结构组织起来。</p>
+<blockquote>
+<p>在Fabric中，通道和链在概念上都是一条区块链，所以本文中也会可能会混用链和通道。</p>
+</blockquote>
+<h2 id="核心数据结构"><a href="#核心数据结构" class="headerlink" title="核心数据结构"></a>核心数据结构</h2><h3 id="Registrar"><a href="#Registrar" class="headerlink" title="Registrar"></a>Registrar</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-registrar.png" alt="Registrar"></p>
+<p>代码中，这样描述Registrar：</p>
+<blockquote>
+<p>Registrar serves as a point of access and control for the individual channel resources.</p>
+</blockquote>
+<p>可见它负责了每个channel资源的访问和控制点，也就说，要对某个通道怎么样，得从这入手。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Registrar <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock sync.RWMutex</span><br><span class="line">	<span class="comment">// 保存了多条链</span></span><br><span class="line">	chains <span class="keyword">map</span>[<span class="keyword">string</span>]*ChainSupport</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 共识插件</span></span><br><span class="line">	consenters         <span class="keyword">map</span>[<span class="keyword">string</span>]consensus.Consenter</span><br><span class="line">	ledgerFactory      blockledger.Factory</span><br><span class="line">	signer             crypto.LocalSigner</span><br><span class="line">    </span><br><span class="line">	systemChannelID    <span class="keyword">string</span></span><br><span class="line">	systemChannel      *ChainSupport</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>chains</code>保存了每一条链，每一条链在Orderer中都以<a href="#ChainSupport">ChainSupport</a>代表。</li>
+<li><code>consenters</code>保存了所有的共识插件，每个共识插件都是一个<a href="#Consenter">Consenter</a>，Fabric 1.4中共识插件有Solo、Kafka、EtcdRaft。</li>
+<li><code>ledgerFactory</code>用来读取和创建链的账本。</li>
+<li><code>signer</code>用来对Orderer中的数据进行签名，以及创建<a href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/#解密SignatureHeader">SignatureHeader</a>。</li>
+<li><code>systemChannelID</code>和<code>systemChannel</code>分别是系统链ID、系统链实例。</li>
+</ul>
+<h3 id="ChainSupport"><a href="#ChainSupport" class="headerlink" title="ChainSupport"></a>ChainSupport</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-chainsupport.png" alt="chainsupport"></p>
+<p>ChainSupport汇集了一条通道所需要的所有资源，所以说一个ChainSupport代表了一条链。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ChainSupport <span class="keyword">struct</span> &#123;</span><br><span class="line">	*ledgerResources</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line">	*BlockWriter</span><br><span class="line">	consensus.Chain</span><br><span class="line">	cutter blockcutter.Receiver</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ChainSupport 是一堆接口的集合，这些接口构成一条链所有的操作，接口可以分为4类：</p>
+<ul>
+<li>账本：<code>ledgerResources</code>、<code>BlockWriter</code>分别是账本读写和把区块写入到账本。</li>
+<li>消息：<code>msgprocessor.Processor</code>、<code>cutter</code>分别是处理交易和把交易切块。</li>
+<li>共识：<code>consensus.Chain</code>是Orderer的共识实例，比如每条链都有自己的Raft共识实例，它们互不干扰。</li>
+<li>签名：<code>crypto.LocalSigner</code>，同Registrar中的介绍。</li>
+</ul>
+<h3 id="Chain"><a href="#Chain" class="headerlink" title="Chain"></a>Chain</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-chain.png" alt="Chain"></p>
+<p>Chain是接口，它的实现并不一条链，而是一条链的共识实例，可以是Solo、Kafka和EtcdRaft，它运行在单独的协程，使用Channel和ChainSupport通信，它调用其它接口完成切块，以及让所有的Orderer节点对交易达成一致。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Chain defines a way to inject messages for ordering.</span></span><br><span class="line"><span class="comment">// Note, that in order to allow flexibility in the implementation, it is the responsibility of the implementer</span></span><br><span class="line"><span class="comment">// to take the ordered messages, send them through the blockcutter.Receiver supplied via HandleChain to cut blocks,</span></span><br><span class="line"><span class="comment">// and ultimately write the ledger also supplied via HandleChain.  This design allows for two primary flows</span></span><br><span class="line"><span class="comment">// 1. Messages are ordered into a stream, the stream is cut into blocks, the blocks are committed (solo, kafka)</span></span><br><span class="line"><span class="comment">// 2. Messages are cut into blocks, the blocks are ordered, then the blocks are committed (sbft)</span></span><br><span class="line"><span class="keyword">type</span> Chain <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// 普通消息/交易排序</span></span><br><span class="line">	<span class="comment">// Order accepts a message which has been processed at a given configSeq.</span></span><br><span class="line">	<span class="comment">// If the configSeq advances, it is the responsibility of the consenter</span></span><br><span class="line">	<span class="comment">// to revalidate and potentially discard the message</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Order(env *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置消息/交易排序</span></span><br><span class="line">	<span class="comment">// Configure accepts a message which reconfigures the channel and will</span></span><br><span class="line">	<span class="comment">// trigger an update to the configSeq if committed.  The configuration must have</span></span><br><span class="line">	<span class="comment">// been triggered by a ConfigUpdate message. If the config sequence advances,</span></span><br><span class="line">	<span class="comment">// it is the responsibility of the consenter to recompute the resulting config,</span></span><br><span class="line">	<span class="comment">// discarding the message if the reconfiguration is no longer valid.</span></span><br><span class="line">	<span class="comment">// The consenter may return an error, indicating the message was not accepted</span></span><br><span class="line">	Configure(config *cb.Envelope, configSeq <span class="keyword">uint64</span>) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 等待排序集群可用</span></span><br><span class="line">	<span class="comment">// WaitReady blocks waiting for consenter to be ready for accepting new messages.</span></span><br><span class="line">	<span class="comment">// This is useful when consenter needs to temporarily block ingress messages so</span></span><br><span class="line">	<span class="comment">// that in-flight messages can be consumed. It could return error if consenter is</span></span><br><span class="line">	<span class="comment">// in erroneous states. If this blocking behavior is not desired, consenter could</span></span><br><span class="line">	<span class="comment">// simply return nil.</span></span><br><span class="line">	WaitReady() error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当排序集群发送错误时，会关闭返回的通道</span></span><br><span class="line">	<span class="comment">// Errored returns a channel which will close when an error has occurred.</span></span><br><span class="line">	<span class="comment">// This is especially useful for the Deliver client, who must terminate waiting</span></span><br><span class="line">	<span class="comment">// clients when the consenter is not up to date.</span></span><br><span class="line">	Errored() &lt;-<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 启动当前链</span></span><br><span class="line">	<span class="comment">// Start should allocate whatever resources are needed for staying up to date with the chain.</span></span><br><span class="line">	<span class="comment">// Typically, this involves creating a thread which reads from the ordering source, passes those</span></span><br><span class="line">	<span class="comment">// messages to a block cutter, and writes the resulting blocks to the ledger.</span></span><br><span class="line">	Start()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 停止当前链，并释放资源</span></span><br><span class="line">	<span class="comment">// Halt frees the resources which were allocated for this Chain.</span></span><br><span class="line">	Halt()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Consenter"><a href="#Consenter" class="headerlink" title="Consenter"></a>Consenter</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-consenter.png" alt="Consenter"></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Consenter <span class="keyword">interface</span> &#123;</span><br><span class="line">	HandleChain(support ConsenterSupport, metadata *cb.Metadata) (Chain, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Consenter也是接口，它只有1个功能用来创建<code>Chain</code>。每种共识插件，都有自己单独的<strong>consenter实现</strong>，分别用来创建solo实例、kafka实例或etcdraft实例。</p>
+<h3 id="ConsenterSupport"><a href="#ConsenterSupport" class="headerlink" title="ConsenterSupport"></a>ConsenterSupport</h3><p><img src="http://img.lessisbetter.site/2019-11-orderer-consentersupport.png" alt="ConsenterSupport"></p>
+<p>ConsenterSupport为<strong>consenter实现</strong>提供所需的资源，其实就是共识用来访问外部数据的接口。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ConsenterSupport provides the resources available to a Consenter implementation.</span></span><br><span class="line"><span class="keyword">type</span> ConsenterSupport <span class="keyword">interface</span> &#123;</span><br><span class="line">	crypto.LocalSigner</span><br><span class="line">	msgprocessor.Processor</span><br><span class="line"></span><br><span class="line">	<span class="comment">// VerifyBlockSignature verifies a signature of a block with a given optional</span></span><br><span class="line">	<span class="comment">// configuration (can be nil).</span></span><br><span class="line">	VerifyBlockSignature([]*cb.SignedData, *cb.ConfigEnvelope) error</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 提供把消息切成块的接口</span></span><br><span class="line">	<span class="comment">// BlockCutter returns the block cutting helper for this channel.</span></span><br><span class="line">	BlockCutter() blockcutter.Receiver</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的orderer配置</span></span><br><span class="line">	<span class="comment">// SharedConfig provides the shared config from the channel's current config block.</span></span><br><span class="line">	SharedConfig() channelconfig.Orderer</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 当前链的通道配置</span></span><br><span class="line">	<span class="comment">// ChannelConfig provides the channel config from the channel's current config block.</span></span><br><span class="line">	ChannelConfig() channelconfig.Channel</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 生成区块</span></span><br><span class="line">	<span class="comment">// CreateNextBlock takes a list of messages and creates the next block based on the block with highest block number committed to the ledger</span></span><br><span class="line">	<span class="comment">// Note that either WriteBlock or WriteConfigBlock must be called before invoking this method a second time.</span></span><br><span class="line">	CreateNextBlock(messages []*cb.Envelope) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读区块</span></span><br><span class="line">	<span class="comment">// Block returns a block with the given number,</span></span><br><span class="line">	<span class="comment">// or nil if such a block doesn't exist.</span></span><br><span class="line">	Block(number <span class="keyword">uint64</span>) *cb.Block</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写区块</span></span><br><span class="line">	<span class="comment">// WriteBlock commits a block to the ledger.</span></span><br><span class="line">	WriteBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 写配置区块并更新配置</span></span><br><span class="line">	<span class="comment">// WriteConfigBlock commits a block to the ledger, and applies the config update inside.</span></span><br><span class="line">	WriteConfigBlock(block *cb.Block, encodedMetadataValue []<span class="keyword">byte</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sequence returns the current config squence.</span></span><br><span class="line">	Sequence() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ChainID returns the channel ID this support is associated with.</span></span><br><span class="line">	ChainID() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Height returns the number of blocks in the chain this channel is associated with.</span></span><br><span class="line">	Height() <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 以原始数据的格式追加区块，不像WriteBlock那样会修改元数据</span></span><br><span class="line">	<span class="comment">// Append appends a new block to the ledger in its raw form,</span></span><br><span class="line">	<span class="comment">// unlike WriteBlock that also mutates its metadata.</span></span><br><span class="line">	Append(block *cb.Block) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="宏观视角"><a href="#宏观视角" class="headerlink" title="宏观视角"></a>宏观视角</h2><p>把上面介绍的各项，融合在一幅图中：</p>
+<ul>
+<li>Registrar 包容万象，主要是ChainSupport和Consenter，Consenter是可插拔的</li>
+<li>ChainSupport 代表了一条链，能够指向属于本条链的共识实例，该共识实例由对应共识类型的Consenter创建</li>
+<li>共识实例使用ConsenterSupport访问共识外部资源</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-core-struct-of-orderer.png" alt=""></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/13/using-fabric-sdk-go-register-event/" class="post-title-link" itemprop="url">使用fabric-sdk-go订阅Fabric事件</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-13 20:43:13 / 修改时间：16:43:47" itemprop="dateCreated datePublished" datetime="2019-11-13T20:43:13+08:00">2019-11-13</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">使用fabric-sdk-go操作链码</a>，介绍了使用官方Go SDK，安装、实例化和升级链码，调用和查询链码，本文介绍使用fabric-sdk-go订阅事件。</p>
+<h2 id="事件介绍"><a href="#事件介绍" class="headerlink" title="事件介绍"></a>事件介绍</h2><p>本质上就3种事件：</p>
+<ul>
+<li>BlockEvent：获取区块信息</li>
+<li>TransactionEvent：获取交易信息</li>
+<li>ChainCodeEvnet：链码中<strong>自定义的</strong>链码事件</li>
+</ul>
+<p>但每种事件都有2 种类型：</p>
+<ul>
+<li><strong>Filtered</strong>：事件订阅时默认的类型，获取的<strong>信息“不全”</strong>，不同的事件缺失的数据不同，比如链码事件，如果是Filtered的，其响应字段中的Payload是空的，也就是不知道链码事件携带的数据。这种方式能够降低fabric网络和SDK之间的流量，当Filtered后的字段信息就足够时，这种方式非常适合。关于Filtered的更多信息，这篇文章 <a href="http://lessisbetter.site/2019/09/20/fabric-event-source/">Fabric 1.4源码解读 3：Event原理解读</a> 非常有帮助。</li>
+<li><strong>非Filtered</strong> ：可以获取<strong>完整的</strong>区块、交易、链码事件<strong>信息</strong>，这种方式在SDK想获取更多信息时，是非常必要的。</li>
+</ul>
+<p>4 个注册事件的接口1个取消注册的接口如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">接口名称</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">参数值</th>
+<th style="text-align:center">返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">RegisterBlockEvent</td>
+<td style="text-align:center">注册块事件</td>
+<td style="text-align:center">filter …fab.BlockFilter</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.BlockEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterFilteredBlockEvent</td>
+<td style="text-align:center">注册过滤块事件</td>
+<td style="text-align:center">无</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.FilteredBlockEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterTxStatusEvent</td>
+<td style="text-align:center">注册交易状态事件</td>
+<td style="text-align:center">txID string</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.TxStatusEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterChaincodeEvent</td>
+<td style="text-align:center">注册链码事件</td>
+<td style="text-align:center">ccID, eventFilter string</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.CCEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">Unregister</td>
+<td style="text-align:center">取消事件订阅</td>
+<td style="text-align:center">fab.Registration</td>
+<td style="text-align:center">无</td>
+</tr>
+</tbody>
+</table>
+<p>注册会得到管理可以管理订阅的Registration、接收事件的通道，以及可能注册时发生的错误，关于每个接口的具体介绍、使用，可以参考官方的<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/event" target="_blank" rel="noopener">Event文档</a>，其中包含了样例代码，如果想看真实的样例代码，可以参考<a href="#示例项目">示例项目</a>。</p>
+<h2 id="Option介绍"><a href="#Option介绍" class="headerlink" title="Option介绍"></a>Option介绍</h2><p>注册事件需要使用<code>EventClient</code>，创建EventClient时可以指定一些选项，这些选项其实就是事件订阅的选项。</p>
+<p>有3个Option:</p>
+<ul>
+<li><p>func WithBlockEvents() ClientOption</p>
+<p>  指定了此选项，事件就是<strong>非“filtered”</strong>，fabric会向调用SDK客户端发送完整的区块，可以获得订阅事件完整的信息。</p>
+</li>
+<li><p>func WithSeekType(seek seek.Type) ClientOption</p>
+<p>  使用此选项可以<strong>指定从哪个区块高度获取事件</strong>。<code>seek.Type</code>有<code>Oldest</code>、<code>Newest</code>和<code>FromBlock</code> 3种取值，分别代表从第1个区块、最后一个区块和指定区块号开始获取事件，<code>FromBlock</code>需要结合<code>WithBlockNum</code>使用。So，可以通过这个选项<strong>获取历史事件</strong>。</p>
+</li>
+<li><p>func WithBlockNum(from uint64) ClientOption</p>
+<p>  指定区块高度，只有<code>WithSeekType(FromBlock)</code>时才生效。</p>
+</li>
+</ul>
+<h2 id="链码事件多说几句"><a href="#链码事件多说几句" class="headerlink" title="链码事件多说几句"></a>链码事件多说几句</h2><h3 id="链码如何发链码事件"><a href="#链码如何发链码事件" class="headerlink" title="链码如何发链码事件"></a>链码如何发链码事件</h3><p><code>ChaincodeStubInterface</code>有<code>SetEvent</code>的方法，入参分别为事件名称和事件锁携带的信息payload。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ChaincodeStubInterface is used by deployable chaincode apps to access and</span></span><br><span class="line"><span class="comment">// modify their ledgers</span></span><br><span class="line"><span class="keyword">type</span> ChaincodeStubInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// SetEvent allows the chaincode to set an event on the response to the</span></span><br><span class="line">    <span class="comment">// proposal to be included as part of a transaction. The event will be</span></span><br><span class="line">    <span class="comment">// available within the transaction in the committed block regardless of the</span></span><br><span class="line">    <span class="comment">// validity of the transaction.</span></span><br><span class="line">    SetEvent(name <span class="keyword">string</span>, payload []<span class="keyword">byte</span>) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="通过ChannelClient订阅链码事件介绍"><a href="#通过ChannelClient订阅链码事件介绍" class="headerlink" title="通过ChannelClient订阅链码事件介绍"></a>通过ChannelClient订阅链码事件介绍</h3><p>SDK的channel client也有订阅链码事件的接口：<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/channel#Client.RegisterChaincodeEvent" target="_blank" rel="noopener">channel.Client.RegisterChaincodeEvent()</a>，它的定义和event client提供的接口完全一样，但功能上有所差别。</p>
+<p>channel client没有指定 <code>WithBlockEvents</code>，所以这是<strong>Filtered的事件链码</strong>，获取的事件链码中，其Payload为空。</p>
+<h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>示例项目<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/tree/master/samples/event" target="_blank" rel="noopener">fabric-sdk-go-sample</a>是结合Fabric的BYFN展示如何使用fabric-sdk-go的项目，它的Event样例部分，介绍了如何使用以上接口订阅Fabric事件，具体请参加该部分<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/samples/event/README.md" target="_blank" rel="noopener">README</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/10/how-fabric-verify-signatures/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 5：Fabric是如何验证签名的？</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-10 21:23:36" itemprop="dateCreated datePublished" datetime="2019-11-10T21:23:36+08:00">2019-11-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-30 16:53:34" itemprop="dateModified" datetime="2020-03-30T16:53:34+08:00">2020-03-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="理论知识"><a href="#理论知识" class="headerlink" title="理论知识"></a>理论知识</h2><p>如果不清楚数字证书、公私钥与签名的关系，建议阅读阮一峰的<a href="https://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html" target="_blank" rel="noopener">数字签名是什么？</a>。</p>
+<h2 id="Fabric证书和密钥文件"><a href="#Fabric证书和密钥文件" class="headerlink" title="Fabric证书和密钥文件"></a>Fabric证书和密钥文件</h2><p>使用Fabric CA或者 cryptogen 工具可以生成证书和私钥文件，这里取 BYFN 例子的文件做介绍，Org1 Admin 账户的文件如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  first-network git:(release-1.4) ✗ tree crypto-config&#x2F;peerOrganizations&#x2F;org1.example.com&#x2F;users&#x2F;Admin@org1.example.com</span><br><span class="line">crypto-config&#x2F;peerOrganizations&#x2F;org1.example.com&#x2F;users&#x2F;Admin@org1.example.com</span><br><span class="line">├── msp</span><br><span class="line">│   ├── admincerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   ├── cacerts</span><br><span class="line">│   │   └── ca.org1.example.com-cert.pem</span><br><span class="line">│   ├── keystore</span><br><span class="line">│   │   └── f9f3dddb7fcc40086de6d5ae77f1481abbb99bff7a74839b950720d3dca0d8ee_sk</span><br><span class="line">│   ├── signcerts</span><br><span class="line">│   │   └── Admin@org1.example.com-cert.pem</span><br><span class="line">│   └── tlscacerts</span><br><span class="line">│       └── tlsca.org1.example.com-cert.pem</span><br><span class="line">└── tls</span><br><span class="line">    ├── ca.crt</span><br><span class="line">    ├── client.crt</span><br><span class="line">    └── client.key</span><br></pre></td></tr></table></figure>
+<p>msp目录，为Admin的身份信息：</p>
+<ul>
+<li>admincerts：组织管理员的身份验证证书。</li>
+<li>cacerts：组织的根证书。</li>
+<li>keystore：该用户的私钥，用来对消息签名。</li>
+<li>signcerts：该用户的身份验证证书，被组织根证书签名。</li>
+<li>tlscacerts：TLS通信用的身份证书，为组织的TLS证书。</li>
+</ul>
+<p>tls目录，为TLS通信相关的证书：</p>
+<ul>
+<li>ca.crt：组织根证书</li>
+<li>client.crt：验证当前用户身份的证书，当前为验证管理员的证书</li>
+<li>client.key：当前用户的身份私钥，用来签名</li>
+</ul>
+<h2 id="整体逻辑"><a href="#整体逻辑" class="headerlink" title="整体逻辑"></a>整体逻辑</h2><p>交易是区块链的核心，一切状态的转移都是一条交易，交易的真伪需要使用数字签名进行保证。</p>
+<p>在Fabric中，交易涉及两个概念：</p>
+<ul>
+<li>Proposal：提案</li>
+<li>Transaction：交易</li>
+</ul>
+<p>所以 Proposal 和 Transaction 都需要使用数字签名进行保护，它们相关的消息中，都包含了发送方的身份信息：mspid、证书（证书中实际包含了公钥）。</p>
+<p>提案的实际消息是 SignedProposal，其中包含了：</p>
+<ul>
+<li>数字签名：Signature</li>
+<li>证书、公钥等签名者身份信息：ProposalBytes.Proposal.Header.SignatureHeader.Creator</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-signed_proposal.png" alt="signed_proposal"></p>
+<blockquote>
+<p>图来自杨保华的<a href="https://github.com/yeasy/hyperledger_code_fabric" target="_blank" rel="noopener">hyperledger_code_fabric</a> 。</p>
+</blockquote>
+<p>交易中最重要的是Envelope结构体，SDK向Orderer提交交易时，会发送Envelope消息，它包含了：</p>
+<ul>
+<li>数字签名：Signature</li>
+<li>交易发送方的身份信息：Payload.Header.SignatureHeader.Creator</li>
+<li>可选背书节点的身份信息，不同的交易类型，Data包含了不同的信息，如果是需要背书的，可以包含背书的信息、签名和身份信息：Payload.Data.SignedChainccodeDeploymentSpec.OwnerEndorsements.signingidentity</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2019-11-tx_envelop.jpeg" alt="Signed transaction"></p>
+<blockquote>
+<p>图来自《区块链原理、设计与应用》，为升级链码的交易Envelope结构。</p>
+</blockquote>
+<p>在验证消息的签名时，会从中提取出数字签名Signature，身份信息（证书、公钥）和被签名消息体，完成以下验证：</p>
+<ul>
+<li>使用证书验证发送方的身份，发送方是否属于它所在的组织，以及发送方的公钥没有修改和替换</li>
+<li>使用公钥验证消息是否为发送方签名，并且消息没有被修改</li>
+</ul>
+<p>验证的整体流程如下：</p>
+<p><img src="http://img.lessisbetter.site/2019-11-verify-signature.png" alt="Verify signature"></p>
+<h2 id="验证签名的函数"><a href="#验证签名的函数" class="headerlink" title="验证签名的函数"></a>验证签名的函数</h2><p><code>core/common/validation/msgvalidation.go</code> 提供了2验证消息签名的函数，用来验证Proposal和Transaction，它们会调用相同的函数<code>checkSignatureFromCreator</code>进行数字签名的验证。</p>
+<h3 id="验证Porposal签名"><a href="#验证Porposal签名" class="headerlink" title="验证Porposal签名"></a>验证Porposal签名</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValidateProposalMessage</span><span class="params">(signedProp *pb.SignedProposal)</span> <span class="params">(*pb.Proposal, *common.Header, *pb.ChaincodeHeaderExtension, error)</span></span> &#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 从SignatureHeader交易客户端的签名</span></span><br><span class="line">	<span class="comment">// validate the signature</span></span><br><span class="line">	err = checkSignatureFromCreator(shdr.Creator, signedProp.Signature, signedProp.ProposalBytes, chdr.ChannelId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// log the exact message on the peer but return a generic error message to</span></span><br><span class="line">		<span class="comment">// avoid malicious users scanning for channels</span></span><br><span class="line">		putilsLogger.Warningf(<span class="string">"channel [%s]: %s"</span>, chdr.ChannelId, err)</span><br><span class="line">		sId := &amp;msp.SerializedIdentity&#123;&#125;</span><br><span class="line">		err := proto.Unmarshal(shdr.Creator, sId)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="comment">// log the error here as well but still only return the generic error</span></span><br><span class="line">			err = errors.Wrap(err, <span class="string">"could not deserialize a SerializedIdentity"</span>)</span><br><span class="line">			putilsLogger.Warningf(<span class="string">"channel [%s]: %s"</span>, chdr.ChannelId, err)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="literal">nil</span>, <span class="literal">nil</span>, errors.Errorf(<span class="string">"access denied: channel [%s] creator org [%s]"</span>, chdr.ChannelId, sId.Mspid)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="验证Transaction签名"><a href="#验证Transaction签名" class="headerlink" title="验证Transaction签名"></a>验证Transaction签名</h3><p>Commit阶段会对交易进行验证，会调用此函数，该函数完成了对Transaction的验证，包含发送方数字签名的验证。</p>
+<p>交易是包含背书结果和背书签名的，背书相关的验证并不包含在此，而是专门的背书验证，具体请看<a href="http://lessisbetter.site/2019/09/06/fabric-source-endorser-policy-flow/">Fabric 1.4源码解读 1：背书策略是怎么使用的</a>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ValidateTransaction checks that the transaction envelope is properly formed</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValidateTransaction</span><span class="params">(e *common.Envelope, c channelconfig.ApplicationCapabilities)</span> <span class="params">(*common.Payload, pb.TxValidationCode)</span></span> &#123;</span><br><span class="line">	putilsLogger.Debugf(<span class="string">"ValidateTransactionEnvelope starts for envelope %p"</span>, e)</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// validate the header</span></span><br><span class="line">	chdr, shdr, err := validateCommonHeader(payload.Header)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		putilsLogger.Errorf(<span class="string">"validateCommonHeader returns err %s"</span>, err)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, pb.TxValidationCode_BAD_COMMON_HEADER</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// validate the signature in the envelope</span></span><br><span class="line">	err = checkSignatureFromCreator(shdr.Creator, e.Signature, e.Payload, chdr.ChannelId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		putilsLogger.Errorf(<span class="string">"checkSignatureFromCreator returns err %s"</span>, err)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, pb.TxValidationCode_BAD_CREATOR_SIGNATURE</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// continue the validation in a way that depends on the type specified in the header</span></span><br><span class="line">	<span class="keyword">switch</span> common.HeaderType(chdr.Type) &#123;</span><br><span class="line">	<span class="keyword">case</span> common.HeaderType_ENDORSER_TRANSACTION:</span><br><span class="line">		<span class="comment">// Verify that the transaction ID has been computed properly.</span></span><br><span class="line">		<span class="comment">// This check is needed to ensure that the lookup into the ledger</span></span><br><span class="line">		<span class="comment">// for the same TxID catches duplicates.</span></span><br><span class="line">		err = utils.CheckTxID(</span><br><span class="line">			chdr.TxId,</span><br><span class="line">			shdr.Nonce,</span><br><span class="line">			shdr.Creator)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			putilsLogger.Errorf(<span class="string">"CheckTxID returns err %s"</span>, err)</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, pb.TxValidationCode_BAD_PROPOSAL_TXID</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 如果是背书交易，背书的签名不在此验证，由背书策略模块进行验证</span></span><br><span class="line">		err = validateEndorserTransaction(payload.Data, payload.Header)</span><br><span class="line">		putilsLogger.Debugf(<span class="string">"ValidateTransactionEnvelope returns err %s"</span>, err)</span><br></pre></td></tr></table></figure>
+<h2 id="验证签名"><a href="#验证签名" class="headerlink" title="验证签名"></a>验证签名</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// given a creator, a message and a signature,</span></span><br><span class="line"><span class="comment">// this function returns nil if the creator</span></span><br><span class="line"><span class="comment">// is a valid cert and the signature is valid</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">checkSignatureFromCreator</span><span class="params">(creatorBytes []<span class="keyword">byte</span>, sig []<span class="keyword">byte</span>, msg []<span class="keyword">byte</span>, ChainID <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	putilsLogger.Debugf(<span class="string">"begin"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// check for nil argument</span></span><br><span class="line">	<span class="keyword">if</span> creatorBytes == <span class="literal">nil</span> || sig == <span class="literal">nil</span> || msg == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"nil arguments"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 每个链有各自的msp</span></span><br><span class="line">	mspObj := mspmgmt.GetIdentityDeserializer(ChainID)</span><br><span class="line">	<span class="keyword">if</span> mspObj == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.Errorf(<span class="string">"could not get msp for channel [%s]"</span>, ChainID)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取proposal创建者/发送方的Identity</span></span><br><span class="line">	<span class="comment">// creatorBytes 中是序列化后的mspid、证书、公钥等信息</span></span><br><span class="line">	creator, err := mspObj.DeserializeIdentity(creatorBytes)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"MSP error"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	putilsLogger.Debugf(<span class="string">"creator is %s"</span>, creator.GetIdentifier())</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 验证证书是否有效</span></span><br><span class="line">	<span class="comment">// ensure that creator is a valid certificate</span></span><br><span class="line">	err = creator.Validate()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"creator certificate is not valid"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	putilsLogger.Debugf(<span class="string">"creator is valid"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// validate the signature</span></span><br><span class="line">	<span class="comment">// 验证签名</span></span><br><span class="line">	err = creator.Verify(msg, sig)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"creator's signature over the proposal is not valid"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	putilsLogger.Debugf(<span class="string">"exits successfully"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取Identity"><a href="#获取Identity" class="headerlink" title="获取Identity"></a>获取Identity</h3><p>获取当前通道的MSP manager：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// GetIdentityDeserializer returns the IdentityDeserializer for the given chain</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetIdentityDeserializer</span><span class="params">(chainID <span class="keyword">string</span>)</span> <span class="title">msp</span>.<span class="title">IdentityDeserializer</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> chainID == <span class="string">""</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> GetLocalMSP()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> GetManagerForChain(chainID)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// GetManagerForChain returns the msp manager for the supplied</span></span><br><span class="line"><span class="comment">// chain; if no such manager exists, one is created</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetManagerForChain</span><span class="params">(chainID <span class="keyword">string</span>)</span> <span class="title">msp</span>.<span class="title">MSPManager</span></span> &#123;</span><br><span class="line">	m.Lock()</span><br><span class="line">	<span class="keyword">defer</span> m.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 先从缓存查找</span></span><br><span class="line">	mspMgr, ok := mspMap[chainID]</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="comment">// 找不到则新建立当前通道Msp manager</span></span><br><span class="line">		mspLogger.Debugf(<span class="string">"Created new msp manager for channel `%s`"</span>, chainID)</span><br><span class="line">		mspMgmtMgr := &amp;mspMgmtMgr&#123;msp.NewMSPManager(), <span class="literal">false</span>&#125;</span><br><span class="line">		mspMap[chainID] = mspMgmtMgr</span><br><span class="line">		mspMgr = mspMgmtMgr</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// check for internal mspManagerImpl and mspMgmtMgr types. if a different</span></span><br><span class="line">		<span class="comment">// type is found, it's because a developer has added a new type that</span></span><br><span class="line">		<span class="comment">// implements the MSPManager interface and should add a case to the logic</span></span><br><span class="line">		<span class="comment">// above to handle it.</span></span><br><span class="line">		<span class="keyword">if</span> !(reflect.TypeOf(mspMgr).Elem().Name() == <span class="string">"mspManagerImpl"</span> || reflect.TypeOf(mspMgr).Elem().Name() == <span class="string">"mspMgmtMgr"</span>) &#123;</span><br><span class="line">			<span class="built_in">panic</span>(<span class="string">"Found unexpected MSPManager type."</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		mspLogger.Debugf(<span class="string">"Returning existing manager for channel '%s'"</span>, chainID)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> mspMgr</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MSPManager has been setup for a channel, which indicates whether the channel</span></span><br><span class="line"><span class="comment">// exists or not</span></span><br><span class="line"><span class="keyword">type</span> mspMgmtMgr <span class="keyword">struct</span> &#123;</span><br><span class="line">	msp.MSPManager</span><br><span class="line">	<span class="comment">// track whether this MSPManager has been setup successfully</span></span><br><span class="line">	up <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>msp.MSPManager</code>是一个接口，从上面代码可以得知，它是利用<code>NewMSPManager</code>创建的：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建等待Setup的MSPManager</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewMSPManager</span><span class="params">()</span> <span class="title">MSPManager</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;mspManagerImpl&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>疑问是，啥时候Setup的，当前调用路径上没发现这个路径，可能从系统整体流程上，已经保证了，当前调用时，已经创建好了。</p>
+<p>获取Identity，是一个剥洋葱的过程：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mgr *mspMgmtMgr)</span> <span class="title">DeserializeIdentity</span><span class="params">(serializedIdentity []<span class="keyword">byte</span>)</span> <span class="params">(msp.Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> !mgr.up &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"channel doesn't exist"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> mgr.MSPManager.DeserializeIdentity(serializedIdentity)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际调用<code>mspManagerImpl</code>的<code>DeserializeIdentity</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DeserializeIdentity returns an identity given its serialized version supplied as argument</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mgr *mspManagerImpl)</span> <span class="title">DeserializeIdentity</span><span class="params">(serializedID []<span class="keyword">byte</span>)</span> <span class="params">(Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// We first deserialize to a SerializedIdentity to get the MSP ID</span></span><br><span class="line">	sId := &amp;msp.SerializedIdentity&#123;&#125;</span><br><span class="line">	err := proto.Unmarshal(serializedID, sId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Wrap(err, <span class="string">"could not deserialize a SerializedIdentity"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取发送方的msp实例</span></span><br><span class="line">	<span class="comment">// we can now attempt to obtain the MSP</span></span><br><span class="line">	msp := mgr.mspsMap[sId.Mspid]</span><br><span class="line">	<span class="keyword">if</span> msp == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Errorf(<span class="string">"MSP %s is unknown"</span>, sId.Mspid)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> t := msp.(<span class="keyword">type</span>) &#123;</span><br><span class="line">	<span class="keyword">case</span> *bccspmsp:</span><br><span class="line">		<span class="keyword">return</span> t.deserializeIdentityInternal(sId.IdBytes)</span><br><span class="line">	<span class="keyword">case</span> *idemixmsp:</span><br><span class="line">		<span class="keyword">return</span> t.deserializeIdentityInternal(sId.IdBytes)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> t.DeserializeIdentity(serializedID)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>转到bccspmsp的实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 反序列化二进制，得到证书，然后用证书获取公钥，使用证书、公钥和msp，创建Identity</span></span><br><span class="line"><span class="comment">// deserializeIdentityInternal returns an identity given its byte-level representation</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(msp *bccspmsp)</span> <span class="title">deserializeIdentityInternal</span><span class="params">(serializedIdentity []<span class="keyword">byte</span>)</span> <span class="params">(Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// This MSP will always deserialize certs this way</span></span><br><span class="line">	bl, _ := pem.Decode(serializedIdentity)</span><br><span class="line">	<span class="keyword">if</span> bl == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"could not decode the PEM structure"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	cert, err := x509.ParseCertificate(bl.Bytes)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Wrap(err, <span class="string">"parseCertificate failed"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Now we have the certificate; make sure that its fields</span></span><br><span class="line">	<span class="comment">// (e.g. the Issuer.OU or the Subject.OU) match with the</span></span><br><span class="line">	<span class="comment">// MSP id that this MSP has; otherwise it might be an attack</span></span><br><span class="line">	<span class="comment">// TODO!</span></span><br><span class="line">	<span class="comment">// We can't do it yet because there is no standardized way</span></span><br><span class="line">	<span class="comment">// (yet) to encode the MSP ID into the x.509 body of a cert</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 从证书中提取公钥，封装一下，满足bccsp.Key接口</span></span><br><span class="line">	pub, err := msp.bccsp.KeyImport(cert, &amp;bccsp.X509PublicKeyImportOpts&#123;Temporary: <span class="literal">true</span>&#125;)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.WithMessage(err, <span class="string">"failed to import certificate's public key"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 利用证书、公钥和msp建立角色身份</span></span><br><span class="line">	<span class="keyword">return</span> newIdentity(cert, pub, msp)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Identity包含了Identity标示符，证书、公钥和所在的msp，创建Identity就是计算以上几项信息的过程：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> identity <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// id contains the identifier (MSPID and identity identifier) for this instance</span></span><br><span class="line">	id *IdentityIdentifier</span><br><span class="line"></span><br><span class="line">	<span class="comment">// cert contains the x.509 certificate that signs the public key of this instance</span></span><br><span class="line">	cert *x509.Certificate</span><br><span class="line"></span><br><span class="line">	<span class="comment">// this is the public key of this instance</span></span><br><span class="line">	pk bccsp.Key</span><br><span class="line"></span><br><span class="line">	<span class="comment">// reference to the MSP that "owns" this identity</span></span><br><span class="line">	msp *bccspmsp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newIdentity</span><span class="params">(cert *x509.Certificate, pk bccsp.Key, msp *bccspmsp)</span> <span class="params">(Identity, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> mspIdentityLogger.IsEnabledFor(zapcore.DebugLevel) &#123;</span><br><span class="line">		mspIdentityLogger.Debugf(<span class="string">"Creating identity instance for cert %s"</span>, certToPEM(cert))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 检查证书</span></span><br><span class="line">	<span class="comment">// Sanitize first the certificate</span></span><br><span class="line">	cert, err := msp.sanitizeCert(cert)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Compute identity identifier</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Use the hash of the identity's certificate as id in the IdentityIdentifier</span></span><br><span class="line">	hashOpt, err := bccsp.GetHashOpt(msp.cryptoConfig.IdentityIdentifierHashFunction)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.WithMessage(err, <span class="string">"failed getting hash function options"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	digest, err := msp.bccsp.Hash(cert.Raw, hashOpt)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.WithMessage(err, <span class="string">"failed hashing raw certificate to compute the id of the IdentityIdentifier"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	id := &amp;IdentityIdentifier&#123;</span><br><span class="line">		Mspid: msp.name,</span><br><span class="line">		Id:    hex.EncodeToString(digest)&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;identity&#123;id: id, cert: cert, pk: pk, msp: msp&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="验证数字签名"><a href="#验证数字签名" class="headerlink" title="验证数字签名"></a>验证数字签名</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Verify checks against a signature and a message</span></span><br><span class="line"><span class="comment">// to determine whether this identity produced the</span></span><br><span class="line"><span class="comment">// signature; it returns nil if so or an error otherwise</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(id *identity)</span> <span class="title">Verify</span><span class="params">(msg []<span class="keyword">byte</span>, sig []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="comment">// mspIdentityLogger.Infof("Verifying signature")</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Compute Hash</span></span><br><span class="line">	hashOpt, err := id.getHashOpt(id.msp.cryptoConfig.SignatureHashFamily)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"failed getting hash function options"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	digest, err := id.msp.bccsp.Hash(msg, hashOpt)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"failed computing digest"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> mspIdentityLogger.IsEnabledFor(zapcore.DebugLevel) &#123;</span><br><span class="line">		mspIdentityLogger.Debugf(<span class="string">"Verify: digest = %s"</span>, hex.Dump(digest))</span><br><span class="line">		mspIdentityLogger.Debugf(<span class="string">"Verify: sig = %s"</span>, hex.Dump(sig))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 最终会调用bccsp的接口验证签名，SW或者国密</span></span><br><span class="line">	valid, err := id.msp.bccsp.Verify(id.pk, sig, digest, <span class="literal">nil</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.WithMessage(err, <span class="string">"could not determine the validity of the signature"</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> !valid &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"The signature is invalid"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="解密SignatureHeader"><a href="#解密SignatureHeader" class="headerlink" title="解密SignatureHeader"></a>解密SignatureHeader</h2><p>Fabric 使用 <code>SignatureHeader</code> 保存发送方的身份信息，Creator即为序列化后的信息。</p>
+<p><code>SignatureHeaderMaker</code> 接口定义了创建一个 <code>SignatureHeader</code> 的方法，搜索起来实现该接口的结构体很多，本质上只有2个：<code>mspSigner</code> 和 <code>SignatureHeaderCreator</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SignatureHeaderMaker creates a new SignatureHeader</span></span><br><span class="line"><span class="keyword">type</span> SignatureHeaderMaker <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// NewSignatureHeader creates a SignatureHeader with the correct signing identity and a valid nonce</span></span><br><span class="line">	NewSignatureHeader() (*cb.SignatureHeader, error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// localmsp</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *mspSigner)</span> <span class="title">NewSignatureHeader</span><span class="params">()</span> <span class="params">(*cb.SignatureHeader, error)</span></span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// crypto</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bs *SignatureHeaderCreator)</span> <span class="title">NewSignatureHeader</span><span class="params">()</span> <span class="params">(*cb.SignatureHeader, error)</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>两个实现本质上是一样的，以 <code>mspSigner</code> 为例进行介绍。首先获取实现SigningIdentity接口的实例，然后调用<code>Serialize</code>得到序列化后的身份信息，再随机生成一个Nonce，创建出<code>SignatureHeader</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NewSignatureHeader creates a SignatureHeader with the correct signing identity and a valid nonce</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *mspSigner)</span> <span class="title">NewSignatureHeader</span><span class="params">()</span> <span class="params">(*cb.SignatureHeader, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获得SigningIdentity接口实例</span></span><br><span class="line">	signer, err := mspmgmt.GetLocalMSP().GetDefaultSigningIdentity()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"Failed getting MSP-based signer [%s]"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 序列化得到creator</span></span><br><span class="line">	creatorIdentityRaw, err := signer.Serialize()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"Failed serializing creator public identity [%s]"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取一个随机nonce</span></span><br><span class="line">	nonce, err := crypto.GetRandomNonce()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"Failed creating nonce [%s]"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	sh := &amp;cb.SignatureHeader&#123;&#125;</span><br><span class="line">	sh.Creator = creatorIdentityRaw</span><br><span class="line">	sh.Nonce = nonce</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> sh, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>SigningIdentity</code>接口包含了<code>Identity</code>接口，Identity声明了跟证书相关的方法，SigningIdentity则增加了对消息签名的函数<code>Sign</code>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> SigningIdentity <span class="keyword">interface</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Extends Identity</span></span><br><span class="line">	Identity</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sign the message</span></span><br><span class="line">	Sign(msg []<span class="keyword">byte</span>) ([]<span class="keyword">byte</span>, error)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// GetPublicVersion returns the public parts of this identity</span></span><br><span class="line">	GetPublicVersion() Identity</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Identity <span class="keyword">interface</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">	<span class="comment">// Serialize converts an identity to bytes</span></span><br><span class="line">	Serialize() ([]<span class="keyword">byte</span>, error)</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Serialize</code>的实现，实际只包含了证书和MSPID，说明了<strong>消息中携带的只包含MSPID和证书作为身份信息</strong>，而不是<code>signingidentity</code>的所有字段（signingidentity实现了SigningIdentity接口）。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Serialize returns a byte array representation of this identity</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(id *identity)</span> <span class="title">Serialize</span><span class="params">()</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// mspIdentityLogger.Infof("Serializing identity %s", id.id)</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Raw格式证书</span></span><br><span class="line">	pb := &amp;pem.Block&#123;Bytes: id.cert.Raw, Type: <span class="string">"CERTIFICATE"</span>&#125;</span><br><span class="line">	pemBytes := pem.EncodeToMemory(pb)</span><br><span class="line">	<span class="keyword">if</span> pemBytes == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.New(<span class="string">"encoding of identity failed"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 使用MSPID和序列化后的证书，再次序列化得到身份信息 </span></span><br><span class="line">	sId := &amp;msp.SerializedIdentity&#123;Mspid: id.id.Mspid, IdBytes: pemBytes&#125;</span><br><span class="line">	idBytes, err := proto.Marshal(sId)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errors.Wrapf(err, <span class="string">"could not marshal a SerializedIdentity structure for identity %s"</span>, id.id)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> idBytes, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://github.com/yeasy/hyperledger_code_fabric" target="_blank" rel="noopener">https://github.com/yeasy/hyperledger_code_fabric</a></li>
+<li>《区块链原理、设计与应用》第9章、第10章</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/10/31/go-modules-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/31/go-modules-notes/" class="post-title-link" itemprop="url">Go Modules 方法、问题汇总贴</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-10-31 17:07:59 / 修改时间：17:29:11" itemprop="dateCreated datePublished" datetime="2019-10-31T17:07:59+08:00">2019-10-31</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="教程资料"><a href="#教程资料" class="headerlink" title="教程资料"></a>教程资料</h2><ul>
+<li>简单操作：<a href="https://segmentfault.com/a/1190000016703769" target="_blank" rel="noopener">https://segmentfault.com/a/1190000016703769</a></li>
+<li>多项介绍：<a href="https://learnku.com/golang/t/33859" target="_blank" rel="noopener">https://learnku.com/golang/t/33859</a></li>
+<li>官方教程：<a href="https://blog.golang.org/using-go-modules" target="_blank" rel="noopener">https://blog.golang.org/using-go-modules</a></li>
+</ul>
+<h2 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h2><h3 id="replace-使用http或https"><a href="#replace-使用http或https" class="headerlink" title="replace 使用http或https"></a>replace 使用http或https</h3><p>在使用go replace时，有2点注意：</p>
+<ul>
+<li>目标仓库不能带协议头，比如http、https，要从域名或者IP开始</li>
+<li>版本号格式要符合语义格式化，测试版本是否符合规则：<a href="https://play.golang.org/p/S_Jz3-Uxh_T" target="_blank" rel="noopener">Go playground 样例代码</a></li>
+</ul>
+<p>直接修改 <code>go.mod</code> 文件格式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">replace github.com&#x2F;hyperledger&#x2F;fabric v1.4.1 &#x3D;&gt; 192.168.9.251&#x2F;hyperledger&#x2F;fabric v1.4.1-alpha.11-yx</span><br></pre></td></tr></table></figure></p>
+<p>或使用命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go mod edit -replace&#x3D;github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1&#x3D;192.168.9.251&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br></pre></td></tr></table></figure></p>
+<h3 id="Gitlab-仓库没开启https"><a href="#Gitlab-仓库没开启https" class="headerlink" title="Gitlab 仓库没开启https"></a>Gitlab 仓库没开启https</h3><p>go mod 默认使用 go get 下载依赖，而 go get 默认使用 https，如果 Gitlab 仓库没有启用 https，需要使用 <code>-insecure</code> 让go get走http。</p>
+<p>问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY&#x3D;&quot;&quot; go get github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br><span class="line">go: 192.168.9.251&#x2F;hyperledger&#x2F;fabric@v1.4.1-alpha.11-yx: unrecognized import path &quot;192.168.9.251&#x2F;hyperledger&#x2F;fabric&quot; (https fetch: Get https:&#x2F;&#x2F;192.168.9.251&#x2F;hyperledger&#x2F;fabric?go-get&#x3D;1: dial tcp 192.168.9.251:443: connect: connection refused)</span><br><span class="line">go: error loading module requirements</span><br></pre></td></tr></table></figure>
+<p>方案：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOPROXY&#x3D;&quot;&quot; go get -insecure github.com&#x2F;hyperledger&#x2F;fabric@v1.4.1</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注解：遇到问题时，使用 <code>go get -v</code> 可以看到更多信息，有助分析问题。</p>
+</blockquote>
+<h3 id="Go-Modules-代理"><a href="#Go-Modules-代理" class="headerlink" title="Go Modules 代理"></a>Go Modules 代理</h3><p>由于某些网络原因，国内下载 Github 等处的依赖，不够流程，需要设置代理，不同版本的设置如下：</p>
+<ul>
+<li><p>go1.12</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>go1.13</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ export GOPRIVATE&#x3D;192.168.9.251</span><br><span class="line">$ export GOPROXY&#x3D;https:&#x2F;&#x2F;goproxy.cn,direct</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="私有仓库"><a href="#私有仓库" class="headerlink" title="私有仓库"></a>私有仓库</h3><p>如果仓库设置为私有，这要求用户必须登录才能访问仓库。</p>
+<p>Go Modules 默认使用 go get 下载依赖，go get 利用 https 或者 http, 但下载过程没有设置用户名和密码的地方，下载依赖时，可能遇到一下错误：</p>
+<ul>
+<li>connection refused</li>
+<li>unkown revision</li>
+</ul>
+<p>可以通过设置Github/Gitlab Access Token结果，通过token的方式，访问仓库，token的获取方式为，登录Gitlab仓库，进入以下页面：</p>
+<p>Gitlab User Setting -&gt; Access Tokens</p>
+<p>在此页面复制下顶端的 <code>Your New Personal Access Token</code>, 然后填写token名字和勾选下方的权限进行创建 Token。</p>
+<p>然后执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global \</span><br><span class="line">url.<span class="string">"http://oauth2:<span class="variable">$&#123;your_access_token&#125;</span>@ip_address_or_domain"</span>.insteadOf \</span><br><span class="line"><span class="string">"http://ip_address_or_domain"</span></span><br></pre></td></tr></table></figure>
+<p>后面再去 go get 的时候，就可顺利下载依赖。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/10/31/fabric-sdk-go-configure-graph/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -434,7 +921,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-04 17:31:33" itemprop="dateModified" datetime="2020-02-04T17:31:33+08:00">2020-02-04</time>
+                <time title="修改时间：2020-08-21 17:34:53" itemprop="dateModified" datetime="2020-08-21T17:34:53+08:00">2020-08-21</time>
               </span>
 
           
@@ -557,12 +1044,16 @@
 <li>灰色 Gary：表示<strong>被黑色对象直接引用的对象</strong>，但还没对它进行扫描。</li>
 <li>白色 White：白色是对象的初始颜色，如果扫描完成后，对象依然还是白色的，说明此对象是垃圾对象。</li>
 </ol>
-<p>三色标记规则：黑色不能指向白色对象。即黑色可以指向灰色，灰色可以指向白色。</p>
+<p>三色标记规则：</p>
+<ol>
+<li>黑色不能指向白色对象。</li>
+<li>即黑色可以指向灰色，灰色可以指向白色。</li>
+</ol>
 <p>三色标记主要流程：</p>
 <ol>
 <li>初始所有对象被标记为白色。</li>
 <li>寻找所有Root对象，比如被线程直接引用的对象，把Root对象标记为灰色。</li>
-<li>把灰色对象标记为黑色，并它们引用的对象标记为灰色。</li>
+<li>把灰色对象标记为黑色，并把它们引用的对象标记为灰色。</li>
 <li>持续遍历每一个灰色对象，直到没有灰色对象。</li>
 <li>剩余白色对象为垃圾对象。</li>
 </ol>
@@ -579,7 +1070,7 @@
 <h3 id="写屏障"><a href="#写屏障" class="headerlink" title="写屏障"></a>写屏障</h3><p>我们结合一段用户代码介绍写屏障：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A.Next = B</span><br><span class="line">A.Next = &amp;C&#123;&#125;</span><br></pre></td></tr></table></figure>
 <p>三色标记的扫描线程是跟用户线程并发执行的，考虑这种情况：</p>
-<p>用户线程执行完 <code>A.Next = B</code> 后，扫描线程把A标记为黑色，B标记为灰色，用户线程执行 <code>A.Next = &amp;C{}</code> ，C是新对象，被标记为白色，由于A已经被扫描，不会重复扫描，所以C不会被标记为灰色，造成了黑色对象指向白色对象的情况，这种三色标记中是不允许的，结果是C被认为是垃圾对象，最终被清扫掉，当访问C时会造成非法内存访问而Panic。</p>
+<p>用户线程执行完 <code>A.Next = B</code> 后，扫描线程把A标记为黑色，B标记为灰色，用户线程执行 <code>A.Next = &amp;C{}</code> ，C是新对象，被标记为白色，由于A已经被扫描，不会重复扫描，所以C不会被标记为灰色，造成了黑色对象指向白色对象的情况，这违反了三色标记中的不变性规则，结果是C被认为是垃圾对象，最终被清扫掉，当访问C时会造成非法内存访问而Panic。</p>
 <p>写屏障可以解决这个问题，当对象引用树发生改变时，即对象指向关系发生变化时，将被指向的对象标记为灰色，维护了三色标记的约束：黑色对象不能直接引用白色对象，这避免了使用中的对象被释放。</p>
 <p>有写屏障后，用户线程执行 <code>A.Next = &amp;C{}</code> 后，写屏障把C标记为灰色。</p>
 <h3 id="并发标记"><a href="#并发标记" class="headerlink" title="并发标记"></a>并发标记</h3><p>并发垃圾回收的主要思想上文已经介绍，Go的垃圾回收为每个P都分配了一个gcMarker协程，用于并发标记对象，这样有些P在标记对象，而有些P上继续运行用户协程。</p>
@@ -1156,450 +1647,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/05/etcd-raft-sources-structs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/05/etcd-raft-sources-structs/" class="post-title-link" itemprop="url">Etcd Raft架构设计和源码剖析3：重要结构体定义</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-05 21:59:35" itemprop="dateCreated datePublished" datetime="2019-09-05T21:59:35+08:00">2019-09-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-01-08 19:24:11" itemprop="dateModified" datetime="2020-01-08T19:24:11+08:00">2020-01-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>etcd raft定义了一些重要的结构体，来传递和表示raft使用到的数据。</p>
-<p>在介绍各结构体之前，先澄清一下raft、log和state machine的关系，它们三个是独立的，没有隶属关系，尤其是state machine并不属于raft。</p>
-<p><img src="http://img.lessisbetter.site/2019-08-raft-%E5%9B%BE1.png" alt="State machine"></p>
-<p>Consensus Module指raft算法，它输出一致的Log Entry序列，State machine指应用Entry后得到的状态，状态机是并不是raft的一部分，而是用来存储数据的模块。</p>
-<h2 id="Entry"><a href="#Entry" class="headerlink" title="Entry"></a>Entry</h2><p>每个Raft集群节点都是一个状态机，每个节点都使用相同的log entry序列修改状态机的数据，Entry就是每一个操作项，<strong>raft的核心能力就是为应用层提供序列相同的entry</strong>。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Entry <span class="keyword">struct</span> &#123;</span><br><span class="line">	Term             <span class="keyword">uint64</span>    <span class="string">`protobuf:"varint,2,opt,name=Term" json:"Term"`</span></span><br><span class="line">	Index            <span class="keyword">uint64</span>    <span class="string">`protobuf:"varint,3,opt,name=Index" json:"Index"`</span></span><br><span class="line">	Type             EntryType <span class="string">`protobuf:"varint,1,opt,name=Type,enum=raftpb.EntryType" json:"Type"`</span></span><br><span class="line">	Data             []<span class="keyword">byte</span>    <span class="string">`protobuf:"bytes,4,opt,name=Data" json:"Data,omitempty"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> EntryType <span class="keyword">int32</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	EntryNormal       EntryType = <span class="number">0</span></span><br><span class="line">	EntryConfChange   EntryType = <span class="number">1</span></span><br><span class="line">	EntryConfChangeV2 EntryType = <span class="number">2</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>每一个Entry，都可以使用(Term, Index)进行唯一标记，相当于Entry的ID：</p>
-<ul>
-<li>Term：即raft论文中的Term，表明了当前Entry所属的Term。raft不使用绝对时间，而是使用相对时间，它把时间分割成了大小不等的term，每一轮选举都会开启一个新的term，term值会连续累加。如果当前的节点已经是Term 10缺收到了Term 8的Entry，Term 8的Entry已经过时，会被丢弃。</li>
-<li>Index：每一个Entry都有一个的Index，代表当前Entry在log entry序列中的位置，每个index上最终只有1个达成共识的Entry。</li>
-</ul>
-<p>除了用于达成一致的Term和Index外，Entry还携带了数据：</p>
-<ul>
-<li>Type：表明当前Entry的类型，<code>EntryNormal</code>代表是Entry携带的是修改状态机的操作数据，<code>EntryConfChange</code>和<code>EntryConfChangeV2</code>代表的是Entry携带的是修改当前raft集群的配置。</li>
-<li>Data：是序列化的数据，不同的Type类型，对应不同的Data。</li>
-</ul>
-<h2 id="Snapshot"><a href="#Snapshot" class="headerlink" title="Snapshot"></a>Snapshot</h2><p>在Entry特别多的场景下，会存在一些问题，比如现在有1亿条已经达成一致Entry，后面还有源源不断的Entry产生，是否有以下问题：</p>
-<ol>
-<li>这些Entry占用了大量的磁盘空间，但实际上过去的Entry已经对已经拥有这些Entry的节点没有意义了，只对那些没有Entry的节点有意义，leader把Entry发送给没有这些Entry节点，以让这些节点最终能和leader保持一致的状态。</li>
-<li>有些follower非常慢，或者刚启动，或者重启过，与leader的当前状态已经严重脱节，让他们从Entry 0开始同步，然后应用到状态机，这种操作时间效率是不是非常慢？然后每一个Entry都会产生一个历史的状态，当产生新的状态之后，历史状态对当前节点也没有意义。</li>
-</ol>
-<p>解决这种问题的办法就是快照，比如虚拟机的快照，或者docker镜像（镜像本质也是一种快照），有了快照就可以把状态机快速恢复到快照时的状态，<strong>空间和时间上效率都能提高很多</strong>。</p>
-<p>Raft可以定期产生一些快照，然后在这些快照上按序应用快照之后的Entry就能得到一致的状态。1亿个Entry + 1亿01个Entry得到的状态，跟第1亿个Entry后所产生的快照+1亿零1个Entry得到的状态是一致的。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Snapshot <span class="keyword">struct</span> &#123;</span><br><span class="line">	Data             []<span class="keyword">byte</span>           <span class="string">`protobuf:"bytes,1,opt,name=data" json:"data,omitempty"`</span></span><br><span class="line">	Metadata         SnapshotMetadata <span class="string">`protobuf:"bytes,2,opt,name=metadata" json:"metadata"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SnapshotMetadata <span class="keyword">struct</span> &#123;</span><br><span class="line">	ConfState        ConfState <span class="string">`protobuf:"bytes,1,opt,name=conf_state,json=confState" json:"conf_state"`</span></span><br><span class="line">	Index            <span class="keyword">uint64</span>    <span class="string">`protobuf:"varint,2,opt,name=index" json:"index"`</span></span><br><span class="line">	Term             <span class="keyword">uint64</span>    <span class="string">`protobuf:"varint,3,opt,name=term" json:"term"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Data：是状态机中状态的快照。</li>
-<li>Metadata：是快照自身相关的数据。<ul>
-<li>ConfState：是快照时，当前raft的配置状态，这些状态数据并不在状态机中，所以需要进行保存。</li>
-<li>Index、Term：快照所依据的Entry所在的Index和Term。</li>
-</ul>
-</li>
-</ul>
-<h2 id="Message"><a href="#Message" class="headerlink" title="Message"></a>Message</h2><p>Raft集群节点之间的通信只使用了1个结构体<code>Message</code>，Message中有一个<code>Type</code>成员，表明了当前的Message是哪种消息，比如可以是Raft论文中提到的AppendEntries，RequestVotes等，目前实际可以容纳19种类型的消息，每种消息对Raft都有不同的作用，具体见<a href="https://zhuanlan.zhihu.com/p/51065416" target="_blank" rel="noopener">这篇文章</a>：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不同的Message类型会用到不同的字段</span></span><br><span class="line"><span class="keyword">type</span> Message <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type             MessageType <span class="string">`protobuf:"varint,1,opt,name=type,enum=raftpb.MessageType" json:"type"`</span></span><br><span class="line">	To               <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,2,opt,name=to" json:"to"`</span></span><br><span class="line">	From             <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,3,opt,name=from" json:"from"`</span></span><br><span class="line">	Term             <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,4,opt,name=term" json:"term"`</span></span><br><span class="line">	LogTerm          <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,5,opt,name=logTerm" json:"logTerm"`</span></span><br><span class="line">	Index            <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,6,opt,name=index" json:"index"`</span></span><br><span class="line">	Entries          []Entry     <span class="string">`protobuf:"bytes,7,rep,name=entries" json:"entries"`</span></span><br><span class="line">	Commit           <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,8,opt,name=commit" json:"commit"`</span></span><br><span class="line">	Snapshot         Snapshot    <span class="string">`protobuf:"bytes,9,opt,name=snapshot" json:"snapshot"`</span></span><br><span class="line">	Reject           <span class="keyword">bool</span>        <span class="string">`protobuf:"varint,10,opt,name=reject" json:"reject"`</span></span><br><span class="line">	RejectHint       <span class="keyword">uint64</span>      <span class="string">`protobuf:"varint,11,opt,name=rejectHint" json:"rejectHint"`</span></span><br><span class="line">	Context          []<span class="keyword">byte</span>      <span class="string">`protobuf:"bytes,12,opt,name=context" json:"context,omitempty"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Message中包含了很多字段，不同的消息类型使用的字段组合不相同，可以从不同消息的处理逻辑中看出来。</p>
-<ul>
-<li>To, From：是消息的接收节点和发送节点的的Raft ID。</li>
-<li>Term：创建Message时，发送节点所在的Term。</li>
-<li>LogTerm：创建Message时，发送节点本地所保存的log entry序列中最大的Term，在选举的时候会使用。</li>
-<li>Index：不同的消息类型，Index的含义不同。Term和Index与Entry中的Term和Index不一定会相同，因为某个follower可能比较慢，leader向follower发送已经committed的Entry。</li>
-<li>Entries：发送给follower，待follower处理的Entry。</li>
-<li>Commit：创建Message时，不同消息含义不同，Append时是发送节点本地已committed的Index，Heartbeat时是committed Index或者与follower匹配的Index。</li>
-<li>Snapshot：leader传递给follower的snapshot。</li>
-<li>Reject：投票和Append的响应消息使用，Reject表示拒绝leader发来的消息。</li>
-<li>RejectHint：拒绝Append消息的响应消息使用，用来给leader提示，发送follower已有的最后一个Index。</li>
-<li>Context：某些消息的附加信息，即用来存储通用的数据。比如竞选时，存放<code>campaignTransfer</code>。</li>
-</ul>
-<h2 id="Storage"><a href="#Storage" class="headerlink" title="Storage"></a>Storage</h2><p>etcd/raft不负责<strong>持久化数据存储</strong>和网络通信，网络数据都是通过Node接口的函数传入和传出raft。持久化数据存储由创建raft.Node的应用层负责，包含：</p>
-<ul>
-<li>应用层使用Entry生成的状态机，即一致的应用数据。</li>
-<li>WAL：Write Ahead Log，历史的Entry（包含还未达成一致的Entry）和快照数据。</li>
-</ul>
-<p>Snapshot是已在节点间达成一致Entry的快照，快照之前的Entry必然都是已经达成一致的，而快照之后，有达成一致的，也有写入磁盘还未达成一致的Entry。etcd/raft会使用到这些Entry和快照，而<code>Storage</code>接口，就是用来读这些数据的。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Storage is an interface that may be implemented by the application</span></span><br><span class="line"><span class="comment">// to retrieve log entries from storage.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// If any Storage method returns an error, the raft instance will</span></span><br><span class="line"><span class="comment">// become inoperable and refuse to participate in elections; the</span></span><br><span class="line"><span class="comment">// application is responsible for cleanup and recovery in this case.</span></span><br><span class="line"><span class="keyword">type</span> Storage <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// TODO(tbg): split this into two interfaces, LogStorage and StateStorage.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// InitialState returns the saved HardState and ConfState information.</span></span><br><span class="line">	InitialState() (pb.HardState, pb.ConfState, error)</span><br><span class="line">	<span class="comment">// Entries returns a slice of log entries in the range [lo,hi).</span></span><br><span class="line">	<span class="comment">// MaxSize limits the total size of the log entries returned, but</span></span><br><span class="line">	<span class="comment">// Entries returns at least one entry if any.</span></span><br><span class="line">	Entries(lo, hi, maxSize <span class="keyword">uint64</span>) ([]pb.Entry, error)</span><br><span class="line">	<span class="comment">// Term returns the term of entry i, which must be in the range</span></span><br><span class="line">	<span class="comment">// [FirstIndex()-1, LastIndex()]. The term of the entry before</span></span><br><span class="line">	<span class="comment">// FirstIndex is retained for matching purposes even though the</span></span><br><span class="line">	<span class="comment">// rest of that entry may not be available.</span></span><br><span class="line">	Term(i <span class="keyword">uint64</span>) (<span class="keyword">uint64</span>, error)</span><br><span class="line">	<span class="comment">// LastIndex returns the index of the last entry in the log.</span></span><br><span class="line">	LastIndex() (<span class="keyword">uint64</span>, error)</span><br><span class="line">	<span class="comment">// FirstIndex returns the index of the first log entry that is</span></span><br><span class="line">	<span class="comment">// possibly available via Entries (older entries have been incorporated</span></span><br><span class="line">	<span class="comment">// into the latest Snapshot; if storage only contains the dummy entry the</span></span><br><span class="line">	<span class="comment">// first log entry is not available).</span></span><br><span class="line">	FirstIndex() (<span class="keyword">uint64</span>, error)</span><br><span class="line">	<span class="comment">// Snapshot returns the most recent snapshot.</span></span><br><span class="line">	<span class="comment">// If snapshot is temporarily unavailable, it should return ErrSnapshotTemporarilyUnavailable,</span></span><br><span class="line">	<span class="comment">// so raft state machine could know that Storage needs some time to prepare</span></span><br><span class="line">	<span class="comment">// snapshot and call Snapshot later.</span></span><br><span class="line">	Snapshot() (pb.Snapshot, error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用这个接口，从应用层读取：</p>
-<ul>
-<li>InitialState：HardState和配置状态Confstate</li>
-<li>Entries：根据Index获取连续的Entry</li>
-<li>Term：获取某个Entry所在的Term</li>
-<li>LastIndex：获取本节点已存储的最新的Entry的Index</li>
-<li>FirstIndex：获取本节点已存储的第一个Entry的Index</li>
-<li>Snapshot：获取本节点最近生成的Snapshot，Snapshot是由应用层创建的，并暂时保存起来，raft调用此接口读取</li>
-</ul>
-<p>每次都从磁盘文件读取这些数据，效率必然是不高的，所以etcd/raft内定义了<code>MemoryStorage</code>，它实现了<code>Storage</code>接口，并且提供了函数来维护最新快照后的Entry，关于<code>MemoryStorage</code>见<a href="#raftLog">raftLog</a>小节，其中的<code>storage</code>即为<code>MemoryStorage</code>。</p>
-<h2 id="unstable"><a href="#unstable" class="headerlink" title="unstable"></a>unstable</h2><p>因为Entry的存储是由应用层负责的，所以raft需要暂时存储还未存到Storage中的Entry或者Snapshot，在创建Ready时，Entry和Snapshot会被封装到Ready，由应用层写入到storage。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// unstable.entries[i] has raft log position i+unstable.offset.</span></span><br><span class="line"><span class="comment">// Note that unstable.offset may be less than the highest log</span></span><br><span class="line"><span class="comment">// position in storage; this means that the next write to storage</span></span><br><span class="line"><span class="comment">// might need to truncate the log before persisting unstable.entries.</span></span><br><span class="line"><span class="keyword">type</span> unstable <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// the incoming unstable snapshot, if any.</span></span><br><span class="line">	snapshot *pb.Snapshot</span><br><span class="line">	<span class="comment">// all entries that have not yet been written to storage.</span></span><br><span class="line">	entries []pb.Entry</span><br><span class="line">	offset  <span class="keyword">uint64</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Snapshot：是follower从leader收到的最新的Snapshot。</li>
-<li>entries：对leader而已，是raft刚利用请求创建的Entry，对follower而言是从leader收到的Entry。</li>
-<li>offset：Entries[i].Index = i + offset。</li>
-</ul>
-<h2 id="raftLog"><a href="#raftLog" class="headerlink" title="raftLog"></a>raftLog</h2><p>raft使用raftLog来管理当前Entry序列和Snapshot等信息，它由Storage、unstable、committed和applied组成。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> raftLog <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// storage contains all stable entries since the last snapshot.</span></span><br><span class="line">	storage Storage</span><br><span class="line"></span><br><span class="line">	<span class="comment">// unstable contains all unstable entries and snapshot.</span></span><br><span class="line">	<span class="comment">// they will be saved into storage.</span></span><br><span class="line">	unstable unstable</span><br><span class="line"></span><br><span class="line">	<span class="comment">// committed和applied是storage的2个整数下标</span></span><br><span class="line">	<span class="comment">// committed到applied需要Ready</span></span><br><span class="line">	<span class="comment">// committed is the highest log position that is known to be in</span></span><br><span class="line">	<span class="comment">// stable storage on a quorum of nodes.</span></span><br><span class="line">	committed <span class="keyword">uint64</span></span><br><span class="line">	<span class="comment">// applied is the highest log position that the application has</span></span><br><span class="line">	<span class="comment">// been instructed to apply to its state machine.</span></span><br><span class="line">	<span class="comment">// Invariant: applied &lt;= committed</span></span><br><span class="line">	applied <span class="keyword">uint64</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Storage和unstable前面已经介绍过了，所以介绍下committed和applied。</p>
-<p>committed指最后一个在raft集群多数节点之间达成一致的Entry Index。</p>
-<p>applied指当前节点被应用层应用到状态机的最后一个Entry Index。applied和committed之间的Entry就是等待被应用层应用到状态机的Entry。</p>
-<p>前面提到Storage接口可以获取第一个索引firstIdx，最后一个索引lastIdx，在生成snapshot之后签名的Entry就可以删除了，所以firstidx是storage中snapshot后的第一个Entry的Index，lastIndex是storage中保存的最后一个Entry的Index，这个Entry可能还没有在raft集群多数节点之间达成一致，所以在committed之后，这些Entry是等待commit的Entry，leader发现某个Entry Index已经在多数节点之间达成一致，就会把committed移动到该Entry Index。</p>
-<p><img src="http://img.lessisbetter.site/2019-08-raftLog.png" alt="raftLog"></p>
-<h2 id="SoftState"><a href="#SoftState" class="headerlink" title="SoftState"></a>SoftState</h2><p>SoftState指易变的状态数据，记录了<strong>当前</strong>的Leader的Node ID，以及当前节点的角色。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SoftState provides state that is useful for logging and debugging.</span></span><br><span class="line"><span class="comment">// The state is volatile and does not need to be persisted to the WAL.</span></span><br><span class="line"><span class="keyword">type</span> SoftState <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// leader的Node ID</span></span><br><span class="line">	Lead <span class="keyword">uint64</span> <span class="comment">// must use atomic operations to access; keep 64-bit aligned.</span></span><br><span class="line">	<span class="comment">// 节点是什么角色：leader、follower...</span></span><br><span class="line">	RaftState StateType</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// StateType represents the role of a node in a cluster.</span></span><br><span class="line"><span class="keyword">type</span> StateType <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> stmap = [...]<span class="keyword">string</span>&#123;</span><br><span class="line">	<span class="string">"StateFollower"</span>,</span><br><span class="line">	<span class="string">"StateCandidate"</span>,</span><br><span class="line">	<span class="string">"StateLeader"</span>,</span><br><span class="line">	<span class="string">"StatePreCandidate"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="HardState"><a href="#HardState" class="headerlink" title="HardState"></a>HardState</h2><p>HardState是写入到WAL（存储Entry的文件）的状态，可以在节点重启时恢复raft的状态，它了记录：</p>
-<ul>
-<li>Term：节点当前所在的Term。</li>
-<li>Vote：节点在竞选期间所投的候选节点ID。</li>
-<li>Commit：当前已经committed Entry Index。</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> HardState <span class="keyword">struct</span> &#123;</span><br><span class="line">	Term             <span class="keyword">uint64</span> <span class="string">`protobuf:"varint,1,opt,name=term" json:"term"`</span></span><br><span class="line">	Vote             <span class="keyword">uint64</span> <span class="string">`protobuf:"varint,2,opt,name=vote" json:"vote"`</span></span><br><span class="line">	Commit           <span class="keyword">uint64</span> <span class="string">`protobuf:"varint,3,opt,name=commit" json:"commit"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Ready"><a href="#Ready" class="headerlink" title="Ready"></a>Ready</h2><p>终于到etcd raft最重要的一个结构体了。raft使用Ready结构体对外传递数据，是多种数据的打包。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Ready encapsulates the entries and messages that are ready to read,</span></span><br><span class="line"><span class="comment">// be saved to stable storage, committed or sent to other peers.</span></span><br><span class="line"><span class="comment">// All fields in Ready are read-only.</span></span><br><span class="line"><span class="keyword">type</span> Ready <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// The current volatile state of a Node.</span></span><br><span class="line">	<span class="comment">// SoftState will be nil if there is no update.</span></span><br><span class="line">	<span class="comment">// It is not required to consume or store SoftState.</span></span><br><span class="line">	*SoftState</span><br><span class="line"></span><br><span class="line">	<span class="comment">// The current state of a Node to be saved to stable storage BEFORE</span></span><br><span class="line">	<span class="comment">// Messages are sent.</span></span><br><span class="line">	<span class="comment">// HardState will be equal to empty state if there is no update.</span></span><br><span class="line">	pb.HardState</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ReadStates can be used for node to serve linearizable read requests locally</span></span><br><span class="line">	<span class="comment">// when its applied index is greater than the index in ReadState.</span></span><br><span class="line">	<span class="comment">// Note that the readState will be returned when raft receives msgReadIndex.</span></span><br><span class="line">	<span class="comment">// The returned is only valid for the request that requested to read.</span></span><br><span class="line">	ReadStates []ReadState</span><br><span class="line"></span><br><span class="line">	<span class="comment">// unstable的entry，即待写入到storage的entry</span></span><br><span class="line">	<span class="comment">// Entries specifies entries to be saved to stable storage BEFORE</span></span><br><span class="line">	<span class="comment">// Messages are sent.</span></span><br><span class="line">	Entries []pb.Entry</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Snapshot specifies the snapshot to be saved to stable storage.</span></span><br><span class="line">	Snapshot pb.Snapshot</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 待applied的entry</span></span><br><span class="line">	<span class="comment">// CommittedEntries specifies entries to be committed to a</span></span><br><span class="line">	<span class="comment">// store/state-machine. These have previously been committed to stable</span></span><br><span class="line">	<span class="comment">// store.</span></span><br><span class="line">	CommittedEntries []pb.Entry</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Messages specifies outbound messages to be sent AFTER Entries are</span></span><br><span class="line">	<span class="comment">// committed to stable storage.</span></span><br><span class="line">	<span class="comment">// If it contains a MsgSnap message, the application MUST report back to raft</span></span><br><span class="line">	<span class="comment">// when the snapshot has been received or has failed by calling ReportSnapshot.</span></span><br><span class="line">	Messages []pb.Message</span><br><span class="line"></span><br><span class="line">	<span class="comment">// MustSync indicates whether the HardState and Entries must be synchronously</span></span><br><span class="line">	<span class="comment">// written to disk or if an asynchronous write is permissible.</span></span><br><span class="line">	MustSync <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>SoftState、HardState、Entry、Snapshot、Message都已经介绍过，不再单独介绍含义。</p>
-<p>Entries和CommittedEntries的区别是，Entries保存的是从unstable读取的Entry，它们即将被应用层写入storage，CommittedEntries是已经被Committed，还没有applied，应用层会把他们应用到状态机。</p>
-<p>ReadStates用来处理读请求，MustSync用来指明应用层是否采用异步的方式写数据。</p>
-<p>应用层在接收到Ready后，应当处理Ready中的每一个有效字段，处理完毕后，调用<code>Advance()</code>通知raft Ready已处理完毕。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/" class="post-title-link" itemprop="url">Fabric 1.4不同peer使用不同语言链码的问题</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-03 11:50:31" itemprop="dateCreated datePublished" datetime="2019-09-03T11:50:31+08:00">2019-09-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-11 14:27:33" itemprop="dateModified" datetime="2019-09-11T14:27:33+08:00">2019-09-11</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png" alt="fabric chaincode error"></p>
-<p>大家的问题是：</p>
-<blockquote>
-<p>一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？</p>
-</blockquote>
-<p>经过实证，这是不可行的。</p>
-<p>分2种情况，2种都有问题：</p>
-<ol>
-<li>不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码</li>
-<li>部分peer先实例化，另外peer再安装不同语言链码：调用链码时报指纹不匹配错误</li>
-</ol>
-<h2 id="不同peer安装不同语言链码，然后同时实例化"><a href="#不同peer安装不同语言链码，然后同时实例化" class="headerlink" title="不同peer安装不同语言链码，然后同时实例化"></a>不同peer安装不同语言链码，然后同时实例化</h2><p>1、修改BFYN，只在peer0.org1和peer0.org2上安装Go语言链码，不进行后续操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Installing chaincode on peer0.org1...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;go&#x2F;</span><br><span class="line">+ res&#x3D;0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.108 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Chaincode is installed on peer0.org1 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">Install chaincode on peer0.org2...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;go&#x2F;</span><br><span class="line">+ res&#x3D;0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.529 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Chaincode is installed on peer0.org2 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; All GOOD, BYFN execution completed &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
-<p>2、在peer1.org1上安装Java语言链码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode install -n mycc -v 1.0 -l java -p &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;java&#x2F;</span><br><span class="line">2019-09-03 03:19:44.710 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:19:44.711 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 03:19:44.754 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br></pre></td></tr></table></figure>
-<p>3、在peer1.org1上发起实例化链码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem -C mychannel -n mycc -l golang -v 1.0 -c &#39;&#123;&quot;Args&quot;:[&quot;init&quot;,&quot;a&quot;,&quot;100&quot;,&quot;b&quot;,&quot;200&quot;]&#125;&#39; -P &#39;OR (&#39;\&#39;&#39;Org1MSP.peer&#39;\&#39;&#39;,&#39;\&#39;&#39;Org2MSP.peer&#39;\&#39;&#39;)&#39;</span><br><span class="line">2019-09-03 03:22:12.430 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:22:12.431 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br></pre></td></tr></table></figure>
-<p>4、查看链码容器，只有peer1.org1的链码容器，peer0.org1和peer0.org2的链码容器都没有起来。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric-sdk-go-sample git:(master) ✗ docker ps</span><br><span class="line">CONTAINER ID        IMAGE                                                                                                  COMMAND                  CREATED             STATUS              PORTS                      NAMES</span><br><span class="line">f8f6aa8b5da6        dev-peer1.org1.example.com-mycc-1.0-cd123150154e6bf2df7ce682e0b1bcbea40499416f37a6da3aae14c4eb51b08d   &quot;&#x2F;root&#x2F;chaincode-jav…&quot;   37 seconds ago      Up 36 seconds                                  dev-peer1.org1.example.com-mycc-1.0</span><br><span class="line">6cec20eb7502        hyperledger&#x2F;fabric-tools:latest                                                                        &quot;&#x2F;bin&#x2F;bash&quot;              About an hour ago   Up About an hour                               cli</span><br><span class="line">7e134fe7e8e9        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:8051-&gt;8051&#x2F;tcp     peer1.org1.example.com</span><br><span class="line">ed6f5511d938        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:10051-&gt;10051&#x2F;tcp   peer1.org2.example.com</span><br><span class="line">025a71178777        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:7051-&gt;7051&#x2F;tcp     peer0.org1.example.com</span><br><span class="line">8687dfd14e7b        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:9051-&gt;9051&#x2F;tcp     peer0.org2.example.com</span><br><span class="line">e9cc8b410d7f        hyperledger&#x2F;fabric-orderer:latest                                                                      &quot;orderer&quot;                About an hour ago   Up About an hour    0.0.0.0:7050-&gt;7050&#x2F;tcp     orderer.example.com</span><br></pre></td></tr></table></figure>
-<h2 id="部分peer先实例化，另外peer再安装不同语言链码"><a href="#部分peer先实例化，另外peer再安装不同语言链码" class="headerlink" title="部分peer先实例化，另外peer再安装不同语言链码"></a>部分peer先实例化，另外peer再安装不同语言链码</h2><p>不改造BYFN，原生启动。peer0.org1，peer0.org2，peer1.org2都已经实例化了Go语言链码。</p>
-<p>然后在peer1.org1上安装Java语言的链码，在执行Invoke或者查询，报指纹不匹配-数据不匹配的错误。</p>
-<p>原因分析：操作链码时，会调用LSCC的<code>LifeCycleSysCC.getCCCode</code>获取链码，一份链码是从数据库取的，即当前链码容器的，一份链码是本地存储的，会对2份进行匹配，如果不匹配就会报指纹不匹配错误。</p>
-<p>匹配函数为<code>CDSPackage.ValidateCC</code>，匹配项为：</p>
-<ol>
-<li>名称、版本</li>
-<li>CodeHash、元数据Hash</li>
-</ol>
-<p>调用链码时报的指纹不匹配错误：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode install -n mycc -v 1.0 -l java -p &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;java&#x2F;</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 01:52:15.755 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode query -C mychannel -n mycc -c &#39;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&#39;</span><br><span class="line">Error: endorsement failure during query. response: status:500 message:&quot;failed to execute transaction b8b740aab0e6dd10cfe62416240ef94bfb90a55358904233c4d60dd5a39e6fe3: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;peerOrganizations&#x2F;org1.example.com&#x2F;peers&#x2F;peer1.org1.example.com&#x2F;tls&#x2F;ca.crt  -c &#39;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;a&quot;,&quot;b&quot;,&quot;50&quot;]&#125;&#39;</span><br><span class="line">Error: endorsement failure during invoke. response: status:500 message:&quot;failed to execute transaction aec5a0ccbcf86032774dc80220b90419d2816cc3f050a104c1cfcde55a2247cb: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="文章"><a href="#文章" class="headerlink" title="文章"></a>文章</h2><p>另外，社区里的hucg编写了一篇源码文章：<a href="https://blog.csdn.net/love_feng_forever/article/details/100532324" target="_blank" rel="noopener">https://blog.csdn.net/love_feng_forever/article/details/100532324</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/02/hyperledger-projects/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/02/hyperledger-projects/" class="post-title-link" itemprop="url">Hyperledger项目介绍</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-02 15:04:06" itemprop="dateCreated datePublished" datetime="2019-09-02T15:04:06+08:00">2019-09-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-04 10:58:38" itemprop="dateModified" datetime="2019-09-04T10:58:38+08:00">2019-09-04</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Hyperledger下有许多区块链相关的项目，曾以为它们分别是不同的类别，专注不同的功能，梳理一下其实并不是这样，比如光区块链框架就有Fabric、Iroha和Sawtooth。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-hyperledger-projects.png" alt="hyperledger projects"></p>
-<p>各项目的简要介绍以及TWGC的介绍，一定要看看Baohua Yang大佬的<a href="https://github.com/dWChina/ibm-opentech-ma/blob/master/fabric1.4LTS/02_Hyperledger_Overview.pdf" target="_blank" rel="noopener">PPT</a>，ppt介绍Hyperledger社区的现状，各子项目概览，以及发展方向，以及Hyperledger 中国技术工作组的最新动态。。</p>
-<p>做Fabric相关的工作，需要关注Fabric、Cello、Caliper、Explorer等几个项目。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-projects-archs.png" alt="fabric projects arch"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/02/fabric-sdk-go-chaincode/" class="post-title-link" itemprop="url">使用fabric-sdk-go操作链码</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-02 14:55:16" itemprop="dateCreated datePublished" datetime="2019-09-02T14:55:16+08:00">2019-09-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-26 15:26:09" itemprop="dateModified" datetime="2020-05-26T15:26:09+08:00">2020-05-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文把与fabric网络交互的baas、应用程序、客户端统称成为客户端，它们可以使用sdk和fabric网络进行交互，sdk调用grpc可以与指定的peer和orderer进行通信，本文的目的是在BYFN搭建的fabric网络的基础之上，展示如何使用fabric-sdk-go操作链码。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk.png" alt="fabric sdk"></p>
-<h2 id="fabric-sdk-go项目简介"><a href="#fabric-sdk-go项目简介" class="headerlink" title="fabric-sdk-go项目简介"></a>fabric-sdk-go项目简介</h2><p><a href="https://github.com/hyperledger/fabric-sdk-go" target="_blank" rel="noopener">fabric-sdk-go</a>是Fabric官方的Go语言SDK，它的目录结构如下：</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-sd-go.png" alt="fabric sdk go"></p>
-<p>有2个目录需要注意一下，internal和third_party，它们两个包含了sdk依赖的一些代码，来自于fabric、fabric-ca，当使用到fabric的一些类型时，应当使用以下的方式，而不是直接导入fabric或者fabric-ca：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/xxx"</span></span><br></pre></td></tr></table></figure>
-<p>pkg目录是sdk的主要实现，<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go" target="_blank" rel="noopener">doc 文档</a>介绍了不同目录所提供的功能，以及给出了接口调用样例：</p>
-<ul>
-<li>pkg/fabsdk：主package，主要用来生成fabsdk以及各种其他pkg使用的option context。</li>
-<li>pkg/client/channel：主要用来调用、查询链码，或者注册链码事件。</li>
-<li>pkg/client/resmgmt：主要用来fabric网络的管理，比如创建、加入通道，安装、实例化和升级链码。</li>
-<li>pkg/client/event:配合channel模块来进行链码事件注册和过滤。</li>
-<li>pkg/client/ledger：主要用来账本的查询，查询区块、交易、配置等。</li>
-<li>pkg/client/msp：主要用来管理fabric的成员关系。</li>
-</ul>
-<blockquote>
-<p>想用好fabric-go-sdk，建议仔细看看<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go" target="_blank" rel="noopener">doc 文档</a>。</p>
-</blockquote>
-<h2 id="使用SDK步骤"><a href="#使用SDK步骤" class="headerlink" title="使用SDK步骤"></a>使用SDK步骤</h2><ol>
-<li>为client编写配置文件config.yaml</li>
-<li>为client创建fabric sdk实例fabsdk</li>
-<li>为client创建resource manage client，<strong>简称RC</strong>，RC用来进行管理操作的client，比如通道的创建，链码的安装、实例化和升级等</li>
-<li>为client创建channel client，<strong>简称CC</strong>，CC用来链码的调用、查询以及链码事件的注册和取消注册</li>
-</ol>
-<h2 id="SDK配置文件config-yaml"><a href="#SDK配置文件config-yaml" class="headerlink" title="SDK配置文件config.yaml"></a>SDK配置文件config.yaml</h2><p>client使用sdk与fabric网络交互，需要告诉sdk两类信息：</p>
-<ol>
-<li>我是谁：即当前client的信息，包含所属组织、密钥和证书文件的路径等，这是每个client专用的信息。</li>
-<li>对方是谁：即fabric网络结构的信息，channel、org、orderer和peer等的怎么组合起当前fabric网络的，这些结构信息应当与<code>configytx.yaml</code>中是一致的。这是通用配置，每个客户端都可以拿来使用。另外，这部分信息并不需要是完整fabric网络信息，如果当前client只和部分节点交互，那配置文件中只需要包含所使用到的网络信息。</li>
-</ol>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-sdk-config.yaml.png" alt="fabric sdk config"></p>
-<p>这里提供一个适合<a href="https://github.com/hyperledger/fabric-samples/tree/release-1.4/first-network" target="_blank" rel="noopener">BFYN</a>的精简配置文件<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/config/org1sdk-config.yaml" target="_blank" rel="noopener">fabric-sdk-go-sample/config.yaml</a>。</p>
-<h2 id="使用go-mod管理依赖"><a href="#使用go-mod管理依赖" class="headerlink" title="使用go mod管理依赖"></a>使用go mod管理依赖</h2><p>fabric-sdk-go目前本身使用go modules管理依赖，从<a href="https://github.com/hyperledger/fabric-sdk-go/blob/master/go.mod" target="_blank" rel="noopener">go.mod</a>可知，依赖的一些包指定了具体的版本，如果项目依赖的版本和sdk依赖的版本不同，会产生编译问题。</p>
-<p>建议项目也使用go moudles管理依赖，然后相同的软件包可以使用相同的版本，可以这样操作：</p>
-<ol>
-<li>go mod init初始化好项目的go.mod文件。</li>
-<li>编写代码，完成后运行go mod run，会自动下载依赖的项目，但版本可能与fabric-sdk-go中的依赖版本不同，编译存在问题。</li>
-<li>把<a href="https://github.com/hyperledger/fabric-sdk-go/blob/master/go.mod" target="_blank" rel="noopener">go.mod</a>中的内容复制到项目的go.mod中，然后保存，go mod会自动合并相同的依赖，运行go mod tidy，会自动添加新的依赖或删除不需要的依赖。</li>
-</ol>
-<p>项目的go mod样例可以参考<a href="https://github.com/securekey/fabric-examples/blob/master/fabric-cli/cmd/fabric-cli/go.mod" target="_blank" rel="noopener">securekey/fabric-examples … /go.mod</a>，<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/go.mod" target="_blank" rel="noopener">shitaibin/fabric-sdk-go-sample/go.mod</a>。</p>
-<h2 id="创建Client"><a href="#创建Client" class="headerlink" title="创建Client"></a>创建Client</h2><h3 id="利用config-yaml创建fabsdk"><a href="#利用config-yaml创建fabsdk" class="headerlink" title="利用config.yaml创建fabsdk"></a>利用config.yaml创建fabsdk</h3><p>通过<code>config.FromFile</code>解析配置文件，然后通过<code>fabsdk.New</code>创建sdk实例。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/hyperledger/fabric-sdk-go/pkg/core/config"</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"</span></span><br><span class="line"></span><br><span class="line">sdk, err := fabsdk.New(config.FromFile(c.ConfigPath))</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  log.Panicf(<span class="string">"failed to create fabric sdk: %s"</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="创建RC"><a href="#创建RC" class="headerlink" title="创建RC"></a>创建RC</h3><p>管理员账号才能进行fabric网络的管理操作，所以创建rc一定要使用管理员账号。</p>
-<p>通过<code>fabsdk.WithOrg(&quot;Org1&quot;)</code>和<code>fabsdk.WithUser(&quot;Admin&quot;)</code>指定Org1的Admin账户，使用<code>sdk.Context</code>创建<strong>clientProvider</strong>，然后通过<code>resmgmt.New</code>创建rc。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> 	<span class="string">"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"</span></span><br><span class="line"></span><br><span class="line">rcp := sdk.Context(fabsdk.WithUser(<span class="string">"Admin"</span>), fabsdk.WithOrg(<span class="string">"Org1"</span>))</span><br><span class="line">rc, err := resmgmt.New(rcp)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  log.Panicf(<span class="string">"failed to create resource client: %s"</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="创建CC"><a href="#创建CC" class="headerlink" title="创建CC"></a>创建CC</h3><p>创建cc使用用户账号，进行链码的调用和查询，使用<code>sdk.ChannelContext</code>创建<strong>channelProvider</strong>，需要指定channelID和用户User1，然后通过<code>channel.New</code>创建cc，此cc就是调用channelID对应channel上链码的channel client。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> 	<span class="string">"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"</span></span><br><span class="line"></span><br><span class="line">ccp := sdk.ChannelContext(ChannelID, fabsdk.WithUser(<span class="string">"User1"</span>))</span><br><span class="line">cc, err := channel.New(ccp)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  log.Panicf(<span class="string">"failed to create channel client: %s"</span>, err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="管理操作"><a href="#管理操作" class="headerlink" title="管理操作"></a>管理操作</h2><h3 id="安装链码"><a href="#安装链码" class="headerlink" title="安装链码"></a>安装链码</h3><p>安装链码使用<code>rc.InstallCC</code>接口，需要指定<code>resmgmt.InstallCCRequest</code>以及在哪些peers上面安装。<code>resmgmt.InstallCCRequest</code>指明了链码ID、链码路径、链码版本以及打包后的链码。</p>
-<p>打包链码需要使用到链码路径<code>CCPath</code>和<code>GoPath</code>，<code>GoPath</code>即本机的<code>$GOPATH</code>，<code>CCPath</code>是相对于<code>GoPath</code>的<strong>相对路径</strong>，如果路径设置不对，会造成sdk找不到链码。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pack the chaincode</span></span><br><span class="line">ccPkg, err := gopackager.NewCCPackage(<span class="string">"github.com/hyperledger/fabric-samples/chaincode/chaincode_example02/go/"</span>, <span class="string">"/Users/shitaibin/go"</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"pack chaincode error"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// new request of installing chaincode</span></span><br><span class="line">req := resmgmt.InstallCCRequest&#123;</span><br><span class="line">  Name:    c.CCID,</span><br><span class="line">  Path:    c.CCPath,</span><br><span class="line">  Version: v,</span><br><span class="line">  Package: ccPkg,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">reqPeers := resmgmt.WithTargetEndpoints(<span class="string">"peer0.org1.example.com"</span>)</span><br><span class="line">resps, err := rc.InstallCC(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"installCC error"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="实例化链码"><a href="#实例化链码" class="headerlink" title="实例化链码"></a>实例化链码</h3><p>实例化链码需要使用<code>rc.InstantiateCC</code>接口，需要通过ChannelID、<code>resmgmt.InstantiateCCRequest</code>和peers，指明在哪个channel上实例化链码，请求包含了链码的ID、路径、版本，以及初始化参数和背书策略，背书策略可以通过<code>cauthdsl.FromString</code>生成。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// endorser policy</span></span><br><span class="line">org1OrOrg2 := <span class="string">"OR('Org1MSP.member','Org2MSP.member')"</span></span><br><span class="line">ccPolicy, err := cauthdsl.FromString(org1OrOrg2)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"gen policy from string error"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// new request</span></span><br><span class="line">args := packArgs([]<span class="keyword">string</span>&#123;<span class="string">"init"</span>, <span class="string">"a"</span>, <span class="string">"100"</span>, <span class="string">"b"</span>, <span class="string">"200"</span>&#125;)</span><br><span class="line">req := resmgmt.InstantiateCCRequest&#123;</span><br><span class="line">  Name:    c.CCID,</span><br><span class="line">  Path:    c.CCPath,</span><br><span class="line">  Version: v,</span><br><span class="line">  Args:    args,</span><br><span class="line">  Policy:  ccPolicy,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := resmgmt.WithTargetEndpoints(<span class="string">"peer0.org1.example.com"</span>)</span><br><span class="line">resp, err := rc.InstantiateCC(ChannelID, req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"instantiate chaincode error"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="升级链码"><a href="#升级链码" class="headerlink" title="升级链码"></a>升级链码</h3><p>升级链码和实例化链码是非常相似的，不同点只在请求是<code>resmgmt.UpgradeCCRequest</code>，调用的接口是<code>rc.UpgradeCC</code>。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// endorser policy</span></span><br><span class="line">org1AndOrg2 := <span class="string">"AND('Org1MSP.member','Org2MSP.member')"</span></span><br><span class="line">ccPolicy, err := c.genPolicy(org1AndOrg2)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"gen policy from string error"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// new request</span></span><br><span class="line">args := packArgs([]<span class="keyword">string</span>&#123;<span class="string">"init"</span>, <span class="string">"a"</span>, <span class="string">"100"</span>, <span class="string">"b"</span>, <span class="string">"200"</span>&#125;)</span><br><span class="line">req := resmgmt.UpgradeCCRequest&#123;</span><br><span class="line">  Name:    c.CCID,</span><br><span class="line">  Path:    c.CCPath,</span><br><span class="line">  Version: v,</span><br><span class="line">  Args:    args,</span><br><span class="line">  Policy:  ccPolicy,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := resmgmt.WithTargetEndpoints(<span class="string">"peer0.org1.example.com"</span>)</span><br><span class="line">resp, err := rc.UpgradeCC(ChannelID, req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"instantiate chaincode error"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="查询操作"><a href="#查询操作" class="headerlink" title="查询操作"></a>查询操作</h2><h3 id="调用链码"><a href="#调用链码" class="headerlink" title="调用链码"></a>调用链码</h3><p>调用链码使用<code>cc.Execute</code>接口，使用入参<code>channel.Request</code>和peers指明要让哪些peer上执行链码，进行背书。<code>channel.Request</code>指明了要调用的链码，以及链码内要Invoke的函数args，args是序列化的结果，序列化是自定义的，只要链码能够按相同的规则进行反序列化即可。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new channel request for invoke</span></span><br><span class="line">args := packArgs([]<span class="keyword">string</span>&#123;<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"10"</span>&#125;)</span><br><span class="line">req := channel.Request&#123;</span><br><span class="line">  ChaincodeID: c.CCID,</span><br><span class="line">  Fcn:         <span class="string">"invoke"</span>,</span><br><span class="line">  Args:        args,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line"><span class="comment">// peers is needed</span></span><br><span class="line">reqPeers := channel.WithTargetEndpoints(<span class="string">"peer0.org1.example.com"</span>)</span><br><span class="line">resp, err := cc.Execute(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"invoke chaincode error"</span>)</span><br><span class="line">&#125;</span><br><span class="line">log.Printf(<span class="string">"invoke chaincode tx: %s"</span>, resp.TransactionID)</span><br></pre></td></tr></table></figure>
-<h3 id="查询链码"><a href="#查询链码" class="headerlink" title="查询链码"></a>查询链码</h3><p>查询和调用链码是非常相似的，使用相同的<code>channel.Request</code>，指明了Invoke链码中的<code>query</code>函数，然后调用<code>cc.Query</code>进行查询操作，这样节点不会对请求进行背书。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new channel request for query</span></span><br><span class="line">req := channel.Request&#123;</span><br><span class="line">  ChaincodeID: c.CCID,</span><br><span class="line">  Fcn:         <span class="string">"query"</span>,</span><br><span class="line">  Args:        packArgs([]<span class="keyword">string</span>&#123;keys&#125;),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// send request and handle response</span></span><br><span class="line">reqPeers := channel.WithTargetEndpoints(peer)</span><br><span class="line">resp, err := cc.Query(req, reqPeers)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.WithMessage(err, <span class="string">"query chaincode error"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log.Printf(<span class="string">"query chaincode tx: %s"</span>, resp.TransactionID)</span><br><span class="line">log.Printf(<span class="string">"result: %v"</span>, <span class="keyword">string</span>(resp.Payload))</span><br></pre></td></tr></table></figure>
-<h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>本文的基础是创建了一个结合fabric byfn的示例项目，在byfn的基础之上对链码进行安装、实例化、升级，调用和查询等操作，项目的使用可见项目<a href="https://github.com/Shitaibin/fabric-sdk-go-sample" target="_blank" rel="noopener">README文档</a>，项目地址：<a href="https://github.com/Shitaibin/fabric-sdk-go-sample" target="_blank" rel="noopener">https://github.com/Shitaibin/fabric-sdk-go-sample</a> ，项目样例执行后，可见新部署和升级成功的链码容器，操作日志可见项目。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-byfn-sdk.png" alt="byfn-sdk"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1671,13 +1718,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">130</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">70</span>
+        <span class="site-state-item-count">74</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
