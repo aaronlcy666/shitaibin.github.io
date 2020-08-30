@@ -1,7 +1,7 @@
 ---
 title: Docker容器基础：Cgroup - 资源控制简介
 date: 2020-08-27 21:43:52
-tags: ['Docker', 'Kubernetes']
+tags: ['Docker', 'Kubernetes', 'Cgroup']
 ---
 
 
@@ -179,9 +179,13 @@ cgroup hierarchy (继承树)结构，每个cgroup节点都包含以下几个文�
 - tasks : 当前cgroup包含的进程列表
 - notify_on_release : 值为0或1，1代表当cgroup中的最后1个task退出，并且子cgroup移除时，内核会在继承树根目录运行`release_agent`文件
 
+## 总结
 
+cgroup对一组进程的资源进行控制，包括但不限于CPU、内存、网络、磁盘等资源，共12种资源，通过12个subsystem去进行限制、控制。
 
-参考资料：
+cgroup由内核使用文件系统实现，文件系统的层级结构实现了cgroup的层级结构，它默认挂载到 `/sys/fs/cgroup` 目录。
+
+## 参考资料
 
 
 1. [Linux Kernel Cgroup的文档](https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups)
