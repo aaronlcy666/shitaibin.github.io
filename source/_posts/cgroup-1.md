@@ -1,367 +1,188 @@
 ---
-title: 容器基础：Cgroup
+title: Docker容器基础：Cgroup - 资源控制简介
 date: 2020-08-27 21:43:52
 tags: ['Docker', 'Kubernetes']
 ---
 
 
-### Cgroup
+## 什么是Cgroup
 
-Cgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源限制、控制、统计能力，包括CPU、内存、磁盘、网络。
+Cgroup 是 Control Group 的缩写，提供对一组进程，及未来子进程的资源**限制、控制、统计**能力，包括CPU、内存、磁盘、网络。
+
+- 限制：限制的资源最大使用量阈值。比如不能超过128MB内存，CPU使用率不得超过50%，或者只能是否CPU的某哪几个核。
+- 控制：超过资源使用最大阈值时，进程会被控制，不任由它发展。比如cgroup内所有tasks的内存使用量超过阈值的结果就是被KILL，CPU使用率不得超过设定值。
+- 统计：统计资源的使用情况等指标。比如cgroup内tasks的内存使用量，占用CPU的时间。
 
 Cgroup 包含3个组件：
 - cgroup ：一组进程，可以加上subsystem
 - subsystem ：一组资源控制模块，CPU、内存...
 - hierarchy ： 把一组cgroup串成树状结构，这样就能实现cgroup的继承。为什么要继承呢？就如同docker镜像的继承，站在前人的基础之上，免去重复的配置
 
-### 查看Docker的Cgroup信息
+## 为什么需要Cgroup
 
-1. 创建一个容器，限制为内存为128MB
+为什么需要Cgroup的问题等价于：为什么需要限制一组进程的资源？
+
+有多种原因，比如：
+1. Linux是一个可以多用户登录的系统，如何限制不同的用户使用不同量的系统资源呢？
+2. 某个系统有64核，由于局部性原理，如果一组进程在64个核上调度，效率比较低，但把这些进程只允许在某几个核上调度，就有较好的局部性，提高效率。这类似与在分布式系统中，某个有状态的请求，最好能分配到上一次处理该请求的机器上一样的道理。
+
+cgroup的文档中还提到一个思路：实现资源限制的技术有多种，为什么使用cgroup？
+
+cgroup是内核实现的，它更轻量、更高效、对内核的热点路径影响最小。
+
+## 你的Linux支持哪些Cgroup subsystem
+
+查看当前系统支持的subsystem，共12个子系统。
+
 
 ```
-[~]$ docker run -itd -m 128m ubuntu:16.04
-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529
+[/sys/fs/cgroup]$ cat /proc/cgroups
+#subsys_name	hierarchy	num_cgroups	enabled
+cpuset	8	4	1
+cpu	2	74	1
+cpuacct	2	74	1
+memory	11	74	1
+devices	6	69	1
+freezer	10	4	1
+net_cls	4	4	1
+blkio	9	69	1
+perf_event	5	4	1
+hugetlb	7	4	1
+pids	3	69	1
+net_prio	4	4	1
 ```
 
-`9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529`为容器id
+从左到右字段的含义分别是：
 
-2. Linux下容器的cgroup信息在`/sys/fs/cgroup/`目录，每个目录应该都是一类资源信息
+1. subsys_name: subsystem的名字
+2. hierarchy: subsystem所关联到的cgroup树的ID，如果多个subsystem关联到同一颗cgroup树，那么他们的这个字段将一样，比如这里的cpu和cpuacct就一样，表示他们绑定到了同一颗树。如果出现下面的情况，这个字段将为0：
+   - 当前subsystem没有和任何cgroup树绑定
+   - 当前subsystem已经和cgroup v2的树绑定
+   - 当前subsystem没有被内核开启
+3. num_cgroups: subsystem所关联的cgroup树中进程组的个数，也即树上节点的个数
+4. enabled: 1表示开启，0表示没有被开启(可以通过设置内核的启动参数“cgroup_disable”来控制subsystem的开启).
+
+[Cgroup的内核文档](https://www.kernel.org/doc/Documentation/cgroup-v1/)对各 cgroup 和 subsystem 有详细的介绍，以下是每个 subsystem 功能简记：
+1. cpu ：用来**限制**cgroup的CPU使用率
+2. cpuacct ：用来**统计**cgroup的CPU的使用率
+3. cpuset ： 用来绑定cgroup到指定CPU哪个核上和NUMA节点
+4. memory ：限制和统计cgroup的内存的使用率，包括process memory, kernel memory, 和swap
+5. devices ： 限制cgroup创建(mknod)和访问设备的权限
+6. freezer ： suspend和restore一个cgroup中的所有进程
+7. net_cls ： 将一个cgroup中进程创建的所有网络包加上一个classid标记，用于tc和iptables。 只对发出去的网络包生效，对收到的网络包不起作用
+8. blkio ： 限制cgroup访问块设备的IO速度
+9. perf_event ： 对cgroup进行性能监控
+10. net_prio ： 针对每个网络接口设置cgroup的访问优先级
+11. hugetlb ： 限制cgroup的huge pages的使用量
+12. pids ：限制一个cgroup及其子孙cgroup中的总进程数
+
+这些子系统的排列顺序，就是引入Linux内核顺序，最早的是cpu subsystem ，引入自Linux 2.6.24，最晚的是pid subsystem ，引入自 Linux 4.3。
+
+## 查看子系统和cgroup的挂载
+
+cgroup是通过文件系统实现的，每个目录都是一个cgroup节点，目录中的子目录都是子cgroup节点，这样就形成了 cgroup的 hierarchy 特性。
+
+cgroup会挂载到 `/sys/fs/cgroup/`目录，该目录下的目录基本都是subsystem，`systemd`目录除外（它是 systemd 自建在cgroup下的目录，但不是子系统）：
 
 ```
-[~]$ cd /sys/fs/cgroup/
 [/sys/fs/cgroup]$ ll
-总用量 0
-drwxr-xr-x 4 root root  0 8月  26 12:10 blkio
-lrwxrwxrwx 1 root root 11 8月  26 12:10 cpu -> cpu,cpuacct
-lrwxrwxrwx 1 root root 11 8月  26 12:10 cpuacct -> cpu,cpuacct
-drwxr-xr-x 4 root root  0 8月  26 12:10 cpu,cpuacct
-drwxr-xr-x 3 root root  0 8月  26 12:10 cpuset
-drwxr-xr-x 4 root root  0 8月  26 12:10 devices
-drwxr-xr-x 3 root root  0 8月  26 12:10 freezer
-drwxr-xr-x 3 root root  0 8月  26 12:10 hugetlb
-drwxr-xr-x 4 root root  0 8月  26 12:10 memory
-lrwxrwxrwx 1 root root 16 8月  26 12:10 net_cls -> net_cls,net_prio
-drwxr-xr-x 3 root root  0 8月  26 12:10 net_cls,net_prio
-lrwxrwxrwx 1 root root 16 8月  26 12:10 net_prio -> net_cls,net_prio
-drwxr-xr-x 3 root root  0 8月  26 12:10 perf_event
-drwxr-xr-x 4 root root  0 8月  26 12:10 pids
-drwxr-xr-x 4 root root  0 8月  26 12:10 systemd
+total 0
+dr-xr-xr-x 6 root root  0 Aug 30 09:30 blkio
+lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpu -> cpu,cpuacct
+lrwxrwxrwx 1 root root 11 Aug 30 09:30 cpuacct -> cpu,cpuacct
+dr-xr-xr-x 7 root root  0 Aug 30 09:30 cpu,cpuacct
+dr-xr-xr-x 3 root root  0 Aug 30 09:30 cpuset
+dr-xr-xr-x 6 root root  0 Aug 30 09:30 devices
+dr-xr-xr-x 3 root root  0 Aug 30 09:30 freezer
+dr-xr-xr-x 3 root root  0 Aug 30 09:30 hugetlb
+dr-xr-xr-x 6 root root  0 Aug 30 09:30 memory
+lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_cls -> net_cls,net_prio
+dr-xr-xr-x 3 root root  0 Aug 30 09:30 net_cls,net_prio
+lrwxrwxrwx 1 root root 16 Aug 30 09:30 net_prio -> net_cls,net_prio
+dr-xr-xr-x 3 root root  0 Aug 30 09:30 perf_event
+dr-xr-xr-x 6 root root  0 Aug 30 09:30 pids
+dr-xr-xr-x 6 root root  0 Aug 30 09:30 systemd
 ```
 
-3. 利用容器id找到与当前容器相关的cgroup信息
+发现cpu、cpuacct都指向了 `cpu,cpuacct` 目录，把它们合成了1个cgroup节点。另外 net_cls 和 net_prio 也都合到了 `net_cls,net_prio` 节点，也就形成了下面这幅图的样子，并把资源控制分成了5个类别：CPU、内存、网络、进程控制、设备，另外的`perf_event`是cgroup对自身的监控，不归于资源控制。
+
+![](http://img.lessisbetter.site/2020-08-30-cgroup-subsystem.png)
+
+子系统挂载到cgroup的虚拟文件系统是通过mount命令实现的，系统启动时自动挂载subsystem到cgroup，查看已经挂载的Cgroup：
 
 ```
-[/sys/fs/cgroup]$ find . -name "*9fe91cc60ff0a94345e13a9*" -print
-./memory/system.slice/var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount
-./memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./freezer/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./blkio/system.slice/var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount
-./blkio/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./cpuset/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./hugetlb/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./devices/system.slice/var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount
-./devices/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./perf_event/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./net_cls,net_prio/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./pids/system.slice/var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount
-./pids/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./cpu,cpuacct/system.slice/var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount
-./cpu,cpuacct/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
-./systemd/system.slice/var-lib-docker-containers-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529-shm.mount
-./systemd/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope
+[~]$ mount -t cgroup
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent=/lib/systemd/systemd-cgroups-agent,name=systemd)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)
+cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)
+cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)
 ```
 
-4. 容器memory的信息在`memory`目录
-
-通过容器id可以找到容器对于的目录：`docker-xxx`：
+查看某个进程所属的cgroup：
 
 ```
-[/sys/fs/cgroup/memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ ls
-cgroup.clone_children           memory.kmem.slabinfo                memory.memsw.failcnt             memory.soft_limit_in_bytes
-cgroup.event_control            memory.kmem.tcp.failcnt             memory.memsw.limit_in_bytes      memory.stat
-cgroup.procs                    memory.kmem.tcp.limit_in_bytes      memory.memsw.max_usage_in_bytes  memory.swappiness
-memory.failcnt                  memory.kmem.tcp.max_usage_in_bytes  memory.memsw.usage_in_bytes      memory.usage_in_bytes
-memory.force_empty              memory.kmem.tcp.usage_in_bytes      memory.move_charge_at_immigrate  memory.use_hierarchy
-memory.kmem.failcnt             memory.kmem.usage_in_bytes          memory.numa_stat                 notify_on_release
-memory.kmem.limit_in_bytes      memory.limit_in_bytes               memory.oom_control               tasks
-memory.kmem.max_usage_in_bytes  memory.max_usage_in_bytes           memory.pressure_level
+[/sys/fs/cgroup]$ # $$代表当前进程
+[/sys/fs/cgroup]$ cat /proc/$$/cgroup
+11:memory:/user.slice/user-1000.slice/session-269.scope
+10:freezer:/
+9:blkio:/user.slice
+8:cpuset:/
+7:hugetlb:/
+6:devices:/user.slice
+5:perf_event:/
+4:net_prio,net_cls:/
+3:pids:/user.slice
+2:cpuacct,cpu:/user.slice/user-1000.slice/session-269.scope
+1:name=systemd:/user.slice/user-1000.slice/session-269.scope
 ```
 
-查看内存限制，刚好是设置的128MB：
+每一行从左到右，用`:`分割依次是：
+- `11`： cgroup继承树的节点的ID
+- `memory`: 当前节点上挂载的子系统
+- `/user.slice/user-1000.slice/session-269.scope`: cgroup节点相对于cgroup根目录下子系统的相对路径，转换成绝对路径就是：`/sys/fs/cgroup/memory/user.slice/user-1000.slice/session-269.scope`
 
-```
-[/sys/fs/cgroup/memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ cat memory.limit_in_bytes
-134217728
-[/sys/fs/cgroup/memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ python
-Python 2.7.5 (default, Apr 11 2018, 07:36:10)
-[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> 134217728 / 1024 /1024
-128
->>>
-```
 
-查看容器内存统计信息：
 
-```
-[/sys/fs/cgroup/memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ cat memory.stat
-cache 0
-rss 479232
-rss_huge 0
-mapped_file 0
-swap 0
-pgpgin 554
-pgpgout 437
-pgfault 1862
-pgmajfault 0
-inactive_anon 0
-active_anon 479232
-inactive_file 0
-active_file 0
-unevictable 0
-hierarchical_memory_limit 134217728
-hierarchical_memsw_limit 268435456
-total_cache 0
-total_rss 479232
-total_rss_huge 0
-total_mapped_file 0
-total_swap 0
-total_pgpgin 554
-total_pgpgout 437
-total_pgfault 1862
-total_pgmajfault 0
-total_inactive_anon 0
-total_active_anon 479232
-total_inactive_file 0
-total_active_file 0
-total_unevictable 0
-[/sys/fs/cgroup/memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$
-[/sys/fs/cgroup/memory/system.slice/docker-9fe91cc60ff0a94345e13a90ad08d2683bf14e2aa37c4d277f384e3bfff17529.scope]$ docker stats
-CONTAINER           CPU %               MEM USAGE / LIMIT   MEM %               NET I/O             BLOCK I/O           PIDS
-9fe91cc60ff0        0.00%               468 KiB / 128 MiB   0.36%               1.3 kB / 648 B      0 B / 0 B           1
+## 再聊cgroup hierarchy
+
+在 cpu,cpuacct 子系统下创建一个测试cgroup节点：
+
+```sh
+[/sys/fs/cgroup/cpu,cpuacct]$ sudo mkdir dabin_test_cpu_cgroup
+[/sys/fs/cgroup/cpu,cpuacct]$ cd dabin_test_cpu_cgroup
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ ls
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ ls cgroup.*
+cgroup.clone_children  cgroup.event_control  cgroup.procs
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat cgroup.clone_children
+0
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat cgroup.procs
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ ls notify_on_release tasks
+notify_on_release  tasks
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat tasks
+[/sys/fs/cgroup/cpu,cpuacct/dabin_test_cpu_cgroup]$ cat notify_on_release
+0
 ```
 
-可以看到内存统计信息和`docker stats`的信息是匹配的，因为这就是`docker stats`数据的来源。
+cgroup hierarchy (继承树)结构，每个cgroup节点都包含以下几个文件：
 
-6. 查看cgroup中的cpu信息
-
-之前的容器样例限制了内存，没有限制cpu，我们启动一个限制cpu的容器。
-
-```
-docker run --rm -itd -c 2 -m 128m ubuntu:16.04
-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d
-```
-
-然后另外开1个进程，登录该容器，查看容器中的进程：
-
-```
-docker exec -it 30a1da397ec4 /bin/bash
-root@30a1da397ec4:/# ps -A
-  PID TTY          TIME CMD
-    1 ?        00:00:00 bash
-   36 ?        00:00:00 bash
-   48 ?        00:00:00 ps
-```
-
-发现有2个bash进程，分别是启动容器运行的bash和exec启动的bash，容器启动是bash的pid在容器中是1。
-
-
-到Linux主机的cgroup目录下，利用find命令，找到容器cpu相关的目录：
-
-
-```
-[/sys/fs/cgroup/cpuset/system.slice/docker-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d.scope]$ cat cgroup.procs
-3022
-3381
-[/sys/fs/cgroup/cpuset/system.slice/docker-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d.scope]$ cat tasks
-3022
-3381
-[/sys/fs/cgroup/cpuset/system.slice/docker-30a1da397ec45034cca1582c6a2be9095693a02196a5e40a531ffd4abda1f33d.scope]$ ps -ef | grep /bin/bash
-root      3022  3003  0 13:04 pts/1    00:00:00 /bin/bash
-centos    3353  2196  0 13:10 pts/2    00:00:00 /usr/bin/docker-current exec -it 30a1da397ec4 /bin/bash
-root      3381  3362  0 13:10 pts/3    00:00:00 /bin/bash
-centos    3409  2337  0 13:10 pts/0    00:00:00 grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn --exclude-dir=.idea --exclude-dir=.tox /bin/bash
-```
-
-通过`cgroup.procs`或者`tasks`文件（记录加入到cgroup的容器进程号），也能看到2个进程，然后通过ps把这2个进程找出来，就是2个`/bin/bash`，这就是容器进程，在Linux主机中的进程号，是通过PID Namespace实现的。
-
-**Cgroup的本质就是通过树形文件系统实现了cgroup hierarchy，cgroup下的目录，都是上层目录的子节点，即子cgroup，会继承上层目录的限制，代表容器的目录，就是针对当前容器的子cgroup，它限定了容器的某一类资源，正是由于这是一颗资源限制树，按不同的资源类别划分，并进行继承，所以一个容器的多种资源限制，分布在多个目录中**。
-
-
-### 利用Go演示Cgroup内存限制
-
-#### 源码
-
-cgroup的演示如下：
-
-```go
-// https://github.com/Shitaibin/notes/blob/master/docker/codes/02.1.cgroup.go
-package main
-
-// 参考《自动动手写Docker》
-
-import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"path"
-	"strconv"
-	"syscall"
-)
-
-const CgroupMemoryHierarchyMount = "/sys/fs/cgroup/memory"
-
-func main() {
-	if os.Args[0] == "/proc/self/exe" {
-		fmt.Println("---------- 2 ------------")
-		fmt.Printf("Current pid: %d\n", syscall.Getpid())
-
-		// 创建stress子进程，施加内存压力
-		allocMemSize := "101m" // 另外1项测试为99m
-		fmt.Printf("allocMemSize: %v\n", allocMemSize)
-		stressCmd := fmt.Sprintf("stress --vm-bytes %s --vm-keep -m 1", allocMemSize)
-		cmd := exec.Command("sh", "-c", stressCmd)
-		cmd.SysProcAttr = &syscall.SysProcAttr{}
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		if err := cmd.Run(); err != nil {
-			fmt.Printf("stress run error: %v", err)
-			os.Exit(-1)
-		}
-	}
-
-	fmt.Println("---------- 1 ------------")
-	cmd := exec.Command("/proc/self/exe")
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWNS | syscall.CLONE_NEWPID,
-	}
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// 启动子进程
-	if err := cmd.Start(); err != nil {
-		fmt.Printf("/proc/self/exe start error: %v", err)
-		os.Exit(-1)
-	}
-
-	cmdPid := cmd.Process.Pid
-	fmt.Printf("cmdPid: %d\n", cmdPid)
-
-	// 创建子cgroup
-	memoryGroup := path.Join(CgroupMemoryHierarchyMount, "test_memory_limit")
-	os.Mkdir(memoryGroup, 0755)
-	// 设定内存限制
-	ioutil.WriteFile(path.Join(memoryGroup, "memory.limit_in_bytes"),
-		[]byte("100m"), 0644)
-	// 将进程加入cgroup
-	ioutil.WriteFile(path.Join(memoryGroup, "tasks"),
-		[]byte(strconv.Itoa(cmdPid)), 0644)
-
-	cmd.Process.Wait()
-}
-```
-
-关于源码中的`/proc/self/exe`看[补充小知识](#补充小知识)。
-
-
-源码运行解读：
-1. 使用`go run`运行程序，或build后运行程序时，程序的名字是`02.1.cgroup`，所以不满足`os.Args[0] == "/proc/self/exe"`会被跳过。
-2. 然后使用`"/proc/self/exe"`新建了子进程，子进程此时叫：`"/proc/self/exe"`
-3. 创建cgroup `test_memory_limit`，然后设置内存限制为100MB
-4. 把子进程加入到cgroup `test_memory_limit`
-5. 等待子进程结束
-6. 子进程干了啥呢？子进程其实还是当前程序，只不过它的名字是`"/proc/self/exe"`，符合最初的if语句，之后它会创建stress子进程，然后运行stress，可以修改`allocMemSize`设置stress所要占用的内存
-
-修改源码，stress命令设置内存占用为99m，然后启动测试程序：
-
-#### 不超越内存限制情况
-
-```
-[~/workspace/notes/docker/codes]$ go run 02.1.cgroup.go
----------- 1 ------------
-cmdPid: 2533
----------- 2 ------------
-Current pid: 1
-allocMemSize: 99m
-stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
-```
-
-可以看到，子进程`"/proc/self/exe"`运行后取得的pid为 **2533** ，在新的Namespace中，子进程`"/proc/self/exe"`的pid已经变成1，然后利用stress打了99M内存。
-
-使用top查看资源使用情况，stress进程内存RES大约为99M，pid 为 **2539** 。
-
-```
-  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
- 2539 root      20   0  103940 101680    284 R 93.8  9.9   0:06.09 stress
-```
-
-```
-[/sys/fs/cgroup/memory/test_memory_limit]$ cat memory.limit_in_bytes
-104857600
-[/sys/fs/cgroup/memory/test_memory_limit]$ # 104857600 刚好为100MB
-[/sys/fs/cgroup/memory/test_memory_limit]$ cat memory.usage_in_bytes
-2617344
-[/sys/fs/cgroup/memory/test_memory_limit]$ cat tasks
-2533 <--- /prof/self/exe进程
-2534
-2535
-2536
-2537
-2538
-2539 <--- stress进程
-```
-
-tasks下都是在cgroup `test_memory_limit` 中的进程，这些是Host中真实的进程号，通过`pstree -p`查看进程树，看看这些都是哪些进程：
-
-![Cgroup限制内存的进程树](http://img.lessisbetter.site/2020-08-cgroup.png)
-
-进程树佐证了前面的代码执行流程分析大致是对的，只不过这其中还涉及一些创建子进程的具体手段，比如stress是通过sh命令创建出来的。
-
-#### 内存超过限制被Kill情况
-
-内存超过cgroup限制的内存会怎么样？会OOM吗？
-
-如果将内存提高到占用101MB，大于cgroup中内存的限制100M时就会被Kill。
-
-```
-[~/notes/docker/codes]$ go run 02.1.cgroup.go                                                                        *[master]
----------- 1 ------------
-cmdPid: 21492
----------- 2 ------------
-Current pid: 1
-allocMemSize: 101m
-stress: info: [6] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
-stress: FAIL: [6] (415) <-- worker 7 got signal 9
-stress: WARN: [6] (417) now reaping child worker processes
-stress: FAIL: [6] (421) kill error: No such process
-stress: FAIL: [6] (451) failed run completed in 0s
-2020/08/27 17:38:52 exit status 1
-```
-
-`stress: FAIL: [6] (415) <-- worker 7 got signal 9` 说明收到了信号9，即SIGKILL 。
+- cgroup.clone_children : 被cpuset控制器使用，值为1时子cgroup初始化时拷贝父cgroup的配置
+- cgroup.procs : cgroup中的线程组id
+- tasks : 当前cgroup包含的进程列表
+- notify_on_release : 值为0或1，1代表当cgroup中的最后1个task退出，并且子cgroup移除时，内核会在继承树根目录运行`release_agent`文件
 
 
 
-### 补充小知识
+参考资料：
 
-在演示源码中，使用到`"/proc/self/exe"`，它在Linux是一个特殊的软链接，它指向当前正在运行的程序，比如执行`ll`查看该文件时，它就执行了`/usr/bin/ls`，因为当前的程序是`ls`：
 
-```
-[~]$ ll /proc/self/exe
-lrwxrwxrwx 1 centos centos 0 8月  27 12:44 /proc/self/exe -> /usr/bin/ls
-```
-
-演示代码中的技巧就是通过`"/proc/self/exe"`重新启动一个子进程，只不过进程名称叫`"/proc/self/exe"`而已。如果代码中没有那句if判断，又会执行到创建子进程，最终会导致递归溢出。
-
-### 演示环境
-
-阿里云 Ubuntu14.04
-
-```
-[~/notes/docker/codes]$ uname -a                                                                                     *[master]
-Linux aliyun 4.4.0-117-generic #141-Ubuntu SMP Tue Mar 13 12:01:47 UTC 2018 i686 i686 i686 GNU/Linux
-```
+1. [Linux Kernel Cgroup的文档](https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups)
+2. [阿里同学的书《自己动手写Docker》](https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw%3D)
