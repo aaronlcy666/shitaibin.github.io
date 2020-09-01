@@ -196,6 +196,186 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/22/why-pbft-needs-viewchange/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/22/why-pbft-needs-viewchange/" class="post-title-link" itemprop="url">为什么PBFT需要View Changes</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-22 14:10:53" itemprop="dateCreated datePublished" datetime="2020-03-22T14:10:53+08:00">2020-03-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-11 17:33:20" itemprop="dateModified" datetime="2020-04-11T17:33:20+08:00">2020-04-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在当前的PBFT资料中，尤其是中文资料，多数都在介绍PBFT的3阶段消息过程，很少提及View Changes（视图切换），View Changes对PBFT的重要性，如同Leader Election对Raft的重要性，它是一个一致性算法中，不可或缺的部分。</p>
+<p>作者为大家介绍下，为什么View Changes如此重要，即为什么PBFT需要View Changes，以及View Changes的原理。</p>
+<h2 id="为什么PBFT需要View-Changes"><a href="#为什么PBFT需要View-Changes" class="headerlink" title="为什么PBFT需要View Changes"></a>为什么PBFT需要View Changes</h2><p>一致性算法都要提供：</p>
+<ul>
+<li>safety ：原意指不会出现错误情况，一致性中指操作是正确的，得到相同的结果。</li>
+<li>liveness ：操作过程能在有限时间内完成。</li>
+</ul>
+<p><img src="http://img.lessisbetter.site/2020-03-consistency-property.png" alt="一致性协议需要满足的特性"></p>
+<p><strong>safety通常称为一致性，liveness通常称为可用性</strong>，没有liveness的一致性算法无法长期提供一致性服务，没有safety的一致性算法称不上一致性算法，所以，所有的一致性算法都在做二者之间的折中。</p>
+<p>所以对一致性和可用性不同的要求，就出现了你常听见的ACID原理、CAP理论、BASE理论。</p>
+<p>PBFT作为一个一致性算法，它也需要提供一致性和可用性。在<a href="https://lessisbetter.site/2020/03/15/why-pbft-needs-3-phase-message/">为什么PBFT需要3个阶段消息</a>中，介绍了PBFT算法的如何达成一致性，并且请求可以在有限时间内达成一致，客户端得到响应，也满足可用性。</p>
+<p>但没有介绍，当遇到以下情况时，是否还能保住一致性和可用性呢？</p>
+<ol>
+<li>主节点是拜占庭节点（宕机、拒绝响应…）</li>
+<li>主节点不是拜占庭节点，但非拜占庭副本节点参与度不足，不足以完成3阶段消息</li>
+<li>网络不畅，丢包严重，造成不足以完成3阶段消息</li>
+<li>…</li>
+</ol>
+<p>在以上场景中，<strong>新的请求无法在有限时间内达成一致，老的数据可以保持一致性，所以一致性是可以满足的，但可用性无法满足</strong>。必须寻找一个方案，恢复集群的可用性。</p>
+<p><strong>PBFT算法使用View Changes，让集群重新具有可用性</strong>。通过View Changes，可以选举出新的、让请求在有限时间内达成一致的主节点，向客户端响应，从而满足可用性的要求。</p>
+<p>让集群重新恢复可用，需要做到什么呢？<strong>让至少f+1个非拜占庭节点迁移到，新的一致的状态</strong>。然后这些节点，运行3阶段消息协议，处理新的客户端请求，并达成一致。</p>
+<h2 id="不同版本的View-Changes协议有什么不同？"><a href="#不同版本的View-Changes协议有什么不同？" class="headerlink" title="不同版本的View Changes协议有什么不同？"></a>不同版本的View Changes协议有什么不同？</h2><p>PBFT算法有1999年和2001年2个版本：</p>
+<ul>
+<li>99年：<a href="http://pmg.csail.mit.edu/papers/osdi99.pdf" target="_blank" rel="noopener">Practical Byzantine Fault Tolerance</a>，PBFT初次发表。</li>
+<li>01年：<a href="http://www.pmg.csail.mit.edu/papers/bft-tocs.pdf" target="_blank" rel="noopener">Practical Byzantine Fault Tolerance and Proactive Recovery</a>，又称PBFT-PR，让PBFT受攻击时，具有主动恢复能力。</li>
+</ul>
+<p>PBFT-PR并非只是在PBFT上增加了PR，同时也对PBFT算法做了详细的介绍和改进，View Changes的改进就是其中一项。</p>
+<p>PBFT中View Changes介绍比较简单，没有说明以下场景下，View Changes协议如何处理：</p>
+<ul>
+<li>如果下一个View的主节点宕机了怎么办</li>
+<li>如果下一个View的主节点是恶意节点，作恶怎么办</li>
+<li>如果非拜占庭恶意发起View Changes，造成主节点切换怎么办？</li>
+<li>如果参与View Changes的节点数量不足怎么办</li>
+</ul>
+<p>如果，以上场景下，节点处在View Changes阶段，持续的等待下去，就无法恢复集群的可用性。</p>
+<p>PBFT-PR中的View Changes协议进行了细化，可以解决以上问题。</p>
+<h2 id="2001年版本View-Changes协议原理"><a href="#2001年版本View-Changes协议原理" class="headerlink" title="2001年版本View Changes协议原理"></a>2001年版本View Changes协议原理</h2><p>每个主节点都拥有一个View，就如同Raft中每个leader都拥有1个term。不同点是term所属的leader是选举出来的，而View所属的主节点是计算出的： <code>primary = v % R</code>，R是运行PBFT协议的节点数量。</p>
+<p>View Changes的战略是：当副本节点怀疑主节点无法让请求达成一致时，发起视图切换，新的主节点收集当前视图中已经Prepared，但未Committed的请求，传递到下一个视图中，所有非拜占庭节点基于以上请求，会达到一个新的、一致的状态。然后，正常运行3阶段消息协议。</p>
+<p>为什么要包含已经Prepared，但未Committed的请求？如果一个请求，在副本节点i上，已经是Prepared状态，证明至少f+1的非拜占庭节点，已经拥有此请求并赞成请求req在视图v中使用序号n。如果没有问题，不发生视图切换，这些请求可以在有限的时间内达成一致，新的主节点把已经Prepared的请求，带到新的view，并证明给其他节点，请求已经Prepared，那只需1轮Commit就可以达成一致。</p>
+<h3 id="View-Changes主要流程简介"><a href="#View-Changes主要流程简介" class="headerlink" title="View Changes主要流程简介"></a>View Changes主要流程简介</h3><p>对View Changes的流程可以分为2部分：</p>
+<ul>
+<li>View Changes的开端，即每一次View的开始</li>
+<li>View Changes的中间过程，以及View Changes的结束，切换到正常流程</li>
+</ul>
+<p>这2部分分别占据了下图的左右两部分。实线代表流程线，虚线代表网络消息。蓝色代表正常操作流程（三阶段消息：Preprepare、Prepare、Commit），青色代表View Changes流程，蓝青相接就是正常流程和View Changes流程切换的地方。</p>
+<p><img src="http://img.lessisbetter.site/2020-04-09-blueprint-view-changes.png" alt=""></p>
+<p>View Changes的开端流程是通用的，主节点和副本节点都遵守这一流程：<code>新视图：v=v+1</code>，代表一个新的View开始，指向它的每一个箭头，都是视图切换的一种原因。某个副本节点，新视图的开始，还伴随着广播<code>view-change</code>消息，告诉其他节点，本节点开启了一个新的视图。</p>
+<p>主节点是通过公式算出来的，其余为副本节点，在View Changes流程中，副本节点会和主节点交互，共同完成View Changes过程。副本节点会对收到的<code>view-change</code>消息进行检查，然后把一条对应的<code>view-change-ack</code>消息发送给主节点，主节点会依赖收到的<code>view-change</code>消息和<code>view-change-ack</code>消息数量和内容，产生能让所有节点移动到统一状态的<code>new-view</code>消息，并且对<code>new-view</code>消息进行3阶段共识，即对<code>new-view</code>消息达成一致，从而让至少<code>f+1</code>个非拜占庭节点达成一致。</p>
+<h3 id="View-Changes的开端"><a href="#View-Changes的开端" class="headerlink" title="View Changes的开端"></a>View Changes的开端</h3><p>View Change的核心因素只有一个：怀疑当前的主节点在有限的时间内，无法达成一致。</p>
+<p>具体有4个路径：</p>
+<ol>
+<li>正常阶段定时器超时，代表一定时间内无法完成Pre-prepare -&gt; Prepare -&gt; Commit</li>
+<li>View Changes阶段定时器超时，代表一定时间内无法完成正在进行的View Change</li>
+<li>定时器未超时，但有效的view-change消息数量达到f+1个，代表当前已经有f+1个非拜占庭节点发起了新的视图切换，本节点为了不落后，不等待超时而进入视图切换</li>
+<li>new-view消息不合法，代表当前View Changes阶段的主节点为拜占庭节点</li>
+</ol>
+<p>图中【正常阶段定时器超时】被标记为蓝色，是因为它是正常阶段进入视图切换阶段的开端，【有效的view-change消息数量达到f+1个】即有可能是正常阶段的定时器，也有可能是视图切换过程中的定时器，所以颜色没做调整。</p>
+<h3 id="主副节点主要交互流程"><a href="#主副节点主要交互流程" class="headerlink" title="主副节点主要交互流程"></a>主副节点主要交互流程</h3><p>视图切换过程中有3个消息：view-change消息、view-change-ack消息和new-view消息，下文围绕这3个消息，对主副节点的交互流程做详细介绍。</p>
+<h3 id="view-change消息阶段"><a href="#view-change消息阶段" class="headerlink" title="view-change消息阶段"></a>view-change消息阶段</h3><p>在view v时，副本节点怀疑主节点fault时，会发送view-change消息，该消息包含：</p>
+<ol>
+<li>h：副本i最新的稳定检查点序号</li>
+<li>C：副本i保存的h之后的（非稳定）检查点</li>
+<li>P和Q</li>
+<li>i：副本i</li>
+<li>α：副本i对本消息的数字签名</li>
+</ol>
+<p>P和Q是2个集合。</p>
+<p>P是已经Prepared消息的信息集合：消息既然已经Prepared，说明<strong>至少2f+1的节点拥有了消息，并且认可<code>&lt;view, n, d&gt;</code></strong>，即为消息分配的view和序号，只是还差一步commit阶段就可以完成一致性确认。P中包含的就是已经达到Prepared的消息的摘要d，无需包含完整的请求消息。新的view中，这些请求会使用老的序号n，而无需分配新的序号。</p>
+<p>Q是已经Pre-prepared消息的信息集合，主节点已经发送Pre-prepare或副本节点i为请求已经发送Prepare消息，证明<strong>该节点认可<code>&lt;n, d, v&gt;</code></strong>。</p>
+<p>P、Q中的请求都是高低水位之间的，无View Changes时，P、Q都是空的，也就是说不包含已经committed的请求。new-view消息中的数据（View Changes的决策结果），都是基于P、Q集合计算出的。</p>
+<p>在发送view-change消息前，副本节点会利用日志中的三阶段消息计算P、Q集合，发送view-change消息后，就删除日志中的三阶段消息。</p>
+<h3 id="view-change-ack消息阶段"><a href="#view-change-ack消息阶段" class="headerlink" title="view-change-ack消息阶段"></a>view-change-ack消息阶段</h3><p>视图<code>v+1</code>的主节点在收到其他节点发送的view-change消息后，并不确认view-change消息是是否拜占庭节点发出的，即不确定消息是否是正确无误的，如果基于错误的消息做决策，就会得到错误的结果，违反一致性：一切操作都是正确的。</p>
+<p>设置view-change-ack消息的目的是，让所有副本节点对所有它收到的view-change消息进行检查和确认，只不过确认的结果都发送给新的主节点。主节点统计ack消息，可以辨别哪些view-change是正确的，哪些是拜占庭节点发出的。</p>
+<p>副本节点会对view-change消息中的P、Q集合进行检查，要求集合中的请求消息小于等于视图<code>v</code>，满足则发送view-change-ack消息：</p>
+<ol>
+<li>v：v+1</li>
+<li>i：发送ack消息的副本序号</li>
+<li>j：副本i要确认的view-change消息的发送方</li>
+<li>d：副本i要确认的view-change消息的摘要</li>
+<li>μip：i向主节点p发送消息的通信密钥计算出的MAC，这里需要保证i和p之间通信的私密性，所以不使用数字签名</li>
+</ol>
+<h3 id="new-view消息阶段"><a href="#new-view消息阶段" class="headerlink" title="new-view消息阶段"></a>new-view消息阶段</h3><p>新视图主节点p负责基于view-change消息做决策，决策放到new-view消息中。</p>
+<p>主节点p维护了一个集合S，用来存放正确的view-change消息。只有view-change消息，以及为该消息背书的view-change-ack消息达到<code>2f-1</code>个时，view-change消息才能加入到集合S，但view-change-ack消息不加入集合S。</p>
+<p>当集合S的大小达到<code>2f+1</code>时，证明有足够多的非拜占庭节点认为需要进行视图变更，并提供了变更的依据：2f+1个view-change消息，主节点p使用S做决策。以下便是<strong>决策逻辑</strong>。</p>
+<p>主节点p先确定h：所有view-change消息中最大的稳定检查点。h和h+L其实就是高低水位。</p>
+<p>然后依次检查h到h+L中的每一个序号n，对序号n对于的请求进行的处理为：请求m已经Prepared并且Pre-prepared，则收集序号n对应的请求。否则，说明没有请求在序号n能达到committed，为序号n分配一个空请求，并收集起来。它们最后会被放到new-view消息的X集合中。</p>
+<p>主节点会创建new-view消息：</p>
+<ul>
+<li>view：当前新视图的编号</li>
+<li>V：是一个集合，每个元素是一对<code>(i, d)</code>，代表i发送的view-change消息摘要是d，每一对都与集合S中消息对应，可以使用V证明主节点是在满足条件下，创建new-view消息的，即V是新视图的证明。因为其它多数副本节点已经接收view-change消息，所以此处发送消息的摘要做对比即可。</li>
+<li>X：是一个集合，包含检查点以及选定的请求</li>
+<li>α：主节点p对new-view消息的数字签名</li>
+</ul>
+<p>之后，主节点会把new-view消息广播给每一个副本节点。</p>
+<h3 id="处理new-view消息"><a href="#处理new-view消息" class="headerlink" title="处理new-view消息"></a>处理new-view消息</h3><h4 id="主节点处理new-view消息"><a href="#主节点处理new-view消息" class="headerlink" title="主节点处理new-view消息"></a>主节点处理new-view消息</h4><p>在发生View Changes时，主节点的状态可能也不是最全的，如果它没有X结合中的请求或者检查点，它可以从其他节点哪拉去。</p>
+<p>主节点需要使用new-view消息，达到视图切换的最后一步状态：在新视图v+1中，让集合X中的请求，全部是Pre-prepared状态。为何是Pre-prepared状态呢？因为new-view消息，可以看做一次特殊的Pre-prepare消息。</p>
+<p>为什么不直接标记为Committed呢？因为主节点也可能是拜占庭节点，副本节点需要检查new-view消息，向所有节点广播自己检查的结果，满足条件后才能达成一致性。</p>
+<h4 id="副本节点处理new-view消息"><a href="#副本节点处理new-view消息" class="headerlink" title="副本节点处理new-view消息"></a>副本节点处理new-view消息</h4><p>副本节点在视图v+1，会持续接收view-change消息和new-view消息，它会把new-view消息V集合中的view-change消息，跟它收到的消息做对比，如果它本地不存在某条view-change消息，它可以要求主节点向他提供view-change消息和view-change-ack消息集合，证明至少f+1个非拜占庭副本节点收到过此view-change消息。</p>
+<p>副本节点拥有所有的view-change消息之后，副本节点会和主节点运行相同的决策逻辑，以校验new-view消息的正确性。</p>
+<p>如果new-view消息是正确的，副本节点会和主节点一样移动到相同的状态，然后广播一条Prepare消息给所有节点，这样就恢复到了正常情况下的：<code>Pre-prepare -&gt; Prepare -&gt; Commit</code> 一致性逻辑。这样就完成了从View Changes到正常处理流程的迁移。</p>
+<p>如果new-view消息是错误的，说明主节点p是拜占庭节点，副本节点会直接进入v+2，发送view-change消息，进行新的一轮视图切换。</p>
+<h3 id="View-Changes如何提供liveness"><a href="#View-Changes如何提供liveness" class="headerlink" title="View Changes如何提供liveness"></a>View Changes如何提供liveness</h3><p>在一轮视图切换无法完成的时候，会开启新的一轮视图切换，由于拜占庭节点的数量最多为f个，最终会在某一轮视图切换中，能够完成视图切换，所有非拜占庭节点达成一致的状态，保证liveness和safety。</p>
+<p>本文前面列出了几种异常情况，下面就看一下View Changes是如何应对这些异常情况的，以及如何提供活性。</p>
+<p>Q1：如果下一个View的主节点宕机了怎么办？</p>
+<p>A1：副本节点在收集到2f+1个view-change消息后，会启动定时器，超时时间为T，新view的主节点宕机，必然会导致定时器超时时，未能完成View Changes流程，会进入新一轮视图切换。</p>
+<p>Q2：如果下一个View的主节点是恶意节点，作恶怎么办？</p>
+<p>A2：新view的主节点是恶意节点，如果它做恶了，生成的new-view消息不合法，副本节点可以检测出来。或者new-view消息是合法的，但它只发送给了少数副本节点，副本节点在对new-view消息进行正常的3阶段流程，参与的节点太少，在定时器超时前，不足以完成3阶段流程，副本节点会进入下一轮视图切换。</p>
+<p>Q3：如果非拜占庭恶意发起View Changes，造成主节点切换怎么办？</p>
+<p>A3：定时器未超时情况下，只有有效的f+1个view-change消息，才会引发其他副本节点进行主节点切换，否则无法造成主节点切换。但PBFT的前提条件是恶意节点不足f个，所以只有恶意节点发起view-change消息时，无法造成主节点切换。</p>
+<p>Q4：如果参与View Changes的节点数量不足怎么办？</p>
+<p>A4：这个问题可以分几种情况。</p>
+<ul>
+<li>发起view-change的节点数量不足f+1个，这种情况不会发生整个集群的视图切换。</li>
+<li>视图切换过程中，不满足各节点的数量要求，无法完成本轮视图切换，会进入下一轮视图切换。</li>
+</ul>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>View Changes是PBFT中一个重要的环节，它能保证整个协议的liveness，是PBFT不可或缺的一部分。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/15/gops-introduction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1195,246 +1375,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/21/fabric-orderer-architecture/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/21/fabric-orderer-architecture/" class="post-title-link" itemprop="url">Fabric 1.4源码解读 7：Orderer架构解读</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-11-21 20:07:54" itemprop="dateCreated datePublished" datetime="2019-11-21T20:07:54+08:00">2019-11-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-01-10 17:30:42" itemprop="dateModified" datetime="2020-01-10T17:30:42+08:00">2020-01-10</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Orderer介绍"><a href="#Orderer介绍" class="headerlink" title="Orderer介绍"></a>Orderer介绍</h2><p>排序服务由一组<strong>排序节点</strong>组成，它接收客户端提交的交易，把交易打包成区块，确保排序节点间达成一致的区块内容和顺序，提供区块链的<strong>一致性</strong>服务。</p>
-<p><img src="http://img.lessisbetter.site/2019-11-fabric-orderer-network.png" alt=""></p>
-<blockquote>
-<p>图片源自《区块链原理、设计与应用》，当时Fabric还不支持raft</p>
-</blockquote>
-<p>排序服务所提供的一致性，依赖<strong>确定性的共识算法</strong>，而非比特币、以太坊等公有链，所采用的概率性共识算法。确定性的共识算法是区块上链，即不可修改。Fabric所采用的共识算法有Solo、Kafka、EtcdRaft。</p>
-<p>客户端<strong>通过Broadcast接口向Orderer提交背书过的交易</strong>，客户端（此处广义指用户客户端和<strong>Peer节点</strong>）<strong>通过Deliver接口订阅区块事件，从Orderer获取区块</strong>。</p>
-<p>更多的排序服务介绍请参考这篇官方文档<a href="https://hyperledger-fabric-cn.readthedocs.io/zh/latest/orderer/ordering_service.html" target="_blank" rel="noopener">排序服务</a>。</p>
-<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://img.lessisbetter.site/2019-11-arch-of-orderer.png" alt="Architecture of Orderer"></p>
-<blockquote>
-<p>本图依赖 Fabric 1.4 源码分析而得</p>
-</blockquote>
-<p>Orderer由：多通道、共识插件、消息处理器、本地配置、区块元数据、gRPC服务端、账本等组成，其中gRPC中的Deliver、Ledger是通用的（Peer也有），其余都是Orderer独有的。</p>
-<h3 id="多通道"><a href="#多通道" class="headerlink" title="多通道"></a>多通道</h3><p>Fabric 支持多通道特性，而Orderer是多通道的核心组成部分。多通道由Registrar、ChainSupport、BlockWriter等一些重要部件组成。</p>
-<p>Registrar是所有通道资源的汇总，访问每一条通道，都要经由Registrar，更多信息请看<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/#Registrar">Registrar</a>。</p>
-<p>ChainSupport代表了每一条通道，它融合了一条通道所有的资源，更多信息请看<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/#ChainSupport">ChainSupport</a>。</p>
-<p>BlockWriter 是区块达成共识后，Orderer写入区块到账本需要使用的接口。</p>
-<h3 id="共识插件"><a href="#共识插件" class="headerlink" title="共识插件"></a>共识插件</h3><p>Fabric的共识是插件化的，抽象出了Orderer所使用的共识接口，任何一种共识插件，只要满足给定的接口，就可以配合Fabric Orderer使用。</p>
-<p>当前共识有3种插件：Solo、Kafka、EtcdRaft。Solo用于实验环境，Kafka和EtcdRaft用于生产环境，Kafka和EtcdRaft都是CFT算法，但EtcdRaft比Kafka更易配置。</p>
-<p>EtcdRaft实在Fabric 1.4开始引入的，如果之前的生产环境使用Kafka作为共识，可以遵循Fabric给的指导，把Kafka共识，迁移到Raft共识。</p>
-<h3 id="gRPC通信"><a href="#gRPC通信" class="headerlink" title="gRPC通信"></a>gRPC通信</h3><p>Orderer只有2个gRPC接口：</p>
-<ul>
-<li>Broadcast：用来接收客户端提交的待排序交易</li>
-<li>Deliver：客户端（包括Peer节点）用来从Orderer节点获取已经达成一致的区块</li>
-</ul>
-<p>其中，Broadcast是Orderer独有的，而Devliver是通用的，因为客户端也可以利用Deliver接口从Peer节点获取区块、交易等。</p>
-<p>关于Broadcast和Orderer更多介绍可以参考杨保华的2篇笔记：</p>
-<ul>
-<li><a href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_broadcast.md" target="_blank" rel="noopener">Orderer 节点 Broadcast 请求的处理</a></li>
-<li><a href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_deliver.md" target="_blank" rel="noopener">Orderer 节点 Deliver 请求的处理</a>。<h3 id="Local-Config"><a href="#Local-Config" class="headerlink" title="Local Config"></a>Local Config</h3></li>
-</ul>
-<p>用来解析orderer节点的配置文件: <code>orderer.yaml</code>，并保存入内存。</p>
-<p>该配置文件中的配置，是节点本地的配置，不需要Orderer节点间统一的配置，因此不需要上链，相关配置有：</p>
-<ul>
-<li>网络相关配置</li>
-<li>账本类型、位置</li>
-<li>raft文件位置</li>
-<li>…</li>
-</ul>
-<p>而上链的配置，被称为通道配置，需要使用配置交易进行更新，这部分配置，写在<code>configtx.yaml</code>中，和Orderer相关的有：</p>
-<ul>
-<li>共识类型</li>
-<li>区块大小</li>
-<li>切区块的时间</li>
-<li>区块内交易数</li>
-<li>各种共识的相关配置</li>
-<li>…</li>
-</ul>
-<h3 id="Metadata"><a href="#Metadata" class="headerlink" title="Metadata"></a>Metadata</h3><p>区块中有4个元数据：</p>
-<ul>
-<li>区块签名，存放orderer对区块的SignatureHeader</li>
-<li>最新配置区块的高度，方便获取当前通道最新配置</li>
-<li>交易过滤，为数组，存放区块内所有交易的有效性，使用数字代表无效的原因，由验证交易的记账节点填写</li>
-<li>orderer相关元数据，不同的共识类型，该元数据不同</li>
-</ul>
-<p>区块Header中记录了Data.Hash()，Data是所有交易后序列化的结果，但不包含区块元数据，所以区块元数据是可以在产生区块后修改的。即，即使元数据上链了，但这数据是可以修改的，只不过修改也没有什么意义。</p>
-<h3 id="MsgProcessor"><a href="#MsgProcessor" class="headerlink" title="MsgProcessor"></a>MsgProcessor</h3><p>orderer收到交易后需要对交易进行多项检查，不同的通道可以设置不同的MsgProcessor，也就可以进行不同的检查。</p>
-<p>当前Processor分2个：</p>
-<ul>
-<li>应用通道的叫StandardChannel</li>
-<li>系统通道的叫SystemChannel</li>
-</ul>
-<p>StandardChannel会对交易进行以下检查：</p>
-<ul>
-<li>交易内容不能为空</li>
-<li>交易大小不能超过区块大小最大值（默认10MB）</li>
-<li>交易交易签名不符合签名策略</li>
-<li>签名者证书是否过期</li>
-</ul>
-<p>SystemChannel只比StandardChannel多一项：系统配置检查，用来检查以下交易中包含的配置，配置项是否有缺失，或者此项配置是否允许更新等。</p>
-<h3 id="BlockCutter"><a href="#BlockCutter" class="headerlink" title="BlockCutter"></a>BlockCutter</h3><p>BlockCutter用来把收到的交易分成多个组，每组交易会打包到一个区块中。而分组的过程，就是切块，每组交易被称为一个Batch，它有一个缓冲区用来存放待切块交易。</p>
-<p>切块有3个可配置条件：</p>
-<ul>
-<li>缓冲区内交易数，达到区块包含的交易上限（默认500）</li>
-<li>缓冲区内交易总大小，达到区块大小上限（默认10MB）</li>
-<li>缓冲区存在交易，并且未出块的时间，达到切块超时时间（默认2s）</li>
-</ul>
-<p>切块有1个不可配置条件：</p>
-<ul>
-<li>缓冲区收到配置交易，配置交易要放到单独区块，如果缓冲区有交易，缓冲区已有交易会切到1个区块</li>
-</ul>
-<p>超多刚接触Fabric的人有这样一个疑问：排序节点是按什么规则对交易排序的？</p>
-<p>按什么顺序对交易排序并不重要，只要交易在区块内的顺序是一致的，然后所有记账节点，按交易在区块内的顺序，处理交易，最后得到的状态必然是一致的，这也是区块链保持一致性的原理。</p>
-<p>再回过头来说一下实现是什么顺序：哪个交易先写入BlockCutter的缓冲区，哪个交易就在前面，仅此而已。</p>
-<h3 id="BlockWriter"><a href="#BlockWriter" class="headerlink" title="BlockWriter"></a>BlockWriter</h3><p>Orderer的BlockWriter是基于common/ledger实现的，<strong>它用来保存区块文件</strong>，不包含状态数据库等其他数据库，其中有3类区块文件:ram，json和file，file是Orderer和Peer都可使用的，另外2个只能Orderer使用。</p>
-<p>BlockWriter用来向Peer的账本追加区块，但追加区块之前，还需要做另外1件事情，设置区块的元数据。</p>
-<p>区块元数据包含：</p>
-<ul>
-<li>区块签名，存放orderer对区块的SignatureHeader</li>
-<li>最新配置区块的高度，方便获取当前通道最新配置</li>
-<li>交易过滤，为数组，存放区块内所有交易的有效性，使用数字代表无效的原因，由验证交易的记账节点填写</li>
-<li>orderer相关元数据，不同的共识类型，该元数据不同</li>
-</ul>
-<p>但此时只设置其中的3个：区块签名、配置区块高度、orderer相关的元数据。因为交易的有效性在记账节点检查后才能设置。</p>
-<p><strong>为何不在创建区块的时候就设置这些元数据信息，而是在区块经过共识之后？</strong></p>
-<p>共识的过程会传播区块，只让区块包含必要的信息，可以减少区块大小，降低通信量。但元数据占用大小非常小，所以这未必是真实原因。</p>
-<p>BlockWriter还有<strong>另外一个功能：根据一个Batch创建下一个高度的区块</strong>。一个区块包含了：</p>
-<ul>
-<li>Header：区块高度、前一个区块Hash、Data的哈希值</li>
-<li>Data：被序列化的交易列表</li>
-<li>Metadata：区块元数据</li>
-</ul>
-<p>Header只记录Data的哈希值，不包含Metadata哈希值，这样的目的是，在区块创建之后，仍能修改区块。</p>
-<h2 id="Orderer节点启动"><a href="#Orderer节点启动" class="headerlink" title="Orderer节点启动"></a>Orderer节点启动</h2><p>根据Fabric 1.4源码梳理Orderer启动步骤：</p>
-<ul>
-<li>加载配置文件</li>
-<li>设置Logger</li>
-<li>设置本地MSP</li>
-<li>核心启动部分：<ul>
-<li>加载创世块</li>
-<li>创建账本工厂</li>
-<li>创建本机gRPCServer</li>
-<li>如果共识需要集群(raft)，创建集群gRPCServer</li>
-<li>创建Registrar：设置好共识插件，启动各通道，如果共识是raft，还会设置集群的gRPC接口处理函数Step</li>
-<li>创建本机server：它是原子广播的处理服务，融合了Broadcast处理函数、deliver处理函数和registrar</li>
-<li>开启profile</li>
-<li>启动集群gRPC服务</li>
-<li>启动本机gRPC服务</li>
-</ul>
-</li>
-</ul>
-<p>启动流程图可请参考杨宝华的笔记<a href="https://github.com/yeasy/hyperledger_code_fabric/blob/master/process/orderer_start.md" target="_blank" rel="noopener">Orderer 节点启动过程</a>，笔记可能是老版本的Fabric，但依然有参考价值。</p>
-<h2 id="Orderer处理交易的流程"><a href="#Orderer处理交易的流程" class="headerlink" title="Orderer处理交易的流程"></a>Orderer处理交易的流程</h2><h3 id="普通交易在Orderer中的流程"><a href="#普通交易在Orderer中的流程" class="headerlink" title="普通交易在Orderer中的流程"></a>普通交易在Orderer中的流程</h3><p>交易是区块链的核心，交易在Orderer中的流程分3阶段：</p>
-<ol>
-<li>Orderer 的 Broadcast 接口收到来自客户端提交的交易，会获取交易所在的链的资源，并进行首次检查，然后提交给该链的共识，对交易进行排序，最后向客户端发送响应，为下图蓝色部分。</li>
-<li>共识实例是单独运行的，也就是说Orderer把交易交给共识后，共识可能还在处理交易，然而Orderer已经开始向客户端发送提交交易的响应。共识如果发现排序服务的配置如果进行了更新，会再次检查交易，然后利用把Pending的交易分割成一组，然后打包成区块，然后共识机制确保各Orderer节点对区块达成一致，最后将区块写入账本。为下图绿色部分。</li>
-<li>Peer会向Orderer订阅区块事件，每当新区块被Orderer写入账本时，Orderer会把新区块以区块事件的方式，发送给Peer。为下图换色部分。</li>
-</ol>
-<p><img src="http://img.lessisbetter.site/2019-11-21-orderer-tx-flow.png" alt=""></p>
-<p>上面提到Orderer和共识实例分别会对交易进行2次检查，这些检查是相同的，为何要进行两次检查呢？</p>
-<p>代码如下：ProcessMessage 会调用<code>ProcessNormalMsg</code>，对交易进行第一次检查，如果有错误，会向客户端返回错误响应。 SomeConsensurFunc 是一个假的函数名称，但3种共识插件实现，都包含相同的代码片，当消息中 configSeq &lt; seq 时，再次对交易进行检查，如果错误，则丢次此条交易。configSeq是Order函数传入的，即第一次检查交易时的配置号，seq为共识当前运行时的配置号。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bh *Handler)</span> <span class="title">ProcessMessage</span><span class="params">(msg *cb.Envelope, addr <span class="keyword">string</span>)</span> <span class="params">(resp *ab.BroadcastResponse)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    configSeq, err := processor.ProcessNormalMsg(msg)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        logger.Warningf(<span class="string">"[channel: %s] Rejecting broadcast of normal message from %s because of error: %s"</span>, chdr.ChannelId, addr, err)</span><br><span class="line">        <span class="keyword">return</span> &amp;ab.BroadcastResponse&#123;Status: ClassifyError(err), Info: err.Error()&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    err = processor.Order(msg, configSeq)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SomeConsensurFunc</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> msg.configSeq &lt; seq &#123;</span><br><span class="line">        _, err = ch.support.ProcessNormalMsg(msg.normalMsg)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            logger.Warningf(<span class="string">"Discarding bad normal message: %s"</span>, err)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我认为如此设计的原因，考量如下：<br>共识插件应当尽量高效，orderer尽量把能做的做掉，把不能做的交给共识插件，而交易检查就是orderer能做的。共识插件只有在排序服务配置更新后，才需要重新检查交易，以判断是否依然满足规则。排序服务的配置通常是比较稳定的，更新频率很低，所以进行2次校验的频率也是非常低。这种方式，比只在共识插件校验，会拥有更高的整体性能。</p>
-<h3 id="配置交易在Orderer中的流程"><a href="#配置交易在Orderer中的流程" class="headerlink" title="配置交易在Orderer中的流程"></a>配置交易在Orderer中的流程</h3><p>配置交易可以用来创建通道、更新通道配置，与普通交易的处理流程总体是相似的，只不过多了一些地方或者使用不同的函数，比如：</p>
-<ul>
-<li>交易检查函数不是ProcessNormalMsg，而是ProcessConfigMsg</li>
-<li>配置交易单独打包在1个区块</li>
-<li>配置交易写入账本后，要让配置生效，即Orderer应用最新的配置</li>
-<li>…</li>
-</ul>
-<h3 id="使用Raft共识，交易在Orderer中的流程"><a href="#使用Raft共识，交易在Orderer中的流程" class="headerlink" title="使用Raft共识，交易在Orderer中的流程"></a>使用Raft共识，交易在Orderer中的流程</h3><p>上面2中流程都是与具体共识算法无关的，这里补充一个Raft共识的。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-orderer-using-raft.png" alt=""></p>
-<p>使用Raft共识的链处理交易包含了上图中的4步：</p>
-<ul>
-<li>交易：处理交易</li>
-<li>区块：创建区块</li>
-<li>Raft：使用Raft对区块达成共识</li>
-<li>账本：写区块元数据，把区块写入到账本</li>
-</ul>
-<p>如果把图中提到的：转发和Raft去掉，就是以Solo为共识的链的过程。</p>
-<p>下图是更加细化一层的，如果看不懂，建议先读下<a href="http://lessisbetter.site/2019/08/22/etcd-raft-source-data-flow/">Etcd Raft架构设计和源码剖析2：数据流</a>这篇文章。</p>
-<p><img src="http://img.lessisbetter.site/2020-01-fabric-order-with-etcdraft.png" alt=""></p>
-<p>红色圈出来的是etcd/raft的实现，蓝色圈出来的是Fabric使用raft为共识的部分，外面的Broadcast、Deliver是属于Orderer但不属于某条链。</p>
-<p>这张图和etcd与raft交互没有太多不同，只有2个地方：</p>
-<ol>
-<li>chains要把交易转化为区块，再交给raft去共识</li>
-<li>chains的Apply并不是去修改状态机，而是把取消写到账本</li>
-</ol>
-<h2 id="源码简介"><a href="#源码简介" class="headerlink" title="源码简介"></a>源码简介</h2><p>Orderer的代码位于<code>fabric/orderer</code>，其目录结构如下，标注了每个目录结构的功能：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric git:(readCode) ✗ tree -L 2 orderer</span><br><span class="line">orderer</span><br><span class="line">├── README.md</span><br><span class="line">├── common</span><br><span class="line">│   ├── blockcutter 缓存待打包的交易，切块</span><br><span class="line">│   ├── bootstrap 启动时替换通道创世块</span><br><span class="line">│   ├── broadcast orderer的Broadcast接口</span><br><span class="line">│   ├── cluster （Raft）集群服务</span><br><span class="line">│   ├── localconfig 解析orderer配置文件orderer.yaml</span><br><span class="line">│   ├── metadata 区块元数据填写</span><br><span class="line">│   ├── msgprocessor 交易检查</span><br><span class="line">│   ├── multichannel 多通道支持：Registrar、chainSupport、写区块</span><br><span class="line">│   └── server Orderer节点的服务端程序</span><br><span class="line">├── consensus 共识插件</span><br><span class="line">│   ├── consensus.go 共识插件需要实现的接口等定义</span><br><span class="line">│   ├── etcdraft raft共识插件</span><br><span class="line">│   ├── inactive 未激活时的raft</span><br><span class="line">│   ├── kafka kafka共识插件</span><br><span class="line">│   ├── mocks 测试用的共识插件</span><br><span class="line">│   └── solo solo共识插件</span><br><span class="line">├── main.go orderer程序入口</span><br><span class="line">├── mocks</span><br><span class="line">│   ├── common</span><br><span class="line">│   └── util</span><br><span class="line">└── sample_clients orderer的客户端程序样例</span><br><span class="line">    ├── broadcast_config</span><br><span class="line">    ├── broadcast_msg</span><br><span class="line">    └── deliver_stdout</span><br><span class="line"></span><br><span class="line">23 directories, 3 files</span><br></pre></td></tr></table></figure>
-<p>阅读Orderer源码，深入学习Orderer的时候，建议以下顺序：</p>
-<ul>
-<li>核心的数据结构，主要在multichannel、consensus.go：<a href="http://lessisbetter.site/2019/11/18/fabric-orderer-structs/">Fabric 1.4源码解读 6：Orderer核心数据结构</a></li>
-<li>Orderer的启动</li>
-<li>Broadcast接口</li>
-<li>msgprocessor</li>
-<li>通过Solo掌握共识插件需要做哪些工作</li>
-<li>切块：blockcutter</li>
-<li>写区块：BlockWriter、metadata</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从宏观的角度介绍了Orderer的功能、核心组成，以及交易在Orderer中的流程，Peer如何从Orderer获取区块。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1501,7 +1446,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-count">131</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
