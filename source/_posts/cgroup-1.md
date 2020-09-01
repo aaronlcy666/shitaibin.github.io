@@ -1,5 +1,5 @@
 ---
-title: Docker容器基础：Cgroup - 资源控制简介
+title: Docker容器基础1：Cgroup - 资源控制简介
 date: 2020-08-27 21:43:52
 tags: ['Docker', 'Kubernetes', 'Cgroup']
 ---
