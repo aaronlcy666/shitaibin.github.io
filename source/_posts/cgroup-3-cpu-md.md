@@ -1,5 +1,5 @@
 ---
-title: Docker容器基础2：Cgroup - cpu, cpuacct, cpuset子系统
+title: Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统
 date: 2020-09-01 23:00:24
 tags: ['Docker', 'Kubernetes', 'Cgroup']
 ---
@@ -192,7 +192,10 @@ top显示占用100%CPU。
 ```
   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
  6633 root      20   0    7480     92      0 R 100.0  0.0   0:12.13 stress
-``` 
+```
+ 
+
+
 
 cpuset 能看到可使用的核为： 0~3。
 
@@ -260,15 +263,23 @@ cpu user system
 ```
 ## 利用Go演示Cgroup CPU限制
 
-分3组实验，利用top、docker stat、cpuacc 3个角度查看CPU使用情况。
+测试程序：[02.2.cgroup_cpu.go](https://github.com/Shitaibin/notes/blob/master/docker/codes/02.2.cgroup_cpu.go) 。
 
-测试程序会创建3个goroutine不断的去消耗cpu，它们会占用3个线程，3个线程会分配到3个核上执行，所以CPU使用率不限制时应当达到300%。
-
-程序接受1个入参，代表测试类型：
+该程序接受1个入参，代表测试类型：
 - 空或`nolimit`: 无限制
 - `cpu` : 执行cpu限制，利用cfs把cpu使用率控制在5%
 - `cpuset` : 限制只使用核1和核3
 
+测试程序的执行动作如下：
+1. 程序首先在cpu和cpuset中创建2个cgroup，
+2. 按传入的参数设置限制或不设置限制
+3. 利用`/proc/self/exe`启动进程
+4. 把进程加入到2个cgroup的tasks，即加入cgroup
+5. 进程会创建3个goroutine不断的去消耗cpu，它们会占用3个线程
+   
+当CPU使用率不限制时，3个线程会分配到3个核上执行，所以进程的CPU使用率应当达到300%。
+
+利用测试程序分3组实验，然后利用 `top`、`cpuacct.usage_all`、`cpuset.cpu` 3个角度查看CPU限制和使用情况。
 
 ### 不限制CPU
 

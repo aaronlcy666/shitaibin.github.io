@@ -142,7 +142,7 @@ top命令查看进程占用内存情况：
 
 ### 测试源码
 
-cgroup的演示[源码](./codes/02.1.cgroup.go) ，关于源码中的`/proc/self/exe`看[补充小知识](#补充小知识)。
+cgroup的演示[源码](https://github.com/Shitaibin/notes/blob/master/docker/codes/02.1.cgroup.go) ，关于源码中的`/proc/self/exe`看[补充小知识](#补充小知识)。
 
 ```go
 package main
