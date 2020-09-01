@@ -405,10 +405,11 @@ cpu user system
 1,3
 ```
 
-## 资料
+## 推荐资料
 
 
-1. googlesource上介绍了cgroup中各subsystem的各指标的含义：https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups
-2. 解决写 cpu.cfs_quota_us `invalid argument`问题：https://my.oschina.net/xiaominmin/blog/3068364
-3. 解决写 cpuset.tasks `No space` 问题： https://blog.csdn.net/xftony/article/details/80536562
-4. cgroup使用踩坑：https://www.cnblogs.com/raymondshiquan/articles/2727037.html
+1. [Linux Kernel关于cgroup cpu、cpuset的文档](https://kernel.googlesource.com/pub/scm/linux/kernel/git/glommer/memcg/+/cpu_stat/Documentation/cgroups/)
+2. [阿里同学的书《自己动手写Docker》](https://union-click.jd.com/jdc?e=&p=AyIGZRtSFwsWB1EcXhUyFQ5WEloVCxMBURxrUV1KWQorAlBHU0VeBUVNR0ZbSkdETlcNVQtHRVNSUVNLXANBRA1XB14DS10cQQVYD21XHgBcGFIUAhsGUx9cJQEbBTJbEmFdcHkRSANGBhBDCnkmEVQeC2UaaxUDEwVWEl8RBhM3ZRtcJUN8B1QaUxMCFAFlGmsVBhoOUx9fFwESB1IfaxICGzeDtdnBl4nT2YZrJTIRN2UrWyUBIkU7HQxBABEGBhILHVdGAgcaXB0DQARWHQ4QVhFVVhkLEVciBVQaXxw%3D)
+3. [解决写 cpu.cfs_quota_us `invalid argument`问题](https://my.oschina.net/xiaominmin/blog/3068364)
+4. [解决写 cpuset.tasks `No space` 问题](https://blog.csdn.net/xftony/article/details/80536562)
+5. [cgroup使用踩坑](https://www.cnblogs.com/raymondshiquan/articles/2727037.html)
