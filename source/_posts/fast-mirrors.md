@@ -1,7 +1,7 @@
 ---
 title: 让镜像飞，加速你的开发
 date: 2019-07-13 11:15:51
-tags: ['Linux', 'Mac']
+tags: ['Linux', 'Mac', 'Docker']
 ---
 
 由于你知我知的网络原因，开发者遇到了以下问题：
@@ -34,15 +34,17 @@ tags: ['Linux', 'Mac']
 
 ## Docker镜像
 
+使用加速器的原理是，docker deamon会先去加速器寻找镜像，如果找不到才从docker官方仓库拉镜像。如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。
+
 看如何配置[Docker镜像加速器](https://yeasy.gitbooks.io/docker_practice/install/mirror.html)。
 
-推荐使用七牛或DaoCloud的镜像。
+推荐使用阿里云、七牛、DaoCloud的镜像。
 
 ## Go modules代理
 
 现在国内已经有第三方的Go modules代理服务了，比如：
 
-1. [goproxy.io](https://goproxy.io/zh/)，是即将毕业的[盛奥飞](https://github.com/aofei)小哥捐给了七牛搭建的Go modules代理服务。
+1. [goproxy.io](https://goproxy.io/zh/)，是[盛奥飞](https://github.com/aofei)小哥捐给了七牛搭建的Go modules代理服务。
 1. [aliyun goproxy](http://mirrors.aliyun.com/goproxy/)，阿里云昨天（大概2019年07月15日）刚开放了Go modules代理服务。
 
 fabric使用vendor，下载各种东西的时候需要翻墙，即便是可以翻墙，也是有缺点的：

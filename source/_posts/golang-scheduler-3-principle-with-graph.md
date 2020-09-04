@@ -72,7 +72,7 @@ n = min(len(GQ)/GOMAXPROCS + 1, len(GQ/2))
 
 假定我们场景中一共有4个P，所以m2只从能从全局队列取1个g（即g3）移动p2本地队列，然后完成从g0到g3的切换，运行g3。
 
-![](http://img.lessisbetter.site/2019-04-image-20190331163755555-4021475.png)
+![](http://img.lessisbetter.site/2020-09-go-scheduler-p8.png)
 
 **场景8**：假设g2一直在m1上运行，经过2轮后，m2已经把g7、g4也挪到了p2的本地队列并完成运行，全局队列和p2的本地队列都空了，如上图左边。
 
