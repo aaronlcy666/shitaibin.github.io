@@ -707,10 +707,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-08-27 21:30:41 / 修改时间：21:51:40" itemprop="dateCreated datePublished" datetime="2020-08-27T21:30:41+08:00">2020-08-27</time>
+              <time title="创建时间：2020-08-27 21:30:41" itemprop="dateCreated datePublished" datetime="2020-08-27T21:30:41+08:00">2020-08-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-04 23:09:33" itemprop="dateModified" datetime="2020-09-04T23:09:33+08:00">2020-09-04</time>
+              </span>
 
           
 
@@ -737,8 +743,8 @@
 <p>使用minikube可以查看帮助flag帮助信息：</p>
 <ul>
 <li><code>--image-mirror-country</code>: 需要使用的镜像镜像的国家/地区代码。留空以使用全球代码。对于中国大陆用户，请将其设置为<br>cn</li>
-<li><code>--docker-env</code>: 是通过环境变量向docker挂http代理，否则国内可能出现拉不到镜像的问题。挂代理还需要一个必要条件，在主机上使用SS开启代理。挂了代理可能也很难拉到，但不挂代理，几乎拉不下来镜像。</li>
-<li><code>--registry-mirror</code>: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：<code>--registry-mirror=&quot;https://a90tkz28.mirror.aliyuncs.com&quot;</code></li>
+<li><code>--docker-env</code>: 是通过环境变量向docker挂http代理，否则国内可能出现拉不到镜像的问题。挂代理还需要一个必要条件，在主机上使用SS开启代理。挂了代理可能也很难拉到，但不挂代理，几乎拉不下来镜像。就算挂了代理，也会和某些https的镜像仓库出现TLS握手失败、超时的错误，可以利用<code>docker search</code>去搜索镜像，也许镜像加速器已经有同名镜像了，<code>yaml</code>中把镜像连接，设置为当前查询到的镜像即可。</li>
+<li><code>--registry-mirror</code>: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：<code>--registry-mirror=&quot;https://a90tkz28.mirror.aliyuncs.com&quot;</code> 。</li>
 <li><code>--image-repository</code> : 如果不能从gcr.io拉镜像，配置minikube中docker拉镜像的地方</li>
 <li><code>--kubernetes-version</code>： 指定要部署的k8s版本</li>
 </ul>
