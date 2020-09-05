@@ -12,6 +12,61 @@ minikube很好，但某些原因造成国内用起来比较慢，要各种挂代
 
 ![](http://img.lessisbetter.site/2020-08-minikube.jpeg)
 
+kubectl和kube-apiserver是CS架构，kubectl是操作k8s集群的客户端，kube-apiserver是服务端。
+
+minikube是创建了一个虚拟机`minikube vm`，然后在虚拟机里创建了1个单机的k8s集群，并把集群部署信息写到`~/.kube/config`文件，它是kubectl默认使用的配置文件。
+
+```
+[~]$ ls ~/.kube/config
+/Users/shitaibin/.kube/config
+[~]$ cat ~/.kube/config
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /Users/shitaibin/.minikube/ca.crt
+    server: https://192.168.99.103:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /Users/shitaibin/.minikube/profiles/minikube/client.crt
+    client-key: /Users/shitaibin/.minikube/profiles/minikube/client.key
+```
+
+文件内容也可以使用 `kubectl config view` 命令查看。
+
+```
+[~]$ kubectl config view
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /Users/shitaibin/.minikube/ca.crt
+    server: https://192.168.99.103:8443
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    client-certificate: /Users/shitaibin/.minikube/profiles/minikube/client.crt
+    client-key: /Users/shitaibin/.minikube/profiles/minikube/client.key
+[~]$
+```
+
 ## 安装软件
 
 1. 安装minikube，1分钟，如果提供的命令行下载不下来，就浏览器下载下来，放到增加可执行，然后放到bin目录即可：
@@ -43,8 +98,8 @@ minikube start --image-mirror-country cn \
 
 - `--image-mirror-country`: 需要使用的镜像镜像的国家/地区代码。留空以使用全球代码。对于中国大陆用户，请将其设置为
 cn
-- `--docker-env`: 是通过环境变量向docker挂http代理，否则国内可能出现拉不到镜像的问题。挂代理还需要一个必要条件，在主机上使用SS开启代理。挂了代理可能也很难拉到，但不挂代理，几乎拉不下来镜像。就算挂了代理，也会和某些https的镜像仓库出现TLS握手失败、超时的错误，可以利用`docker search`去搜索镜像，也许镜像加速器已经有同名镜像了，`yaml`中把镜像连接，设置为当前查询到的镜像即可。
-- `--registry-mirror`: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：`--registry-mirror="https://a90tkz28.mirror.aliyuncs.com"` 。
+- `--docker-env`: 是通过环境变量向docker挂http代理，否则国内可能出现拉不到镜像的问题。挂代理还需要一个必要条件，在主机上使用SS开启代理。挂了代理可能也很难拉到，但不挂代理，几乎拉不下来镜像。就算挂了代理，也会和某些https的镜像仓库出现TLS握手失败、超时的错误，可以利用`docker search`去搜索镜像，也许镜像加速器已经有同名镜像了，`yaml`中把镜像地址设置为当前查询到的镜像即可，这种方式存在的风险是search出的镜像和指定的镜像名称版本相同，但可能并不是相同的镜像，比较存在于不同的镜像仓库中。
+- `--registry-mirror`: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：`--registry-mirror="https://a90tkz28.mirror.aliyuncs.com"` 。使用加速器的原理是，docker deamon会先去加速器寻找镜像，如果找不到才从docker官方仓库拉镜像。如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。
 - `--image-repository` : 如果不能从gcr.io拉镜像，配置minikube中docker拉镜像的地方
 - `--kubernetes-version`： 指定要部署的k8s版本
 
@@ -174,3 +229,18 @@ Registry Mirrors对应的是阿里云镜像加速，HTTP proxy也配置上了，
 - 查看集群IP，kubectl就是连这个IP： minikube ip
 - 进入minikube虚拟机，整个k8s集群跑在这里面： minikube ssh
 
+## kubectl自动补全
+
+zsh在配置文件 `~/.zshrc` 中增加：
+
+```
+source <(kubectl completion zsh)  # 在 zsh 中设置当前 shell 的自动补全
+echo "if [ $commands[kubectl] ]; then source <(kubectl completion zsh); fi" >> ~/.zshrc # 在您的 zsh shell 中永久的添加自动补全
+```
+
+bash 在 `~/.bashrc` 中增加:
+
+```
+source <(kubectl completion bash) # 在 bash 中设置当前 shell 的自动补全，要先安装 bash-completion 包。
+echo "source <(kubectl completion bash)" >> ~/.bashrc # 在您的 bash shell 中永久的添加自动补全
+```
