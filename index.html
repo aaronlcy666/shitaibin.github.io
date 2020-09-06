@@ -196,6 +196,100 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/05/docker-proxy-and-registry-mirror/" class="post-title-link" itemprop="url">Docker网络代理和仓库镜像加速</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-05 14:48:04" itemprop="dateCreated datePublished" datetime="2020-09-05T14:48:04+08:00">2020-09-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-06 08:05:44" itemprop="dateModified" datetime="2020-09-06T08:05:44+08:00">2020-09-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于Docker官方镜像仓库<code>Registry</code>，没有仓库镜像加速，寸步难行。</p>
+<p>对于国外非Docker官方镜像仓库，并且还被墙的仓库<code>Registry</code>，没有网络代理，寸步难行。</p>
+<p>镜像仓库加速器<code>Registry Mirrors</code>，是国内对官方<code>Registry</code>的”镜像(mirror)”，当拉取image时，Docker Daemon先去 <code>Registry Mirrors</code> 拉去镜像，如果没找到镜像，<code>Registry Mirrors</code>找官方<code>Registry</code>拉去镜像，然后再返回给本地。</p>
+<p>网络代理是给Docker设置http和https代理，最原始的方式，适合有代理的情况。主要用于服务器上有<strong>稳定可访问</strong>的代理或者当前主机上有稳定代理的情况。对于代理和docker不在同一台机器上时，稳定可访问就成了一个问题，比如代理在笔记本上，IP随时都可能变化，服务器连接笔记本做代理，就算法上稳定可访问，而docker也在笔记本上运行，通过环回地址就能稳定访问。</p>
+<p><strong>不推荐给Docker设置代理，而应当优先使用<code>Registry Mirrors</code></strong>。代理也是有副作用的，你需要保证非本机能稳定连接到代理，并且能够转发数据，不然端口拒绝访问、TLS握手失败等问题，需要花费更多的时间。</p>
+<p>可访问的Registry有：</p>
+<ul>
+<li><a href="https://quay.io/" target="_blank" rel="noopener">quay.io</a> : 只是访问慢一些而已，可以拉下镜像来</li>
+</ul>
+<h2 id="镜像仓库加速器-推荐"><a href="#镜像仓库加速器-推荐" class="headerlink" title="镜像仓库加速器(推荐)"></a>镜像仓库加速器(推荐)</h2><p>如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。如果该仓库可以访问，非本机有代理的情况，无需配置网络代理。</p>
+<p>看如何配置<a href="https://yeasy.gitbooks.io/docker_practice/install/mirror.html" target="_blank" rel="noopener">Docker镜像加速器</a>。</p>
+<p>推荐使用阿里云、七牛、DaoCloud的镜像仓库加速器。</p>
+<p><code>/etc/docker/daemon.json</code> 配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;insecure-registries&quot;:[&quot;192.168.9.8:80&quot;],</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后冲抵daemon：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+<h2 id="网络代理-不推荐"><a href="#网络代理-不推荐" class="headerlink" title="网络代理(不推荐)"></a>网络代理(不推荐)</h2><p>我Mac上的http、https、socks5代理，http和https监听的是7890端口，sock5监听的是7891端口。</p>
+<p>拉镜像时，可以看到docker连接了7890端口走http代理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;private&#x2F;tmp]$ lsof -i:7890</span><br><span class="line">COMMAND     PID      USER   FD   TYPE             DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">....</span><br><span class="line">com.docke 73371 shitaibin   50u  IPv4 0xa8184ba4240fbe99      0t0  TCP localhost:58847-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   53u  IPv4 0xa8184ba4035deb09      0t0  TCP localhost:58857-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   58u  IPv4 0xa8184ba42d889861      0t0  TCP localhost:58893-&gt;localhost:7890 (ESTABLISHED)</span><br></pre></td></tr></table></figure>
+<p><a href="https://docs.docker.com/network/proxy/" target="_blank" rel="noopener">官方设置代理教程</a>，2选1:</p>
+<ol>
+<li>给Docker客户端设置代理，拉去镜像、创建新容器时，客户端会把变量发送给Daemon。支持17.07及以上版本，这是官方推荐方式。</li>
+<li>给Daemon设置代理，通过环境变量的方式。支持17.06及以下版本，不推荐。</li>
+</ol>
+<p>给Daemon设置的代理的另外方法：</p>
+<p>创建Daemon的代理配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d</span><br><span class="line">sudo touch &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d&#x2F;http-proxy.conf</span><br></pre></td></tr></table></figure>
+<p>内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment&#x3D;&quot;HTTP_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;NO_PROXY&#x3D;localhost,127.0.0.1,10.96.0.0&#x2F;16, 10.244.0.0&#x2F;16&quot;</span><br></pre></td></tr></table></figure>
+<p>然后重启Daemon：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line">systemctl show --property&#x3D;Environment docker</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/01/cgroup-3-cpu-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1168,142 +1262,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/23/markdown-mermaid/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/23/markdown-mermaid/" class="post-title-link" itemprop="url">提高画时序图的效率</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-03-23 15:28:40 / 修改时间：15:30:04" itemprop="dateCreated datePublished" datetime="2020-03-23T15:28:40+08:00">2020-03-23</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="https://mermaid-js.github.io/mermaid/#/README" target="_blank" rel="noopener">mermaid</a>是一个开源项目，可以在Markdown中，使用类似编写代码的方式，制作流程图、时序图、甘特图、饼图等。使用下来，感觉可以明显提升时序图的效率。</p>
-<h3 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h3><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    %% 注释</span><br><span class="line">    Client -&gt;&gt; Gateway: 发送JSON RPC请求</span><br><span class="line">    Gateway -&gt;&gt; Gateway: JSON RPC请求转换为gRPC请求</span><br><span class="line">    Gateway -&gt;&gt; Server: 发送gRPC请求</span><br><span class="line">    Server -&gt;&gt; Server: 处理gRPC请求</span><br><span class="line">    Server -&gt;&gt; Gateway: 发送gRPC响应</span><br><span class="line">    Gateway -&gt;&gt; Gateway: gRPC响应转换为JSON RPC响应</span><br><span class="line">    Gateway -&gt;&gt; Client: 把JSON RPC响应发送给客户端</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    %% 注释
-    Client ->> Gateway: 发送JSON RPC请求
-    Gateway ->> Gateway: JSON RPC请求转换为gRPC请求
-    Gateway ->> Server: 发送gRPC请求
-    Server ->> Server: 处理gRPC请求
-    Server ->> Gateway: 发送gRPC响应
-    Gateway ->> Gateway: gRPC响应转换为JSON RPC响应
-    Gateway ->> Client: 把JSON RPC响应发送给客户端</pre>
-
-<h4 id="昵称"><a href="#昵称" class="headerlink" title="昵称"></a>昵称</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    participant C as Client</span><br><span class="line">    participant G as Gateway</span><br><span class="line">    participant S as Server</span><br><span class="line"></span><br><span class="line">    C -&gt;&gt; G: 发送JSON RPC请求</span><br><span class="line">    G -&gt;&gt; G: JSON RPC请求转换为gRPC请求</span><br><span class="line">    G -&gt;&gt; S: 发送gRPC请求</span><br><span class="line">    S -&gt;&gt; S: 处理gRPC请求</span><br><span class="line">    S -&gt;&gt; G: 发送gRPC响应</span><br><span class="line">    G -&gt;&gt; G: gRPC响应转换为JSON RPC响应</span><br><span class="line">    G -&gt;&gt; C: 把JSON RPC响应发送给客户端</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    participant C as Client
-    participant G as Gateway
-    participant S as Server
-
-    C ->> G: 发送JSON RPC请求
-    G ->> G: JSON RPC请求转换为gRPC请求
-    G ->> S: 发送gRPC请求
-    S ->> S: 处理gRPC请求
-    S ->> G: 发送gRPC响应
-    G ->> G: gRPC响应转换为JSON RPC响应
-    G ->> C: 把JSON RPC响应发送给客户端</pre>
-
-<h4 id="线条和箭头"><a href="#线条和箭头" class="headerlink" title="线条和箭头"></a>线条和箭头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt; Gateway: 实线</span><br><span class="line">    Client --&gt; Gateway: 虚线 --</span><br><span class="line">    Client -&gt;&gt; Gateway: 带箭头 &gt;&gt;</span><br><span class="line">    Client -x Gateway: 带叉，不使用&gt;</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    Client -> Gateway: 实线
-    Client --> Gateway: 虚线 --
-    Client ->> Gateway: 带箭头 >>
-    Client -x Gateway: 带叉，不使用></pre>
-
-<h4 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Note left of Client: 创建请求</span><br><span class="line">    Note right of Gateway: 接收请求</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    Note left of Client: 创建请求
-    Note right of Gateway: 接收请求</pre>
-
-<h4 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    loop Every Second</span><br><span class="line">        Client -&gt;&gt; Server: 发送请求</span><br><span class="line">        Server -&gt;&gt; Server: 处理请求</span><br><span class="line">        Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    loop Every Second
-        Client ->> Server: 发送请求
-        Server ->> Server: 处理请求
-        Server ->> Client: 发送响应
-    end</pre>
-
-<h4 id="If语句"><a href="#If语句" class="headerlink" title="If语句"></a>If语句</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 查询用户</span><br><span class="line">    alt User not found</span><br><span class="line">        Server -&gt;&gt; Server: 创建错误响应：用户不存在</span><br><span class="line">    else </span><br><span class="line">        Server -&gt;&gt; Server: 使用用户信息创建响应</span><br><span class="line">    end</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    Client ->> Server: 查询用户
-    alt User not found
-        Server ->> Server: 创建错误响应：用户不存在
-    else 
-        Server ->> Server: 使用用户信息创建响应
-    end
-    Server ->> Client: 发送响应</pre>
-
-<h4 id="背景颜色"><a href="#背景颜色" class="headerlink" title="背景颜色"></a>背景颜色</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 发送请求</span><br><span class="line">    rect rgb(191,223,255)</span><br><span class="line">    Server -&gt;&gt; Server: 处理请求</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    Client ->> Server: 发送请求
-    rect rgb(191,223,255)
-    Server ->> Server: 处理请求
-    Server ->> Client: 发送响应
-    end</pre>
-
-<h4 id="激活"><a href="#激活" class="headerlink" title="激活"></a>激活</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">    Client -&gt;&gt; Server: 发送请求</span><br><span class="line">    activate Server</span><br><span class="line">    Server -&gt;&gt; Server: 处理请求</span><br><span class="line">    Server -&gt;&gt; Client: 发送响应</span><br><span class="line">    deactivate Server</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">sequenceDiagram
-    Client ->> Server: 发送请求
-    activate Server
-    Server ->> Server: 处理请求
-    Server ->> Client: 发送响应
-    deactivate Server</pre>
-
-<h3 id="饼图"><a href="#饼图" class="headerlink" title="饼图"></a>饼图</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pie</span><br><span class="line">    title 硬币正反面的概率</span><br><span class="line">    &quot;正面&quot;: 0.5</span><br><span class="line">    &quot;反面&quot;: 0.5</span><br></pre></td></tr></table></figure>
-<pre class="mermaid">pie
-    title 硬币正反面的概率
-    "正面": 0.5
-    "反面": 0.5</pre>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1375,7 +1333,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">131</span>
+          <span class="site-state-item-count">132</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

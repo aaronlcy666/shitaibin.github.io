@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://lessisbetter.site/"/>
-  <updated>2020-09-01T15:19:56.419Z</updated>
+  <updated>2020-09-06T00:05:44.404Z</updated>
   <id>http://lessisbetter.site/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Docker网络代理和仓库镜像加速</title>
+    <link href="http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/"/>
+    <id>http://lessisbetter.site/2020/09/05/docker-proxy-and-registry-mirror/</id>
+    <published>2020-09-05T06:48:04.000Z</published>
+    <updated>2020-09-06T00:05:44.404Z</updated>
+    
+    <content type="html"><![CDATA[<p>对于Docker官方镜像仓库<code>Registry</code>，没有仓库镜像加速，寸步难行。</p><p>对于国外非Docker官方镜像仓库，并且还被墙的仓库<code>Registry</code>，没有网络代理，寸步难行。</p><p>镜像仓库加速器<code>Registry Mirrors</code>，是国内对官方<code>Registry</code>的”镜像(mirror)”，当拉取image时，Docker Daemon先去 <code>Registry Mirrors</code> 拉去镜像，如果没找到镜像，<code>Registry Mirrors</code>找官方<code>Registry</code>拉去镜像，然后再返回给本地。</p><p>网络代理是给Docker设置http和https代理，最原始的方式，适合有代理的情况。主要用于服务器上有<strong>稳定可访问</strong>的代理或者当前主机上有稳定代理的情况。对于代理和docker不在同一台机器上时，稳定可访问就成了一个问题，比如代理在笔记本上，IP随时都可能变化，服务器连接笔记本做代理，就算法上稳定可访问，而docker也在笔记本上运行，通过环回地址就能稳定访问。</p><p><strong>不推荐给Docker设置代理，而应当优先使用<code>Registry Mirrors</code></strong>。代理也是有副作用的，你需要保证非本机能稳定连接到代理，并且能够转发数据，不然端口拒绝访问、TLS握手失败等问题，需要花费更多的时间。</p><p>可访问的Registry有：</p><ul><li><a href="https://quay.io/" target="_blank" rel="noopener">quay.io</a> : 只是访问慢一些而已，可以拉下镜像来</li></ul><h2 id="镜像仓库加速器-推荐"><a href="#镜像仓库加速器-推荐" class="headerlink" title="镜像仓库加速器(推荐)"></a>镜像仓库加速器(推荐)</h2><p>如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。如果该仓库可以访问，非本机有代理的情况，无需配置网络代理。</p><p>看如何配置<a href="https://yeasy.gitbooks.io/docker_practice/install/mirror.html" target="_blank" rel="noopener">Docker镜像加速器</a>。</p><p>推荐使用阿里云、七牛、DaoCloud的镜像仓库加速器。</p><p><code>/etc/docker/daemon.json</code> 配置如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;insecure-registries&quot;:[&quot;192.168.9.8:80&quot;],</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>然后冲抵daemon：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl restart docker</span><br></pre></td></tr></table></figure><h2 id="网络代理-不推荐"><a href="#网络代理-不推荐" class="headerlink" title="网络代理(不推荐)"></a>网络代理(不推荐)</h2><p>我Mac上的http、https、socks5代理，http和https监听的是7890端口，sock5监听的是7891端口。</p><p>拉镜像时，可以看到docker连接了7890端口走http代理。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;private&#x2F;tmp]$ lsof -i:7890</span><br><span class="line">COMMAND     PID      USER   FD   TYPE             DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">....</span><br><span class="line">com.docke 73371 shitaibin   50u  IPv4 0xa8184ba4240fbe99      0t0  TCP localhost:58847-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   53u  IPv4 0xa8184ba4035deb09      0t0  TCP localhost:58857-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   58u  IPv4 0xa8184ba42d889861      0t0  TCP localhost:58893-&gt;localhost:7890 (ESTABLISHED)</span><br></pre></td></tr></table></figure><p><a href="https://docs.docker.com/network/proxy/" target="_blank" rel="noopener">官方设置代理教程</a>，2选1:</p><ol><li>给Docker客户端设置代理，拉去镜像、创建新容器时，客户端会把变量发送给Daemon。支持17.07及以上版本，这是官方推荐方式。</li><li>给Daemon设置代理，通过环境变量的方式。支持17.06及以下版本，不推荐。</li></ol><p>给Daemon设置的代理的另外方法：</p><p>创建Daemon的代理配置文件：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d</span><br><span class="line">sudo touch &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;docker.service.d&#x2F;http-proxy.conf</span><br></pre></td></tr></table></figure><p>内容为：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment&#x3D;&quot;HTTP_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;NO_PROXY&#x3D;localhost,127.0.0.1,10.96.0.0&#x2F;16, 10.244.0.0&#x2F;16&quot;</span><br></pre></td></tr></table></figure><p>然后重启Daemon：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line">systemctl show --property&#x3D;Environment docker</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;对于Docker官方镜像仓库&lt;code&gt;Registry&lt;/code&gt;，没有仓库镜像加速，寸步难行。&lt;/p&gt;
+&lt;p&gt;对于国外非Docker官方镜像仓库，并且还被墙的仓库&lt;code&gt;Registry&lt;/code&gt;，没有网络代理，寸步难行。&lt;/p&gt;
+&lt;p&gt;镜像仓库加速器&lt;cod
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Docker" scheme="http://lessisbetter.site/tags/Docker/"/>
+    
+  </entry>
   
   <entry>
     <title>Docker容器基础3：Cgroup - cpu, cpuacct, cpuset子系统</title>
@@ -519,34 +545,6 @@
       
         &lt;p&gt;Peer与Orderer的交互主要是组织的Peer主节点从Orderer获取区块，本文就来介绍，Peer是如何从Orderer获取区块的，顺带介绍为何Peer从Orderer获取的区块“好慢”。&lt;/p&gt;
 &lt;h2 id=&quot;网络拓扑&quot;&gt;&lt;a href=&quot;#网络拓扑&quot; class
-      
-    
-    </summary>
-    
-    
-    
-      <category term="区块链" scheme="http://lessisbetter.site/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
-    
-      <category term="Fabric" scheme="http://lessisbetter.site/tags/Fabric/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Fabric 2.0 特性一览</title>
-    <link href="http://lessisbetter.site/2019/12/16/fabric-2-0/"/>
-    <id>http://lessisbetter.site/2019/12/16/fabric-2-0/</id>
-    <published>2019-12-16T12:30:11.000Z</published>
-    <updated>2019-12-16T09:35:14.045Z</updated>
-    
-    <content type="html"><![CDATA[<p>Fabric 2.0 Beta版前几日已经发布了，浏览了官方文档和Release Notes，对特性进行了记录，</p><ul><li><a href="https://hyperledger-fabric.readthedocs.io/en/master/whatsnew.html" target="_blank" rel="noopener">官方文档</a></li><li><a href="https://github.com/hyperledger/fabric/releases/tag/v2.0.0-beta" target="_blank" rel="noopener">Relase Notes</a></li></ul><p><img src="http://img.lessisbetter.site/2019-12-fabric-2.0.png" alt=""></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;Fabric 2.0 Beta版前几日已经发布了，浏览了官方文档和Release Notes，对特性进行了记录，&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://hyperledger-fabric.readthedocs.io/en/master/whatsn
       
     
     </summary>
