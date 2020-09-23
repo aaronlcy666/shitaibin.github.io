@@ -8,12 +8,16 @@ tags: ['Mac']
 
 homebrew默认使用的是Github，虽然已经科学上网了，速度依然是KB级别的，相当的慢。使用国内的源，速度有质的提升，推荐2个国内的：
 
-```
-https://mirrors.cloud.tencent.com/homebrew/brew.git
-git://mirrors.ustc.edu.cn/brew.git
-```
 
-腾讯源更多信息见：https://mirrors.cloud.tencent.com/help/homebrew-bottles.html
+腾讯：
+- 源：https://mirrors.cloud.tencent.com/homebrew/brew.git
+- 帮助文档：https://mirrors.cloud.tencent.com/help/homebrew-bottles.html
+
+
+清华大学：
+- 源：git://mirrors.ustc.edu.cn/brew.git
+- 帮助文档：https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/
+
 
 建议ping一下以上2个源，选延时小的。
 
