@@ -430,7 +430,7 @@
     <link href="http://lessisbetter.site/2020/03/11/pbft-xmind/"/>
     <id>http://lessisbetter.site/2020/03/11/pbft-xmind/</id>
     <published>2020-03-11T13:08:05.000Z</published>
-    <updated>2020-04-11T09:48:59.646Z</updated>
+    <updated>2020-09-25T05:52:37.074Z</updated>
     
     <content type="html"><![CDATA[<p>最近央行发布的《金融分布式账本安全规范》中提到了区块链系统要提供BFT共识，把之前整理的PBFT的思维导图分享给大家。</p><p><strong>新标签页中打开，查看高清大图</strong>。</p><h2 id="1999年版本"><a href="#1999年版本" class="headerlink" title="1999年版本"></a>1999年版本</h2><p><img src="http://img.lessisbetter.site/PBFT.svg" alt=""></p><h2 id="2001年版本"><a href="#2001年版本" class="headerlink" title="2001年版本"></a>2001年版本</h2><p><img src="http://img.lessisbetter.site/PBFT-PR.svg" alt=""></p>]]></content>
     
@@ -446,6 +446,8 @@
     </summary>
     
     
+    
+      <category term="一致性" scheme="http://lessisbetter.site/tags/%E4%B8%80%E8%87%B4%E6%80%A7/"/>
     
       <category term="区块链" scheme="http://lessisbetter.site/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
     
