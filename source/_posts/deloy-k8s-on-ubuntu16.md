@@ -75,12 +75,12 @@ systemctl enable --now kubelet
 ```
 kubeadm init \
   --kubernetes-version=v1.19.0 \
-  --image-repository registry.aliyuncs.com/google_containers \
+  --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
   --pod-network-cidr=10.24.0.0/16 \
   --ignore-preflight-errors=Swap
 ```
 
-- `--image-repository` ： 使用阿里云提供的k8s镜像仓库，快速下载k8s相关的镜像
+- `--image-repository` ： 由于`k8s.gcr.io`由于网络原因无法访问，使用阿里云提供的k8s镜像仓库，快速下载k8s相关的镜像
 - `--ignore-preflight-errors` ： 部署时忽略swap问题
 - `--pod-network-cidr` ：设置pod的ip区间
 
