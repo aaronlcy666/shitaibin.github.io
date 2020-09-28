@@ -307,7 +307,7 @@ Go中的内存分类并不像TCMalloc那样分成小、中、大对象，但是�
 
 ![Go内存管理](http://img.lessisbetter.site/2019-07-go-memory-detail.png)
 
-[大小转换](#大小转换)这一小节，我们介绍了转换表，size class从1到66共66个，代码中`_NumSizeClasses=67`代表了实际使用的size class数量，即67个，从0到67，size class 0实际并未使用到。
+[大小转换](#大小转换)这一小节，我们介绍了转换表，size class从1到66共66个，代码中`_NumSizeClasses=67`代表了实际使用的size class数量，即67个，从0到66，size class 0实际并未使用到。
 
 上文提到1个size class对应2个span class：
 
