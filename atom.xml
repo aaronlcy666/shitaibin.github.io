@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://lessisbetter.site/"/>
-  <updated>2020-09-26T03:40:57.532Z</updated>
+  <updated>2020-09-28T09:33:05.509Z</updated>
   <id>http://lessisbetter.site/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>被误解的iowait</title>
+    <link href="http://lessisbetter.site/2020/09/28/misunderstanding-iowait/"/>
+    <id>http://lessisbetter.site/2020/09/28/misunderstanding-iowait/</id>
+    <published>2020-09-28T08:57:19.000Z</published>
+    <updated>2020-09-28T09:33:05.509Z</updated>
+    
+    <content type="html"><![CDATA[<p>有一个cpu指标叫<code>iowait</code>或者<code>wa</code>，在top、iostat、vmstat命令中都可以看到这一项。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[~]$ top</span><br><span class="line">top - 08:58:06 up 26 days, 23:20,  1 user,  load average: 0.07, 0.23, 0.26</span><br><span class="line">Tasks: 164 total,   1 running, 111 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  2.5 us,  1.2 sy,  0.0 ni, 96.2 id,  0.1 wa,  0.0 hi,  0.1 si,  0.0 st</span><br><span class="line">KiB Mem :  8167548 total,   698220 free,   996640 used,  6472688 buff&#x2F;cache</span><br><span class="line">KiB Swap:        0 total,        0 free,        0 used.  7061988 avail Mem</span><br><span class="line"></span><br><span class="line">[~]$ iostat</span><br><span class="line">Linux 4.15.0-112-generic (shitaibin-x) 09&#x2F;28&#x2F;20 _x86_64_(4 CPU)</span><br><span class="line"></span><br><span class="line">avg-cpu:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">           1.02    0.00    0.55    0.86    0.00   97.56</span><br><span class="line"></span><br><span class="line">Device             tps    kB_read&#x2F;s    kB_wrtn&#x2F;s    kB_read    kB_wrtn</span><br><span class="line">loop0             0.00         0.00         0.00          5          0</span><br><span class="line">vda              13.32         2.65        84.15    6182326  196098973</span><br><span class="line"></span><br><span class="line">[~]$</span><br><span class="line">[~]$</span><br><span class="line">[~]$ vmstat</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 0  0      0 685616 177356 6306652    0    0     1    21    5    3  1  1 98  1  0</span><br></pre></td></tr></table></figure><p>这个指标的字面含义是等待IO的时间（百分比），很多人会认为这个指标暗示这IO瓶颈，然而这是有一定无解的，iowait高不一定有IO瓶颈。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iowait &#x3D; CPU空闲时间 &#x2F; CPU总时间 ，前提CPU在等待至少一项IO操作完成</span><br></pre></td></tr></table></figure><p>所以它真正的含义是有未完成的IO操作时，CPU空闲的时间。</p><p>这2个资料都把iowait讲解的很清晰，并且举例iowait和IO瓶颈无关的例子。</p><ul><li><a href="http://linuxperf.com/?p=33" target="_blank" rel="noopener">理解iowait</a></li><li><a href="https://www.inspurpower.com/upload/file/1583309942.pdf" target="_blank" rel="noopener">浪潮：CPU iowait详解</a></li></ul><p>例子：</p><ul><li>低iowait，高IO的例子：IO高同时CPU计算也高，这样CPU的空闲时间少，造成iowait比较低，CPU密集掩盖了IO密集。</li><li>高iowait，低IO的例子：CPU计算很少，CPU基本空闲，但也有1个进程在IO，所以iowait高，但实际IO根本没任何瓶颈。</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;有一个cpu指标叫&lt;code&gt;iowait&lt;/code&gt;或者&lt;code&gt;wa&lt;/code&gt;，在top、iostat、vmstat命令中都可以看到这一项。&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gu
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Linux" scheme="http://lessisbetter.site/tags/Linux/"/>
+    
+      <category term="IO" scheme="http://lessisbetter.site/tags/IO/"/>
+    
+      <category term="性能优化" scheme="http://lessisbetter.site/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
+    
+  </entry>
   
   <entry>
     <title>Ubuntu 16.04上部署单机Kubernetes</title>
@@ -530,32 +559,6 @@
       <category term="区块链" scheme="http://lessisbetter.site/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
     
       <category term="Fabric" scheme="http://lessisbetter.site/tags/Fabric/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>WAL(预写式日志)简介</title>
-    <link href="http://lessisbetter.site/2020/01/02/wal-introduction/"/>
-    <id>http://lessisbetter.site/2020/01/02/wal-introduction/</id>
-    <published>2020-01-02T12:56:32.000Z</published>
-    <updated>2020-08-22T03:30:48.933Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>Write Ahead Logging，简称WAL，也被翻译成<strong>预写式日志</strong>，是数据库技术中实现事务日志(Transaction Journal)的一种标准方法，可以实现<strong>单机</strong>事务的原子性，同时可以提高数据库的写入效率。</p><p>思考如下场景，如何确保原子性：写操作修改数据库中a和b的值，二者是一个事务，需要把a和b的最新值持久化到磁盘，假如保存完a的值，系统宕机了，重新启动后，a的值已经写入，但b待写入的值已经丢失，如何发现事务没有完成呢？如何保证事务的原子性呢？</p><p>可以为事务加锁，也为事务增加标志位，修改完磁盘数据后，标志位设置事务为完成，事务状态保存在磁盘中，假使保存事务状态的过程中宕机了，就把事务回滚掉。实现REDO和UNDO，就能实现原子性。</p><p>数据库中针对<strong>Crash</strong>和<strong>Recovery</strong>的解决方案是WAL。</p><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>WAL的核心思想是<strong>先写日志再写数据文件</strong>，修改数据文件必须发生在修改操作记录在日志文件之后。</p><blockquote><p>本文的日志指事务的操作日志，本文提到的日志都是指事务日志，不再特殊声明。</p></blockquote><p><img src="http://img.lessisbetter.site/2019-12-wal.png" alt="WAL"></p><p>我们看WAL怎么<strong>解决宕机和恢复的问题</strong>：</p><ul><li>写WAL前宕机了，重启后，数据处于事务未执行的状态。</li><li>写WAL时宕机了，重启后，可以检查到WAL数据不正确，回滚当事务前的状态。</li><li>写WAL后宕机了，重启后，把WAL中记录的操作，应用到数据库文件中，得到事务执行后的状态。</li></ul><p>如此，保证了数据的恢复和事务的原子性。</p><p>上面提到的都是写操作，看一下使用WAL时的<strong>读操作</strong>。WAL中可能包含了未写入到数据库文件中的最新值，如果读最新值就需要从WAL中读取，如果WAL中未读到，从数据库读到的就是最新的数据。</p><p><strong>检查点</strong>：写入到WAL文件中的操作记录并不一定会立刻应用到数据库文件上，这个过程是异步的，设计检查点来记录已经被应用到数据库文件上的操作序号，检查点后面的操作记录等待被应用到数据库文件上。</p><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>WAL的作用是解决宕机和恢复的问题，同时也有其他优点：</p><ol><li><strong>提高写数据的性能</strong><ol><li>WAL是顺序写，数据库文件是随机写，顺序写性能高于随机写</li><li>减少写磁盘次数<ol><li>不直接修改数据库真实数据</li><li>合并若干小的事务，一次性commit到数据库</li></ol></li></ol></li><li>保证事务<strong>原子性</strong></li><li>保证事务<strong>一致性</strong></li><li><strong>并发读写</strong>，比如SQLite中，读写、读读都是可以并行的，比如读时需要找到WAL某个值最后写入的位置，就可以从该位置读数据，而写操作是在WAL文件后Append，二者并行。但写写不能并行，因为2次写操作都要向WAL文件Append数据，无法同时进行。</li><li>WAL文件中记录了数据的历史版本，因此可以读取历史版本的值，甚至把状态回滚到某个历史版本。</li></ol><h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>SQLite提到了WAL的几项缺点：</p><ol><li>WAL需要VFS的支持。</li><li>所有使用数据库的进程必须在同一个机器上，以为WAL是单机的。</li><li>多读少写的场景WAL比rollback-journal类型要慢1%~2%。</li></ol><h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>WAL几乎是<strong>数据存储</strong>(数据库只是数据存储的一个类别，只不过这个类别很大)的标配：</p><ul><li>Raft可以使用WAL保存log Entry以及状态</li><li>数据库<ul><li>PgSQL使用WAL实现事务日志实现事务原子性、一致性，提升性能</li><li>SQLite使用WAL实现原子性</li><li>MySQL使用WAL实现持久性，保证数据不丢失的情况下提升性能</li><li>leveldb也使用WAL提升性能，保证操作原子性</li></ul></li></ul><h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><ul><li><a href="https://juejin.im/post/5b04a93151882542672666e8" target="_blank" rel="noopener">菜鸟学数据库——WAL模式及其原理</a></li><li><a href="http://mysql.taobao.org/monthly/2017/03/02/" target="_blank" rel="noopener">PgSQL · 特性分析 · Write-Ahead Logging机制浅析</a></li><li><a href="https://www.postgresql.org/docs/9.1/wal-intro.html" target="_blank" rel="noopener">PostgreSQL 9.1.24 Documentation: Chapter 29. Reliability and the Write-Ahead Log</a></li><li><a href="https://www.sqlite.org/wal.html" target="_blank" rel="noopener">SQLite: Write-Ahead Logging</a></li><li><a href="https://mysqlserverteam.com/mysql-8-0-new-lock-free-scalable-wal-design/" target="_blank" rel="noopener">MySQL 8.0: New Lock free, scalable WAL design</a></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;引言&quot;&gt;&lt;a href=&quot;#引言&quot; class=&quot;headerlink&quot; title=&quot;引言&quot;&gt;&lt;/a&gt;引言&lt;/h2&gt;&lt;p&gt;Write Ahead Logging，简称WAL，也被翻译成&lt;strong&gt;预写式日志&lt;/strong&gt;，是数据库技术中实现事务日志(Tr
-      
-    
-    </summary>
-    
-    
-    
-      <category term="分布式" scheme="http://lessisbetter.site/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-      <category term="存储" scheme="http://lessisbetter.site/tags/%E5%AD%98%E5%82%A8/"/>
     
   </entry>
   
