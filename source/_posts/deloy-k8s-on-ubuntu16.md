@@ -110,7 +110,7 @@ KubeDNS is running at https://192.168.0.103:6443/api/v1/namespaces/kube-system/s
 
 ## 安装CNI网络插件
 
-集群启动后，缺少网络插件，集群的Pod直接还不能通信。
+k8s本身不负责容器之间的通信，集群启动后，集群的Pod直接还不能通信，需要安装网络插件。
 
 ```
 dabin@ubuntu:~$ kubectl get node

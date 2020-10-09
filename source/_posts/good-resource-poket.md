@@ -43,3 +43,9 @@ tags:
 
 ## Linux
 - [在 Linux 上如何清除内存的 Cache、Buffer 和交换空间](https://colobu.com/2015/10/31/How-to-Clear-RAM-Memory-Cache-Buffer-and-Swap-Space-on-Linux/)
+
+## 云原生
+
+### Docker
+
+- [kubelet之cri演变史](https://zhuanlan.zhihu.com/p/87602649)，介绍了docker的演变，同时也就能清楚为何现在containerd和docker(engine)能平起平坐了，k8s这是要把docker(engine)直接踢出去了。
