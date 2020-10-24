@@ -4,9 +4,7 @@ date: 2020-08-27 21:30:41
 tags: ['Docker', 'Kubernetes']
 ---
 
-
-
-minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、镜像加速。
+minikube很好，但某些原因造成国内用起来比较慢，要各种挂代理、Docker镜像加速。
 
 ## minikube原理
 
@@ -85,12 +83,8 @@ https://blog.csdn.net/yuanjunlai141/article/details/79469071
 ```
 minikube start --image-mirror-country cn \
     --iso-url=https://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/iso/minikube-v1.7.3.iso \
-    --docker-env http_proxy=http://192.168.0.104:1087 \
-    --docker-env https_proxy=http://192.168.0.104:1087 \
-    --docker-env no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.99.0/24,192.168.39.0/24 \
     --registry-mirror="https://a90tkz28.mirror.aliyuncs.com" \
     --image-repository="registry.cn-hangzhou.aliyuncs.com/google_containers" \
-    --insecure-registry=192.168.9.8 \
     --kubernetes-version=v1.18.3
 ```
 
@@ -98,10 +92,9 @@ minikube start --image-mirror-country cn \
 
 - `--image-mirror-country`: 需要使用的镜像镜像的国家/地区代码。留空以使用全球代码。对于中国大陆用户，请将其设置为
 cn
-- `--docker-env`: 是通过环境变量向docker挂http代理，否则国内可能出现拉不到镜像的问题。挂代理还需要一个必要条件，在主机上使用SS开启代理。挂了代理可能也很难拉到，但不挂代理，几乎拉不下来镜像。就算挂了代理，也会和某些https的镜像仓库出现TLS握手失败、超时的错误，可以利用`docker search`去搜索镜像，也许镜像加速器已经有同名镜像了，`yaml`中把镜像地址设置为当前查询到的镜像即可，这种方式存在的风险是search出的镜像和指定的镜像名称版本相同，但可能并不是相同的镜像，比较存在于不同的镜像仓库中。
 - `--registry-mirror`: 传递给 Docker 守护进程的注册表镜像。效果最好的镜像加速器：`--registry-mirror="https://a90tkz28.mirror.aliyuncs.com"` 。使用加速器的原理是，docker deamon会先去加速器寻找镜像，如果找不到才从docker官方仓库拉镜像。如果指定拉某个镜像仓库的镜像，镜像加速器是用不上的。
 - `--image-repository` : 如果不能从gcr.io拉镜像，配置minikube中docker拉镜像的地方
-- `--kubernetes-version`： 指定要部署的k8s版本
+- `--kubernetes-version`： 指定要部署的k8s版本，可以省略
 
 minikube内拉不到镜像的报错:
 
@@ -117,24 +110,15 @@ $ kubectl describe pod
 ```
 $ minikube start --image-mirror-country cn \
     --iso-url=https://kubernetes.oss-cn-hangzhou.aliyuncs.com/minikube/iso/minikube-v1.7.3.iso \
-    --docker-env http_proxy=http://192.168.0.104:1087 \
-    --docker-env https_proxy=http://192.168.0.104:1087 \
-    --docker-env no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.99.0/24,192.168.39.0/24 \
     --registry-mirror="https://a90tkz28.mirror.aliyuncs.com" \
-    --image-repository="registry.cn-hangzhou.aliyuncs.com/google_containers" \
-    --insecure-registry=192.168.9.8
+    --image-repository="registry.cn-hangzhou.aliyuncs.com/google_containers"
 😄  Darwin 10.15.3 上的 minikube v1.12.3
-✨  根据现有的配置文件使用 virtualbox 驱动程序
+✨  根据用户配置使用 virtualbox 驱动程序
+✅  正在使用镜像存储库 registry.cn-hangzhou.aliyuncs.com/google_containers
 👍  Starting control plane node minikube in cluster minikube
-🏃  Updating the running virtualbox "minikube" VM ...
+🔥  Creating virtualbox VM (CPUs=2, Memory=4000MB, Disk=20000MB) ...
+💡  Existing disk is missing new features (lz4). To upgrade, run 'minikube delete'
 🐳  正在 Docker 19.03.6 中准备 Kubernetes v1.18.3…
-    ▪ env http_proxy=http://192.168.0.104:1087
-    ▪ env https_proxy=http://192.168.0.104:1087
-    ▪ env no_proxy=localhost,127.0.0.1,10.96.0.0/12,192.168.99.0/24,192.168.39.0/24
-    > kubeadm.sha256: 65 B / 65 B [--------------------------] 100.00% ? p/s 0s
-    > kubelet.sha256: 65 B / 65 B [--------------------------] 100.00% ? p/s 0s
-    > kubeadm: 37.97 MiB / 37.97 MiB [--------------] 100.00% 320.45 MiB p/s 0s
-    > kubelet: 108.04 MiB / 108.04 MiB [---------] 100.00% 514.43 KiB p/s 3m36s
 🔎  Verifying Kubernetes components...
 🌟  Enabled addons: default-storageclass, storage-provisioner
 🏄  完成！kubectl 已经配置至 "minikube"
@@ -160,11 +144,11 @@ Client:
  Debug Mode: false
 
 Server:
- Containers: 14
-  Running: 14
+ Containers: 18
+  Running: 15
   Paused: 0
-  Stopped: 0
- Images: 10
+  Stopped: 3
+ Images: 11
  Server Version: 19.03.6
  Storage Driver: overlay2
   Backing Filesystem: extfs
@@ -193,18 +177,14 @@ Server:
  CPUs: 2
  Total Memory: 3.754GiB
  Name: minikube
- ID: DSF4:HEQB:HTUU:OXRS:ZBWC:ESX4:WEST:UFDC:WAW5:5CDV:PITM:BEXZ
+ ID: 6GOT:L6SH:NPBW:ZM44:PVKY:LSEZ:MXW7:LWOB:GB4N:CNXU:S6NJ:KASG
  Docker Root Dir: /var/lib/docker
  Debug Mode: false
- HTTP Proxy: http://192.168.0.104:1087
- HTTPS Proxy: http://192.168.0.104:1087
- No Proxy: localhost,127.0.0.1,10.96.0.0/12,192.168.99.0/24,192.168.39.0/24
  Registry: https://index.docker.io/v1/
  Labels:
   provider=virtualbox
  Experimental: false
  Insecure Registries:
-  192.168.9.8
   10.96.0.0/12
   127.0.0.0/8
  Registry Mirrors:
