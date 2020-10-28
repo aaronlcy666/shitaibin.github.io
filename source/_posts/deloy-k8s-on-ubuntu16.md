@@ -323,6 +323,32 @@ twocontainers   2/2     Running   2          83m
 kubectl describe pod twocontainers
 ```
 
+## 清空k8s环境
+
+```
+// remove_k8s.sh
+# 重置k8s
+sudo kubeadm reset -f
+# 删除kubectl配置文件
+sudo rm -rf ~/.kube
+# 卸载和清理程序配置文件
+sudo apt-get -y purge kubeadm kubectl kubelet kubernetes-cni
+# 卸载自安装依赖
+sudo apt-get -y autoremove
+
+# 删除遗留的文件
+sudo rm -rf ~/.kube/
+sudo rm -rf /etc/kubernetes/
+sudo rm -rf /etc/systemd/system/kubelet.service.d
+sudo rm -rf /etc/systemd/system/kubelet.service
+sudo rm -rf /etc/cni
+sudo rm -rf /opt/cni
+sudo rm -rf /var/lib/etcd
+sudo rm -rf /var/etcd
+```
+
+
+
 ## 资料
 
 1. 人人必备的神书《Kuerbenetes权威指南》
