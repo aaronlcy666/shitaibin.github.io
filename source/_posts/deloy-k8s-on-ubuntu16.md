@@ -106,27 +106,98 @@ Kubernetes master is running at https://192.168.0.103:6443
 KubeDNS is running at https://192.168.0.103:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
-
-
-## 安装CNI网络插件
+## k8s主节点部署后的情况
 
 k8s本身不负责容器之间的通信，集群启动后，集群的Pod直接还不能通信，需要安装网络插件。
 
 ```
-dabin@ubuntu:~$ kubectl get node
+$ kubectl get node
 NAME         STATUS     ROLES    AGE    VERSION
 k8s-master   NotReady   master   5m8s   v1.19.0
+$ kubectl get pod -n kube-system -owide
+
+NAME                                  READY   STATUS    RESTARTS   AGE   IP         NODE          NOMINATED NODE   READINESS GATES
+coredns-6c76c8bb89-9wnfb              0/1     Pending   0          56s   <none>     <none>        <none>           <none>
+coredns-6c76c8bb89-glkdx              0/1     Pending   0          56s   <none>     <none>        <none>           <none>
+etcd-shitaibin-x                      0/1     Running   0          70s   10.0.0.3   shitaibin-x   <none>           <none>
+kube-apiserver-shitaibin-x            1/1     Running   0          70s   10.0.0.3   shitaibin-x   <none>           <none>
+kube-controller-manager-shitaibin-x   1/1     Running   0          70s   10.0.0.3   shitaibin-x   <none>           <none>
+kube-proxy-7gpjx                      1/1     Running   0          56s   10.0.0.3   shitaibin-x   <none>           <none>
+kube-scheduler-shitaibin-x            0/1     Running   0          70s   10.0.0.3   shitaibin-x   <none>           <none>
 ```
+
+从上面可以看到master节点为 NotReady 状态，coredns 服务也没有分配ip。
+
+从下面的Condition和Events可以看到节点会进行4项检测：
+1. 节点内存是否充足
+2. 节点磁盘是否有压力
+3. 节点Pid是否充足
+4. kubelet是否就绪
+
+从Events可以kubelet启动了2次，而内存、磁盘压力、pid条件检查进行了4次。
+
+从Condition的kubelet消息中看到CNI网络插件还未就绪，导致kubelet并没有ready。
+
+```
+$ kubectl describe nodes shitaibin-x
+Name:               shitaibin-x
+Roles:              master
+...
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            False   Wed, 28 Oct 2020 08:40:18 +0000   Wed, 28 Oct 2020 08:40:07 +0000   KubeletNotReady              runtime network not ready: NetworkReady=false reason:NetworkPluginNotReady message:docker: network plugin is not ready: cni config uninitialized
+....
+Events:
+  Type    Reason                   Age                  From        Message
+  ----    ------                   ----                 ----        -------
+  Normal  Starting                 111s                 kubelet     Starting kubelet.
+  Normal  NodeHasSufficientMemory  110s (x3 over 110s)  kubelet     Node shitaibin-x status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    110s (x3 over 110s)  kubelet     Node shitaibin-x status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     110s (x3 over 110s)  kubelet     Node shitaibin-x status is now: NodeHasSufficientPID
+  Normal  NodeAllocatableEnforced  110s                 kubelet     Updated Node Allocatable limit across pods
+  Normal  Starting                 88s                  kubelet     Starting kubelet.
+  Normal  NodeHasSufficientMemory  88s                  kubelet     Node shitaibin-x status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    88s                  kubelet     Node shitaibin-x status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     88s                  kubelet     Node shitaibin-x status is now: NodeHasSufficientPID
+  Normal  NodeAllocatableEnforced  87s                  kubelet     Updated Node Allocatable limit across pods
+  Normal  Starting                 66s                  kube-proxy  Starting kube-proxy.
+```
+
+查看kubelet进程启动配置：
+```
+$ ps -ef | grep kubelet
+root      5549     1  2 08:40 ?        00:00:07 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --network-plugin=cni --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.2
+```
+
+通过`--network-plugin=cni`可以看到默认使用CNI作为网络插件。
+
+主机`/etc/cni/net.d`目录保存CNI的配置，发现目前为空。`/opt/cni/bin`目录为CNI插件程序所在的位置，可以看到已经有flannel等插件。
+
+```
+$ ls /etc/cni/net.d
+ls: cannot access '/etc/cni/net.d': No such file or directory
+$ ls /opt/cni/bin
+bandwidth  bridge  dhcp  firewall  flannel  host-device  host-local  ipvlan  loopback  macvlan  portmap  ptp  sbr  static  tuning  vlan
+```
+
+接下来安装CNI网络插件。
+
+## 安装CNI网络插件
+
 
 k8s的[文档](https://kubernetes.io/zh/docs/concepts/cluster-administration/addons/)列举了多种选择，这里提供2种：
 
-weave:
+较为简便的weave，它提供overlay network:
 
 ```
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
 
-flannel:
+flannel，也是overlay network模型:
 
 ```
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -144,24 +215,50 @@ rolebinding.rbac.authorization.k8s.io/weave-net created
 daemonset.apps/weave-net created
 ```
 
+查看weave的配置和可执行程序：
+```
+$ ls /etc/cni/net.d
+10-weave.conflist
+$ ls /opt/cni/bin
+bandwidth  dhcp      flannel      host-local  loopback  portmap  sbr     tuning  weave-ipam  weave-plugin-2.7.0
+bridge     firewall  host-device  ipvlan      macvlan   ptp      static  vlan    weave-net
+$
+$ cat /etc/cni/net.d/10-weave.conflist
+{
+    "cniVersion": "0.3.0",
+    "name": "weave",
+    "plugins": [
+        {
+            "name": "weave",
+            "type": "weave-net",
+            "hairpinMode": true
+        },
+        {
+            "type": "portmap",
+            "capabilities": {"portMappings": true},
+            "snat": true
+        }
+    ]
+}
+```
 
-安装之后节点变为Ready：
+安装之后节点变为Ready，coredns也拥有了ip：
 
 ```
-dabin@ubuntu:~$ kubectl get node
+$ kubectl get node
 NAME         STATUS   ROLES    AGE   VERSION
 k8s-master   Ready    master   10m   v1.19.0
-dabin@ubuntu:~$
-dabin@ubuntu:~$ kubectl get -n kube-system pods
-NAME                                 READY   STATUS    RESTARTS   AGE
-coredns-6d56c8448f-bdgwj             1/1     Running   0          10m
-coredns-6d56c8448f-w6nnb             1/1     Running   0          10m
-etcd-k8s-master                      1/1     Running   0          10m
-kube-apiserver-k8s-master            1/1     Running   0          10m
-kube-controller-manager-k8s-master   1/1     Running   0          10m
-kube-proxy-xtgwn                     1/1     Running   0          10m
-kube-scheduler-k8s-master            1/1     Running   0          10m
-weave-net-4gtcq                      2/2     Running   0          93s
+
+$ kubectl get pod -n kube-system -owide
+NAME                                  READY   STATUS    RESTARTS   AGE     IP          NODE          NOMINATED NODE   READINESS GATES
+coredns-6c76c8bb89-9wnfb              1/1     Running   0          19m     10.32.0.9   shitaibin-x   <none>           <none>
+coredns-6c76c8bb89-glkdx              1/1     Running   0          19m     10.32.0.8   shitaibin-x   <none>           <none>
+etcd-shitaibin-x                      1/1     Running   0          20m     10.0.0.3    shitaibin-x   <none>           <none>
+kube-apiserver-shitaibin-x            1/1     Running   0          20m     10.0.0.3    shitaibin-x   <none>           <none>
+kube-controller-manager-shitaibin-x   1/1     Running   0          20m     10.0.0.3    shitaibin-x   <none>           <none>
+kube-proxy-7gpjx                      1/1     Running   0          19m     10.0.0.3    shitaibin-x   <none>           <none>
+kube-scheduler-shitaibin-x            1/1     Running   0          20m     10.0.0.3    shitaibin-x   <none>           <none>
+weave-net-72p6p                       2/2     Running   0          2m36s   10.0.0.3    shitaibin-x   <none>           <none>
 ```
 
 ## 开启master调度
