@@ -263,15 +263,65 @@ weave-net-72p6p                       2/2     Running   0          2m36s   10.0.
 
 ## 开启master调度
 
-master节点默认是不可调度的，不可在master上部署任务，在单节点下，需要开启master可被调度。
+master节点默认是不可被调度的，不可在master上部署任务，在单节点下，只有master一个节点，部署资源后会出现以下错误：
 
 ```
+$ kubectl describe pod mysql
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  22s (x2 over 22s)  default-scheduler  0/1 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate.
+```
+
+Event的告警信息提示，当前节点存在一个污点`node-role.kubernetes.io/master:`，而pod却不容忍这个污点。
+
+查看master节点的信息，确实可以看到一个不允许调度的污点。
+
+```
+$ kubectl get nodes shitaibin-x -o yaml | grep -10 taint
+...
+spec:
+  podCIDR: 10.24.0.0/24
+  podCIDRs:
+  - 10.24.0.0/24
+  taints:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+```
+
+有2个办法解决这个问题，让资源可以调度到master节点上：
+1. 所有的资源声明文件中，都设置容忍这个污点，
+2. master节点上删除这个污点
+
+我们是一个测试环境，采取第2种办法更简单：
+
+```
+# --all为所有节点上的污点
+# 最后的-代表移除污点
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-以上集群搭建完毕。
+移除污点记录：
 
-## 测试
+```
+[~]$ kubectl taint nodes shitaibin-x node-role.kubernetes.io/master-
+node/shitaibin-x untainted
+[~]$
+[~]$ kubectl get nodes shitaibin-x -o yaml | grep -10 taint
+[~]$
+[~]$ kubectl describe pod | grep -10 Events
+...
+Events:
+  Type     Reason            Age                  From               Message
+  ----     ------            ----                 ----               -------
+  Warning  FailedScheduling  27s (x7 over 7m38s)  default-scheduler  0/1 nodes are available: 1 node(s) had taint {node-role.kubernetes.io/master: }, that the pod didn't tolerate.
+  Normal   Scheduled         17s                  default-scheduler  Successfully assigned default/mysql-0 to shitaibin-x
+  Normal   Pulled            15s                  kubelet            Container image "mysql:5.6" already present on machine
+  Normal   Created           14s                  kubelet            Created container mysql
+  Normal   Started           14s                  kubelet            Started container mysql
+```
+
+## 测试集群
 
 部署一个Pod进行测试，Pod能Running，代表Docker、K8s的配置基本没问题了：
 
