@@ -196,6 +196,142 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/10/dockerfile-go/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/10/dockerfile-go/" class="post-title-link" itemprop="url">Go程序Dockerfile模板</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-10 13:25:04 / 修改时间：13:29:50" itemprop="dateCreated datePublished" datetime="2020-11-10T13:25:04+08:00">2020-11-10</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># build时设置版本 --build-arg GO_VERSION=1.13，默认为go1.15</span></span><br><span class="line"><span class="keyword">ARG</span> GO_VERSION=<span class="number">1.15</span></span><br><span class="line"><span class="keyword">FROM</span> golang:$&#123;GO_VERSION&#125; AS builder</span><br><span class="line"><span class="keyword">ENV</span> GOPROXY=<span class="string">"https://goproxy.cn"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> APP_PATH=<span class="string">"/app/goapp"</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> <span class="string">"/app"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拷贝构建文件</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> . .</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> go mod download</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o <span class="variable">$&#123;APP_PATH&#125;</span> .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> ls </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建运行镜像</span></span><br><span class="line"><span class="keyword">FROM</span> alpine:<span class="number">3.10</span> AS final</span><br><span class="line"></span><br><span class="line"><span class="keyword">ENV</span> APP_PATH=<span class="string">"/app/goapp"</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> <span class="string">"/app"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拷贝程序，如有必要另外拷贝其他文件</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> --from=builder <span class="variable">$&#123;APP_PATH&#125;</span> <span class="variable">$&#123;APP_PATH&#125;</span> </span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行程序</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">"/app/goapp"</span>]</span></span><br></pre></td></tr></table></figure>
+<p>构建命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t app:1.0 --build-arg GO_VERSION&#x3D;1.13 .</span><br></pre></td></tr></table></figure>
+<p>模板说明：</p>
+<ol>
+<li>构建命令不指定<code>--build-arg GO_VERSION=1.13</code>时，默认使用go1.15进行编译。</li>
+<li>使用<code>alpine</code>作为运行基础镜像，减小镜像大小。</li>
+<li>Dockerfile文件放到main.go所在目录。</li>
+<li>把<code>goapp</code>替换成真正的程序名称。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/11/10/dockerfile-arg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/10/dockerfile-arg/" class="post-title-link" itemprop="url">Dockerfile ARG指令</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-10 10:52:35 / 修改时间：11:11:02" itemprop="dateCreated datePublished" datetime="2020-11-10T10:52:35+08:00">2020-11-10</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Docker的文档关于<a href="https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact" target="_blank" rel="noopener">ARG和FROM指令配合使用</a>做了详细说明：</p>
+<p>ARG用于传入外部参数，定义在FROM指令前，FROM后的其他指令无法使用ARG定义的环境变量，如果FROM指令后的指令要使用ARG定义的值，需要在FROM后再次定义。如果FROM不使用定义的ARG，可以直接定义到FROM后。</p>
+<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h3><h3 id="定义在FROM前"><a href="#定义在FROM前" class="headerlink" title="定义在FROM前"></a>定义在FROM前</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION=<span class="number">16.04</span></span><br><span class="line"><span class="keyword">FROM</span> ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env | grep UBUNTU_VERSION</span></span><br></pre></td></tr></table></figure>
+<p>从结果可以看到FROM后的指令<strong>无法访问</strong>ARG定义的<code>UBUNTU_VERSION</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t test:afterfrom .</span><br><span class="line">Sending build context to Docker daemon  37.38kB</span><br><span class="line">Step 1&#x2F;3 : ARG UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Step 2&#x2F;3 : FROM ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"> ---&gt; 4b22027ede29</span><br><span class="line">Step 3&#x2F;3 : RUN env | grep UBUNTU_VERSION</span><br><span class="line"> ---&gt; Running in 8e93ca5e376b</span><br><span class="line">The command &#39;&#x2F;bin&#x2F;sh -c env | grep UBUNTU_VERSION&#39; returned a non-zero code: 1</span><br></pre></td></tr></table></figure>
+<h3 id="定义在FROM后"><a href="#定义在FROM后" class="headerlink" title="定义在FROM后"></a>定义在FROM后</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION=<span class="number">16.04</span></span><br><span class="line"><span class="keyword">FROM</span> ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env | grep UBUNTU_VERSION</span></span><br></pre></td></tr></table></figure>
+<p>从结果可以看到FROM后的指令<strong>可以访问</strong>ARG定义的<code>UBUNTU_VERSION</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t test:afterfrom .</span><br><span class="line">Sending build context to Docker daemon  37.38kB</span><br><span class="line">Step 1&#x2F;4 : ARG UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Step 2&#x2F;4 : FROM ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"> ---&gt; 4b22027ede29</span><br><span class="line">Step 3&#x2F;4 : ARG UBUNTU_VERSION</span><br><span class="line"> ---&gt; Using cache</span><br><span class="line"> ---&gt; e3bae0875e66</span><br><span class="line">Step 4&#x2F;4 : RUN env | grep UBUNTU_VERSION</span><br><span class="line"> ---&gt; Running in 02438aff1f75</span><br><span class="line">UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Removing intermediate container 02438aff1f75</span><br><span class="line"> ---&gt; 646eec496165</span><br><span class="line">Successfully built 646eec496165</span><br><span class="line">Successfully tagged test:afterfrom</span><br></pre></td></tr></table></figure>
+<h3 id="传递多个ARG参数"><a href="#传递多个ARG参数" class="headerlink" title="传递多个ARG参数"></a>传递多个ARG参数</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ARG</span> UBUNTU_VERSION=<span class="number">16.04</span></span><br><span class="line"><span class="keyword">ARG</span> FILE_NAME=test</span><br><span class="line"><span class="keyword">FROM</span> ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">ARG</span> FILE_NAME</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /<span class="built_in">test</span>/</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> touch <span class="variable">$&#123;FILE_NAME&#125;</span></span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> ls <span class="variable">$&#123;FILE_NAME&#125;</span></span></span><br></pre></td></tr></table></figure>
+<p>传递多个参数需要多次使用<code>--build-arg</code>，可以看到传递的<code>FILE_NAME=app</code>生效了，而不是默认值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t test:twoargs --build-arg UBUNTU_VERSION&#x3D;18.04 --build-arg FILE_NAME&#x3D;app .</span><br><span class="line">Sending build context to Docker daemon  37.38kB</span><br><span class="line">Step 1&#x2F;7 : ARG UBUNTU_VERSION&#x3D;16.04</span><br><span class="line">Step 2&#x2F;7 : ARG FILE_NAME&#x3D;test</span><br><span class="line">Step 3&#x2F;7 : FROM ubuntu:$&#123;UBUNTU_VERSION&#125;</span><br><span class="line">18.04: Pulling from library&#x2F;ubuntu</span><br><span class="line">171857c49d0f: Pull complete</span><br><span class="line">419640447d26: Pull complete</span><br><span class="line">61e52f862619: Pull complete</span><br><span class="line">Digest: sha256:646942475da61b4ce9cc5b3fadb42642ea90e5d0de46111458e100ff2c7031e6</span><br><span class="line">Status: Downloaded newer image for ubuntu:18.04</span><br><span class="line"> ---&gt; 56def654ec22</span><br><span class="line">Step 4&#x2F;7 : ARG FILE_NAME</span><br><span class="line"> ---&gt; Running in bee623328f35</span><br><span class="line">Removing intermediate container bee623328f35</span><br><span class="line"> ---&gt; 52f803da2959</span><br><span class="line">Step 5&#x2F;7 : WORKDIR &#x2F;test&#x2F;</span><br><span class="line"> ---&gt; Running in fa4542584af1</span><br><span class="line">Removing intermediate container fa4542584af1</span><br><span class="line"> ---&gt; 5ebd782db9b8</span><br><span class="line">Step 6&#x2F;7 : RUN touch $&#123;FILE_NAME&#125;</span><br><span class="line"> ---&gt; Running in 0cd5723b744d</span><br><span class="line">Removing intermediate container 0cd5723b744d</span><br><span class="line"> ---&gt; 920c6bd75bab</span><br><span class="line">Step 7&#x2F;7 : RUN ls $&#123;FILE_NAME&#125;</span><br><span class="line"> ---&gt; Running in b94a33093ddf</span><br><span class="line">app</span><br><span class="line">Removing intermediate container b94a33093ddf</span><br><span class="line"> ---&gt; 804bf831059a</span><br><span class="line">Successfully built 804bf831059a</span><br><span class="line">Successfully tagged test:twoargs</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/09/28/misunderstanding-iowait/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -452,7 +588,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-06 08:30:50" itemprop="dateModified" datetime="2020-09-06T08:30:50+08:00">2020-09-06</time>
+                <time title="修改时间：2020-11-10 16:34:41" itemprop="dateModified" datetime="2020-11-10T16:34:41+08:00">2020-11-10</time>
               </span>
 
           
@@ -482,7 +618,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;insecure-registries&quot;:[&quot;192.168.9.8:80&quot;],</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;a90tkz28.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后冲抵daemon：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl daemon-reload</span><br><span class="line">$ sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
-<h2 id="网络代理-不推荐"><a href="#网络代理-不推荐" class="headerlink" title="网络代理(不推荐)"></a>网络代理(不推荐)</h2><p>我Mac上的http、https、socks5代理，http和https监听的是7890端口，sock5监听的是7891端口。</p>
+<h2 id="为Docker-Daemon设置网络代理-不推荐"><a href="#为Docker-Daemon设置网络代理-不推荐" class="headerlink" title="为Docker Daemon设置网络代理(不推荐)"></a>为Docker Daemon设置网络代理(不推荐)</h2><p>我Mac上的http、https、socks5代理，http和https监听的是7890端口，sock5监听的是7891端口。</p>
 <p>拉镜像时，可以看到docker连接了7890端口走http代理。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[&#x2F;private&#x2F;tmp]$ lsof -i:7890</span><br><span class="line">COMMAND     PID      USER   FD   TYPE             DEVICE SIZE&#x2F;OFF NODE NAME</span><br><span class="line">....</span><br><span class="line">com.docke 73371 shitaibin   50u  IPv4 0xa8184ba4240fbe99      0t0  TCP localhost:58847-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   53u  IPv4 0xa8184ba4035deb09      0t0  TCP localhost:58857-&gt;localhost:7890 (ESTABLISHED)</span><br><span class="line">com.docke 73371 shitaibin   58u  IPv4 0xa8184ba42d889861      0t0  TCP localhost:58893-&gt;localhost:7890 (ESTABLISHED)</span><br></pre></td></tr></table></figure>
 <p><a href="https://docs.docker.com/network/proxy/" target="_blank" rel="noopener">官方设置代理教程</a>，2选1:</p>
@@ -497,6 +633,16 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment&#x3D;&quot;HTTP_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;proxy.server.com:913&#x2F;&quot; &quot;NO_PROXY&#x3D;localhost,127.0.0.1,10.96.0.0&#x2F;16, 10.244.0.0&#x2F;16&quot;</span><br></pre></td></tr></table></figure>
 <p>然后重启Daemon：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br><span class="line"></span><br><span class="line">systemctl show --property&#x3D;Environment docker</span><br></pre></td></tr></table></figure>
+<h2 id="关于Docker代理的另外一件事：容器内的代理-几乎不用"><a href="#关于Docker代理的另外一件事：容器内的代理-几乎不用" class="headerlink" title="关于Docker代理的另外一件事：容器内的代理(几乎不用)"></a>关于Docker代理的另外一件事：容器内的代理(几乎不用)</h2><p>默认情况<code>~/.docker/config.json</code>是docker客户端的配置文件，其中可以配置Http和Https代理，这些环境变量会通过<code>--build-arg</code>的方式，在执行<code>docker build</code>时传递到镜像中。</p>
+<p><strong>容器内的服务通常不需要代理，所以这个无需设置</strong>。</p>
+<p>看个测试demo，config.json内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"> <span class="attr">"proxies"</span>:</span><br><span class="line"> &#123;</span><br><span class="line">   <span class="attr">"default"</span>:</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="attr">"httpProxy"</span>: <span class="string">"http://127.0.0.1:3001"</span>,</span><br><span class="line">     <span class="attr">"httpsProxy"</span>: <span class="string">"http://127.0.0.1:3001"</span>,</span><br><span class="line">     <span class="attr">"noProxy"</span>: <span class="string">"*.test.example.com,.example2.com"</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Dockerfile如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> busybox</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> env</span></span><br></pre></td></tr></table></figure>
+<p>构建过程如下，可以看到设置了http等环境变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ docker build .</span><br><span class="line">Sending build context to Docker daemon  2.048kB</span><br><span class="line">Step 1&#x2F;2 : FROM busybox</span><br><span class="line"> ---&gt; f0b02e9d092d</span><br><span class="line">Step 2&#x2F;2 : RUN env</span><br><span class="line"> ---&gt; Running in 2a8fe4fad631</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">no_proxy&#x3D;*.test.example.com,.example2.com</span><br><span class="line">HOSTNAME&#x3D;2a8fe4fad631</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">NO_PROXY&#x3D;*.test.example.com,.example2.com</span><br><span class="line">https_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">http_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">HTTP_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">Removing intermediate container 2a8fe4fad631</span><br><span class="line"> ---&gt; 89c86d136d8d</span><br><span class="line">Successfully built 89c86d136d8d</span><br></pre></td></tr></table></figure>
+<p>启动容器后http环境变量依然生效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[~&#x2F;test]$ docker run -it --rm 89c86d136d8d sh</span><br><span class="line">&#x2F; # env</span><br><span class="line">HTTPS_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">no_proxy&#x3D;*.test.example.com,.example2.com</span><br><span class="line">HOSTNAME&#x3D;e9c131f55062</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">NO_PROXY&#x3D;*.test.example.com,.example2.com</span><br><span class="line">https_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">http_proxy&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br><span class="line">TERM&#x3D;xterm</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">HTTP_PROXY&#x3D;http:&#x2F;&#x2F;127.0.0.1:3001</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1181,144 +1327,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/07/29/go-time-date-timestamp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/29/go-time-date-timestamp/" class="post-title-link" itemprop="url">Go语言日期和时间戳转换</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-07-29 19:48:59 / 修改时间：19:49:32" itemprop="dateCreated datePublished" datetime="2020-07-29T19:48:59+08:00">2020-07-29</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>字符串格式日期、time.Time类型、整形时间戳三者之间的转换如下图：</p>
-<p><img src="http://img.lessisbetter.site/2020-07-go-time-date-transform.png" alt=""></p>
-<p>有2点要注意：</p>
-<ol>
-<li>字符串日期和时间戳之间不能直接转换，需要通过time.Time完成。</li>
-<li>涉及字符串日期的时候，字符串日期格式一定要以Go诞生的时间为基准，而不是随意的时间，否则会导致时间转换不正确。所以，以下Demo中的日期格式是通用的。</li>
-<li>字符串日期格式要与真实的日期格式完全匹配，否则会解析时间不正确。比如设置的格式为<code>2006-01-02</code>，实际日期格式为<code>2006-1-2</code>时会解析错误。</li>
-</ol>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Date2Time</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"&gt;&gt; Date2Time"</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">"&lt;&lt; Date2Time"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 一定要以Go诞生的时间为基准</span></span><br><span class="line">	<span class="comment">// 2006年1月2号，MST时区，下午3:04分为基准</span></span><br><span class="line">	<span class="keyword">const</span> dateFormat = <span class="string">"Jan 2, 2006 at 3:04pm (MST)"</span></span><br><span class="line">	t, _ := time.Parse(dateFormat, <span class="string">"May 20, 2020 at 0:00am (UTC)"</span>)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">const</span> shortForm = <span class="string">"2006-Jan-02"</span></span><br><span class="line">	t, _ = time.Parse(shortForm, <span class="string">"2020-May-20"</span>)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line"></span><br><span class="line">	t, _ = time.Parse(<span class="string">"01/02/2006"</span>, <span class="string">"05/20/2020"</span>)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Time2Date</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"&gt;&gt; Time2Date"</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">"&lt;&lt; Time2Date"</span>)</span><br><span class="line"></span><br><span class="line">	tm := time.Now()</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">"2006-01-02 03:04:05 PM"</span>))</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">"2006-1-2 03:04:05 PM"</span>))</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">"2006-Jan-02 03:04:05 PM"</span>))</span><br><span class="line">	fmt.Println(tm.Format(<span class="string">"02/01/2006 03:04:05 PM"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Timestamp2Time</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"&gt;&gt; Timestamp2Time"</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">"&lt;&lt; Timestamp2Time"</span>)</span><br><span class="line"></span><br><span class="line">	ts := <span class="keyword">int64</span>(<span class="number">1595900001</span>)</span><br><span class="line">	tm := time.Unix(ts, <span class="number">0</span>)</span><br><span class="line">	fmt.Println(tm)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Time2Timestamp</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"&gt;&gt; Time2Timestamp"</span>)</span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(<span class="string">"&lt;&lt; Time2Timestamp"</span>)</span><br><span class="line"></span><br><span class="line">	tm := time.Now()</span><br><span class="line">	ts := tm.Unix()</span><br><span class="line">	fmt.Println(ts)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	Date2Time()</span><br><span class="line">	Time2Date()</span><br><span class="line">	Timestamp2Time()</span><br><span class="line">	Time2Timestamp()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; Date2Time</span><br><span class="line">2020-05-20 00:00:00 +0000 UTC</span><br><span class="line">2020-05-20 00:00:00 +0000 UTC</span><br><span class="line">2020-05-20 00:00:00 +0000 UTC</span><br><span class="line">&lt;&lt; Date2Time</span><br><span class="line">&gt;&gt; Time2Date</span><br><span class="line">2020-07-28 09:35:46 AM</span><br><span class="line">2020-7-28 09:35:46 AM</span><br><span class="line">2020-Jul-28 09:35:46 AM</span><br><span class="line">28&#x2F;07&#x2F;2020 09:35:46 AM</span><br><span class="line">&lt;&lt; Time2Date</span><br><span class="line">&gt;&gt; Timestamp2Time</span><br><span class="line">2020-07-28 09:33:21 +0800 CST</span><br><span class="line">&lt;&lt; Timestamp2Time</span><br><span class="line">&gt;&gt; Time2Timestamp</span><br><span class="line">1595900146</span><br><span class="line">&lt;&lt; Time2Timestamp</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/07/28/about-ssh/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/28/about-ssh/" class="post-title-link" itemprop="url">SSH常用命令和配置</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-07-28 21:11:15 / 修改时间：21:12:11" itemprop="dateCreated datePublished" datetime="2020-07-28T21:11:15+08:00">2020-07-28</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="生成SSH密钥"><a href="#生成SSH密钥" class="headerlink" title="生成SSH密钥"></a>生成SSH密钥</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f ~/.ssh/id_rsa -C <span class="string">"temp user"</span> -N <span class="string">""</span></span><br></pre></td></tr></table></figure>
-<p>-t：指定加密算法<br>-f：指定路径<br>-C：注释，可以填写用户名或邮箱<br>-N：密码</p>
-<p>指定以上<code>f、C、N</code>这3个参数，可以避免交互式问答，快速生成密钥，在脚本中使用很方便。</p>
-<h2 id="SSH客户端配置文件"><a href="#SSH客户端配置文件" class="headerlink" title="SSH客户端配置文件"></a>SSH客户端配置文件</h2><p><code>~/.ssh/config</code>文件内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># Read more about SSH config files: https:&#x2F;&#x2F;linux.die.net&#x2F;man&#x2F;5&#x2F;ssh_config</span><br><span class="line">Host 个人VM</span><br><span class="line">    HostName 192.168.9.137</span><br><span class="line">    User centos</span><br><span class="line"></span><br><span class="line">Host 阿里云</span><br><span class="line">    HostName 139.224.105.10</span><br><span class="line">    User root</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">Host 腾讯云</span><br><span class="line">    HostName 140.143.6.185</span><br><span class="line">    User root</span><br><span class="line">    Port 22</span><br><span class="line">    IdentityFile ~&#x2F;.ssh&#x2F;id_rsa_tencent</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Host：自定义命名</li>
-<li>HostName：机器IP或者域名</li>
-<li>User：登录机器的用户名</li>
-<li>Port：登录机器的端口，默认为22，可省略</li>
-<li>IdentityFile：登录机器时使用的私钥，默认为<code>~/.ssh/id_rsa</code>，可省略；当某台机器使用单独密钥时，很有用</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1390,7 +1398,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-count">136</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
