@@ -196,6 +196,78 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/08/27/sync-code-to-server-with-sftp-in-vscode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/27/sync-code-to-server-with-sftp-in-vscode/" class="post-title-link" itemprop="url">VSCode利用SFTP上传代码到服务器</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-27 20:24:00 / 修改时间：20:37:00" itemprop="dateCreated datePublished" datetime="2020-08-27T20:24:00+08:00">2020-08-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>VSCode已经支持远程开发，可以把代码自动从本地和服务器进行同步。</p>
+<p>为了某些实验搞了一条Ubuntu 14.04的服务器，结果VSCode说远程服务器不支持，就只能另谋它路了，利用SFTP实现本地和服务器端的代码同步。</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ol>
+<li>VSCode应用市场安装SFTP插件</li>
+<li>在项目目录下建立SFTP的配置文件：<code>.vscode/sftp.json</code>，内容如下</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"root"</span>,</span><br><span class="line">    <span class="attr">"host"</span>: <span class="string">"192.168.9.xxx"</span>,</span><br><span class="line">    <span class="attr">"protocol"</span>: <span class="string">"sftp"</span>,</span><br><span class="line">    <span class="attr">"port"</span>: <span class="number">22</span>,</span><br><span class="line">    <span class="attr">"username"</span>: <span class="string">"centos"</span>,</span><br><span class="line">    <span class="attr">"privateKeyPath"</span>: <span class="string">"/Users/shitaibin/.ssh/id_xxx"</span>,</span><br><span class="line">    <span class="attr">"remotePath"</span>: <span class="string">"/home/centos/workspace/docker/notes"</span>,</span><br><span class="line">    <span class="attr">"uploadOnSave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"ignore"</span>: [<span class="string">".vscode"</span>, <span class="string">".git"</span>, <span class="string">".DS_Store"</span>, <span class="string">"node_modules"</span>, <span class="string">"vendor"</span>],</span><br><span class="line">    <span class="attr">"localPath"</span>:<span class="string">"."</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>登录服务器可以使用密码或者私钥，上面文件的示例使用私钥，如果使用密码，增加一项<code>password</code>即可。</p>
+<p><code>uploadOnSave</code>配置项设置为true，能够确保文件保存时，自动上传到服务器，无需手动上传。</p>
+<ol start="3">
+<li><p>初次上传到服务器</p>
+<p> a. Ctrl + Shift + P，输入<code>SFTP</code>，选择<code>Sync Local -&gt; Remote</code>即可<br> b. VSCode底部状态栏，会显示SFTP，如果在动态变化，说明在上传文件</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/07/29/go-time-date-timestamp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1160,75 +1232,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2020/03/03/contribute-to-fabric/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/03/contribute-to-fabric/" class="post-title-link" itemprop="url">向Fabric贡献代码</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-03 20:33:19" itemprop="dateCreated datePublished" datetime="2020-03-03T20:33:19+08:00">2020-03-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-16 22:51:33" itemprop="dateModified" datetime="2020-03-16T22:51:33+08:00">2020-03-16</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>PDF如下：</p>
-<div class="pdf" target="http://img.lessisbetter.site/contribute-to-fabric.pdf" height=""></div>
-<blockquote>
-<p>PDF不显示时，hexo安装插件：<code>npm install --save hexo-pdf</code>。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1300,7 +1303,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-count">137</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
