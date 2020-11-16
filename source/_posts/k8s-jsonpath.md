@@ -159,6 +159,12 @@ kubectl get pods --all-namespaces -o=jsonpath='{range .items[?(@.metadata.name==
 
 ![](http://img.lessisbetter.site/2020-11-6-pod-filter.png)
 
+### 练习
+
+使用JSONPath获取：
+1. Pod的名称和IP
+2. Pod退出原因
+
 ### 参考资料
 
 - [goessner: JSONPath - XPath for JSON](https://goessner.net/articles/JsonPath/)
