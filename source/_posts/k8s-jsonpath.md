@@ -77,7 +77,7 @@ JSONPath现在有很多不同的实现，不同的实现支持的提取语法略
 | [start:end]       | 获取数组区间[start, end)的数据。                                                           | `$.store.book[0:2]`                         | [获取前2本书](http://jsonpath.herokuapp.com/?path=$.store.book[0:2])。                                                                    |
 | [start:end:step]  | 获取数组区间[start, end)的数据，但以step为步长提取数据。**但不是所有JSONPath实现都支持**。 | `$.store.book[0:3:2]`                       | 获取第1~3本书，以步长为2提取，也即是第1、3本书。                                                                                          |
 | [*]               | 通配符，匹配所有子对象。                                                                   | `$.store.*.price`                           | [匹配store子对象中的价格，因为book的价格，是更下一级，所以只能匹配到bicycle的价格](http://jsonpath.herokuapp.com/?path=$.store.*.price)。 |
-| ?()               | 过滤符，可以理解成SQL的Where。                                                             | `$.store.[?(@.category=="fiction")].author` | [获取类别为fiction的书籍作者列表](http://jsonpath.herokuapp.com/?path=$.store.[?(@.category==%22fiction%22)].author)。                    |
+| ?()               | 过滤符，可以理解成SQL的Where。                                                             | `$.store.[?(@.category=="fiction")].author` | [获取类别为fiction的书籍作者列表](http://jsonpath.herokuapp.com/?path=$.store.[?(@.category==%22fiction%22).author])。                    |
 | @                 | 当前对象，配合`?()`很好用。                                                                |                                             |                                                                                                                                           |
 
 
