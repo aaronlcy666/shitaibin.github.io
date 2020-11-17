@@ -1,5 +1,5 @@
 ---
-title: Kustomize: 自定义YAML资源文件
+title: Kustomize：自定义YAML资源文件
 date: 2020-11-17 09:54:12
 tags: ['Kubernetes']
 ---
