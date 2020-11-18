@@ -397,7 +397,13 @@ sudo rm -rf /var/lib/etcd
 sudo rm -rf /var/etcd
 ```
 
+## 更快的部署方法？
 
+利用[kind](https://github.com/kubernetes-sigs/kind)，使用Docker快速部署一个**本地测试、开发**k8s环境。
+
+```
+GO111MODULE="on" go get sigs.k8s.io/kind@v0.9.0 && kind create cluster
+```
 
 ## 资料
 
