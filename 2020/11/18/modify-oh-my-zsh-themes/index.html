@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"lessisbetter.site","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="习惯使用gallois主题，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。  oh my zsh的所有主题配置都在.oh-my-zsh&#x2F;themes&#x2F;目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。 注释掉配置文件中关于git的设置，打开新终端后，">
+  <meta name="description" content="配置文件选择oh my zsh的原因在于它提供了很多插件和主题。 zsh的配置文件为：~&#x2F;.zshrc，oh my zsh的许多配置也在此添加。 主题习惯使用gallois主题，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。  oh my zsh的所有主题配置">
 <meta property="og:type" content="article">
-<meta property="og:title" content="修改oh my zsh主题">
+<meta property="og:title" content="Oh my zsh">
 <meta property="og:url" content="http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/index.html">
 <meta property="og:site_name" content="Go语言充电站">
-<meta property="og:description" content="习惯使用gallois主题，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。  oh my zsh的所有主题配置都在.oh-my-zsh&#x2F;themes&#x2F;目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。 注释掉配置文件中关于git的设置，打开新终端后，">
+<meta property="og:description" content="配置文件选择oh my zsh的原因在于它提供了很多插件和主题。 zsh的配置文件为：~&#x2F;.zshrc，oh my zsh的许多配置也在此添加。 主题习惯使用gallois主题，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。  oh my zsh的所有主题配置">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://img.lessisbetter.site/2020-11-old-gallois.png">
 <meta property="og:image" content="http://img.lessisbetter.site/2020-11-new-gallois.png">
 <meta property="article:published_time" content="2020-11-18T12:09:49.000Z">
-<meta property="article:modified_time" content="2020-11-18T06:27:39.445Z">
+<meta property="article:modified_time" content="2020-11-18T07:08:32.644Z">
 <meta property="article:author" content="大彬">
 <meta property="article:tag" content="Terminal">
 <meta name="twitter:card" content="summary">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>修改oh my zsh主题 | Go语言充电站</title>
+  <title>Oh my zsh | Go语言充电站</title>
   
 
 
@@ -214,7 +214,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          修改oh my zsh主题
+          Oh my zsh
         </h1>
 
         <div class="post-meta">
@@ -225,7 +225,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-11-18 20:09:49 / 修改时间：14:27:39" itemprop="dateCreated datePublished" datetime="2020-11-18T20:09:49+08:00">2020-11-18</time>
+              <time title="创建时间：2020-11-18 20:09:49 / 修改时间：15:08:32" itemprop="dateCreated datePublished" datetime="2020-11-18T20:09:49+08:00">2020-11-18</time>
             </span>
 
           
@@ -246,12 +246,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>习惯使用<a href="https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme" target="_blank" rel="noopener">gallois主题</a>，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。</p>
+        <h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>选择oh my zsh的原因在于它提供了很多插件和主题。</p>
+<p>zsh的配置文件为：<code>~/.zshrc</code>，oh my zsh的许多配置也在此添加。</p>
+<h3 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h3><p>习惯使用<a href="https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme" target="_blank" rel="noopener">gallois主题</a>，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。</p>
 <p><img src="http://img.lessisbetter.site/2020-11-old-gallois.png" alt=""></p>
 <p>oh my zsh的所有主题配置都在<code>.oh-my-zsh/themes/</code>目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。</p>
 <p>注释掉配置文件中关于git的设置，打开新终端后，就可以不显示git分支信息了。</p>
 <p><img src="http://img.lessisbetter.site/2020-11-new-gallois.png" alt=""></p>
 <p>从此复制出的代码，在也没有多余文本。</p>
+<h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件目录在：<code>~/.oh-my-zsh/plugins</code>，从中可以浏览自己需要的插件。</p>
+<p>比如我常用的插件为：<code>plugins=(git autojump docker kubectl extract)</code>，添加到<code>~/.zshrc</code>即可。</p>
 
     </div>
 
@@ -267,7 +271,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/" title="修改oh my zsh主题">http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/</a>
+    <a href="http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/" title="Oh my zsh">http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -380,6 +384,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主题"><span class="nav-number">2.</span> <span class="nav-text">主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#插件"><span class="nav-number">3.</span> <span class="nav-text">插件</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

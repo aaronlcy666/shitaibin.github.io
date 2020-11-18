@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://lessisbetter.site/"/>
-  <updated>2020-11-18T06:27:39.445Z</updated>
+  <updated>2020-11-18T07:08:32.644Z</updated>
   <id>http://lessisbetter.site/</id>
   
   <author>
@@ -17,19 +17,20 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>修改oh my zsh主题</title>
+    <title>Oh my zsh</title>
     <link href="http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/"/>
     <id>http://lessisbetter.site/2020/11/18/modify-oh-my-zsh-themes/</id>
     <published>2020-11-18T12:09:49.000Z</published>
-    <updated>2020-11-18T06:27:39.445Z</updated>
+    <updated>2020-11-18T07:08:32.644Z</updated>
     
-    <content type="html"><![CDATA[<p>习惯使用<a href="https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme" target="_blank" rel="noopener">gallois主题</a>，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。</p><p><img src="http://img.lessisbetter.site/2020-11-old-gallois.png" alt=""></p><p>oh my zsh的所有主题配置都在<code>.oh-my-zsh/themes/</code>目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。</p><p>注释掉配置文件中关于git的设置，打开新终端后，就可以不显示git分支信息了。</p><p><img src="http://img.lessisbetter.site/2020-11-new-gallois.png" alt=""></p><p>从此复制出的代码，在也没有多余文本。</p>]]></content>
+    <content type="html"><![CDATA[<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>选择oh my zsh的原因在于它提供了很多插件和主题。</p><p>zsh的配置文件为：<code>~/.zshrc</code>，oh my zsh的许多配置也在此添加。</p><h3 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h3><p>习惯使用<a href="https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme" target="_blank" rel="noopener">gallois主题</a>，但发现它有一个现在无法忍受的缺点，如果当前目录是git仓库，它会在右边显示分支名称和clean状态。当从终端复制文本出来时，分支名称和左边命令的空白，全是空格填充，复制出来就得手动删除。</p><p><img src="http://img.lessisbetter.site/2020-11-old-gallois.png" alt=""></p><p>oh my zsh的所有主题配置都在<code>.oh-my-zsh/themes/</code>目录，文件名称同主题名称，可以对这些主题的一些配置进行修改。</p><p>注释掉配置文件中关于git的设置，打开新终端后，就可以不显示git分支信息了。</p><p><img src="http://img.lessisbetter.site/2020-11-new-gallois.png" alt=""></p><p>从此复制出的代码，在也没有多余文本。</p><h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件目录在：<code>~/.oh-my-zsh/plugins</code>，从中可以浏览自己需要的插件。</p><p>比如我常用的插件为：<code>plugins=(git autojump docker kubectl extract)</code>，添加到<code>~/.zshrc</code>即可。</p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;习惯使用&lt;a href=&quot;https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/gallois.zsh-theme&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;gallois主题&lt;/a&gt;，但发现它有一
+        &lt;h3 id=&quot;配置文件&quot;&gt;&lt;a href=&quot;#配置文件&quot; class=&quot;headerlink&quot; title=&quot;配置文件&quot;&gt;&lt;/a&gt;配置文件&lt;/h3&gt;&lt;p&gt;选择oh my zsh的原因在于它提供了很多插件和主题。&lt;/p&gt;
+&lt;p&gt;zsh的配置文件为：&lt;code&gt;~/.zshrc&lt;/
       
     
     </summary>
