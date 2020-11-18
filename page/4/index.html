@@ -196,6 +196,138 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/13/using-fabric-sdk-go-register-event/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
+      <meta itemprop="name" content="大彬">
+      <meta itemprop="description" content="区块链、Go语言">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Go语言充电站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/13/using-fabric-sdk-go-register-event/" class="post-title-link" itemprop="url">使用fabric-sdk-go订阅Fabric事件</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-13 20:43:13 / 修改时间：16:43:47" itemprop="dateCreated datePublished" datetime="2019-11-13T20:43:13+08:00">2019-11-13</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="http://lessisbetter.site/2019/09/02/fabric-sdk-go-chaincode/">使用fabric-sdk-go操作链码</a>，介绍了使用官方Go SDK，安装、实例化和升级链码，调用和查询链码，本文介绍使用fabric-sdk-go订阅事件。</p>
+<h2 id="事件介绍"><a href="#事件介绍" class="headerlink" title="事件介绍"></a>事件介绍</h2><p>本质上就3种事件：</p>
+<ul>
+<li>BlockEvent：获取区块信息</li>
+<li>TransactionEvent：获取交易信息</li>
+<li>ChainCodeEvnet：链码中<strong>自定义的</strong>链码事件</li>
+</ul>
+<p>但每种事件都有2 种类型：</p>
+<ul>
+<li><strong>Filtered</strong>：事件订阅时默认的类型，获取的<strong>信息“不全”</strong>，不同的事件缺失的数据不同，比如链码事件，如果是Filtered的，其响应字段中的Payload是空的，也就是不知道链码事件携带的数据。这种方式能够降低fabric网络和SDK之间的流量，当Filtered后的字段信息就足够时，这种方式非常适合。关于Filtered的更多信息，这篇文章 <a href="http://lessisbetter.site/2019/09/20/fabric-event-source/">Fabric 1.4源码解读 3：Event原理解读</a> 非常有帮助。</li>
+<li><strong>非Filtered</strong> ：可以获取<strong>完整的</strong>区块、交易、链码事件<strong>信息</strong>，这种方式在SDK想获取更多信息时，是非常必要的。</li>
+</ul>
+<p>4 个注册事件的接口1个取消注册的接口如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">接口名称</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">参数值</th>
+<th style="text-align:center">返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">RegisterBlockEvent</td>
+<td style="text-align:center">注册块事件</td>
+<td style="text-align:center">filter …fab.BlockFilter</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.BlockEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterFilteredBlockEvent</td>
+<td style="text-align:center">注册过滤块事件</td>
+<td style="text-align:center">无</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.FilteredBlockEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterTxStatusEvent</td>
+<td style="text-align:center">注册交易状态事件</td>
+<td style="text-align:center">txID string</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.TxStatusEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">RegisterChaincodeEvent</td>
+<td style="text-align:center">注册链码事件</td>
+<td style="text-align:center">ccID, eventFilter string</td>
+<td style="text-align:center">fab.Registration, &lt;-chan *fab.CCEvent, error</td>
+</tr>
+<tr>
+<td style="text-align:center">Unregister</td>
+<td style="text-align:center">取消事件订阅</td>
+<td style="text-align:center">fab.Registration</td>
+<td style="text-align:center">无</td>
+</tr>
+</tbody>
+</table>
+<p>注册会得到管理可以管理订阅的Registration、接收事件的通道，以及可能注册时发生的错误，关于每个接口的具体介绍、使用，可以参考官方的<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/event" target="_blank" rel="noopener">Event文档</a>，其中包含了样例代码，如果想看真实的样例代码，可以参考<a href="#示例项目">示例项目</a>。</p>
+<h2 id="Option介绍"><a href="#Option介绍" class="headerlink" title="Option介绍"></a>Option介绍</h2><p>注册事件需要使用<code>EventClient</code>，创建EventClient时可以指定一些选项，这些选项其实就是事件订阅的选项。</p>
+<p>有3个Option:</p>
+<ul>
+<li><p>func WithBlockEvents() ClientOption</p>
+<p>  指定了此选项，事件就是<strong>非“filtered”</strong>，fabric会向调用SDK客户端发送完整的区块，可以获得订阅事件完整的信息。</p>
+</li>
+<li><p>func WithSeekType(seek seek.Type) ClientOption</p>
+<p>  使用此选项可以<strong>指定从哪个区块高度获取事件</strong>。<code>seek.Type</code>有<code>Oldest</code>、<code>Newest</code>和<code>FromBlock</code> 3种取值，分别代表从第1个区块、最后一个区块和指定区块号开始获取事件，<code>FromBlock</code>需要结合<code>WithBlockNum</code>使用。So，可以通过这个选项<strong>获取历史事件</strong>。</p>
+</li>
+<li><p>func WithBlockNum(from uint64) ClientOption</p>
+<p>  指定区块高度，只有<code>WithSeekType(FromBlock)</code>时才生效。</p>
+</li>
+</ul>
+<h2 id="链码事件多说几句"><a href="#链码事件多说几句" class="headerlink" title="链码事件多说几句"></a>链码事件多说几句</h2><h3 id="链码如何发链码事件"><a href="#链码如何发链码事件" class="headerlink" title="链码如何发链码事件"></a>链码如何发链码事件</h3><p><code>ChaincodeStubInterface</code>有<code>SetEvent</code>的方法，入参分别为事件名称和事件锁携带的信息payload。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ChaincodeStubInterface is used by deployable chaincode apps to access and</span></span><br><span class="line"><span class="comment">// modify their ledgers</span></span><br><span class="line"><span class="keyword">type</span> ChaincodeStubInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// SetEvent allows the chaincode to set an event on the response to the</span></span><br><span class="line">    <span class="comment">// proposal to be included as part of a transaction. The event will be</span></span><br><span class="line">    <span class="comment">// available within the transaction in the committed block regardless of the</span></span><br><span class="line">    <span class="comment">// validity of the transaction.</span></span><br><span class="line">    SetEvent(name <span class="keyword">string</span>, payload []<span class="keyword">byte</span>) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="通过ChannelClient订阅链码事件介绍"><a href="#通过ChannelClient订阅链码事件介绍" class="headerlink" title="通过ChannelClient订阅链码事件介绍"></a>通过ChannelClient订阅链码事件介绍</h3><p>SDK的channel client也有订阅链码事件的接口：<a href="https://godoc.org/github.com/hyperledger/fabric-sdk-go/pkg/client/channel#Client.RegisterChaincodeEvent" target="_blank" rel="noopener">channel.Client.RegisterChaincodeEvent()</a>，它的定义和event client提供的接口完全一样，但功能上有所差别。</p>
+<p>channel client没有指定 <code>WithBlockEvents</code>，所以这是<strong>Filtered的事件链码</strong>，获取的事件链码中，其Payload为空。</p>
+<h2 id="示例项目"><a href="#示例项目" class="headerlink" title="示例项目"></a>示例项目</h2><p>示例项目<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/tree/master/samples/event" target="_blank" rel="noopener">fabric-sdk-go-sample</a>是结合Fabric的BYFN展示如何使用fabric-sdk-go的项目，它的Event样例部分，介绍了如何使用以上接口订阅Fabric事件，具体请参加该部分<a href="https://github.com/Shitaibin/fabric-sdk-go-sample/blob/master/samples/event/README.md" target="_blank" rel="noopener">README</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/11/10/how-fabric-verify-signatures/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1563,101 +1695,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://lessisbetter.site/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="http://img.lessisbetter.site/gzh-qrcode-logo-small.png">
-      <meta itemprop="name" content="大彬">
-      <meta itemprop="description" content="区块链、Go语言">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Go语言充电站">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/03/fabric-problem-of-peers-using-different-language-chaincode/" class="post-title-link" itemprop="url">Fabric 1.4不同peer使用不同语言链码的问题</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-03 11:50:31" itemprop="dateCreated datePublished" datetime="2019-09-03T11:50:31+08:00">2019-09-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-11 14:27:33" itemprop="dateModified" datetime="2019-09-11T14:27:33+08:00">2019-09-11</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>社区里在讨论一个问题，是由官方的文档引发的，文档上讲不同的peer可以使用不同语言的链码，前提是2份链码功能、接口等必须一致。</p>
-<p><img src="http://img.lessisbetter.site/2019-09-fabric-chaincode-error.png" alt="fabric chaincode error"></p>
-<p>大家的问题是：</p>
-<blockquote>
-<p>一个链码可以采用不同的语言实现，不同peer上使用不同的链码真的可行吗？</p>
-</blockquote>
-<p>经过实证，这是不可行的。</p>
-<p>分2种情况，2种都有问题：</p>
-<ol>
-<li>不同peer安装不同语言链码，然后同时实例化：实例化后，只能启动发送实例化交易的peer拥有的语言的链码</li>
-<li>部分peer先实例化，另外peer再安装不同语言链码：调用链码时报指纹不匹配错误</li>
-</ol>
-<h2 id="不同peer安装不同语言链码，然后同时实例化"><a href="#不同peer安装不同语言链码，然后同时实例化" class="headerlink" title="不同peer安装不同语言链码，然后同时实例化"></a>不同peer安装不同语言链码，然后同时实例化</h2><p>1、修改BFYN，只在peer0.org1和peer0.org2上安装Go语言链码，不进行后续操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Installing chaincode on peer0.org1...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;go&#x2F;</span><br><span class="line">+ res&#x3D;0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:43.813 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.108 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Chaincode is installed on peer0.org1 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">Install chaincode on peer0.org2...</span><br><span class="line">+ peer chaincode install -n mycc -v 1.0 -l golang -p github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;go&#x2F;</span><br><span class="line">+ res&#x3D;0</span><br><span class="line">+ set +x</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 02:08:44.260 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 02:08:44.529 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; Chaincode is installed on peer0.org2 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; All GOOD, BYFN execution completed &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
-<p>2、在peer1.org1上安装Java语言链码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode install -n mycc -v 1.0 -l java -p &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;java&#x2F;</span><br><span class="line">2019-09-03 03:19:44.710 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:19:44.711 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 03:19:44.754 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br></pre></td></tr></table></figure>
-<p>3、在peer1.org1上发起实例化链码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root@6cec20eb7502:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem -C mychannel -n mycc -l golang -v 1.0 -c &#39;&#123;&quot;Args&quot;:[&quot;init&quot;,&quot;a&quot;,&quot;100&quot;,&quot;b&quot;,&quot;200&quot;]&#125;&#39; -P &#39;OR (&#39;\&#39;&#39;Org1MSP.peer&#39;\&#39;&#39;,&#39;\&#39;&#39;Org2MSP.peer&#39;\&#39;&#39;)&#39;</span><br><span class="line">2019-09-03 03:22:12.430 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 03:22:12.431 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br></pre></td></tr></table></figure>
-<p>4、查看链码容器，只有peer1.org1的链码容器，peer0.org1和peer0.org2的链码容器都没有起来。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  fabric-sdk-go-sample git:(master) ✗ docker ps</span><br><span class="line">CONTAINER ID        IMAGE                                                                                                  COMMAND                  CREATED             STATUS              PORTS                      NAMES</span><br><span class="line">f8f6aa8b5da6        dev-peer1.org1.example.com-mycc-1.0-cd123150154e6bf2df7ce682e0b1bcbea40499416f37a6da3aae14c4eb51b08d   &quot;&#x2F;root&#x2F;chaincode-jav…&quot;   37 seconds ago      Up 36 seconds                                  dev-peer1.org1.example.com-mycc-1.0</span><br><span class="line">6cec20eb7502        hyperledger&#x2F;fabric-tools:latest                                                                        &quot;&#x2F;bin&#x2F;bash&quot;              About an hour ago   Up About an hour                               cli</span><br><span class="line">7e134fe7e8e9        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:8051-&gt;8051&#x2F;tcp     peer1.org1.example.com</span><br><span class="line">ed6f5511d938        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:10051-&gt;10051&#x2F;tcp   peer1.org2.example.com</span><br><span class="line">025a71178777        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:7051-&gt;7051&#x2F;tcp     peer0.org1.example.com</span><br><span class="line">8687dfd14e7b        hyperledger&#x2F;fabric-peer:latest                                                                         &quot;peer node start&quot;        About an hour ago   Up About an hour    0.0.0.0:9051-&gt;9051&#x2F;tcp     peer0.org2.example.com</span><br><span class="line">e9cc8b410d7f        hyperledger&#x2F;fabric-orderer:latest                                                                      &quot;orderer&quot;                About an hour ago   Up About an hour    0.0.0.0:7050-&gt;7050&#x2F;tcp     orderer.example.com</span><br></pre></td></tr></table></figure>
-<h2 id="部分peer先实例化，另外peer再安装不同语言链码"><a href="#部分peer先实例化，另外peer再安装不同语言链码" class="headerlink" title="部分peer先实例化，另外peer再安装不同语言链码"></a>部分peer先实例化，另外peer再安装不同语言链码</h2><p>不改造BYFN，原生启动。peer0.org1，peer0.org2，peer1.org2都已经实例化了Go语言链码。</p>
-<p>然后在peer1.org1上安装Java语言的链码，在执行Invoke或者查询，报指纹不匹配-数据不匹配的错误。</p>
-<p>原因分析：操作链码时，会调用LSCC的<code>LifeCycleSysCC.getCCCode</code>获取链码，一份链码是从数据库取的，即当前链码容器的，一份链码是本地存储的，会对2份进行匹配，如果不匹配就会报指纹不匹配错误。</p>
-<p>匹配函数为<code>CDSPackage.ValidateCC</code>，匹配项为：</p>
-<ol>
-<li>名称、版本</li>
-<li>CodeHash、元数据Hash</li>
-</ol>
-<p>调用链码时报的指纹不匹配错误：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode install -n mycc -v 1.0 -l java -p &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;chaincode&#x2F;chaincode_example02&#x2F;java&#x2F;</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 001 Using default escc</span><br><span class="line">2019-09-03 01:52:15.714 UTC [chaincodeCmd] checkChaincodeCmdParams -&gt; INFO 002 Using default vscc</span><br><span class="line">2019-09-03 01:52:15.755 UTC [chaincodeCmd] install -&gt; INFO 003 Installed remotely response:&lt;status:200 payload:&quot;OK&quot; &gt;</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode query -C mychannel -n mycc -c &#39;&#123;&quot;Args&quot;:[&quot;query&quot;,&quot;a&quot;]&#125;&#39;</span><br><span class="line">Error: endorsement failure during query. response: status:500 message:&quot;failed to execute transaction b8b740aab0e6dd10cfe62416240ef94bfb90a55358904233c4d60dd5a39e6fe3: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer#</span><br><span class="line">root@d0533ffe1864:&#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer# peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;ordererOrganizations&#x2F;example.com&#x2F;orderers&#x2F;orderer.example.com&#x2F;msp&#x2F;tlscacerts&#x2F;tlsca.example.com-cert.pem -C mychannel -n mycc --peerAddresses peer1.org1.example.com:8051 --tlsRootCertFiles &#x2F;opt&#x2F;gopath&#x2F;src&#x2F;github.com&#x2F;hyperledger&#x2F;fabric&#x2F;peer&#x2F;crypto&#x2F;peerOrganizations&#x2F;org1.example.com&#x2F;peers&#x2F;peer1.org1.example.com&#x2F;tls&#x2F;ca.crt  -c &#39;&#123;&quot;Args&quot;:[&quot;invoke&quot;,&quot;a&quot;,&quot;b&quot;,&quot;50&quot;]&#125;&#39;</span><br><span class="line">Error: endorsement failure during invoke. response: status:500 message:&quot;failed to execute transaction aec5a0ccbcf86032774dc80220b90419d2816cc3f050a104c1cfcde55a2247cb: [channel mychannel] failed to get chaincode container info for mycc:1.0: could not get chaincode code: chaincode fingerprint mismatch: data mismatch&quot;</span><br></pre></td></tr></table></figure>
-<h2 id="文章"><a href="#文章" class="headerlink" title="文章"></a>文章</h2><p>另外，社区里的hucg编写了一篇源码文章：<a href="https://blog.csdn.net/love_feng_forever/article/details/100532324" target="_blank" rel="noopener">https://blog.csdn.net/love_feng_forever/article/details/100532324</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1729,13 +1766,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">138</span>
+          <span class="site-state-item-count">139</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">77</span>
+        <span class="site-state-item-count">78</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
